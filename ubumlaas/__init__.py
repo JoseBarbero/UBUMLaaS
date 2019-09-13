@@ -14,7 +14,7 @@ app = Flask(__name__)
 # when you deploy this to a real website.
 # export SECRET_KEY=mysecret
 # set SECRET_KEY=mysecret
-app.config['SECRET_KEY'] = 'esto hay que cambiarlo'
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
 
 ######################
 ### DATABASE SETUP ###

@@ -14,10 +14,8 @@ def login():
 
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
-
         if user.check_password(form.password.data) and user is not None:
             login_user(user)
-            flash("Log in Success")
 
             next = request.args.get("next")
 
@@ -25,8 +23,8 @@ def login():
                 next = url_for("core.index")
 
             return redirect(next)
-    else:
-        flash("Wrong username or password")
+        else:
+            flash("Wrong username or password")
     return render_template("login.html", form=form)
 
 
