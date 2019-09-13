@@ -105,3 +105,18 @@ venv.bak/
 
 # migrations
 migrations
+
+#Entornos
+.vscode/
+.idea/
+
+#Configuración
+project.json
+flask_session/
+
+#DIA
+*~
+
+#Node
+node_modules/
+package-lock.json
