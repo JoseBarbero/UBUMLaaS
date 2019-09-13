@@ -25,7 +25,7 @@ def login():
             return redirect(next)
         else:
             flash("Wrong username or password")
-    return render_template("login.html", form=form)
+    return render_template("login.html", form=form, title="Inicio de sesión")
 
 
 @users.route("/register", methods=["GET", "POST"])
@@ -47,7 +47,7 @@ def register():
 
             flash("User registered.")
             return redirect(url_for("users.login"))
-    return render_template("register.html", form=form)
+    return render_template("register.html", form=form, title="Registro")
 
 @users.route("/logout")
 def logout():
