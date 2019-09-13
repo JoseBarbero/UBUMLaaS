@@ -12,7 +12,7 @@
   <script src="static/js/bootstrap.js"></script>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <meta charset="utf-8">
-  <title>{{ page.title }}</title>
+  <title>{{ title }}</title>
 </head>
 
 <body>
@@ -30,8 +30,8 @@
       </div>
       <div class="navbar-nav ml-auto">
         {% if current_user.is_authenticated %}
+        <span class="navbar-text">Logged in as {{current_user.username}}</span>
         <a class="nav-item nav-link" href="{{ url_for('users.logout') }}">Logout</a>
-        <a class="nav-item nav-link" href="#">Logged in as {{current_user.username}}</a>
         {% else %}
         <a class="nav-item nav-link" href="{{ url_for('users.login') }}">Login</a>
         <a class="nav-item nav-link" href="{{ url_for('users.register') }}">Register</a>
@@ -107,7 +107,6 @@
               <p><a href="mailto:info@domain.com" title="glorythemes">info@domain.com</a></p>
             </div>
           </div>
-
         </div>
       </div>
     </div>

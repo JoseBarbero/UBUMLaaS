@@ -27,7 +27,7 @@ class User(db.Model, UserMixin):
         """
         self.email = email
         self.username = username
-        self.password = generate_password_hash(password)
+        self.password_hash = generate_password_hash(password)
 
     def check_password(self, password):
         """Compare input password with current password

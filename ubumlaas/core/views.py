@@ -4,8 +4,8 @@ core = Blueprint('core', __name__)
 
 @core.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('index.html', title="UBUMLaaS")
 
 @core.route('/info')
 def info():
-    return render_template('info.html')
+    return render_template('info.html', title="Información")

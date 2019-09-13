@@ -5,6 +5,7 @@
 <div class="jumbotron">
     <fieldset>
         <form class="form-horizontal" method="POST">
+            <h3 class="text-center">Login</h3>
             {{form.hidden_tag()}}
             {% for message in get_flashed_messages() %}
                 <div class="alert alert-warning alert-dismissible fade show" role="alert">{{ message }}
