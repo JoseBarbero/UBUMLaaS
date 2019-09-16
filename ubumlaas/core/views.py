@@ -1,5 +1,6 @@
 from flask import render_template, request, Blueprint
-from ubumlaas import celery
+import variables as v
+import time
 
 core = Blueprint('core', __name__)
 
@@ -17,23 +18,25 @@ def task_launcher():
 
 @core.route('/launcher_ajax', methods=["POST"])
 def ajax_tasks():
-    @celery.task(name='tasks.async_run_get_manifest')
-    def run_get_manifest():
-        """ Run the entire get_manifest flow as a single function """
-        print("Vamos a intentarlo")
-        build_path()
-        manifest_version = request_manifest_version()
-        if check_manifest(manifest_version) is True:
-            getManifest()
-            buildTable()
-            manifest_type = "full"
-            all_data = buildDict(DB_HASH)
-            writeManifest(all_data, manifest_type)
-            cleanUp()
-            print("Conseguido")
-        else:
-            print("No change detected!")
-    
-        return
-    run_get_manifest.delay()
-    return
+     
+    req = request.get_json()
+    if req["op"] == "start":
+        job = v.q.enqueue(background_task, req["proc"], req["time"])
+
+    return ""
+
+def background_task(name,tim):
+
+        """ Function that returns len(n) and simulates a delay """
+
+        delay = int(tim)
+
+        print("Task running")
+        print(f"Simulating a {delay} second delay")
+
+        time.sleep(delay)
+
+        print(len(name))
+        print("Task complete")
+
+        return len(name)
