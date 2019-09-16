@@ -1,4 +1,4 @@
-from ubumlaas import app
+import celery_worker as cw
 
 if __name__ == "__main__":
-    app.run(debug = True)
+    cw.app.run(debug = True)
