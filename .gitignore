@@ -120,3 +120,6 @@ flask_session/
 #Node
 node_modules/
 package-lock.json
+
+#DB
+*.sqlite

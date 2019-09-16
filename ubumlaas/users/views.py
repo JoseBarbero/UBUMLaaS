@@ -1,8 +1,10 @@
 from flask import render_template, url_for, flash, redirect, request, Blueprint
 from flask_login import login_user, current_user, logout_user, login_required
 from ubumlaas import db
+from ubumlaas import mail
 from ubumlaas.models import User
 from ubumlaas.users.forms import RegistrationForm, LoginForm
+from flask_mail import Message
 
 users = Blueprint("users", __name__)
 
@@ -21,7 +23,6 @@ def login():
 
             if next == None or not next[0] == "/":
                 next = url_for("core.index")
-
             return redirect(next)
         else:
             flash("Wrong username or password")
