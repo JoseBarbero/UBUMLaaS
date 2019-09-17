@@ -37,6 +37,8 @@ def create_app(config_name):
     v.r = redis.Redis()
     v.q = Queue(connection=v.r)
 
+    v.workers = 0
+
     ######################
     ###  LOGIN CONFIG  ###
     ######################

@@ -4,10 +4,13 @@
   <h3 class="text-center">Task Launcher Demo</h3>
   <div class="container">
       <div class="row">
+          <button class="btn btn-lg btn-block btn-primary" class="col-md-12" id="btn-new_worker">Create Worker</button>
+      </div>
+      <div class="row">
           <input value="" placeholder="Name" id="name" name="name" type="text" class="col-md-3">
           <input value="1" min="1" id="time" name="time" type="number" class="col-md-3">
-          <button class="btn-primary btn col-md-3" id="btn-launch">Launch</button>
-          <button class="btn-danger btn col-md-3" id="btn-stop">Stop</button>          
+          <button class="btn btn-success col-md-3" id="btn-launch">Launch</button>
+          <button class="btn btn-danger col-md-3" id="btn-stop">Stop</button>          
       </div>
   </div>
 </div>
@@ -62,6 +65,21 @@
                             }
                         });
                     }
+                });
+
+                $("#btn-new_worker").click(function(){
+                    $.ajax({
+                        url: '{{ url_for("core.ajax_tasks") }}',
+                        type: 'POST',
+                        contentType: "application/json",
+                        data: '{ "op": "new"}',
+                        success: function(result) {
+                            alert("Todo bien");
+                        },
+                        error: function(result) {
+                            alert("Todo mal");
+                        }
+                    });
                 });
             }
         );

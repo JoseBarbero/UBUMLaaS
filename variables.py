@@ -4,3 +4,4 @@ def start():
     basedir = None
     v = None
     q = None
+    workers = None

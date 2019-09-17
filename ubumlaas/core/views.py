@@ -1,6 +1,7 @@
 from flask import render_template, request, Blueprint
 import variables as v
 import time
+from ubumlaas.jobs import WorkerBuilder
 
 core = Blueprint('core', __name__)
 
@@ -17,11 +18,13 @@ def task_launcher():
     return render_template('launch_tasks.html', title="Task Launcher")
 
 @core.route('/launcher_ajax', methods=["POST"])
-def ajax_tasks():
-     
+def ajax_tasks():     
     req = request.get_json()
     if req["op"] == "start":
         job = v.q.enqueue(background_task, req["proc"], req["time"])
+    elif req["op"] == "new":
+        WorkerBuilder().create().start()
+        print("LOG: Worker created")
 
     return ""
 
