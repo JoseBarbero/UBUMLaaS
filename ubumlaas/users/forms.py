@@ -33,3 +33,4 @@ class DatasetForm(FlaskForm):
     name = StringField("Name", validators=[DataRequired()])
     dataset = FileField()
     submit = SubmitField("Upload dataset")
+

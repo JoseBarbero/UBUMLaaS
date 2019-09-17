@@ -1,4 +1,5 @@
-from ubumlaas import app
+from ubumlaas import create_app
+
 
 if __name__ == "__main__":
-    app.run(debug = True)
+    create_app("main_app").run(debug = True)
