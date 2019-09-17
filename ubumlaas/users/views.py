@@ -8,6 +8,8 @@ import smtplib
 
 users = Blueprint("users", __name__)
 
+EMAIL_AC = 'ubumlaas@gmail.com'
+EMAIL_PASS = 'rotationforest'
 
 @users.route("/login", methods=["GET", "POST"])
 def login():
@@ -55,21 +57,20 @@ def logout():
     logout_user()
     return redirect(url_for("core.index"))
 
-@users.route("/send")
-def send_email():
+def send_email(user, email, procid):
     with smtplib.SMTP('smtp.gmail.com',587) as smtp:
         smtp.ehlo()
         smtp.starttls()
         smtp.ehlo()
 
-        smtp.login('ubumlaas@gmail.com','rotationforest')
+        smtp.login(EMAIL_AC,EMAIL_PASS)
 
-        subject= 'This is an example subject'
+        subject= 'Your process on UBUMLaaS' + str(procid) + ' has finished.'
 
-        body = 'This is an example,This is an example,This is an example,This is an example,This is an example,This is an example,This is an example.'
+        body = 'Hi ' + user + ', your process ' + procid + ', that were running on UBUMLaaS has finished.'
 
         msg = f'Subject: {subject}\n\n{body}'
 
-        smtp.sendmail('ubumlaas@gmail.com', 'ubumlaas@gmail.com',msg)
+        smtp.sendmail(EMAIL_AC, email ,msg)
 
     return redirect(url_for("core.index"))

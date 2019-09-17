@@ -9,7 +9,3 @@ def index():
 @core.route('/info')
 def info():
     return render_template('info.html', title="Información")
-
-@core.route('/email')
-def email():
-    return render_template('email.html',title="Email Demo")
