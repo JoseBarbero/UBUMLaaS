@@ -4,6 +4,7 @@ from ubumlaas import db
 from ubumlaas.models import User
 from ubumlaas.users.forms import RegistrationForm, LoginForm
 from flask_mail import Message
+import smtplib
 
 users = Blueprint("users", __name__)
 
@@ -52,4 +53,23 @@ def register():
 @users.route("/logout")
 def logout():
     logout_user()
+    return redirect(url_for("core.index"))
+
+@users.route("/send")
+def send_email():
+    with smtplib.SMTP('smtp.gmail.com',587) as smtp:
+        smtp.ehlo()
+        smtp.starttls()
+        smtp.ehlo()
+
+        smtp.login('ubumlaas@gmail.com','rotationforest')
+
+        subject= 'This is an example subject'
+
+        body = 'This is an example,This is an example,This is an example,This is an example,This is an example,This is an example,This is an example.'
+
+        msg = f'Subject: {subject}\n\n{body}'
+
+        smtp.sendmail('ubumlaas@gmail.com', 'ubumlaas@gmail.com',msg)
+
     return redirect(url_for("core.index"))
