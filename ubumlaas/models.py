@@ -3,7 +3,6 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 from flask_login import UserMixin
 
-
 @v.login_manager.user_loader
 def load_user(user_id):
     return User.query.get(user_id)
@@ -46,6 +45,9 @@ class User(v.db.Model, UserMixin):
     def __str__(self):
         return self.__repr__() + f" Email: {self.email}"
 
+    def to_dict(self):
+        return {"id": self.id, "email": self.email, "username": self.username, "password": self.password_hash}
+
 
 class Experiment(v.db.Model):
 
@@ -82,6 +84,12 @@ class Experiment(v.db.Model):
         self.result = result
         self.starttime = starttime
         self.endtime = endtime
+
+    def to_dict(self):
+        return {"id": self.id, "idu": self.idu, "alg_name": self.alg_name,
+            "alg_config": self.alg_config, "data": self.data,
+            "result": self.result, "starttime": self.starttime, 
+            "endtime": self.endtime}
 
 
         

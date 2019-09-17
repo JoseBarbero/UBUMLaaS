@@ -34,14 +34,15 @@ def create_app(config_name):
     v.db = SQLAlchemy(app)
     Migrate(app, v.db)
 
-    # Redis
-    v.r = redis.Redis()
-    v.q = Queue(connection=v.r)
+    if config_name == "main_app":
+        # Redis
+        v.r = redis.Redis()
+        v.q = Queue(connection=v.r)
 
-    BASE_WORKERS = 3
-    v.workers = 0
-    for w in range(BASE_WORKERS):
-        WorkerBuilder().set_queue(v.q).create().start()
+        BASE_WORKERS = 3
+        v.workers = 0
+        for w in range(BASE_WORKERS):
+            WorkerBuilder().set_queue(v.q).create().start()
 
     ######################
     ###  LOGIN CONFIG  ###
