@@ -2,8 +2,10 @@ from flask import render_template, url_for, flash, redirect, request, Blueprint
 from flask_login import login_user, current_user, logout_user, login_required
 from ubumlaas import db
 from ubumlaas.models import User
-from ubumlaas.users.forms import RegistrationForm, LoginForm
+from ubumlaas.users.forms import RegistrationForm, LoginForm, DatasetForm
 from flask_mail import Message
+from werkzeug.utils import secure_filename
+import os
 
 users = Blueprint("users", __name__)
 
@@ -25,7 +27,7 @@ def login():
             return redirect(next)
         else:
             flash("Wrong username or password")
-    return render_template("login.html", form=form, title="Inicio de sesión")
+    return render_template("login.html", form=form)
 
 
 @users.route("/register", methods=["GET", "POST"])
@@ -47,9 +49,25 @@ def register():
 
             flash("User registered.")
             return redirect(url_for("users.login"))
-    return render_template("register.html", form=form, title="Registro")
+    return render_template("register.html", form=form)
+
 
 @users.route("/logout")
 def logout():
     logout_user()
     return redirect(url_for("core.index"))
+
+
+@users.route("/new_job", methods=["GET", "POST"])
+def new_job():
+
+    form = DatasetForm()
+    upload_folder = "ubumlaas/datasets/"+current_user.username+"/"
+
+    if form.validate_on_submit():
+        filename = secure_filename(form.dataset.data.filename)
+        if not os.path.exists(upload_folder): 
+            os.mkdir(upload_folder)
+        form.dataset.data.save(upload_folder + filename)                  
+        return redirect(url_for("core.index"))
+    return render_template("new_job.html", form=form)

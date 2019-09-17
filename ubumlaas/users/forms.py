@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField
+from wtforms import StringField, PasswordField, SubmitField, FileField
 from wtforms.validators import DataRequired, Email, EqualTo, Length, Regexp
 from wtforms import ValidationError
 from flask_wtf.file import FileField, FileAllowed
@@ -29,3 +29,7 @@ class RegistrationForm(FlaskForm):
             return True
         return False
             
+class DatasetForm(FlaskForm):
+    name = StringField("Name", validators=[DataRequired()])
+    dataset = FileField()
+    submit = SubmitField("Upload dataset")
