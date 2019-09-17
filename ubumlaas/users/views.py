@@ -13,22 +13,24 @@ EMAIL_PASS = 'rotationforest'
 
 @users.route("/login", methods=["GET", "POST"])
 def login():
-
+    if current_user.is_authenticated:
+        return redirect(url_for('core.index'))
     form = LoginForm()
+    if request.method == "POST":
+        if form.validate_on_submit():
+            user = User.query.filter_by(email=form.email.data).first()
+            if user is not None and user.check_password(form.password.data):
+                login_user(user)
 
-    if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
-        if user.check_password(form.password.data) and user is not None:
-            login_user(user)
+                next = request.args.get("next")
 
-            next = request.args.get("next")
+                if next == None or not next[0] == "/":
+                    next = url_for("core.index")
+                return redirect(next)
+        flash("Wrong username or password")
+        return redirect(url_for("users.login"))
 
-            if next == None or not next[0] == "/":
-                next = url_for("core.index")
-            return redirect(next)
-        else:
-            flash("Wrong username or password")
-    return render_template("login.html", form=form, title="Inicio de sesión")
+    return render_template("login.html", form=form, title="Log in")
 
 
 @users.route("/register", methods=["GET", "POST"])
