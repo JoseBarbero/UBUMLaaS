@@ -15,13 +15,10 @@
                 </div>
             {% endfor %}
             <div class="control-group">
-                {{form.email.label(class="control")}}
-                {{form.email(class="form-control")}}<br>
+                {{form.alg_name.label(class="control")}}
+                {{form.alg_name(class="form-control")}}<br>
             </div>
-            <div class="control-group">
-                {{form.password.label(class="form-group")}}
-                {{form.password(class="form-control")}}<br>
-            </div>
+
             <div class="control-group">
                 {{form.submit(class="btn btn-primary")}}
             </div>

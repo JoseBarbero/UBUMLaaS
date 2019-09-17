@@ -45,3 +45,43 @@ class User(v.db.Model, UserMixin):
 
     def __str__(self):
         return self.__repr__() + f" Email: {self.email}"
+
+
+class Experiment(v.db.Model):
+
+    __tablename__ = 'experiments'
+
+    id = v.db.Column(v.db.Integer, primary_key=True)
+    idu = v.db.Column(
+        v.db.Integer,
+        v.db.ForeignKey('users.id'),
+    )
+    alg_name = v.db.Column(v.db.String(64))
+    alg_config = v.db.Column(v.db.Text)
+    data = v.db.Column(v.db.String(128))
+    result = v.db.Column(v.db.Text, nullable=True)
+    starttime = v.db.Column(v.db.Integer)
+    endtime = v.db.Column(v.db.Integer, nullable=True)
+
+    def __init__(self, idu, alg_name, alg_config, data, result, starttime, endtime):
+        """Experiment constructor
+        
+        Arguments:
+            idu {integer} -- User who lauch experiment
+            alg_name {string} -- Experiment's algorithm name
+            alg_config {string} -- Experiment's algorithm configuration
+            data {string} -- Experiment data
+            result {string} -- Experiment result
+            starttime {integer} -- Experiment start timestamp
+            endtime {integer} -- Experiment end timestamp
+        """
+        self.idu = idu
+        self.alg_name = alg_name
+        self.alg_config = alg_config
+        self.data = data
+        self.result = result
+        self.starttime = starttime
+        self.endtime = endtime
+
+
+        
