@@ -41,7 +41,7 @@ def create_app(config_name):
 
         BASE_WORKERS = 3
         v.workers = 0
-        for w in range(BASE_WORKERS):
+        for _ in range(BASE_WORKERS):
             WorkerBuilder().set_queue(v.q).create().start()
 
     ######################
