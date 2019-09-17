@@ -4,9 +4,12 @@ from ubumlaas import db
 from ubumlaas.models import User
 from ubumlaas.users.forms import RegistrationForm, LoginForm
 from flask_mail import Message
+import smtplib
 
 users = Blueprint("users", __name__)
 
+EMAIL_AC = 'ubumlaas@gmail.com'
+EMAIL_PASS = 'rotationforest'
 
 @users.route("/login", methods=["GET", "POST"])
 def login():
@@ -52,4 +55,22 @@ def register():
 @users.route("/logout")
 def logout():
     logout_user()
+    return redirect(url_for("core.index"))
+
+def send_email(user, email, procid):
+    with smtplib.SMTP('smtp.gmail.com',587) as smtp:
+        smtp.ehlo()
+        smtp.starttls()
+        smtp.ehlo()
+
+        smtp.login(EMAIL_AC,EMAIL_PASS)
+
+        subject= 'Your process on UBUMLaaS' + str(procid) + ' has finished.'
+
+        body = 'Hi ' + user + ', your process ' + procid + ', that were running on UBUMLaaS has finished.'
+
+        msg = f'Subject: {subject}\n\n{body}'
+
+        smtp.sendmail(EMAIL_AC, email ,msg)
+
     return redirect(url_for("core.index"))
