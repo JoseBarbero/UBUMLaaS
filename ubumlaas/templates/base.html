@@ -30,8 +30,9 @@
       </div>
       <div class="navbar-nav ml-auto">
         {% if current_user.is_authenticated %}
-        <a class="nav-item nav-link" href="{{ url_for('experiments.new_experiment') }}">New Experiment</a>
         <span class="navbar-text">Logged in as {{current_user.username}}</span>
+        <a class="nav-item nav-link" href="{{ url_for('users.new_job') }}">New job</a>
+        <a class="nav-item nav-link" href="{{ url_for('experiments.new_experiment') }}">New Experiment</a>
         <a class="nav-item nav-link" href="{{ url_for('users.logout') }}">Logout</a>
         {% else %}
         <a class="nav-item nav-link" href="{{ url_for('users.login') }}">Login</a>
@@ -122,9 +123,6 @@
       </div>
     </div>
   </footer>
-  {% block js %}
-  {% endblock %}
 
 </body>
-
 </html>

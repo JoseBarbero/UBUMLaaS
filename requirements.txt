@@ -7,3 +7,4 @@ flask-migrate >= 2.5.2
 flask-redis >= 0.4.0
 rq == 1.1.0
 scikit-learn >= 0.21
+pandas >= 0.25.1

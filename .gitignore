@@ -123,3 +123,8 @@ package-lock.json
 
 #DB
 *.sqlite
+
+#local
+create_key.sh
+datasets
+
