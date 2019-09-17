@@ -6,6 +6,7 @@ from flask_login import LoginManager
 import variables as v
 import redis
 from rq import Queue
+from ubumlaas.jobs import WorkerBuilder
 
 import time
  
@@ -37,7 +38,10 @@ def create_app(config_name):
     v.r = redis.Redis()
     v.q = Queue(connection=v.r)
 
+    BASE_WORKERS = 3
     v.workers = 0
+    for w in range(BASE_WORKERS):
+        WorkerBuilder().set_queue(v.q).create().start()
 
     ######################
     ###  LOGIN CONFIG  ###

@@ -6,8 +6,9 @@ import multiprocessing as mp
 class WorkerBuilder():
 
     name = None
-    queues = {v.q}
+    queues = set()
     worker = None
+    proc = None
 
     def set_name(self, name):
         self.name = name
@@ -26,7 +27,13 @@ class WorkerBuilder():
             self.name = "Worker "+str(v.workers)
         v.workers += 1
         self.worker = Worker(self.queues, connection=v.r, name=self.name)
+        self.proc = mp.Process(target=self.worker.work, daemon=True)
         return self
 
     def start(self):
-        mp.Process(target=self.worker.work).start()
+        self.proc.start()
+        return self
+
+    def kill(self):
+        self.proc.kill()
+        return self
