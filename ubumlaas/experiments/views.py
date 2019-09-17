@@ -15,11 +15,12 @@ experiments = Blueprint("experiments", __name__)
 def new_experiment():
 
     form = ExperimentForm()
+    form.dataset_list()
 
     if form.validate_on_submit():
         user = current_user
         exp = Experiment(user.id, form.alg_name.data, "DEFAULT",
-            "sklearn.datasets.load_diabetes", None, time(), None)
+            form.data.data, None, time(), None)
         v.db.session.add(exp)
         v.db.session.commit()
         v.q.enqueue(task_skeleton, args=(exp.to_dict(), user.to_dict()))

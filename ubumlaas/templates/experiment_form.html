@@ -14,9 +14,14 @@
                     </button>
                 </div>
             {% endfor %}
-            <div class="control-group">
+            <div class="control-group col-md-6">
                 {{form.alg_name.label(class="control")}}
                 {{form.alg_name(class="form-control")}}<br>
+            </div>
+
+            <div class="control-group col-md-6">
+                {{form.data.label(class="control")}}
+                {{form.data(class="form-control")}}<br>
             </div>
 
             <div class="control-group">

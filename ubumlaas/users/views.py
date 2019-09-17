@@ -1,6 +1,6 @@
 from flask import render_template, url_for, flash, redirect, request, Blueprint
 from flask_login import login_user, current_user, logout_user, login_required
-from ubumlaas import db
+import variables as v
 from ubumlaas.models import User
 from ubumlaas.users.forms import RegistrationForm, LoginForm, DatasetForm
 from flask_mail import Message
@@ -45,8 +45,8 @@ def register():
             user = User(email=form.email.data,
                         username=form.username.data,
                         password=form.password.data)
-            db.session.add(user)
-            db.session.commit()
+            v.db.session.add(user)
+            v.db.session.commit()
 
             flash("User registered.")
             return redirect(url_for("users.login"))
@@ -59,7 +59,7 @@ def logout():
     return redirect(url_for("core.index"))
 
 
-@users.route("/new_job", methods=["GET", "POST"])
+@users.route("/upload_dataset", methods=["GET", "POST"])
 def new_job():
 
     form = DatasetForm()
