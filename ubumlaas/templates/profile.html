@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <h3 class="text-center">User info</h3>
+                <div class="container">
+                    <div class="row">
+                        <p class="col-md-3 font-weight-bold">Username</p>
+                        <p class="col-md-9">{{ user.username }} </p>
+                    </div>
+                    <div class="row">
+                            <p class="col-md-3 font-weight-bold">Mail</p>
+                            <p class="col-md-9">{{ user.email }} </p>
+                        </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <h3 class="text-center">Datasets</h3>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Name</th>
+                        </tr>
+                        {% for d in datasets %}
+                        <tr>
+                                <td scope="col">{{ loop.index }}</td>
+                                <td scope="col">{{ d }}</td>
+                        </tr>
+                        {% endfor %}
+                    </thead>
+                </table>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <h3 class="text-center">Experiments</h3>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Id</th>
+                            <th scope="col">Algorithm</th>
+                            <th scope="col">Dataset</th>
+                            <th scope="col">Init Date</th>
+                            <th scope="col">Finish Date</th>
+                        </tr>
+                        {% for e in experiments %}
+                        <tr>
+                                <td scope="col">{{ loop.index }}</td>
+                                <td scope="col">{{ e.id }}</td>
+                                <td scope="col">{{ e.alg_name }}</td>
+                                <td scope="col">{{ e.data }}</td>
+                                <td scope="col">{{ e.starttime }}</td>
+                                {% if e.endtime is not none %}
+                                <td scope="col">{{ e.endtime }}</td>
+                                {% else %}
+                                <td scope="col">In progress</td>
+                                {% endif %}
+                        </tr>
+                        {% endfor %}
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

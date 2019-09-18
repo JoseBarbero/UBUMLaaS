@@ -1,7 +1,7 @@
 from flask import render_template, url_for, flash, redirect, request, Blueprint
 from flask_login import login_user, current_user, logout_user, login_required
 import variables as v
-from ubumlaas.models import User
+from ubumlaas.models import User, get_experiments
 from ubumlaas.users.forms import RegistrationForm, LoginForm, DatasetForm
 from flask_mail import Message
 from werkzeug.utils import secure_filename
@@ -98,3 +98,10 @@ def new_job():
 
         return render_template("new_job.html", form=form, data=file_df.head().to_html(classes=["table-responsive", "table-borderless", "table-striped", "table-hover"]))
     return render_template("new_job.html", form=form)
+
+@login_required
+@users.route("/profile")
+def profile():
+    datasets = [x for x in os.listdir("ubumlaas/datasets/"+current_user.username)]
+    experiments = get_experiments(current_user.id)
+    return render_template("profile.html", title= current_user.username + " Profile", user=current_user, datasets=datasets, experiments=experiments)
