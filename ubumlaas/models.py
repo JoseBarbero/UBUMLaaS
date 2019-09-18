@@ -1,11 +1,21 @@
 import variables as v
 from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime
 
 from flask_login import UserMixin
 
 @v.login_manager.user_loader
 def load_user(user_id):
     return User.query.get(user_id)
+
+def get_experiments(idu):
+    listexp = Experiment.query.filter(Experiment.idu== idu).all()
+    for i in listexp:
+        i.starttime = datetime.fromtimestamp(i.starttime).strftime("%d/%m/%Y - %H:%M:%S")
+        if i.endtime is not None:
+            i.endtime = datetime.fromtimestamp(i.endtime).strftime("%d/%m/%Y - %H:%M:%S")
+    return listexp
+
 
 class User(v.db.Model, UserMixin):
     
@@ -90,6 +100,5 @@ class Experiment(v.db.Model):
             "alg_config": self.alg_config, "data": self.data,
             "result": self.result, "starttime": self.starttime, 
             "endtime": self.endtime}
-
 
         

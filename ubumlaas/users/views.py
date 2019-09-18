@@ -1,7 +1,7 @@
 from flask import render_template, url_for, flash, redirect, request, Blueprint
 from flask_login import login_user, current_user, logout_user, login_required
 import variables as v
-from ubumlaas.models import User
+from ubumlaas.models import User, get_experiments
 from ubumlaas.users.forms import RegistrationForm, LoginForm
 from flask_mail import Message
 import pandas as pd
@@ -56,3 +56,11 @@ def register():
 def logout():
     logout_user()
     return redirect(url_for("core.index"))
+
+
+@login_required
+@users.route("/profile")
+def profile():
+    datasets = [x for x in os.listdir("ubumlaas/datasets/"+current_user.username)]
+    experiments = get_experiments(current_user.id)
+    return render_template("profile.html", title= current_user.username + " Profile", user=current_user, datasets=datasets, experiments=experiments)
