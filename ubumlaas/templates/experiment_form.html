@@ -1,33 +1,76 @@
 {% extends "base.html" %}
 
 {% block content %}
-
 <div class="jumbotron">
+    <h3 class="text-center">Configure experiment</h3>
     <fieldset>
-        <form class="form-horizontal" method="POST">
-            <h3 class="text-center">Login</h3>
-            {{form.hidden_tag()}}
-            {% for message in get_flashed_messages() %}
-                <div class="alert alert-warning alert-dismissible fade show" role="alert">{{ message }}
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-            {% endfor %}
-            <div class="control-group col-md-6">
-                {{form.alg_name.label(class="control")}}
-                {{form.alg_name(class="form-control")}}<br>
+        <form class="form-group" id="form_dataset">
+            {{ form_d.hidden_tag() }}
+            <h3 class="text-center">Upload Dataset</h3>
+            <div class="form-group">
+                {{ form_d.dataset.label(class="form-control-label") }}
+                {{ form_d.dataset() }}
+            </div>
+            <div class="form-group">
+                <button class="btn btn-secondary" id="uploadDataset">Upload</button>
             </div>
 
+            <div id="show_dataset">
+                 {% include 'blocks/show_dataset.html' %}
+            </div>
+
+        </form>
+    </fieldset>
+    <fieldset>
+        <form class="form-horizontal" method="POST" action="{{ url_for("experiments.launch_experiment") }}">
+            {{form_e.hidden_tag()}}
             <div class="control-group col-md-6">
-                {{form.data.label(class="control")}}
-                {{form.data(class="form-control")}}<br>
+                {{form_e.alg_name.label(class="control")}}
+                {{form_e.alg_name(class="form-control")}}<br>
+            </div>
+
+            <div id="select_dataset">
+                {% include 'blocks/select_dataset.html' %}
             </div>
 
             <div class="control-group">
-                {{form.submit(class="btn btn-primary")}}
+                {{form_e.submit(class="btn btn-primary")}}
             </div>
         </form>
     </fieldset>
 </div>
+{% endblock %}
+{% block js %}
+<script>
+    function update_datasets(){
+        $.ajax({
+            url: '{{ url_for("experiments.update_dataset_list") }}',
+            type: 'POST',
+            success: function(result) {
+                $("#select_dataset").html(result);
+            }
+        })
+    }
+
+    $("form#form_dataset").submit(function(e){
+        e.preventDefault();
+        var formData = new FormData(this)
+        $.ajax({
+            url: '{{ url_for("experiments.add_new_dataset") }}',
+            type: 'POST',
+            contentType: "multipart/form-data",
+            data: formData,
+            success: function(result) {
+                $("#show_dataset").html(result);
+                update_datasets();
+            },
+            error: function(result) {
+                alert("Upload failed")
+            },
+            cache: false,
+            contentType: false,
+            processData: false
+        });
+    });
+</script>
 {% endblock %}

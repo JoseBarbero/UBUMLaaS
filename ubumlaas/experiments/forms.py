@@ -18,6 +18,11 @@ class ExperimentForm(FlaskForm):
         choices=[])
 
     def dataset_list(self):
-        self.data.choices=[(x,x) for x in os.listdir("ubumlaas/datasets/"+current_user.username)]
+        if os.path.isdir("ubumlaas/datasets/"+current_user.username):
+            self.data.choices = [(x, x) for x in os.listdir("ubumlaas/datasets/"+current_user.username)]
 
     submit = SubmitField("Create")
+
+
+class DatasetForm(FlaskForm):
+    dataset = FileField()

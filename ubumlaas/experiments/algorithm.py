@@ -11,11 +11,12 @@ import variables as v
 from ubumlaas.utils import send_email
 from time import time
 
+
 def task_skeleton(experiment, current_user):
     # Task need app environment
     model = eval(experiment["alg_name"]+"()")
     data = pd.read_csv("ubumlaas/datasets/"+current_user["username"]
-        +"/"+experiment['data'])
+    +"/"+experiment['data'])
     X = data.iloc[:, 0:-1]
     y = data.iloc[:, -1]
     X_train, X_test, y_train, y_test = \
