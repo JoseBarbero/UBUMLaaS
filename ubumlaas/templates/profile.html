@@ -23,13 +23,15 @@
                             <th scope="col">#</th>
                             <th scope="col">Name</th>
                         </tr>
+                    </thead>
+                    <tbody>
                         {% for d in datasets %}
                         <tr>
                                 <td scope="col">{{ loop.index }}</td>
                                 <td scope="col">{{ d }}</td>
                         </tr>
                         {% endfor %}
-                    </thead>
+                    </tbody>
                 </table>
             </div>
         </div>
@@ -46,6 +48,8 @@
                             <th scope="col">Init Date</th>
                             <th scope="col">Finish Date</th>
                         </tr>
+                    </thead>
+                    <tbody>
                         {% for e in experiments %}
                         <tr>
                                 <td scope="col">{{ loop.index }}</td>
@@ -60,7 +64,7 @@
                                 {% endif %}
                         </tr>
                         {% endfor %}
-                    </thead>
+                    </tbody>
                 </table>
             </div>
         </div>
