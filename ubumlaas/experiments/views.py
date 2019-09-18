@@ -29,14 +29,12 @@ def new_experiment():
 @experiments.route("/new_experiment/launch", methods=["POST"])
 def launch_experiment():
     form_e = ExperimentForm()
-
-    if form_e.validate_on_submit():
-        user = current_user
-        exp = Experiment(user.id, form_e.alg_name.data, "DEFAULT",
-            form_e.data.data, None, time(), None)
-        v.db.session.add(exp)
-        v.db.session.commit()
-        v.q.enqueue(task_skeleton, args=(exp.to_dict(), user.to_dict()))
+    user = current_user
+    exp = Experiment(user.id, form_e.alg_name.data, "DEFAULT",
+        form_e.data.data, None, time(), None)
+    v.db.session.add(exp)
+    v.db.session.commit()
+    v.q.enqueue(task_skeleton, args=(exp.to_dict(), user.to_dict()))
 
     return redirect(url_for("experiments.new_experiment"))
 

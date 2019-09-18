@@ -12,7 +12,7 @@ def send_email(user, email, procid, result=None):
 
         smtp.login(EMAIL_AC, EMAIL_PASS)
 
-        subject = 'Your process on UBUMLaaS' + str(procid) + ' has finished.'
+        subject = 'Your process on UBUMLaaS ' + str(procid) + ' has finished.'
 
         body = 'Hi ' + user + ', your process ' + str(procid) + ', that were running on UBUMLaaS has finished.'
         if result is not None:
