@@ -68,7 +68,7 @@ def new_job():
     if form.validate_on_submit():
         filename = secure_filename(form.dataset.data.filename)
         if not os.path.exists(upload_folder):
-            os.mkdir(upload_folder)
+            os.makedirs(upload_folder)
 
         # This saves the file locally but we could actually just read it and remove it
         form.dataset.data.save(upload_folder + filename)
