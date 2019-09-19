@@ -6,6 +6,16 @@
     <fieldset>
         <form class="form-group" id="form_dataset">
             {{ form_d.hidden_tag() }}
+            <h3 class="text-center">Algorithm Type</h3>
+            <div class="form-group">
+                {{ form_e.alg_typ.label(class="form-control-label") }}
+                {{ form_e.alg_typ() }}
+            </div>
+        </form>
+    </fieldset>
+    <fieldset>
+        <form class="form-group" id="form_dataset">
+            {{ form_d.hidden_tag() }}
             <h3 class="text-center">Upload Dataset</h3>
             <div class="form-group">
                 {{ form_d.dataset.label(class="form-control-label") }}
@@ -24,9 +34,8 @@
     <fieldset>
         <form class="form-horizontal" method="POST" action="{{ url_for("experiments.launch_experiment") }}">
             {{form_e.hidden_tag()}}
-            <div class="control-group col-md-6">
-                {{form_e.alg_name.label(class="control")}}
-                {{form_e.alg_name(class="form-control")}}<br>
+            <div id="show_algorithms">
+                {% include 'blocks/show_algorithms.html' %}
             </div>
 
             <div id="select_dataset">
@@ -70,6 +79,26 @@
             cache: false,
             contentType: false,
             processData: false
+        });
+    });
+
+    $("document").ready(function(){
+        $("#alg_typ").change(function(){
+            $.ajax({
+                url: '{{ url_for("experiments.change_alg") }}',
+                type: 'POST',
+                contentType: 'application/x-www-form-urlencoded',
+                data: formData,
+                success: function(result) {
+                    $("#show_algorithms").html(result);
+                },
+                error: function(result) {
+                    alert("Upload failed")
+                },
+                cache: false,
+                contentType: false,
+                processData: false
+            });
         });
     });
 </script>

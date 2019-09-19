@@ -16,6 +16,10 @@ def get_experiments(idu):
             i.endtime = datetime.fromtimestamp(i.endtime).strftime("%d/%m/%Y - %H:%M:%S")
     return listexp
 
+def get_algorithms(alg_typ):
+    return Algorithm.query.filter(Algorithm.alg_typ==alg_typ).all()
+
+
 
 class User(v.db.Model, UserMixin):
     
@@ -68,7 +72,10 @@ class Experiment(v.db.Model):
         v.db.Integer,
         v.db.ForeignKey('users.id'),
     )
-    alg_name = v.db.Column(v.db.String(64))
+    alg_name = v.db.Column(
+        v.db.String(64),
+        v.db.ForeignKey('algorithms.alg_name'),
+        )
     alg_config = v.db.Column(v.db.Text)
     data = v.db.Column(v.db.String(128))
     result = v.db.Column(v.db.Text, nullable=True)
@@ -102,3 +109,23 @@ class Experiment(v.db.Model):
             "endtime": self.endtime}
 
         
+class Algorithm(v.db.Model):
+
+    __tablename__ = 'algortihms'
+
+    id = v.db.Column(v.db.Integer, primary_key=True)
+    alg_name = v.db.Column(v.db.String(64))
+    web_name = v.db.Column(v.db.String(64))
+    alg_typ = v.db.Column(v.db.String(64))
+    config = v.db.Column(v.db.Text)
+
+    def __init__(self,alg_name,web_name,alg_typ,config):
+
+
+        self.alg_name=alg_name
+        self.web_name=web_name
+        self.alg_typ=alg_typ
+        self.config=config
+    
+    def to_dict(self):
+        return {"id":self.id,"alg_name":self.alg_name,"web_name":self.web_name,"alg_typ":self.alg_typ,"config":self.config}
