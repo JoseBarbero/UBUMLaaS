@@ -49,7 +49,9 @@ def update_dataset_list():
 @experiments.route("/update_alg_list", methods=["POST"])
 def change_alg():
     form_e = ExperimentForm()
-    form_e.alg_list(form_e.data.alg_typ)
+    form_e.alg_list(form_e.alg_typ.data)
+    for _ in range(100):
+        print(str(form_e.alg_typ))
     return render_template("blocks/show_algorithms.html", form_e=form_e)
 
 @login_required
