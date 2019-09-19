@@ -84,19 +84,19 @@
 
     $("document").ready(function(){
         $("#alg_typ").change(function(){
+            let send = {alg_typ: $("#alg_typ").val()};
             $.ajax({
                 url: '{{ url_for("experiments.change_alg") }}',
                 type: 'POST',
                 contentType: 'application/x-www-form-urlencoded',
-                data: "alg_name="+$("#alg_typ").val(),
+                data: "alg_typ="+$("#alg_typ").val(),
                 success: function(result) {
                     $("#show_algorithms").html(result);
                 },
                 error: function(result) {
-                    alert("Upload failed")
+                    alert("Failed")
                 },
                 cache: false,
-                contentType: false,
                 processData: false
             });
         });
