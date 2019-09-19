@@ -88,7 +88,7 @@
                 url: '{{ url_for("experiments.change_alg") }}',
                 type: 'POST',
                 contentType: 'application/x-www-form-urlencoded',
-                data: formData,
+                data: "alg_name="+$("#alg_typ").val(),
                 success: function(result) {
                     $("#show_algorithms").html(result);
                 },

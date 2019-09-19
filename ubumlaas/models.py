@@ -62,6 +62,25 @@ class User(v.db.Model, UserMixin):
     def to_dict(self):
         return {"id": self.id, "email": self.email, "username": self.username, "password": self.password_hash}
 
+class Algorithm(v.db.Model):
+
+    __tablename__ = 'algorithms'
+
+    id = v.db.Column(v.db.Integer, primary_key=True)
+    alg_name = v.db.Column(v.db.String(64), unique=True)
+    web_name = v.db.Column(v.db.String(64))
+    alg_typ = v.db.Column(v.db.String(64))
+    config = v.db.Column(v.db.Text)
+
+    def __init__(self,alg_name,web_name,alg_typ,config):
+
+        self.alg_name=alg_name
+        self.web_name=web_name
+        self.alg_typ=alg_typ
+        self.config=config
+    
+    def to_dict(self):
+        return {"id":self.id,"alg_name":self.alg_name,"web_name":self.web_name,"alg_typ":self.alg_typ,"config":self.config}
 
 class Experiment(v.db.Model):
 
@@ -108,24 +127,4 @@ class Experiment(v.db.Model):
             "result": self.result, "starttime": self.starttime, 
             "endtime": self.endtime}
 
-        
-class Algorithm(v.db.Model):
 
-    __tablename__ = 'algortihms'
-
-    id = v.db.Column(v.db.Integer, primary_key=True)
-    alg_name = v.db.Column(v.db.String(64))
-    web_name = v.db.Column(v.db.String(64))
-    alg_typ = v.db.Column(v.db.String(64))
-    config = v.db.Column(v.db.Text)
-
-    def __init__(self,alg_name,web_name,alg_typ,config):
-
-
-        self.alg_name=alg_name
-        self.web_name=web_name
-        self.alg_typ=alg_typ
-        self.config=config
-    
-    def to_dict(self):
-        return {"id":self.id,"alg_name":self.alg_name,"web_name":self.web_name,"alg_typ":self.alg_typ,"config":self.config}

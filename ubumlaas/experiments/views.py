@@ -46,6 +46,13 @@ def update_dataset_list():
     return render_template("blocks/select_dataset.html", form_e=form_e)
 
 @login_required
+@experiments.route("/update_alg_list", methods=["POST"])
+def change_alg():
+    form_e = ExperimentForm()
+    form_e.alg_list(form_e.data.alg_typ)
+    return render_template("blocks/show_algorithms.html", form_e=form_e)
+
+@login_required
 @experiments.route("/new_experiment/new_dataset", methods=["POST"])
 def add_new_dataset():
     form_d = DatasetForm()
