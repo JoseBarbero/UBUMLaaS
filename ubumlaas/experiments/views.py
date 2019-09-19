@@ -89,7 +89,7 @@ def add_new_dataset():
                     'props': [('font-family', 'verdana')]},
                 ]
             ).hide_index()
-            return render_template("blocks/show_dataset.html", data=file_df.head()
-                .to_html(classes=["table-responsive", "table-borderless", "table-striped", "table-hover"]))
+            return render_template("blocks/show_dataset.html", data=file_df
+                .to_html(classes=["table-responsive", "table-borderless", "table-striped", "table-hover", "table-sm"], max_rows=6, justify="justify"))
     else:
         return "Error", 400
