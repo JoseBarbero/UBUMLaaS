@@ -31,7 +31,7 @@ def launch_experiment():
     form_e = ExperimentForm()
     user = current_user
     exp = Experiment(user.id, form_e.alg_name.data, "DEFAULT",
-        form_e.data.data, None, time(), None)
+        form_e.data.data, None, time(), None, 0)
     v.db.session.add(exp)
     v.db.session.commit()
     v.q.enqueue(task_skeleton, args=(exp.to_dict(), user.to_dict()))
