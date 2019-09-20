@@ -1,6 +1,6 @@
 from flask import render_template, url_for, flash, redirect, request, Blueprint
 import variables as v
-from ubumlaas.models import User, Experiment, load_user
+from ubumlaas.models import User, Experiment, load_user, load_experiment
 from ubumlaas.experiments.forms import ExperimentForm, DatasetForm
 from flask_login import current_user, login_required
 from flask_mail import Message
@@ -93,3 +93,12 @@ def add_new_dataset():
                 .to_html(classes=["table-responsive", "table-borderless", "table-striped", "table-hover"]))
     else:
         return "Error", 400
+
+
+@login_required
+@experiments.route("/experiment/<id>")
+def result_experiment(id):
+    exp = load_experiment(id)
+    if exp.idu != current_user.id:
+        return "", 403
+    return render_template("result.html",experiment=exp,title="Experiment Result")

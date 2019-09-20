@@ -9,6 +9,8 @@ from flask_login import UserMixin
 def load_user(user_id):
     return User.query.get(user_id)
 
+def load_experiment(exp_id):
+    return Experiment.query.get(exp_id)
 
 def get_experiments(idu):
     listexp = Experiment.query.filter(Experiment.idu== idu).all()

@@ -3,7 +3,7 @@
     <div class="container">
         <div class="row">
             <div class="col-md-6">
-                <h3 class="text-center">User info</h3>
+                <h3 class="text-center">User Info</h3>
                 <div class="container">
                     <div class="row">
                         <p class="col-md-3 font-weight-bold">Username</p>
@@ -80,7 +80,7 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <a href="#">See</a>
+                                    <a href=" {{ url_for("experiments.result_experiment",id=e.id) }} ">See</a>
                                 </td>
                         </tr>
                         {% endfor %}
