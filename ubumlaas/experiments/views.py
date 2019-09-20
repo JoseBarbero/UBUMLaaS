@@ -8,6 +8,7 @@ from time import time
 from werkzeug.utils import secure_filename
 import os
 import pandas as pd
+import json
 
 from ubumlaas.experiments.algorithm import task_skeleton
 
@@ -32,10 +33,13 @@ def new_experiment():
 @login_required
 @experiments.route("/new_experiment/launch", methods=["POST"])
 def launch_experiment():
-    form_e = ExperimentForm()
     user = current_user
-    exp = Experiment(user.id, form_e.alg_name.data, "DEFAULT",
-        form_e.data.data, None, time(), None, 0)
+    exp_config = {"type": "partition",
+                  "split": int(request.form.get("train_partition")),
+                  "target": request.form.get("target")}
+    exp = Experiment(user.id, request.form.get("alg_name"), "DEFAULT",
+                     json.dumps(exp_config), request.form.get("data"),
+                     None, time(), None, 0)
     v.db.session.add(exp)
     v.db.session.commit()
     v.q.enqueue(task_skeleton, args=(exp.to_dict(), user.to_dict()))

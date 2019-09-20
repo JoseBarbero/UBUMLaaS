@@ -13,6 +13,7 @@ import traceback
 
 from ubumlaas.utils import send_email
 from time import time
+import json
 
 
 def task_skeleton(experiment, current_user):
@@ -20,13 +21,20 @@ def task_skeleton(experiment, current_user):
     create_app('subprocess')
     try:
         model = eval(experiment["alg"]["alg_name"]+"()")
+        exp_config = json.loads(experiment["exp_config"])
         data = pd.read_csv("ubumlaas/datasets/"+current_user["username"]
         +"/"+experiment['data'])
-        X = data.iloc[:, 0:-1]
-        y = data.iloc[:, -1]
+        X = data.loc[:, data.columns != exp_config["target"]]
+        print(X.head())
+        y = data[exp_config["target"]]
+        print(y.head())
         X_train, X_test, y_train, y_test = \
-            sklearn.model_selection.train_test_split(X, y, train_size=0.7, test_size=0.3)
+            sklearn.model_selection. \
+            train_test_split(X, y,
+                             train_size=exp_config["split"]/100,
+                             test_size=1-exp_config["split"]/100)
         model.fit(X_train, y_train)
+        print(exp_config["split"])
 
         y_pred = model.predict(X_test)
         score_text = ""
@@ -41,7 +49,7 @@ def task_skeleton(experiment, current_user):
         state = 1
     except Exception as ex:
         result = str(ex)
-        #raise
+        raise
         state = 2
 
     from ubumlaas.models import Experiment

@@ -110,13 +110,14 @@ class Experiment(v.db.Model):
         v.db.ForeignKey('algorithms.alg_name'),
         )
     alg_config = v.db.Column(v.db.Text)
+    exp_config = v.db.Column(v.db.Text)
     data = v.db.Column(v.db.String(128))
     result = v.db.Column(v.db.Text, nullable=True)
     starttime = v.db.Column(v.db.Integer)
     endtime = v.db.Column(v.db.Integer, nullable=True)
     state = v.db.Column(v.db.Integer)
 
-    def __init__(self, idu, alg_name, alg_config, data, result,
+    def __init__(self, idu, alg_name, alg_config, exp_config, data, result,
                  starttime, endtime, state):
         """Experiment constructor
 
@@ -134,6 +135,7 @@ class Experiment(v.db.Model):
         self.idu = idu
         self.alg_name = alg_name
         self.alg_config = alg_config
+        self.exp_config = exp_config
         self.data = data
         self.result = result
         self.starttime = starttime
@@ -142,7 +144,8 @@ class Experiment(v.db.Model):
 
     def to_dict(self):
         return {"id": self.id, "idu": self.idu, "alg": get_algorithm_by_name(self.alg_name).to_dict(),
-                "alg_config": self.alg_config, "data": self.data,
+                "alg_config": self.alg_config, "exp_config": self.exp_config,
+                "data": self.data,
                 "result": self.result, "starttime": self.starttime,
                 "endtime": self.endtime}
 
