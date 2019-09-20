@@ -1,7 +1,7 @@
 from flask import render_template, url_for, flash, redirect, request, Blueprint
 import variables as v
 from ubumlaas.models import User, Experiment, load_user, load_experiment
-from ubumlaas.experiments.forms import ExperimentForm, DatasetForm
+from ubumlaas.experiments.forms import ExperimentForm, DatasetForm, DatasetParametersForm, DatasetTargetForm
 from flask_login import current_user, login_required
 from flask_mail import Message
 from time import time
@@ -21,9 +21,13 @@ def new_experiment():
     form_e.dataset_list()
 
     form_d = DatasetForm()
+
+    form_c = DatasetTargetForm()
+
+    form_p = DatasetParametersForm()
        
     return render_template("experiment_form.html", form_e=form_e,
-        form_d=form_d, title="New experiment")
+        form_d=form_d, form_p=form_p, form_c=form_c, title="New experiment")
 
 @login_required
 @experiments.route("/new_experiment/launch", methods=["POST"])
@@ -53,6 +57,18 @@ def change_alg():
     return render_template("blocks/show_algorithms.html", form_e=form_e)
 
 @login_required
+@experiments.route("/update_column_list", methods=["POST"])
+def change_column_list():
+    form_e = ExperimentForm()
+    form_c = DatasetTargetForm()
+    dataset = form_e.data.data
+    upload_folder = "ubumlaas/datasets/"+current_user.username+"/"
+    df = pd.read_csv(upload_folder+dataset)
+    form_c.add_target_candidates(df.columns)
+    return render_template("blocks/show_columns.html", form_c = form_c)
+
+
+@login_required
 @experiments.route("/new_experiment/new_dataset", methods=["POST"])
 def add_new_dataset():
     form_d = DatasetForm()
@@ -63,34 +79,25 @@ def add_new_dataset():
         if not os.path.exists(upload_folder):
             os.makedirs(upload_folder)
 
-        # This saves the file locally but we could actually just read it and remove it
         form_d.dataset.data.save(upload_folder + filename)
-        flag=True
-        if filename.split(".")[-1] == "csv":
-            #TODO user should define the separator
-            file_df = pd.read_csv(upload_folder + filename)
-        elif filename.split(".")[-1] == "xls":
-            file_df = pd.read_excel(upload_folder + filename)
-        else:
-            flash("File format not allowed")
-            flag=False
-        if flag:
-            file_df = pd.read_csv(upload_folder + filename)
-            file_df.style.set_table_styles(
-                [{'selector': 'tr:nth-of-type(odd)',
-                'props': [('background', '#eee')]},
-                    {'selector': 'tr:nth-of-type(even)',
-                    'props': [('background', 'white')]},
-                    {'selector': 'th',
-                    'props': [('background', '#606060'),
-                            ('color', 'white'),
-                            ('font-family', 'verdana')]},
-                    {'selector': 'td',
-                    'props': [('font-family', 'verdana')]},
-                ]
-            ).hide_index()
-            return render_template("blocks/show_dataset.html", data=file_df.head()
-                .to_html(classes=["table-responsive", "table-borderless", "table-striped", "table-hover"]))
+        
+        file_df = form_d.to_dataframe(filename, upload_folder)
+
+        file_df.style.set_table_styles(
+            [{'selector': 'tr:nth-of-type(odd)',
+            'props': [('background', '#eee')]},
+                {'selector': 'tr:nth-of-type(even)',
+                'props': [('background', 'white')]},
+                {'selector': 'th',
+                'props': [('background', '#606060'),
+                        ('color', 'white'),
+                        ('font-family', 'verdana')]},
+                {'selector': 'td',
+                'props': [('font-family', 'verdana')]},
+            ]
+        ).hide_index()
+        return render_template("blocks/show_dataset.html", data=file_df
+            .to_html(classes=["table-responsive", "table-borderless", "table-striped", "table-hover", "table-sm"], max_rows=6, justify="justify"))
     else:
         return "Error", 400
 
