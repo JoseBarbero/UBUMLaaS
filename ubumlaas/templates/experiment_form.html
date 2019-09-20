@@ -24,33 +24,47 @@
             <div class="form-group">
                 <button class="btn btn-secondary" id="uploadDataset">Upload</button>
             </div>
-        </form>
-    </fieldset>
-    <fieldset>
-        <form class="form-group col-md-6" id="form_dataset">
-            {{ form_d.hidden_tag() }}
             <div id="show_dataset">
                 {% include 'blocks/show_dataset.html' %}
-            </div>
-            <div id="dataset_parameters">
-                {% include 'blocks/select_input_parameters.html' %}
             </div>
         </form>
     </fieldset>
     <fieldset>
         <form class="form-horizontal" method="POST" action="{{ url_for("experiments.launch_experiment") }}">
-            {{form_e.hidden_tag()}}
+            {{ form_e.hidden_tag() }}
             <div id="show_algorithms">
                 {% include 'blocks/show_algorithms.html' %}
             </div>
-
+            
             <div id="select_dataset">
                 {% include 'blocks/select_dataset.html' %}
             </div>
 
             <div class="control-group">
-                {{form_e.submit(class="btn btn-primary")}}
+                {# {{form_e.submit(class="btn btn-primary")}} #}
             </div>
+        </form>
+    </fieldset>
+    <fieldset>
+        <form class="form-group col-md-6" id="form_dataset_parameters">
+           
+            {{ form_c.hidden_tag() }}
+            <div id="dataset_parameters">
+                {% include 'blocks/show_columns.html' %}
+            </div>            
+            <fieldset>
+                {{ form_p.hidden_tag() }}
+                <div class="form-group">
+                    {{ form_p.separator.label(class="form-control-label") }}
+                    {{ form_p.separator(class="form-control") }}
+                </div>
+                <div class="form-group">
+                    {{ form_p.train_partition.label(class="form-control-label") }}
+                    {{ form_p.train_partition(id="train_slider", class="form-control custom-range") }}
+                    <label id="train_value", class="align-left">Train value:</label>
+                    <label id="test_value", class="align-right">Test value:</label>
+                </div>
+            </fieldset>
         </form>
     </fieldset>
 </div>
@@ -90,7 +104,6 @@
 
     $("document").ready(function () {
         $("#alg_typ").change(function () {
-            let send = { alg_typ: $("#alg_typ").val() };
             $.ajax({
                 url: '{{ url_for("experiments.change_alg") }}',
                 type: 'POST',
@@ -104,6 +117,22 @@
                 },
                 cache: false,
                 processData: false
+            });
+        });
+
+        $("#data").change(function(){
+            let chosen_dataset = $("#data").val();
+            $.ajax({
+                url: '{{ url_for("experiments.change_column_list") }}',
+                type: 'POST',
+                contentType: 'application/x-www-form-urlencoded',
+                data: "data="+chosen_dataset,
+                success: function(result) {
+                    $("#dataset_parameters").html(result);
+                },
+                error: function(result) {
+                    alert("Failed open dataset configuration");
+                }
             });
         });
     });
