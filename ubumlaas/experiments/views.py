@@ -1,6 +1,6 @@
 from flask import render_template, url_for, flash, redirect, request, Blueprint
 import variables as v
-from ubumlaas.models import User, Experiment, load_user
+from ubumlaas.models import User, Experiment, load_user, load_experiment
 from ubumlaas.experiments.forms import ExperimentForm, DatasetForm, DatasetParametersForm, DatasetTargetForm
 from flask_login import current_user, login_required
 from flask_mail import Message
@@ -35,7 +35,7 @@ def launch_experiment():
     form_e = ExperimentForm()
     user = current_user
     exp = Experiment(user.id, form_e.alg_name.data, "DEFAULT",
-        form_e.data.data, None, time(), None)
+        form_e.data.data, None, time(), None, 0)
     v.db.session.add(exp)
     v.db.session.commit()
     v.q.enqueue(task_skeleton, args=(exp.to_dict(), user.to_dict()))
@@ -100,3 +100,12 @@ def add_new_dataset():
             .to_html(classes=["table-responsive", "table-borderless", "table-striped", "table-hover", "table-sm"], max_rows=6, justify="justify"))
     else:
         return "Error", 400
+
+
+@login_required
+@experiments.route("/experiment/<id>")
+def result_experiment(id):
+    exp = load_experiment(id)
+    if exp.idu != current_user.id:
+        return "", 403
+    return render_template("result.html",experiment=exp,title="Experiment Result")

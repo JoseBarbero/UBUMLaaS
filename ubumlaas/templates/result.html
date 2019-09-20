@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="jumbotron">
+    <h3 class="text-center">Experiment Result</h3>
+    <div class="row">
+        <div class="col-md-6">
+            <h3 class="text-center">Experiment Info</h3>
+            <div class="container">
+                <div class="row">
+                    <p class="col-md-3 font-weight-bold">Id</p>
+                    <p class="col-md-9">{{ experiment.id }} </p>
+                </div>
+                <div class="row">
+                        <p class="col-md-3 font-weight-bold">Algorithm</p>
+                        <p class="col-md-9">{{ experiment.alg_name }} </p>
+                </div>
+                <div class="row">
+                    <p class="col-md-3 font-weight-bold">Dataset</p>
+                    <p class="col-md-9">{{ experiment.data }} </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            {% if experiment.state == 0 %}
+                <h3 class="text-center">In Progress</h3>
+                <img src="{{ url_for("static",filename="img/dude-mining.gif") }}"/>
+            {% else %}
+
+                {% if experiment.state == 2  %}
+                    <h3 class="text-center">Error</h3>
+                
+                {% elif experiment.state == 1 %}
+                    <h3 class="text-center">Finished</h3>
+                {% endif %}
+
+                {{experiment.result}}
+
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}
