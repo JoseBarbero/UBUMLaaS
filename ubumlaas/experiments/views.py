@@ -63,11 +63,9 @@ def add_new_dataset():
         if not os.path.exists(upload_folder):
             os.makedirs(upload_folder)
 
-        # This saves the file locally but we could actually just read it and remove it
         form_d.dataset.data.save(upload_folder + filename)
         flag=True
         if filename.split(".")[-1] == "csv":
-            #TODO user should define the separator
             file_df = pd.read_csv(upload_folder + filename)
         elif filename.split(".")[-1] == "xls":
             file_df = pd.read_excel(upload_folder + filename)

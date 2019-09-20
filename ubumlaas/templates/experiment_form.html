@@ -4,7 +4,7 @@
 <div class="jumbotron">
     <h3 class="text-center">Configure experiment</h3>
     <fieldset>
-        <form class="form-group" id="form_dataset">
+        <form class="form-group col-md-6" id="form_dataset">
             {{ form_d.hidden_tag() }}
             <h3 class="text-center">Algorithm Type</h3>
             <div class="form-group">
@@ -14,7 +14,7 @@
         </form>
     </fieldset>
     <fieldset>
-        <form class="form-group" id="form_dataset">
+        <form class="form-group col-md-6" id="form_dataset">
             {{ form_d.hidden_tag() }}
             <h3 class="text-center">Upload Dataset</h3>
             <div class="form-group">
@@ -24,11 +24,17 @@
             <div class="form-group">
                 <button class="btn btn-secondary" id="uploadDataset">Upload</button>
             </div>
-
-            <div id="show_dataset" class=".table-wrapper">
-                 {% include 'blocks/show_dataset.html' %}
+        </form>
+    </fieldset>
+    <fieldset>
+        <form class="form-group col-md-6" id="form_dataset">
+            {{ form_d.hidden_tag() }}
+            <div id="show_dataset">
+                {% include 'blocks/show_dataset.html' %}
             </div>
-
+            <div id="dataset_parameters">
+                {% include 'blocks/select_input_parameters.html' %}
+            </div>
         </form>
     </fieldset>
     <fieldset>
@@ -51,17 +57,17 @@
 {% endblock %}
 {% block js %}
 <script>
-    function update_datasets(){
+    function update_datasets() {
         $.ajax({
             url: '{{ url_for("experiments.update_dataset_list") }}',
             type: 'POST',
-            success: function(result) {
+            success: function (result) {
                 $("#select_dataset").html(result);
             }
         })
     }
 
-    $("form#form_dataset").submit(function(e){
+    $("form#form_dataset").submit(function (e) {
         e.preventDefault();
         var formData = new FormData(this)
         $.ajax({
@@ -69,11 +75,11 @@
             type: 'POST',
             contentType: "multipart/form-data",
             data: formData,
-            success: function(result) {
+            success: function (result) {
                 $("#show_dataset").html(result);
                 update_datasets();
             },
-            error: function(result) {
+            error: function (result) {
                 alert("Upload failed")
             },
             cache: false,
@@ -82,18 +88,18 @@
         });
     });
 
-    $("document").ready(function(){
-        $("#alg_typ").change(function(){
-            let send = {alg_typ: $("#alg_typ").val()};
+    $("document").ready(function () {
+        $("#alg_typ").change(function () {
+            let send = { alg_typ: $("#alg_typ").val() };
             $.ajax({
                 url: '{{ url_for("experiments.change_alg") }}',
                 type: 'POST',
                 contentType: 'application/x-www-form-urlencoded',
-                data: "alg_typ="+$("#alg_typ").val(),
-                success: function(result) {
+                data: "alg_typ=" + $("#alg_typ").val(),
+                success: function (result) {
                     $("#show_algorithms").html(result);
                 },
-                error: function(result) {
+                error: function (result) {
                     alert("Failed")
                 },
                 cache: false,
@@ -101,5 +107,16 @@
             });
         });
     });
+    // Slider
+    var slider = document.getElementById("train_slider");
+    var train_perc = document.getElementById("train_value");
+    var test_perc = document.getElementById("test_value");
+    train_perc.innerHTML = "Train: " + slider.value + " %";
+    test_perc.innerHTML = "Test: " + (100 - slider.value) + " %";
+
+    slider.oninput = function () {
+        train_perc.innerHTML = "Train: " + this.value + " %";
+        test_perc.innerHTML = "Test: " + (100 - this.value) + " %";
+    }
 </script>
 {% endblock %}
