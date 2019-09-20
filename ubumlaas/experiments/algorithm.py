@@ -15,10 +15,36 @@ from ubumlaas.utils import send_email
 from time import time
 import json
 
+from weka.core import converters
+import weka.core.jvm as jvm
+from weka.classifiers import Classifier
+from weka.core.classes import Random
+from weka.classifiers import Evaluation
+
 
 def task_skeleton(experiment, current_user):
     # Task need app environment
     create_app('subprocess')
+
+    apps_functions={"sklearn":execute_sklearn, "weka": execute_weka}
+    
+    type_app=experiment["alg"]["alg_name"].split(".",1)[0]
+
+    result,state = apps_functions[type_app](experiment,current_user)
+
+    from ubumlaas.models import Experiment
+
+    exp = Experiment.query.filter_by(id=experiment['id']).first()
+
+    exp.result = result
+    exp.state = state
+    exp.endtime = time()
+    v.db.session.commit()
+
+    send_email(current_user["username"], current_user["email"], experiment["id"], str(exp.result))
+
+
+def execute_sklearn(experiment, current_user):
     try:
         model = eval(experiment["alg"]["alg_name"]+"()")
         exp_config = json.loads(experiment["exp_config"])
@@ -52,15 +78,29 @@ def task_skeleton(experiment, current_user):
         raise
         state = 2
 
-    from ubumlaas.models import Experiment
+    return result, state
 
-    exp = Experiment.query.filter_by(id=experiment['id']).first()
+def execute_weka(experiment, current_user):
+    try:
+        jvm.start()
+        data_dir = "ubumlaas/datasets/"+current_user["username"]+"/"+experiment["data"]
+        data = converters.load_any_file(data_dir)
+        #Last column of data is target
+        data.class_is_last()
 
-    exp.result = result
-    exp.state = state
-    exp.endtime = time()
-    v.db.session.commit()
+        classifier = Classifier(classname=experiment["alg"]["alg_name"])
+        
 
-    send_email(current_user["username"], current_user["email"], experiment["id"], str(exp.result))
+        evaluation = Evaluation(data)
+        evaluation.evaluate_train_test_split(classifier, data, 70.0,Random(time()))
+        result = evaluation.summary()
+        state=1
+        
+    except Exception as ex:
+        result = str(ex)
+        #raise
+        state = 2
+    finally:
+        jvm.stop()
 
-    
+    return result,state
