@@ -14,17 +14,17 @@
         </form>
     </fieldset>
     <fieldset>
-        <form class="form-group col-md-6 offset-md-3" id="form_dataset">
+        <form class="form-group col-12" id="form_dataset">
             {{ form_d.hidden_tag() }}
             <h4 class="text-center">Upload Dataset</h4>
-            <div class="form-group">
+            <div class="form-group col-md-6 offset-md-3">
                 {{ form_d.dataset.label(class="form-control-label") }}
                 {{ form_d.dataset() }}
             </div>
-            <div class="form-group">
+            <div class="form-group col-md-6 offset-md-3">
                 <button class="btn btn-secondary" id="uploadDataset">Upload</button>
             </div>
-            <div id="show_dataset">
+            <div id="show_dataset" class="col-12">
                 {% include 'blocks/show_dataset.html' %}
             </div>
         </form>
@@ -149,7 +149,8 @@
                 contentType: 'application/x-www-form-urlencoded',
                 data: "data="+chosen_dataset,
                 success: function(result) {
-                    $("#dataset_parameters").html(result);
+                    $("#dataset_parameters").html(result.html);
+                    $("#show_dataset").html(result.df)
                 },
                 error: function(result) {
                     alert("Failed open dataset configuration");

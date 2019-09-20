@@ -1,4 +1,4 @@
-from flask import render_template, url_for, flash, redirect, request, Blueprint
+from flask import render_template, url_for, flash, redirect, request, Blueprint, jsonify
 import variables as v
 from ubumlaas.models import User, Experiment, load_user, load_experiment
 from ubumlaas.experiments.forms import ExperimentForm, DatasetForm, DatasetParametersForm, DatasetTargetForm
@@ -69,8 +69,12 @@ def change_column_list():
     upload_folder = "ubumlaas/datasets/"+current_user.username+"/"
     df = pd.read_csv(upload_folder+dataset)
     form_c.add_target_candidates(df.columns)
-    return render_template("blocks/show_columns.html", form_c = form_c)
+    pretty_df = generate_df_head_html(df)
+    to_return = {"html": render_template("blocks/show_columns.html", form_c = form_c),
+                 "df": generate_df_head_html(df)}
+    return jsonify(to_return)
 
+    
 
 @login_required
 @experiments.route("/new_experiment/new_dataset", methods=["POST"])
@@ -87,7 +91,14 @@ def add_new_dataset():
         
         file_df = form_d.to_dataframe(filename, upload_folder)
 
-        file_df.style.set_table_styles(
+        pretty_df = generate_df_head_html(file_df)
+        
+        return render_template("blocks/show_dataset.html", data=pretty_df)
+    else:
+        return "Error", 400
+
+def generate_df_head_html(df):
+    df.style.set_table_styles(
             [{'selector': 'tr:nth-of-type(odd)',
             'props': [('background', '#eee')]},
                 {'selector': 'tr:nth-of-type(even)',
@@ -100,10 +111,8 @@ def add_new_dataset():
                 'props': [('font-family', 'verdana')]},
             ]
         ).hide_index()
-        return render_template("blocks/show_dataset.html", data=file_df
-            .to_html(classes=["table-responsive", "table-borderless", "table-striped", "table-hover", "table-sm"], max_rows=6, justify="justify"))
-    else:
-        return "Error", 400
+
+    return df.to_html(classes=["table-responsive", "table-borderless", "table-striped", "table-hover", "table-sm"], max_rows=6, justify="justify")
 
 
 @login_required
