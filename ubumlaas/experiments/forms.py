@@ -46,7 +46,7 @@ class DatasetForm(FlaskForm):
         return file_df
 
 class DatasetParametersForm(FlaskForm):
-    train_partition = IntegerRangeField("Train/Test partition", validators=[NumberRange(1,100)])
+    train_partition = IntegerRangeField("Train/Test partition", default=70, validators=[NumberRange(1,100)])
 
 class DatasetTargetForm(FlaskForm):
     target_column = SelectField("Target column", validators=[DataRequired()], choices=[])
