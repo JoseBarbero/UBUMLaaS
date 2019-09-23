@@ -6,35 +6,41 @@
     <fieldset>
         <form class="form-group col-md-6 offset-md-3" id="form_algorithm">
             {{ form_d.hidden_tag() }}
-            <div class="control-group">
+            <div class="form-group control-group">
                 {{ form_e.alg_typ.label(class="form-control-label") }}
                 {{ form_e.alg_typ(class="form-control") }}
             </div>
-            <div id="show_algorithms">
+            <div id="show_algorithms" class="form-group">
                 {% include 'blocks/show_algorithms.html' %}
             </div>
         </form>
-        <form class="form-group col-md-6 offset-md-3" id="form_dataset">
+    </fieldset>
+    <fieldset>
+        <form class="col-md-6 offset-md-3" id="form_dataset">
             {{ form_d.hidden_tag() }}
-            <div class="control-group">
-                {{ form_d.dataset.label(class="form-control-label") }}
-                {{ form_d.dataset(class="form-control-file") }}
+            <div class="form-group custom-file">
+                {{ form_d.dataset(class="custom-file-input") }}
+                {{ form_d.dataset.label(class="custom-file-label") }}
             </div>
-            <div class="form-group col-md-6 offset-md-3">
-                <button class="btn btn-secondary btn-block btn-lg" id="uploadDataset">Upload</button>
+            <div class="form-group">
+                <button class="btn btn-secondary btn-block" id="uploadDataset">Upload</button>
             </div>
         </form>
-        <div id="show_dataset" class="col-12">
-            {% include 'blocks/show_dataset.html' %}
-        </div>
-        <form class="form-group col-md-6 offset-md-3" id="form_dataset2">
+    </fieldset>
+    <div id="show_dataset" class="col-12">
+        {% include 'blocks/show_dataset.html' %}
+    </div>
+    <fieldset>
+        <form class="col-md-6 offset-md-3" id="form_dataset2">
             <div id="select_dataset">
                 {% include 'blocks/select_dataset.html' %}
             </div>
         </form>
-        <form class="form-group col-md-6 offset-md-3" id="form_dataset_parameters">
+    </fieldset>
+    <fieldset>
+        <form class="col-md-6 offset-md-3" id="form_dataset_parameters">
 
-            <div id="dataset_parameters">
+            <div id="dataset_parameters" class="form-group">
                 {% include 'blocks/show_columns.html' %}
             </div>
             <div class="form-group">
@@ -44,7 +50,9 @@
                 <label id="test_value" , class="align-right">Test value:</label>
             </div>
         </form>
-        <form class="form-group col-md-6 offset-3" id="submit_completed_experiment">
+    </fieldset>
+    <fieldset>
+        <form class="col-md-6 offset-3" id="submit_completed_experiment">
             {{ form_e.hidden_tag() }}
             {{ form_c.hidden_tag() }}
             {{ form_p.hidden_tag() }}

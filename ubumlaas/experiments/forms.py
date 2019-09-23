@@ -19,7 +19,7 @@ class ExperimentForm(FlaskForm):
     alg_name = SelectField("Algorithm Name", validators=[DataRequired()],
                            choices=[])
 
-    data = SelectField("Dataset", validators=[DataRequired()],
+    data = SelectField("Select Dataset", validators=[DataRequired()],
                        choices=[("","---")])
 
     def alg_list(self, alg_typ):
@@ -35,7 +35,7 @@ class ExperimentForm(FlaskForm):
 
 
 class DatasetForm(FlaskForm):
-    dataset = FileField()
+    dataset = FileField("Upload Dataset")
     def to_dataframe(self, filename, upload_folder):
         if filename.split(".")[-1] == "csv":
             file_df = pd.read_csv(upload_folder + filename)
