@@ -10,17 +10,21 @@ from ubumlaas import create_app
 import pandas as pd
 import variables as v
 import traceback
+import pickle
 
 from ubumlaas.utils import send_email
 from time import time
 import json
+import os
 
-from weka.core import converters
 import weka.core.jvm as jvm
 from weka.classifiers import Classifier
 from weka.core.classes import Random
 from weka.classifiers import Evaluation
+from weka.core.converters import Loader
+import weka.core.serialization as serialization
 
+import tempfile
 
 def task_skeleton(experiment, current_user):
     # Task need app environment
@@ -38,10 +42,13 @@ def task_skeleton(experiment, current_user):
             train_test_split(X, y,
                              train_size=exp_config["split"]/100,
                              test_size=1-exp_config["split"]/100)
+        models_dir ="ubumlaas/models/{}/".format(current_user["username"])
+        if not os.path.exists(models_dir):
+            os.makedirs(models_dir)
+        y_pred = apps_functions[type_app](experiment,"{}{}.model".format(models_dir,experiment['id']), X_train, X_test, y_train, y_test)
+     
 
-        model = apps_functions[type_app](experiment, X_train, y_train)
-  
-        y_pred = model.predict(X_test)
+       
         score_text = ""
         score = 0
         if experiment["alg"]["alg_typ"] == "Regression":
@@ -50,11 +57,12 @@ def task_skeleton(experiment, current_user):
         elif experiment["alg"]["alg_typ"] == "Classification":
             score_text = "Confussion Matrix"
             score = sklearn.metrics.confusion_matrix(y_test, y_pred)
-
-    except Exception as ex:
-        result = str(ex)
-        raise
+        state = 1
+        result = score_text+": "+str(score)
+    except Exception:
+        result = str(traceback.format_exc())
         state = 2
+        
 
     from ubumlaas.models import Experiment
 
@@ -67,33 +75,49 @@ def task_skeleton(experiment, current_user):
     send_email(current_user["username"], current_user["email"], experiment["id"], str(exp.result))
 
 
-def execute_sklearn(experiment, X_train, y_train):
+def execute_sklearn(experiment, path, X_train, X_test, y_train, y_test):
     model = eval(experiment["alg"]["alg_name"]+"()")
     model.fit(X_train, y_train)
+    y_pred = model.predict(X_test)
 
-    return model
+    pickle.dump(model, open(path, 'wb'))
 
-    
-    result = score_text+": "+str(score)
-    state = 1
+    return y_pred
 
 
-    return result, state
-
-def execute_weka(experiment, X_train, y_train):
+def execute_weka(experiment, path, X_train, X_test, y_train, y_test):
     jvm.start()
-    data_dir = "ubumlaas/datasets/"+current_user["username"]+"/"+experiment["data"]
-    data = converters.load_any_file(data_dir)
-    #Last column of data is target
-    data.class_is_last()
+    
+    
+    data = create_weka_dataset(X_train , y_train)
+    
 
     classifier = Classifier(classname=experiment["alg"]["alg_name"])
     
-    evaluation = Evaluation(data)
-    evaluation.evaluate_train_test_split(classifier, data, 70.0,Random(time()))
-    result = evaluation.summary()
-    state=1        
+    classifier.build_classifier(data)
+    data_test= create_weka_dataset(X_test,y_test)
+    y_pred=[]
+    for instance,y in zip(data_test,y_test):
+        pred = classifier.classify_instance(instance)
+        y_pred.append(instance.class_attribute.value(int(pred)))
 
+    serialization.write(path, classifier)
     jvm.stop()
 
-    return result, state
+    return y_pred
+
+def create_weka_dataset(X_train, y_train):
+    try:
+        temp = tempfile.NamedTemporaryFile()
+        X_train_df =pd.DataFrame(X_train)
+        y_train_df = pd.DataFrame(y_train)
+        dataframe = pd.concat([X_train_df,y_train_df], axis=1)
+        dataframe.to_csv(temp.name, index=None)
+        loader = Loader(classname="weka.core.converters.CSVLoader")
+        data = loader.load_file(temp.name)
+        #Last column of data is target
+
+        data.class_is_last()
+    finally:
+        temp.close()
+    return data
