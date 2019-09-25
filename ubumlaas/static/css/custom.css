@@ -7,3 +7,11 @@
 .center {
     margin: 0 auto;
 }
+
+.row-odd {
+    background-color: #f2f2f2;
+}
+
+.config_alg {
+    margin-bottom: 0.4rem;
+}

@@ -122,3 +122,7 @@ def result_experiment(id):
     if exp.idu != current_user.id:
         return "", 403
     return render_template("result.html",experiment=exp,title="Experiment Result")
+
+@experiments.route("/demo_form_generator")
+def demo_form_generator():
+    return render_template("config_form.html", title="Demo")

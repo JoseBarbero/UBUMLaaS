@@ -40,7 +40,7 @@ def task_skeleton(experiment, current_user):
                              test_size=1-exp_config["split"]/100)
 
         model = apps_functions[type_app](experiment, X_train, y_train)
-  
+
         y_pred = model.predict(X_test)
         score_text = ""
         score = 0
@@ -73,7 +73,7 @@ def execute_sklearn(experiment, X_train, y_train):
 
     return model
 
-    
+
     result = score_text+": "+str(score)
     state = 1
 
@@ -88,11 +88,11 @@ def execute_weka(experiment, X_train, y_train):
     data.class_is_last()
 
     classifier = Classifier(classname=experiment["alg"]["alg_name"])
-    
+
     evaluation = Evaluation(data)
-    evaluation.evaluate_train_test_split(classifier, data, 70.0,Random(time()))
+    evaluation.evaluate_train_test_split(classifier, data, 70.0, Random(time()))
     result = evaluation.summary()
-    state=1        
+    state = 1        
 
     jvm.stop()
 
