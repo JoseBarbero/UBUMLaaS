@@ -8,6 +8,8 @@ import redis
 from rq import Queue
 from ubumlaas.jobs import WorkerBuilder
 
+import ubumlaas.weka.weka_packages as weka_packages
+
 import time
  
 def create_app(config_name):
@@ -43,6 +45,10 @@ def create_app(config_name):
         v.workers = 0
         for _ in range(BASE_WORKERS):
             WorkerBuilder().set_queue(v.q).create().start()
+
+        #Install weka packages
+        v.q.enqueue(weka_packages.install_packages,"ubumlaas/weka/weka_packages.txt")
+      
 
     ######################
     ###  LOGIN CONFIG  ###
