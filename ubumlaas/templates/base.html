@@ -3,8 +3,8 @@
 
 <head>
   <link rel="stylesheet" href="{{ url_for('static', filename="css/bootstrap.css") }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename="css/custom.css") }}">
-  
+  <link rel="stylesheet" href="{{ url_for('static', filename="css/custom.css") }}"> 
+  <link rel="stylesheet" href="{{ url_for('static', filename="css/switch.css") }}">  
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <meta charset="utf-8">
   <title>{{ title }}</title>
@@ -127,6 +127,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
     integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
     crossorigin="anonymous"></script>
+  <script src="{{ url_for('static', filename="js/config_alg.js") }}"></script>
   {% block js %}
   {% endblock %}
 </body>

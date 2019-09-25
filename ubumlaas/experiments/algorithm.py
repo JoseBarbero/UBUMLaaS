@@ -36,7 +36,6 @@ def task_skeleton(experiment, current_user):
         X_train, X_test, y_train, y_test = \
             sklearn.model_selection. \
             train_test_split(X, y,
-                             train_size=exp_config["split"]/100,
                              test_size=1-exp_config["split"]/100)
 
         model = apps_functions[type_app](experiment, X_train, y_train)
@@ -68,17 +67,12 @@ def task_skeleton(experiment, current_user):
 
 
 def execute_sklearn(experiment, X_train, y_train):
-    model = eval(experiment["alg"]["alg_name"]+"()")
+    alg_config = json.loads(experiment["alg_config"])
+    print(alg_config)
+    model = eval(experiment["alg"]["alg_name"]+"(**alg_config)")
     model.fit(X_train, y_train)
 
     return model
-
-
-    result = score_text+": "+str(score)
-    state = 1
-
-
-    return result, state
 
 def execute_weka(experiment, X_train, y_train):
     jvm.start()

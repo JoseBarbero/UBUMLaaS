@@ -1,6 +1,6 @@
 from flask import render_template, url_for, flash, redirect, request, Blueprint, jsonify
 import variables as v
-from ubumlaas.models import User, Experiment, load_user, load_experiment
+from ubumlaas.models import User, Experiment, load_user, load_experiment, get_algorithm_by_name
 from ubumlaas.experiments.forms import ExperimentForm, DatasetForm, DatasetParametersForm, DatasetTargetForm
 from flask_login import current_user, login_required
 from flask_mail import Message
@@ -9,6 +9,7 @@ from werkzeug.utils import secure_filename
 import os
 import pandas as pd
 import json
+from urllib.parse import unquote
 
 from ubumlaas.experiments.algorithm import task_skeleton
 
@@ -30,6 +31,7 @@ def new_experiment():
     return render_template("experiment_form.html", form_e=form_e,
         form_d=form_d, form_p=form_p, form_c=form_c, title="New experiment")
 
+
 @login_required
 @experiments.route("/new_experiment/launch", methods=["POST"])
 def launch_experiment():
@@ -37,7 +39,7 @@ def launch_experiment():
     exp_config = {"type": "partition",
                   "split": int(request.form.get("train_partition")),
                   "target": request.form.get("target")}
-    exp = Experiment(user.id, request.form.get("alg_name"), "DEFAULT",
+    exp = Experiment(user.id, request.form.get("alg_name"), unquote(request.form.get("alg_config")),
                      json.dumps(exp_config), request.form.get("data"),
                      None, time(), None, 0)
     v.db.session.add(exp)
@@ -74,7 +76,6 @@ def change_column_list():
                  "df": generate_df_head_html(df)}
     return jsonify(to_return)
 
-    
 
 @login_required
 @experiments.route("/new_experiment/new_dataset", methods=["POST"])
@@ -123,6 +124,8 @@ def result_experiment(id):
         return "", 403
     return render_template("result.html",experiment=exp,title="Experiment Result")
 
-@experiments.route("/demo_form_generator")
-def demo_form_generator():
-    return render_template("config_form.html", title="Demo")
+@experiments.route("/experiment/form_generator", methods=["POST"])
+def form_generator():
+    alg_name = request.form.get('alg_name')
+    alg = get_algorithm_by_name(alg_name)
+    return jsonify({"alg_config": alg.config})
