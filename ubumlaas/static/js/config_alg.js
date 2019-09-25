@@ -101,6 +101,9 @@ function generateForm(alg_config){
 }
 
 function get_config_form(){
+    if (alg_config_reference == null){
+        return {};
+    }
     var parameters = Object.keys(alg_config_reference);
     let result = {};
     parameters.forEach(function(i){

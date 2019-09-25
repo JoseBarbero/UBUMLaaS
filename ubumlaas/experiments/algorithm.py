@@ -26,6 +26,7 @@ import weka.core.serialization as serialization
 
 import tempfile
 
+
 def task_skeleton(experiment, current_user):
     # Task need app environment
     create_app('subprocess')
@@ -39,14 +40,15 @@ def task_skeleton(experiment, current_user):
         y = data[exp_config["target"]]
         X_train, X_test, y_train, y_test = \
             sklearn.model_selection. \
-            train_test_split(X, y,test_size=1-exp_config["split"]/100)
-        models_dir ="ubumlaas/models/{}/".format(current_user["username"])
+            train_test_split(X, y, test_size=1-exp_config["split"]/100)
+        models_dir = "ubumlaas/models/{}/".format(current_user["username"])
         if not os.path.exists(models_dir):
             os.makedirs(models_dir)
-        y_pred = apps_functions[type_app](experiment,"{}{}.model".format(models_dir,experiment['id']), X_train, X_test, y_train, y_test)
-     
+        y_pred = apps_functions[type_app](experiment,
+                                          "{}{}.model".
+                                          format(models_dir, experiment['id']),
+                                          X_train, X_test, y_train, y_test)
 
-       
         score_text = ""
         score = 0
         if experiment["alg"]["alg_typ"] == "Regression":
@@ -60,7 +62,6 @@ def task_skeleton(experiment, current_user):
     except Exception:
         result = str(traceback.format_exc())
         state = 2
-        
 
     from ubumlaas.models import Experiment
 
@@ -73,7 +74,7 @@ def task_skeleton(experiment, current_user):
     send_email(current_user["username"], current_user["email"], experiment["id"], str(exp.result))
 
 
-def execute_sklearn(experiment, X_train, y_train):
+def execute_sklearn(experiment, path, X_train, X_test, y_train, y_test):
     alg_config = json.loads(experiment["alg_config"])
     print(alg_config)
     model = eval(experiment["alg"]["alg_name"]+"(**alg_config)")
@@ -87,42 +88,43 @@ def execute_sklearn(experiment, X_train, y_train):
 
 def execute_weka(experiment, path, X_train, X_test, y_train, y_test):
     jvm.start(packages=True)
-    
-    data = create_weka_dataset(X_train , y_train)
-    
+
+    data = create_weka_dataset(X_train, y_train)
 
     classifier = Classifier(classname=experiment["alg"]["alg_name"])
-    
+
     classifier.build_classifier(data)
-    data_test= create_weka_dataset(X_test,y_test)
+    data_test = create_weka_dataset(X_test, y_test)
     function = None
     if experiment["alg"]["alg_typ"] == "Classification":
-        function = lambda p:data_test.class_attribute.value(int(p))
+        function = lambda p: data_test.class_attribute.value(int(p))
     elif experiment["alg"]["alg_typ"] == "Regression":
         function = lambda p: p
-    y_pred=[]
+    y_pred = []
     for instance in data_test:
         pred = classifier.classify_instance(instance)
         y_pred.append(function(pred))
-      
 
     serialization.write(path, classifier)
     jvm.stop()
 
     return y_pred
 
+
 def create_weka_dataset(X, y):
     try:
         temp = tempfile.NamedTemporaryFile()
-        X_df =pd.DataFrame(X)
+        X_df = pd.DataFrame(X)
         y_df = pd.DataFrame(y)
-        dataframe = pd.concat([X_df,y_df], axis=1)
+        dataframe = pd.concat([X_df, y_df], axis=1)
         dataframe.to_csv(temp.name, index=None)
-        y_uniques=y_df[y_df.columns[0]].unique()
+        y_uniques = y_df[y_df.columns[0]].unique()
         y_uniques.sort()
-        loader = Loader(classname="weka.core.converters.CSVLoader",options=["-L","{}:{}".format(dataframe.shape[1],",".join(y_uniques))])
+        loader = Loader(classname="weka.core.converters.CSVLoader",
+                        options=["-L", "{}:{}".format(dataframe.shape[1],
+                                 ",".join(y_uniques))])
         data = loader.load_file(temp.name)
-        #Last column of data is target
+        # Last column of data is target
         data.class_is_last()
     finally:
         temp.close()
