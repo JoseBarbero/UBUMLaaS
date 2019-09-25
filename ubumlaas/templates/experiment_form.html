@@ -4,61 +4,55 @@
 <div class="jumbotron">
     <h3 class="text-center">Configure experiment</h3>
     <fieldset>
-        <form class="form-group col-md-6 offset-3" id="form_dataset">
+        <form class="form-group col-md-6 offset-md-3" id="form_algorithm">
             {{ form_d.hidden_tag() }}
-            <h4 class="text-center">Algorithm Type</h4>
-            <div class="form-group">
+            <div class="form-group control-group">
                 {{ form_e.alg_typ.label(class="form-control-label") }}
-                {{ form_e.alg_typ() }}
+                {{ form_e.alg_typ(class="form-control") }}
             </div>
-        </form>
-    </fieldset>
-    <fieldset>
-        <form class="form-group col-12" id="form_dataset">
-            {{ form_d.hidden_tag() }}
-            <h4 class="text-center">Upload Dataset</h4>
-            <div class="form-group col-md-6 offset-md-3">
-                {{ form_d.dataset.label(class="form-control-label") }}
-                {{ form_d.dataset() }}
-            </div>
-            <div class="form-group col-md-6 offset-md-3">
-                <button class="btn btn-secondary" id="uploadDataset">Upload</button>
-            </div>
-            <div id="show_dataset" class="col-12">
-                {% include 'blocks/show_dataset.html' %}
-            </div>
-        </form>
-    </fieldset>
-    <fieldset>
-        <form class="form-group col-md-6 offset-md-3">
-            <div id="show_algorithms">
+            <div id="show_algorithms" class="form-group">
                 {% include 'blocks/show_algorithms.html' %}
             </div>
-            
+        </form>
+    </fieldset>
+    <fieldset>
+        <form class="col-md-6 offset-md-3" id="form_dataset">
+            {{ form_d.hidden_tag() }}
+            <div class="form-group custom-file">
+                {{ form_d.dataset(class="custom-file-input") }}
+                {{ form_d.dataset.label(class="custom-file-label") }}
+            </div>
+            <div class="form-group">
+                <button class="btn btn-secondary btn-block" id="uploadDataset">Upload</button>
+            </div>
+        </form>
+    </fieldset>
+    <div id="show_dataset" class="col-12">
+        {% include 'blocks/show_dataset.html' %}
+    </div>
+    <fieldset>
+        <form class="col-md-6 offset-md-3" id="form_dataset2">
             <div id="select_dataset">
                 {% include 'blocks/select_dataset.html' %}
             </div>
+        </form>
+    </fieldset>
+    <fieldset>
+        <form class="col-md-6 offset-md-3" id="form_dataset_parameters">
 
-        </form>
-    </fieldset>
-    <fieldset>
-        <form class="form-group col-md-6 offset-md-3" id="form_dataset_parameters">
-           
-            <div id="dataset_parameters">
+            <div id="dataset_parameters" class="form-group">
                 {% include 'blocks/show_columns.html' %}
-            </div>            
-            <fieldset>
-                <div class="form-group">
-                    {{ form_p.train_partition.label(class="form-control-label") }}
-                    {{ form_p.train_partition(id="train_slider", class="form-control custom-range") }}
-                    <label id="train_value", class="align-left">Train value:</label>
-                    <label id="test_value", class="align-right">Test value:</label>
-                </div>
-            </fieldset>
+            </div>
+            <div class="form-group">
+                {{ form_p.train_partition.label(class="form-control-label") }}
+                {{ form_p.train_partition(id="train_slider", class="form-control custom-range") }}
+                <label id="train_value" , class="align-left">Train value:</label>
+                <label id="test_value" , class="align-right">Test value:</label>
+            </div>
         </form>
     </fieldset>
     <fieldset>
-        <form class="form-group col-md-6 offset-3" id="submit_completed_experiment">
+        <form class="col-md-6 offset-3" id="submit_completed_experiment">
             {{ form_e.hidden_tag() }}
             {{ form_c.hidden_tag() }}
             {{ form_p.hidden_tag() }}
@@ -91,12 +85,12 @@
             url: '{{ url_for("experiments.launch_experiment") }}',
             type: 'POST',
             contentType: 'application/x-www-form-urlencoded',
-            data: "train_partition="+train_partition+
-                  "&alg_name="+alg_name+"&data="+data+"&target="+target,
-            success: function(result) {
-                 location.reload(); 
+            data: "train_partition=" + train_partition +
+                "&alg_name=" + alg_name + "&data=" + data + "&target=" + target,
+            success: function (result) {
+                location.reload();
             },
-            error: function(result) {
+            error: function (result) {
                 alert("Experiment launch error");
             }
         });
@@ -141,18 +135,18 @@
             });
         });
 
-        $("#data").change(function(){
+        $("#data").change(function () {
             let chosen_dataset = $("#data").val();
             $.ajax({
                 url: '{{ url_for("experiments.change_column_list") }}',
                 type: 'POST',
                 contentType: 'application/x-www-form-urlencoded',
-                data: "data="+chosen_dataset,
-                success: function(result) {
+                data: "data=" + chosen_dataset,
+                success: function (result) {
                     $("#dataset_parameters").html(result.html);
                     $("#show_dataset").html(result.df)
                 },
-                error: function(result) {
+                error: function (result) {
                     alert("Failed open dataset configuration");
                 }
             });
