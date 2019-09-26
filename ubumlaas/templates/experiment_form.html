@@ -115,7 +115,7 @@
                 "&alg_name=" + alg_name + "&data=" + data + "&target=" + target +
                 "&alg_config="+alg_config,
             success: function (result) {
-                location.reload();
+                window.location.replace("{{ url_for('users.profile') }}")
             },
             error: function (result) {
                 alert("Experiment launch error");

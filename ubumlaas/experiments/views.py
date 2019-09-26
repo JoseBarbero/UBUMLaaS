@@ -48,7 +48,7 @@ def launch_experiment():
                   "target": request.form.get("target")}
     exp = Experiment(user.id, request.form.get("alg_name"), unquote(request.form.get("alg_config")),
                      json.dumps(exp_config), request.form.get("data"),
-                     None, time(), None, 0)
+                     None, time.time(), None, 0)
     v.db.session.add(exp)
     v.db.session.commit()
     v.q.enqueue(task_skeleton, args=(exp.to_dict(), user.to_dict()),

@@ -40,6 +40,17 @@ function change_value(e){
     span.text(text);
 }
 
+function change_validate(e){
+    let value = $("#"+e+"_value");
+    if(!value.prop('disabled')){
+        value.attr({
+            disabled: "disabled"
+        });
+    }else{
+        value.removeAttr("disabled");
+    }    
+}
+
 function generateForm(alg_config){
     alg_config_reference = alg_config;
     var place_in = $("#form_config_alg");
@@ -87,26 +98,34 @@ function generateForm(alg_config){
                 break;
             case "float":
                 content = $("<input/>", {type: 'number',
-                                            step: 'any',
-                                            id: i+"_value",
-                                            min: convertExponentialToDecimal(parameter.min),
-                                            max: convertExponentialToDecimal(parameter.max),
-                                            value: parameter.default});
+                                         step: 'any',
+                                         id: i+"_value",
+                                         min: convertExponentialToDecimal(parameter.min),
+                                         max: convertExponentialToDecimal(parameter.max),
+                                         value: parameter.default,
+                                         class: "col-10 form-control"
+                                        });
+                content = give_me_activator(content, i);
+                block.children().eq(1).attr("onClick","toggle_click('"+i+"_div"+"','"+i+"_span"+"')");
                 break;
             case "integer":
                 content = $("<input/>", {type: 'number',
-                                            step: 1,
-                                            id: i+"_value",
-                                            min: parameter.min,
-                                            max: parameter.max,
-                                            value: parameter.default});
+                                         step: 1,
+                                         id: i+"_value",
+                                         min: parameter.min,
+                                         max: parameter.max,
+                                         value: parameter.default,
+                                         class: "col-10 form-control"
+                                        });
+                content = give_me_activator(content, i);
+                block.children().eq(1).attr("onClick","toggle_click('"+i+"_div"+"','"+i+"_span"+"')");
                 break;
             default:
                 console.log("Parameter "+i+" has unrecognized type ("+parameter.type+")");
         }
         
         content.attr({style: "display: none"});
-        if(parameter.type != 'boolean'){
+        if(parameter.type == 'string'){
             content.addClass("form-control");
             content.attr("onChange", "change_value('"+i+"')");
         }
@@ -114,6 +133,19 @@ function generateForm(alg_config){
         block.append(content);
         place_in.append(row);
     });
+}
+
+function give_me_activator(content, i){
+    let div = $("<div></div>",{class: "row", id: i+"_div"});
+    let beauty_switch = $("<div></div>",{class: "material-switch pull-right col-2", id: i+"_beauty"});
+    let lbl = $("<label for=\""+i+"_activator"+"\" onClick=\"change_validate('"+i+"')\" class=\"badge-danger\"></label>");
+    let activator = $("<input/>", {type: "checkbox", id: i+"_activator", checked: "checked"});
+    beauty_switch.append(activator);
+    beauty_switch.append(lbl);
+    div.append(content);
+    div.append(beauty_switch);
+    content = div;
+    return content;
 }
 
 function get_config_form(){
@@ -125,17 +157,19 @@ function get_config_form(){
     parameters.forEach(function(i){
         let par = alg_config_reference[i];
         let parameter = $("#"+i+"_value");
-        result[i] = parameter.val();
-        switch(par.type){
-            case "boolean":
-                    result[i]=parameter.is(":checked");
-                break;
-            case "integer":
-                result[i] = parseInt(result[i]);
-                break;
-            case "float":
-                result[i] = parseFloat(result[i]);
-                break;
+        if(!parameter.prop('disabled')){
+            result[i] = parameter.val();            
+            switch(par.type){
+                case "boolean":
+                        result[i]=parameter.is(":checked");
+                    break;
+                case "integer":
+                    result[i] = parseInt(result[i]);
+                    break;
+                case "float":
+                    result[i] = parseFloat(result[i]);
+                    break;
+            }
         }
     });
     return result;
