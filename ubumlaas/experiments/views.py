@@ -122,7 +122,7 @@ def result_experiment(id):
     exp = load_experiment(id)
     if exp.idu != current_user.id:
         return "", 403
-    return render_template("result.html",experiment=exp,title="Experiment Result")
+    return render_template("result.html",experiment=exp,title="Experiment Result",dict_config=json.loads(exp.alg_config),conf=json.loads(get_algorithm_by_name(exp.alg_name).config))
 
 @experiments.route("/experiment/form_generator", methods=["POST"])
 def form_generator():

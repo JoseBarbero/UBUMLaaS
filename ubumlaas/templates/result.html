@@ -8,17 +8,24 @@
             <h3 class="text-center">Experiment Info</h3>
             <div class="container">
                 <div class="row">
-                    <p class="col-md-3 font-weight-bold">Id</p>
-                    <p class="col-md-9">{{ experiment.id }} </p>
+                    <p class="col-md-5 font-weight-bold">Id</p>
+                    <p class="col-md-7">{{ experiment.id }} </p>
                 </div>
                 <div class="row">
-                        <p class="col-md-3 font-weight-bold">Algorithm</p>
-                        <p class="col-md-9">{{ experiment.alg_name }} </p>
+                    <p class="col-md-5 font-weight-bold">Dataset</p>
+                    <p class="col-md-7">{{ experiment.data }} </p>
                 </div>
                 <div class="row">
-                    <p class="col-md-3 font-weight-bold">Dataset</p>
-                    <p class="col-md-9">{{ experiment.data }} </p>
+                    <p class="col-md-5 font-weight-bold">Algorithm</p>
+                    <p class="col-md-7">{{ experiment.alg_name }} </p>
                 </div>
+                <h5 class="text-center">Algorithm Parameters</h5>
+                {% for i in dict_config %}
+                    <div class="row">
+                        <p class="col-md-5 font-weight-bold" data-toggle="tooltip" title="{{ conf[i]['help'] }}">{{ i }}</p>
+                        <p class="col-md-7">{{ dict_config[i] }} </p>
+                    </div>
+                {% endfor %}
             </div>
         </div>
         <div class="col-md-6">
