@@ -76,7 +76,6 @@ def task_skeleton(experiment, current_user):
 
 def execute_sklearn(experiment, path, X_train, X_test, y_train, y_test):
     alg_config = json.loads(experiment["alg_config"])
-    print(alg_config)
     model = eval(experiment["alg"]["alg_name"]+"(**alg_config)")
     model.fit(X_train, y_train)
     y_pred = model.predict(X_test)
@@ -89,9 +88,25 @@ def execute_sklearn(experiment, path, X_train, X_test, y_train, y_test):
 def execute_weka(experiment, path, X_train, X_test, y_train, y_test):
     jvm.start(packages=True)
 
+    alg_config = json.loads(experiment["alg_config"])
+
+    conf = json.loads(experiment["alg"]["config"])
+
+    lincom = []
+
+    for i in alg_config.keys():
+        v = alg_config[i]
+        if v is not False:
+            lincom.append(conf[i]["command"])
+        if not isinstance(v,bool):
+            lincom.append(str(v))
+
+    print(lincom)
+
+
     data = create_weka_dataset(X_train, y_train)
 
-    classifier = Classifier(classname=experiment["alg"]["alg_name"])
+    classifier = Classifier(classname=experiment["alg"]["alg_name"], options=lincom)
 
     classifier.build_classifier(data)
     data_test = create_weka_dataset(X_test, y_test)

@@ -80,20 +80,23 @@ class Algorithm(v.db.Model):
     web_name = v.db.Column(v.db.String(64))
     alg_typ = v.db.Column(v.db.String(64))
     config = v.db.Column(v.db.Text)
+    lib = v.db.Column(v.db.String(64))
 
-    def __init__(self, alg_name, web_name, alg_typ, config):
+    def __init__(self, alg_name, web_name, alg_typ, config,lib):
 
         self.alg_name = alg_name
         self.web_name = web_name
         self.alg_typ = alg_typ
         self.config = config
+        self.lib = lib
 
     def to_dict(self):
         return {"id": self.id,
                 "alg_name": self.alg_name,
                 "web_name": self.web_name,
                 "alg_typ": self.alg_typ,
-                "config": self.config}
+                "config": self.config,
+                "lib": self.lib}
 
 
 class Experiment(v.db.Model):

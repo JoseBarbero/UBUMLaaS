@@ -45,7 +45,7 @@
             </div>
             <div class="form-group">
                 {{ form_p.train_partition.label(class="form-control-label") }}
-                {{ form_p.train_partition(id="train_slider", class="form-control custom-range") }}
+                {{ form_p.train_partition(id="train_slider", class="form-control custom-range", min=1, max=99) }}
                 <label id="train_value" , class="align-left">Train value:</label>
                 <label id="test_value" , class="align-right">Test value:</label>
             </div>
