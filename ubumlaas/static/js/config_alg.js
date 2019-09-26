@@ -25,8 +25,19 @@ $("document").ready(function(){
     })
 })
 
-function toggle_click(block){
-    $("#"+block).toggle("slow");
+function toggle_click(value,span){
+    $("#"+span).toggle("slow");
+    $("#"+value).toggle("slow");
+}
+
+function change_value(e){
+    let value = $("#"+e+"_value");
+    let span = $("#"+e+"_span");
+    let text = "("+value.val()+")"
+    if (value.attr('type') == 'checkbox'){
+        text = "("+!value.is(":checked")+")"
+    }
+    span.text(text);
 }
 
 function generateForm(alg_config){
@@ -44,8 +55,11 @@ function generateForm(alg_config){
             block.addClass("row-odd");
         }
         row.append(block);
-        block.html("<label data-toggle=\"tooltip\" title=\""+parameter.help+"\" for=\""+i+"_value"+"\">"+i+"</label>");
-        block.append($("<a onClick=\"toggle_click('"+i+"_value"+"')\" href=\"#a\" id=\""+i+"_open"+"\">"+
+        block.html("<label data-toggle=\"tooltip\" title=\""+parameter.help+"\" for=\""+i+"_value"+"\">"+
+                        i+
+                        " <span id=\""+i+"_span"+"\">("+parameter.default+")</span>"+
+                    "</label>");
+        block.append($("<a onClick=\"toggle_click('"+i+"_value"+"','"+i+"_span"+"')\" href=\"#a\" id=\""+i+"_open"+"\">"+
                             "<i class=\"material-icons\" style=\"float: right;\">"+
                                 "arrow_drop_down_circle"+
                             "</i>"+
@@ -61,7 +75,7 @@ function generateForm(alg_config){
                 break;
             case "boolean":
                 let div = $("<div></div>",{class: "material-switch pull-right", id: i+"_div"});
-                let label = $("<label for=\""+i+"_value"+"\" class=\"badge-primary\"></label>");
+                let label = $("<label for=\""+i+"_value"+"\" onClick=\"change_value('"+i+"')\" class=\"badge-primary\"></label>");
                 content = $("<input/>", {type: "checkbox", id: i+"_value"});
                 if (parameter.default){
                     content.attr({checked: "checked"});
@@ -69,7 +83,7 @@ function generateForm(alg_config){
                 div.append(content);
                 div.append(label);
                 content = div;
-                block.children().eq(1).attr("onClick","toggle_click('"+i+"_div"+"')");
+                block.children().eq(1).attr("onClick","toggle_click('"+i+"_div"+"','"+i+"_span"+"')");
                 break;
             case "float":
                 content = $("<input/>", {type: 'number',
@@ -90,9 +104,11 @@ function generateForm(alg_config){
             default:
                 console.log("Parameter "+i+" has unrecognized type ("+parameter.type+")");
         }
+        
         content.attr({style: "display: none"});
         if(parameter.type != 'boolean'){
             content.addClass("form-control");
+            content.attr("onChange", "change_value('"+i+"')");
         }
         content.addClass("config_alg");
         block.append(content);
