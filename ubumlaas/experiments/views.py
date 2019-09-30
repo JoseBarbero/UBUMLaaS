@@ -82,7 +82,7 @@ def change_column_list():
     df = pd.read_csv(upload_folder+dataset)
     form_c.add_target_candidates(df.columns)
     pretty_df = generate_df_head_html(df)
-    to_return = {"html": render_template("blocks/show_columns.html", form_c = form_c),
+    to_return = {"html": render_template("blocks/show_columns.html", form_c = form_c, data=df),
                  "df": generate_df_head_html(df)}
     return jsonify(to_return)
 
