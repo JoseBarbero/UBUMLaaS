@@ -57,10 +57,16 @@
 
           <div class="col-xs-12 col-sm-6 col-md-3">
             <div class="widget subscribe no-box">
-              <h5 class="widget-title">UBUMLaaS<span></span></h5>
-              <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Magnam ex officiis consequatur saepe iure!
-                Pariatur, provident facilis. Architecto dolorum in maiores atque aut! Provident voluptate placeat culpa
-                aperiam magnam sed?</p>
+              <h5 class="widget-title">Location<span></span></h5>
+              <ul class="thumbnail-widget">
+                <li><a href="https://www.ubu.es/escuela-politecnica-superior/escuela-politecnica-superior">Escuela politécnica superior</a></li>
+                <li>Río Vena Campus</li>
+                <li>Avda. Cantabria s/n 09006</li>
+                <li>Burgos (Burgos)</li>
+                <li>Spain</li>
+                <li><i class="material-icons">phone</i>947 25 89 00</li>
+                <li><i class="material-icons">email</i><a href="mailto:eps@ubu.es">eps@ubu.es</a></li>
+              </ul>
             </div>
           </div>
 
@@ -69,25 +75,13 @@
               <h5 class="widget-title">Quick Links<span></span></h5>
               <ul class="thumbnail-widget">
                 <li>
-                  <div class="thumb-content"><a href="#.">Link1</a></div>
+                  <div class="thumb-content"><a href="http://www.admirable-ubu.es/">ADMIRABLE</a></div>
                 </li>
                 <li>
-                  <div class="thumb-content"><a href="#.">Link2</a></div>
+                  <div class="thumb-content"><a href="https://www.ubu.es/">University of Burgos</a></div>
                 </li>
                 <li>
-                  <div class="thumb-content"><a href="#.">Link3</a></div>
-                </li>
-                <li>
-                  <div class="thumb-content"><a href="#.">Link4</a></div>
-                </li>
-                <li>
-                  <div class="thumb-content"><a href="#.">Link5</a></div>
-                </li>
-                <li>
-                  <div class="thumb-content"><a href="#.">Link6</a></div>
-                </li>
-                <li>
-                  <div class="thumb-content"><a href="#.">About</a></div>
+                  <div class="thumb-content"><a href="{{ url_for('core.info') }}">About</a></div>
                 </li>
               </ul>
             </div>
@@ -95,8 +89,8 @@
 
           <div class="col-xs-12 col-sm-6 col-md-3">
             <div class="widget no-box">
-              <h5 class="widget-title">Test<span></span></h5>
-              <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Error, sequi rem?</p>
+              <h5 class="widget-title">Register<span></span></h5>
+              <h6>Do you need an account?</h6>
               <a class="btn btn-secondary" href="{{ url_for('users.register') }}">Register Now</a>
             </div>
           </div>
@@ -117,7 +111,7 @@
       <div class="container">
         <div class="row">
           <div class="col-md-12 text-center">
-            <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. © 2016. All rights reserved.</p>
+            <p>UBUMLaaS. © 2019. All rights reserved.</p>
           </div>
         </div>
       </div>
