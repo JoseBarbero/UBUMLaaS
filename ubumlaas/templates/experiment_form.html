@@ -38,11 +38,16 @@
         </form>
     </fieldset>
     <fieldset>
-        <form class="col-md-6 offset-md-3" id="form_dataset_parameters">
-
+        <form class="col-12" id="form_dataset_configuration">
             <div id="dataset_parameters" class="form-group">
                 {% include 'blocks/show_columns.html' %}
             </div>
+        </form>
+    </fieldset>
+    <fieldset>
+        <form class="col-md-6 offset-md-3" id="form_dataset_parameters">
+
+            
             <div class="form-group">
                 {{ form_p.train_partition.label(class="form-control-label") }}
                 {{ form_p.train_partition(id="train_slider", class="form-control custom-range", min=1, max=99) }}
@@ -71,6 +76,9 @@
 </div>
 {% endblock %}
 {% block js %}
+<script src="{{ url_for('static', filename="js/config_alg.js") }}"></script>
+<script src="{{ url_for('static', filename="js/config_dataset.js") }}"></script>
+
 <script>
     function load_config(){
         var alg_name = $("#alg_name").val();
@@ -89,6 +97,13 @@
     }
 </script>
 <script>
+    function unselect(e){
+        let select = $("#"+e+"_select");
+        let ignore = $("#"+e+"_ignore");
+        select.prop('checked', false);
+        ignore.prop('checked', false);
+    }
+
     function update_datasets() {
         $.ajax({
             url: '{{ url_for("experiments.update_dataset_list") }}',
@@ -167,9 +182,9 @@
             var filename =  $("#dataset").val().replace(/C:\\fakepath\\/i, '')
             $("#datasetLabel").text(filename);
         })
-
         
     });
+    
     // Slider
     var slider = document.getElementById("train_slider");
     var train_perc = document.getElementById("train_value");

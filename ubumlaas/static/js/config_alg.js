@@ -127,8 +127,8 @@ function generateForm(alg_config){
         content.attr({style: "display: none"});
         if(parameter.type == 'string'){
             content.addClass("form-control");
-            content.attr("onChange", "change_value('"+i+"')");
         }
+        content.attr("onChange", "change_value('"+i+"')");
         content.addClass("config_alg");
         block.append(content);
         place_in.append(row);

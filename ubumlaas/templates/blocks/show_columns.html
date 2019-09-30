@@ -1,4 +1,37 @@
 <div class="control-group">
-    {{ form_c.target_column.label(class="form-control-label") }}
-    {{ form_c.target_column(class="form-control") }}
+    <table class="center table table-bordered table-responsive">
+        <thead class="thead-dark">
+            <tr>
+                <td>Col1</td>
+                <td>Col2</td>
+                <td>Col3</td>
+                <td>Col4</td>
+                <td>Col5</td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                {% for i in range(5) %}
+                <td>
+                    <div class="material-switch pull-right float-left mr-3" id="col{{ loop.index }}_use_div">
+                        <input type="checkbox" id="col{{ loop.index }}_use" 
+                            {% if not loop.last %}
+                                checked="checked"
+                            {% endif %}
+                        />
+                        <label for="col{{ loop.index }}_use" class="badge-primary" onclick="target_or_use('col{{ loop.index }}','use')"></label>
+                    </div>
+                    <div class="material-switch pull-right float-right" id="col{{ loop.index }}_target_div">
+                        <input type="checkbox" id="col{{ loop.index }}_target" class="col_target"
+                        {% if loop.last %}
+                            checked="checked"
+                        {% endif %}
+                        />
+                        <label for="col{{ loop.index }}_target" class="badge-info" onclick="only_one_target('col{{ loop.index }}_target');target_or_use('col{{ loop.index }}','target')"></label>
+                    </div>
+                </td>
+                {% endfor %}
+            </tr>
+        </tbody>
+    </table>
 </div>
