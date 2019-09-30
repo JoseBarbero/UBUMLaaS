@@ -15,7 +15,7 @@
         <tbody>
             <tr>
                 {% for i in data %}
-                <td>
+                <td class="column-dataset">
                     <div class="material-switch pull-right float-left mr-3" id="col{{ loop.index }}_use_div">
                         <input type="checkbox" id="col{{ loop.index }}_use" 
                             {% if not loop.last %}
@@ -38,3 +38,6 @@
         </tbody>
     </table>
 </div>
+<script>
+ dataset_columns = [{% for i in data %}'{{i}}'{% if not loop.last %},{% endif %}{% endfor %}];
+</script>

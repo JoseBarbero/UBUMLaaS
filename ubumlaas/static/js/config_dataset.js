@@ -20,3 +20,4 @@ function target_or_use(identifier, mode){
         }
     }
 }
+
