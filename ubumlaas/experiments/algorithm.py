@@ -1,3 +1,5 @@
+"""Module with functions to execute training algorithms ready to enqueue.
+"""
 import sklearn
 import sklearn.base
 import sklearn.cluster
@@ -28,19 +30,30 @@ import tempfile
 
 
 def task_skeleton(experiment, current_user):
+    """Base skeleton to execute an experiment.
+
+    Arguments:
+        experiment {dict} -- experiment information (see model.Experiment.to_dict)
+        current_user {dict} -- user information (see model.User.to_dict)
+    """
     # Task need app environment
-    create_app('subprocess')
+    create_app('subprocess') #No generate new workers
+    #Diference sklearn executor and weka executor
     apps_functions = {"sklearn": execute_sklearn, "weka": execute_weka}
+    #Get algorithm type
     type_app = experiment["alg"]["alg_name"].split(".", 1)[0]
     try:
         exp_config = json.loads(experiment["exp_config"])
+        # Open experiment configuration
         data = pd.read_csv("ubumlaas/datasets/"+current_user["username"] +
                            "/"+experiment['data'])
         X = data.loc[:, exp_config["columns"]]
         y = data[exp_config["target"]]
+        # Split dataset (if unsupervised it will be modified)
         X_train, X_test, y_train, y_test = \
             sklearn.model_selection. \
             train_test_split(X, y, test_size=1-exp_config["split"]/100)
+            
         models_dir = "ubumlaas/models/{}/".format(current_user["username"])
         if not os.path.exists(models_dir):
             os.makedirs(models_dir)
@@ -60,6 +73,7 @@ def task_skeleton(experiment, current_user):
         state = 1
         result = score_text+": "+str(score)
     except Exception:
+        # If algoritm failed it save traceback as result
         result = str(traceback.format_exc())
         state = 2
 
@@ -75,6 +89,19 @@ def task_skeleton(experiment, current_user):
 
 
 def execute_sklearn(experiment, path, X_train, X_test, y_train, y_test):
+    """It trains a sklearn model
+
+    Arguments:
+        experiment {dict} -- experiment information (see model.Experiment.to_dict)
+        path {str} -- directory to save model
+        X_train {dataframe} -- training input
+        X_test {dataframe} -- test input
+        y_train {dataframe} -- training output
+        y_test {dataframe} -- test output
+
+    Returns:
+        dataframe -- output of X_test in trained model.
+    """
     alg_config = json.loads(experiment["alg_config"])
     model = eval(experiment["alg"]["alg_name"]+"(**alg_config)")
     model.fit(X_train, y_train)
@@ -86,6 +113,19 @@ def execute_sklearn(experiment, path, X_train, X_test, y_train, y_test):
 
 
 def execute_weka(experiment, path, X_train, X_test, y_train, y_test):
+    """It trains a weka model
+
+    Arguments:
+        experiment {dict} -- experiment information (see model.Experiment.to_dict)
+        path {str} -- directory to save model
+        X_train {dataframe} -- training input
+        X_test {dataframe} -- test input
+        y_train {dataframe} -- training output
+        y_test {dataframe} -- test output
+
+    Returns:
+        dataframe -- output of X_test in trained model.
+    """
     jvm.start(packages=True)
 
     alg_config = json.loads(experiment["alg_config"])

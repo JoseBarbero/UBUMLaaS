@@ -1,18 +1,23 @@
 from flask import render_template, url_for, flash, redirect, request, Blueprint
 from flask_login import login_user, current_user, logout_user, login_required
 import variables as v
-from ubumlaas.models import User
 from ubumlaas.users.forms import RegistrationForm, LoginForm
+from ubumlaas.models import User, get_experiments
 from flask_mail import Message
 import smtplib
+import os 
+
 
 users = Blueprint("users", __name__)
 
-EMAIL_AC = 'ubumlaas@gmail.com'
-EMAIL_PASS = 'rotationforest'
 
 @users.route("/login", methods=["GET", "POST"])
 def login():
+    """User login.
+    
+    Returns:
+        string -- redirect new page.
+    """
     if current_user.is_authenticated:
         return redirect(url_for('core.index'))
     form = LoginForm()
@@ -35,6 +40,11 @@ def login():
 
 @users.route("/register", methods=["GET", "POST"])
 def register():
+    """User registry.
+    
+    Returns:
+        string -- render register or redirect log in.
+    """
 
     form = RegistrationForm()
 
@@ -57,6 +67,11 @@ def register():
 
 @users.route("/logout")
 def logout():
+    """User log out.
+    
+    Returns:
+        string -- redirect to index.
+    """
     logout_user()
     return redirect(url_for("core.index"))
 
@@ -64,18 +79,33 @@ def logout():
 @login_required
 @users.route("/profile")
 def profile():
+    """User profile load.
+    
+    Returns:
+        string -- render profile page.
+    """
     datasets = [x for x in os.listdir("ubumlaas/datasets/"+current_user.username)]
     experiments = get_experiments(current_user.id)
     return render_template("profile.html", title= current_user.username + " Profile", user=current_user, datasets=datasets, experiments=experiments)
 
   
 def send_email(user, email, procid):
+    """Send an email to the user with the result of the experiment.
+    
+    Arguments:
+        user {string} -- user name.
+        email {string} -- user email.
+        procid {int} -- experiment id.
+    
+    Returns:
+        string -- redirect index.
+    """
     with smtplib.SMTP('smtp.gmail.com',587) as smtp:
         smtp.ehlo()
         smtp.starttls()
         smtp.ehlo()
 
-        smtp.login(EMAIL_AC,EMAIL_PASS)
+        smtp.login(os.environ['EMAIL_AC'],os.environ['EMAIL_PASS'])
 
         subject= 'Your process on UBUMLaaS' + str(procid) + ' has finished.'
 
@@ -83,5 +113,5 @@ def send_email(user, email, procid):
 
         msg = f'Subject: {subject}\n\n{body}'
 
-        smtp.sendmail(EMAIL_AC, email ,msg)
+        smtp.sendmail(os.environ['EMAIL_AC'], email ,msg)
     return redirect(url_for("core.index"))

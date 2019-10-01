@@ -2,6 +2,11 @@ import weka.core.jvm as jvm
 import weka.core.packages as packages
 
 def install_packages(path):
+    """Install weka packages
+    
+    Arguments:
+        path {str} -- path to weka_package.txt
+    """
 
     try:
         

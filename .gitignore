@@ -128,3 +128,5 @@ package-lock.json
 create_key.sh
 datasets
 models
+
+env_variables.sh
