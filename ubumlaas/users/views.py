@@ -10,8 +10,6 @@ import os
 
 users = Blueprint("users", __name__)
 
-EMAIL_AC = 'ubumlaas@gmail.com'
-EMAIL_PASS = 'rotationforest'
 
 @users.route("/login", methods=["GET", "POST"])
 def login():
@@ -77,7 +75,7 @@ def send_email(user, email, procid):
         smtp.starttls()
         smtp.ehlo()
 
-        smtp.login(EMAIL_AC,EMAIL_PASS)
+        smtp.login(os.environ['EMAIL_AC'],os.environ['EMAIL_PASS'])
 
         subject= 'Your process on UBUMLaaS' + str(procid) + ' has finished.'
 
@@ -85,5 +83,5 @@ def send_email(user, email, procid):
 
         msg = f'Subject: {subject}\n\n{body}'
 
-        smtp.sendmail(EMAIL_AC, email ,msg)
+        smtp.sendmail(os.environ['EMAIL_AC'], email ,msg)
     return redirect(url_for("core.index"))
