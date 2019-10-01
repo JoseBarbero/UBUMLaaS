@@ -13,6 +13,11 @@ users = Blueprint("users", __name__)
 
 @users.route("/login", methods=["GET", "POST"])
 def login():
+    """User login.
+    
+    Returns:
+        string -- redirect new page.
+    """
     if current_user.is_authenticated:
         return redirect(url_for('core.index'))
     form = LoginForm()
@@ -35,6 +40,11 @@ def login():
 
 @users.route("/register", methods=["GET", "POST"])
 def register():
+    """User registry.
+    
+    Returns:
+        string -- render register or redirect log in.
+    """
 
     form = RegistrationForm()
 
@@ -57,6 +67,11 @@ def register():
 
 @users.route("/logout")
 def logout():
+    """User log out.
+    
+    Returns:
+        string -- redirect to index.
+    """
     logout_user()
     return redirect(url_for("core.index"))
 
@@ -64,12 +79,27 @@ def logout():
 @login_required
 @users.route("/profile")
 def profile():
+    """User profile load.
+    
+    Returns:
+        string -- render profile page.
+    """
     datasets = [x for x in os.listdir("ubumlaas/datasets/"+current_user.username)]
     experiments = get_experiments(current_user.id)
     return render_template("profile.html", title= current_user.username + " Profile", user=current_user, datasets=datasets, experiments=experiments)
 
   
 def send_email(user, email, procid):
+    """Send an email to the user with the result of the experiment.
+    
+    Arguments:
+        user {string} -- user name.
+        email {string} -- user email.
+        procid {int} -- experiment id.
+    
+    Returns:
+        string -- redirect index.
+    """
     with smtplib.SMTP('smtp.gmail.com',587) as smtp:
         smtp.ehlo()
         smtp.starttls()
