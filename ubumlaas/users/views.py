@@ -1,10 +1,12 @@
 from flask import render_template, url_for, flash, redirect, request, Blueprint
 from flask_login import login_user, current_user, logout_user, login_required
 import variables as v
-from ubumlaas.models import User
 from ubumlaas.users.forms import RegistrationForm, LoginForm
+from ubumlaas.models import User, get_experiments
 from flask_mail import Message
 import smtplib
+import os 
+
 
 users = Blueprint("users", __name__)
 
