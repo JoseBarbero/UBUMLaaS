@@ -21,6 +21,7 @@
 
 $("document").ready(function(){
     $(".open_click").click(function(e){
+        /** */
         e.preventDefault();
     })
 })

@@ -24,6 +24,11 @@ experiments = Blueprint("experiments", __name__)
 @login_required
 @experiments.route("/new_experiment", methods=["GET"])
 def new_experiment():
+    """Render a empty experiment page.
+    
+    Returns:
+        str -- HTTP response with rendered page.
+    """
 
     form_e = ExperimentForm()
     form_e.dataset_list()
@@ -42,6 +47,11 @@ def new_experiment():
 @login_required
 @experiments.route("/new_experiment/launch", methods=["POST"])
 def launch_experiment():
+    """Launch a configurated experiment.
+
+    Returns:
+        str -- HTTP response with redirection
+    """
     user = current_user
     dataset_config = json.loads(unquote(request.form.get("dataset_config")))
     exp_config = {"type": "partition",
@@ -62,6 +72,11 @@ def launch_experiment():
 @login_required
 @experiments.route("/update_dataset_list", methods=["POST"])
 def update_dataset_list():
+    """Update dataset list
+    
+    Returns:
+        str -- HTTP response with rendered dataset selector
+    """
     form_e = ExperimentForm()
     form_e.dataset_list()
     return render_template("blocks/select_dataset.html", form_e=form_e)
@@ -70,6 +85,11 @@ def update_dataset_list():
 @login_required
 @experiments.route("/update_alg_list", methods=["POST"])
 def change_alg():
+    """Update algorithm list.
+
+    Returns:
+        str -- HTTP response with rendered algorithm selector
+    """
     form_e = ExperimentForm()
     form_e.alg_list(alg_typ=request.form.get("alg_typ"))
     return render_template("blocks/show_algorithms.html", form_e=form_e)
@@ -78,6 +98,11 @@ def change_alg():
 @login_required
 @experiments.route("/update_column_list", methods=["POST"])
 def change_column_list():
+    """Render dataset form configuration and dataset head.
+    
+    Returns:
+        str -- HTTP response with JSON
+    """
     form_e = ExperimentForm()
     form_c = DatasetTargetForm()
     dataset = form_e.data.data
@@ -93,6 +118,11 @@ def change_column_list():
 @login_required
 @experiments.route("/new_experiment/new_dataset", methods=["POST"])
 def add_new_dataset():
+    """Upload a new dataset.
+
+    Returns:
+        str -- HTTP response 200 if dataset is upload or 400  if failed.
+    """
     form_d = DatasetForm()
     upload_folder = "ubumlaas/datasets/"+current_user.username+"/"
 
@@ -120,6 +150,14 @@ def add_new_dataset():
 
 
 def generate_df_head_html(df):
+    """Generate a html from dataframe head.
+    
+    Arguments:
+        df {dataframe} -- pandas dataframe with dataset
+    
+    Returns:
+        str -- html dataframe
+    """
     df.style.set_table_styles(
             [{'selector': 'tr:nth-of-type(odd)',
              'props': [('background', '#eee')]},
@@ -141,13 +179,27 @@ def generate_df_head_html(df):
 @login_required
 @experiments.route("/experiment/<id>")
 def result_experiment(id):
+    """See experiment information
+
+    Arguments:
+        id {int} -- experiment identifier
+
+    Returns:
+        str -- HTTP response with rendered experiment information
+    """
     exp = load_experiment(id)
     if exp.idu != current_user.id:
         return "", 403
     return render_template("result.html",experiment=exp,title="Experiment Result",dict_config=json.loads(exp.alg_config),conf=json.loads(get_algorithm_by_name(exp.alg_name).config))
 
+
 @experiments.route("/experiment/form_generator", methods=["POST"])
 def form_generator():
+    """Get algorithm configuration to generate a form.
+
+    Returns:
+        str -- HTTP response with JSON
+    """
     alg_name = request.form.get('alg_name')
     alg = get_algorithm_by_name(alg_name)
     return jsonify({"alg_config": alg.config})

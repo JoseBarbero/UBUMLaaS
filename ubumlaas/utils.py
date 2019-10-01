@@ -5,6 +5,16 @@ EMAIL_PASS = 'rotationforest'
 
 
 def send_email(user, email, procid, result=None):
+    """SEND an email with the result
+    
+    Arguments:
+        user {str} -- username
+        email {str} -- user's email
+        procid {int} -- experiment identifier
+    
+    Keyword Arguments:
+        result {str} -- Result of experiment (default: {None})
+    """
     with smtplib.SMTP('smtp.gmail.com', 587) as smtp:
         smtp.ehlo()
         smtp.starttls()
