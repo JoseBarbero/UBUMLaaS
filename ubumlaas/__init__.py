@@ -14,6 +14,14 @@ import time
 
 
 def create_app(config_name):
+    """ Creata application.
+    
+    Arguments:
+        config_name {string} -- configuration.
+    
+    Returns:
+        Flask -- flask application.
+    """
     v.start()
     app = Flask(__name__)
 
