@@ -1,10 +1,10 @@
 from flask import \
-    (render_template, url_for, flash, redirect, request, Blueprint, jsonify)
+    (render_template, url_for, flash, redirect, request, Blueprint, jsonify, send_file, abort, safe_join)
 import variables as v
 from ubumlaas.models import \
     (User, Experiment, load_user, load_experiment, get_algorithm_by_name)
 from ubumlaas.experiments.forms import \
-    (ExperimentForm, DatasetForm, DatasetParametersForm, DatasetTargetForm)
+    (ExperimentForm, DatasetForm, DatasetParametersForm)
 from flask_login import (current_user, login_required)
 from flask_mail import Message
 from time import time
@@ -35,13 +35,12 @@ def new_experiment():
 
     form_d = DatasetForm()
 
-    form_c = DatasetTargetForm()
 
     form_p = DatasetParametersForm()
 
     return render_template("experiment_form.html", form_e=form_e,
-                           form_d=form_d, form_p=form_p,
-                           form_c=form_c, title="New experiment")
+                            form_d=form_d, form_p=form_p,
+                            title="New experiment")
 
 
 @login_required
@@ -104,13 +103,12 @@ def change_column_list():
         str -- HTTP response with JSON
     """
     form_e = ExperimentForm()
-    form_c = DatasetTargetForm()
     dataset = form_e.data.data
     upload_folder = "ubumlaas/datasets/"+current_user.username+"/"
     df = pd.read_csv(upload_folder+dataset)
     form_c.add_target_candidates(df.columns)
     pretty_df = generate_df_head_html(df)
-    to_return = {"html": render_template("blocks/show_columns.html", form_c = form_c, data=df),
+    to_return = {"html": render_template("blocks/show_columns.html", data=df),
                  "df": generate_df_head_html(df)}
     return jsonify(to_return)
 
@@ -203,3 +201,22 @@ def form_generator():
     alg_name = request.form.get('alg_name')
     alg = get_algorithm_by_name(alg_name)
     return jsonify({"alg_config": alg.config})
+
+@login_required
+@experiments.route("/experiment/<int:id>.model")
+def download_model(id):
+    """Download model file using the experiment id
+    
+    Arguments:
+        id int -- experiment id
+    
+    Returns:
+        file -- model file
+    """
+    filename = "{}.model".format(id)
+    upload_path = safe_join("models/"+current_user.username+"/"+filename, filename)
+
+    try:
+        return send_file(upload_path, filename)
+    except FileNotFoundError:
+        abort(404)
