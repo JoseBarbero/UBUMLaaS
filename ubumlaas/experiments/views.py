@@ -43,10 +43,13 @@ def new_experiment():
 @experiments.route("/new_experiment/launch", methods=["POST"])
 def launch_experiment():
     user = current_user
+    dataset_config = json.loads(unquote(request.form.get("dataset_config")))
     exp_config = {"type": "partition",
-                  "split": int(request.form.get("train_partition")),
-                  "target": request.form.get("target")}
-    exp = Experiment(user.id, request.form.get("alg_name"), unquote(request.form.get("alg_config")),
+                  "split": int(dataset_config["train_partition"]),
+                  "target": dataset_config["target"],
+                  "columns": dataset_config["selected_columns"]}
+    exp = Experiment(user.id, request.form.get("alg_name"),
+                     unquote(request.form.get("alg_config")),
                      json.dumps(exp_config), request.form.get("data"),
                      None, time.time(), None, 0)
     v.db.session.add(exp)

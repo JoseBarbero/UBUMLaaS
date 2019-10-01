@@ -36,7 +36,7 @@ def task_skeleton(experiment, current_user):
         exp_config = json.loads(experiment["exp_config"])
         data = pd.read_csv("ubumlaas/datasets/"+current_user["username"] +
                            "/"+experiment['data'])
-        X = data.loc[:, data.columns != exp_config["target"]]
+        X = data.loc[:, exp_config["columns"]]
         y = data[exp_config["target"]]
         X_train, X_test, y_train, y_test = \
             sklearn.model_selection. \

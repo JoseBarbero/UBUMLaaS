@@ -16,21 +16,21 @@
             <tr>
                 {% for i in data %}
                 <td class="column-dataset">
-                    <div class="material-switch pull-right float-left mr-3" id="col{{ loop.index }}_use_div">
-                        <input type="checkbox" id="col{{ loop.index }}_use" 
+                    <div class="material-switch pull-right float-left mr-3" id="col{{ loop.index0 }}_use_div">
+                        <input type="checkbox" id="col{{ loop.index0 }}_use" 
                             {% if not loop.last %}
                                 checked="checked"
                             {% endif %}
                         />
-                        <label for="col{{ loop.index }}_use" class="badge-primary" onclick="target_or_use('col{{ loop.index }}','use')"></label>
+                        <label for="col{{ loop.index0 }}_use" class="badge-primary" onclick="target_or_use('col{{ loop.index0 }}','use')"></label>
                     </div>
-                    <div class="material-switch pull-right float-right" id="col{{ loop.index }}_target_div">
-                        <input type="checkbox" id="col{{ loop.index }}_target" class="col_target"
+                    <div class="material-switch pull-right float-right" id="col{{ loop.index0 }}_target_div">
+                        <input type="checkbox" id="col{{ loop.index0 }}_target" class="col_target"
                         {% if loop.last %}
                             checked="checked"
                         {% endif %}
                         />
-                        <label for="col{{ loop.index }}_target" class="badge-info" onclick="only_one_target('col{{ loop.index }}_target');target_or_use('col{{ loop.index }}','target')"></label>
+                        <label for="col{{ loop.index0 }}_target" class="badge-info" onclick="only_one_target('col{{ loop.index0 }}_target');target_or_use('col{{ loop.index0 }}','target')"></label>
                     </div>
                 </td>
                 {% endfor %}

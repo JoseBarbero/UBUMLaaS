@@ -117,18 +117,16 @@
     $("form#submit_completed_experiment").submit(function (e) {
         e.preventDefault();
         //TODO: Verify all
-        var train_partition = $("#train_slider").val();
         var alg_name = $("#alg_name").val();
-        var data = $("#data").val();
-        var target = $("#target_column").val();
+        var data = $("#data").val();        
         var alg_config = encodeURIComponent(JSON.stringify(get_config_form()));
+        var dataset_config = encodeURIComponent(JSON.stringify(get_dataset_config()));
         $.ajax({
             url: '{{ url_for("experiments.launch_experiment") }}',
             type: 'POST',
             contentType: 'application/x-www-form-urlencoded',
-            data: "train_partition=" + train_partition +
-                "&alg_name=" + alg_name + "&data=" + data + "&target=" + target +
-                "&alg_config="+alg_config,
+            data: "alg_name=" + alg_name + "&data=" + data + 
+                "&alg_config="+alg_config+"&dataset_config="+dataset_config,
             success: function (result) {
                 window.location.replace("{{ url_for('users.profile') }}")
             },
