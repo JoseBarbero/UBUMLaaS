@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField
+from wtforms import StringField, PasswordField, SubmitField, FileField
 from wtforms.validators import DataRequired, Email, EqualTo, Length, Regexp
 from wtforms import ValidationError
 from flask_wtf.file import FileField, FileAllowed
@@ -15,7 +15,7 @@ class LoginForm(FlaskForm):
 class RegistrationForm(FlaskForm):
     email = StringField("Email", validators=[DataRequired(), Email()])
     username = StringField("Username", validators=[DataRequired()])
-    password = PasswordField("Password", validators=[Length(min=4), DataRequired(), EqualTo("confirm_password", message="Passwords must match")]) 
+    password = PasswordField("Password", validators=[Length(min=4), DataRequired(), EqualTo("confirm_password", message="Passwords must match"), Regexp(regex=r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$", message="Password requirements: Minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character")])
     confirm_password = PasswordField("Confirm Password", validators=[DataRequired()])
     submit = SubmitField("Register")
 
@@ -29,3 +29,4 @@ class RegistrationForm(FlaskForm):
             return True
         return False
             
+

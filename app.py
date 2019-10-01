@@ -2,4 +2,4 @@ from ubumlaas import create_app
 
 
 if __name__ == "__main__":
-    create_app("default").run(debug = True)
+    create_app("main_app").run(debug = True)

@@ -1,28 +1,198 @@
 {% extends "base.html" %}
 
 {% block content %}
-
 <div class="jumbotron">
+    <h3 class="text-center">Configure experiment</h3>
     <fieldset>
-        <form class="form-horizontal" method="POST">
-            <h3 class="text-center">Login</h3>
-            {{form.hidden_tag()}}
-            {% for message in get_flashed_messages() %}
-                <div class="alert alert-warning alert-dismissible fade show" role="alert">{{ message }}
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-            {% endfor %}
-            <div class="control-group">
-                {{form.alg_name.label(class="control")}}
-                {{form.alg_name(class="form-control")}}<br>
+        <form class="form-group col-md-6 offset-md-3" id="form_algorithm">
+            {{ form_d.hidden_tag() }}
+            <div class="form-group control-group">
+                {{ form_e.alg_typ.label(class="form-control-label") }}
+                {{ form_e.alg_typ(class="form-control") }}
             </div>
+            <div id="show_algorithms" class="form-group">
+                {% include 'blocks/show_algorithms.html' %}
+            </div>
+        </form>
+    </fieldset>
+    <fieldset>
+        <form class="col-md-6 offset-md-3" id="form_dataset">
+            {{ form_d.hidden_tag() }}
+            <div class="form-group custom-file">
+                {{ form_d.dataset(class="custom-file-input") }}
+                {{ form_d.dataset.label(class="custom-file-label",id="datasetLabel") }}
+            </div>
+            <div class="form-group">
+                <button class="btn btn-secondary btn-block" id="uploadDataset">Upload</button>
+            </div>
+        </form>
+    </fieldset>
+    <div id="show_dataset" class="col-12">
+        {% include 'blocks/show_dataset.html' %}
+    </div>
+    <fieldset>
+        <form class="col-md-6 offset-md-3" id="form_dataset2">
+            <div id="select_dataset">
+                {% include 'blocks/select_dataset.html' %}
+            </div>
+        </form>
+    </fieldset>
+    <fieldset>
+        <form class="col-12" id="form_dataset_configuration">
+            <div id="dataset_parameters" class="form-group">
+                {% include 'blocks/show_columns.html' %}
+            </div>
+        </form>
+    </fieldset>
+    <fieldset>
+        <form class="col-md-6 offset-md-3" id="form_dataset_parameters">
 
-            <div class="control-group">
-                {{form.submit(class="btn btn-primary")}}
+            
+            <div class="form-group">
+                {{ form_p.train_partition.label(class="form-control-label") }}
+                {{ form_p.train_partition(id="train_slider", class="form-control custom-range", min=1, max=99) }}
+                <label id="train_value" , class="align-left">Train value:</label>
+                <label id="test_value" , class="align-right">Test value:</label>
+            </div>
+        </form>
+    </fieldset>
+    <fieldset>
+        <div class="col-md-6 offset-md-3">
+            <div id="form_config_alg" class="form-group">
+        
+            </div>
+        </div>
+    </fieldset>
+    <fieldset>
+        <form class="col-md-6 offset-3" id="submit_completed_experiment">
+            {{ form_e.hidden_tag() }}
+            {{ form_c.hidden_tag() }}
+            {{ form_p.hidden_tag() }}
+            <div class="form-group">
+                {{form_e.submit(class="btn btn-primary btn-block btn-lg")}}
             </div>
         </form>
     </fieldset>
 </div>
+{% endblock %}
+{% block js %}
+<script src="{{ url_for('static', filename="js/config_alg.js") }}"></script>
+<script src="{{ url_for('static', filename="js/config_dataset.js") }}"></script>
+
+<script>
+    function load_config(){
+        var alg_name = $("#alg_name").val();
+        $.ajax({
+            url: '{{ url_for("experiments.form_generator") }}',
+            type: 'POST',
+            contentType: 'application/x-www-form-urlencoded',
+            data: "alg_name=" + alg_name,
+            success: function (result) {
+                generateForm(JSON.parse(result.alg_config));
+            },
+            error: function(result){
+                console.log(result);
+            }
+        })
+    }
+</script>
+<script>
+    function unselect(e){
+        let select = $("#"+e+"_select");
+        let ignore = $("#"+e+"_ignore");
+        select.prop('checked', false);
+        ignore.prop('checked', false);
+    }
+
+    function update_datasets() {
+        $.ajax({
+            url: '{{ url_for("experiments.update_dataset_list") }}',
+            type: 'POST',
+            success: function (result) {
+                $("#select_dataset").html(result);
+            }
+        })
+    }
+
+    $("form#submit_completed_experiment").submit(function (e) {
+        e.preventDefault();
+        //TODO: Verify all
+        var alg_name = $("#alg_name").val();
+        var data = $("#data").val();        
+        var alg_config = encodeURIComponent(JSON.stringify(get_config_form()));
+        var dataset_config = encodeURIComponent(JSON.stringify(get_dataset_config()));
+        $.ajax({
+            url: '{{ url_for("experiments.launch_experiment") }}',
+            type: 'POST',
+            contentType: 'application/x-www-form-urlencoded',
+            data: "alg_name=" + alg_name + "&data=" + data + 
+                "&alg_config="+alg_config+"&dataset_config="+dataset_config,
+            success: function (result) {
+                window.location.replace("{{ url_for('users.profile') }}")
+            },
+            error: function (result) {
+                alert("Experiment launch error");
+            }
+        });
+    });
+
+    $("form#form_dataset").submit(function (e) {
+        e.preventDefault();
+        var formData = new FormData(this)
+        $.ajax({
+            url: '{{ url_for("experiments.add_new_dataset") }}',
+            type: 'POST',
+            contentType: "multipart/form-data",
+            data: formData,
+            success: function (result) {
+                $("#show_dataset").html(result);
+                update_datasets();
+            },
+            error: function (result) {
+                alert("Upload failed")
+            },
+            cache: false,
+            contentType: false,
+            processData: false
+        });
+    });
+
+    $("document").ready(function () {
+        $("#alg_typ").change(function () {
+            $.ajax({
+                url: '{{ url_for("experiments.change_alg") }}',
+                type: 'POST',
+                contentType: 'application/x-www-form-urlencoded',
+                data: "alg_typ=" + $("#alg_typ").val(),
+                success: function (result) {
+                    $("#show_algorithms").html(result);
+                    load_config();
+                },
+                error: function (result) {
+                    alert("Failed")
+                },
+                cache: false,
+                processData: false
+            });
+        });
+
+        $("#dataset").change(function(){
+            var filename =  $("#dataset").val().replace(/C:\\fakepath\\/i, '')
+            $("#datasetLabel").text(filename);
+        })
+        
+    });
+    
+    // Slider
+    var slider = document.getElementById("train_slider");
+    var train_perc = document.getElementById("train_value");
+    var test_perc = document.getElementById("test_value");
+    train_perc.innerHTML = "Train: " + slider.value + " %";
+    test_perc.innerHTML = "Test: " + (100 - slider.value) + " %";
+
+    slider.oninput = function () {
+        train_perc.innerHTML = "Train: " + this.value + " %";
+        test_perc.innerHTML = "Test: " + (100 - this.value) + " %";
+    }
+</script>
 {% endblock %}

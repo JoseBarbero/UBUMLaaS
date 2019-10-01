@@ -52,13 +52,23 @@ def register():
 
             flash("User registered.")
             return redirect(url_for("users.login"))
-    return render_template("register.html", form=form, title="Registro")
+    return render_template("register.html", form=form, title="Register")
+
 
 @users.route("/logout")
 def logout():
     logout_user()
     return redirect(url_for("core.index"))
 
+
+@login_required
+@users.route("/profile")
+def profile():
+    datasets = [x for x in os.listdir("ubumlaas/datasets/"+current_user.username)]
+    experiments = get_experiments(current_user.id)
+    return render_template("profile.html", title= current_user.username + " Profile", user=current_user, datasets=datasets, experiments=experiments)
+
+  
 def send_email(user, email, procid):
     with smtplib.SMTP('smtp.gmail.com',587) as smtp:
         smtp.ehlo()
@@ -74,5 +84,4 @@ def send_email(user, email, procid):
         msg = f'Subject: {subject}\n\n{body}'
 
         smtp.sendmail(EMAIL_AC, email ,msg)
-
     return redirect(url_for("core.index"))

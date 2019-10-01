@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <h3 class="text-center">User Info</h3>
+                <div class="container">
+                    <div class="row">
+                        <p class="col-md-3 font-weight-bold">Username</p>
+                        <p class="col-md-9">{{ user.username }} </p>
+                    </div>
+                    <div class="row">
+                            <p class="col-md-3 font-weight-bold">Mail</p>
+                            <p class="col-md-9">{{ user.email }} </p>
+                        </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <h3 class="text-center">Datasets</h3>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for d in datasets %}
+                        <tr>
+                                <td scope="col">{{ loop.index }}</td>
+                                <td scope="col">{{ d }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <h3 class="text-center">Experiments</h3>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Id</th>
+                            <th scope="col">Algorithm</th>
+                            <th scope="col">Dataset</th>
+                            <th scope="col">Init Date</th>
+                            <th scope="col">Finish Date</th>
+                            <th scope="col">State</th>
+                            <th scope="col">View Result</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for e in experiments %}
+                        <tr>
+                                <td scope="col">{{ loop.index }}</td>
+                                <td scope="col">{{ e.id }}</td>
+                                <td scope="col">{{ e.alg_name }}</td>
+                                <td scope="col">{{ e.data }}</td>
+                                <td scope="col">{{ e.starttime }}</td>
+                                <td scope="col">
+                                    {% if e.endtime is not none %}
+                                        {{ e.endtime }}
+                                    {% else %}
+                                        ---
+                                    {% endif %}
+                                </td>
+                                <td scope="col" align="center">
+                                    <div class="square rounded-circle
+                                    {% if e.state == 0 %}
+                                     bg-warning
+                                    {% elif e.state == 1 %}
+                                     bg-success
+                                    {% elif e.state == 2 %}
+                                     bg-danger
+                                    {% endif %}
+                                    ">
+                                        &nbsp;
+                                    </div>
+                                </td>
+                                <td>
+                                    <a href=" {{ url_for("experiments.result_experiment",id=e.id) }} ">See</a>
+                                </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

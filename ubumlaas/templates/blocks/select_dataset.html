@@ -1,0 +1,22 @@
+<div class="control-group">
+    {{form_e.data.label(class="control")}}
+    {{form_e.data(class="form-control")}}<br>
+    <script>
+        $("#data").change(function () {
+            let chosen_dataset = $("#data").val();
+            $.ajax({
+                url: '{{ url_for("experiments.change_column_list") }}',
+                type: 'POST',
+                contentType: 'application/x-www-form-urlencoded',
+                data: "data=" + chosen_dataset,
+                success: function (result) {
+                    $("#dataset_parameters").html(result.html);
+                    $("#show_dataset").html(result.df)
+                },
+                error: function (result) {
+                    alert("Failed open dataset configuration");
+                }
+            });
+        });
+    </script>
+</div>

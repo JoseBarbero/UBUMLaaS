@@ -2,15 +2,13 @@
 <html>
 
 <head>
-  <link rel="stylesheet" href="static/css/bootstrap.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename="css/bootstrap.css") }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename="css/custom.css") }}"> 
+  <link rel="stylesheet" href="{{ url_for('static', filename="css/switch.css") }}">  
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <script src="https://code.jquery.com/jquery-3.4.1.min.js"
     integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
     crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
-    integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-    crossorigin="anonymous"></script>
-  <script src="static/js/bootstrap.js"></script>
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <meta charset="utf-8">
   <title>{{ title }}</title>
 </head>
@@ -18,7 +16,10 @@
 <body>
 
   <nav class="navbar sticky-top navbar-expand-lg navbar-dark" style="background-color: #A7253B;">
-    <a class="navbar-brand" href="{{ url_for('core.index') }}">UBUMLaaS</a>
+    <div class="rounded float-left">
+      <img class="navbar-brand mx-auto" src={{ url_for("static",filename="img/onlyA-32x32.svg") }}>
+    </div>
+    <a class="navbar-brand" href="{{ url_for('core.index') }}"> UBUMLaaS</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup"
       aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
@@ -26,12 +27,12 @@
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
       <div class="navbar-nav">
         <a class="nav-item nav-link" href="{{ url_for('core.index') }}">Home</a>
-        <a class="nav-item nav-link" href="{{ url_for('core.info') }}">About us</a>
+        <a class="nav-item nav-link" href="{{ url_for('core.info') }}">About</a>
       </div>
       <div class="navbar-nav ml-auto">
         {% if current_user.is_authenticated %}
+        <a class="nav-item nav-link" href="{{ url_for('users.profile') }}">Logged in as {{current_user.username}}</a>
         <a class="nav-item nav-link" href="{{ url_for('experiments.new_experiment') }}">New Experiment</a>
-        <span class="navbar-text">Logged in as {{current_user.username}}</span>
         <a class="nav-item nav-link" href="{{ url_for('users.logout') }}">Logout</a>
         {% else %}
         <a class="nav-item nav-link" href="{{ url_for('users.login') }}">Login</a>
@@ -56,10 +57,16 @@
 
           <div class="col-xs-12 col-sm-6 col-md-3">
             <div class="widget subscribe no-box">
-              <h5 class="widget-title">UBUMLaaS<span></span></h5>
-              <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Magnam ex officiis consequatur saepe iure!
-                Pariatur, provident facilis. Architecto dolorum in maiores atque aut! Provident voluptate placeat culpa
-                aperiam magnam sed?</p>
+              <h5 class="widget-title">Location<span></span></h5>
+              <ul class="thumbnail-widget">
+                <li><a href="https://www.ubu.es/escuela-politecnica-superior/escuela-politecnica-superior">Escuela politécnica superior</a></li>
+                <li>Río Vena Campus</li>
+                <li>Avda. Cantabria s/n 09006</li>
+                <li>Burgos (Burgos)</li>
+                <li>Spain</li>
+                <li><i class="material-icons">phone</i>947 25 89 00</li>
+                <li><i class="material-icons">email</i><a href="mailto:eps@ubu.es">eps@ubu.es</a></li>
+              </ul>
             </div>
           </div>
 
@@ -68,25 +75,13 @@
               <h5 class="widget-title">Quick Links<span></span></h5>
               <ul class="thumbnail-widget">
                 <li>
-                  <div class="thumb-content"><a href="#.">Link1</a></div>
+                  <div class="thumb-content"><a href="http://www.admirable-ubu.es/">ADMIRABLE</a></div>
                 </li>
                 <li>
-                  <div class="thumb-content"><a href="#.">Link2</a></div>
+                  <div class="thumb-content"><a href="https://www.ubu.es/">University of Burgos</a></div>
                 </li>
                 <li>
-                  <div class="thumb-content"><a href="#.">Link3</a></div>
-                </li>
-                <li>
-                  <div class="thumb-content"><a href="#.">Link4</a></div>
-                </li>
-                <li>
-                  <div class="thumb-content"><a href="#.">Link5</a></div>
-                </li>
-                <li>
-                  <div class="thumb-content"><a href="#.">Link6</a></div>
-                </li>
-                <li>
-                  <div class="thumb-content"><a href="#.">About</a></div>
+                  <div class="thumb-content"><a href="{{ url_for('core.info') }}">About</a></div>
                 </li>
               </ul>
             </div>
@@ -94,9 +89,9 @@
 
           <div class="col-xs-12 col-sm-6 col-md-3">
             <div class="widget no-box">
-              <h5 class="widget-title">Test<span></span></h5>
-              <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Error, sequi rem?</p>
-              <a class="btn" href="{{ url_for('users.register') }}">Register Now</a>
+              <h5 class="widget-title">Register<span></span></h5>
+              <h6>Do you need an account?</h6>
+              <a class="btn btn-secondary" href="{{ url_for('users.register') }}">Register Now</a>
             </div>
           </div>
 
@@ -116,15 +111,18 @@
       <div class="container">
         <div class="row">
           <div class="col-md-12 text-center">
-            <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. © 2016. All rights reserved.</p>
+            <p>UBUMLaaS. © 2019. All rights reserved.</p>
           </div>
         </div>
       </div>
     </div>
   </footer>
+  <script src="static/js/bootstrap.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+    integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+    crossorigin="anonymous"></script>
   {% block js %}
   {% endblock %}
-
 </body>
 
 </html>

@@ -8,8 +8,11 @@ import redis
 from rq import Queue
 from ubumlaas.jobs import WorkerBuilder
 
+import ubumlaas.weka.weka_packages as weka_packages
+
 import time
- 
+
+
 def create_app(config_name):
     v.start()
     app = Flask(__name__)
@@ -34,14 +37,19 @@ def create_app(config_name):
     v.db = SQLAlchemy(app)
     Migrate(app, v.db)
 
-    # Redis
-    v.r = redis.Redis()
-    v.q = Queue(connection=v.r)
+    if config_name == "main_app":
+        # Redis
+        v.r = redis.Redis()
+        v.q = Queue(connection=v.r)
 
-    BASE_WORKERS = 3
-    v.workers = 0
-    for w in range(BASE_WORKERS):
-        WorkerBuilder().set_queue(v.q).create().start()
+        BASE_WORKERS = 3
+        v.workers = 0
+        for _ in range(BASE_WORKERS):
+            WorkerBuilder().set_queue(v.q).create().start()
+
+        #Install weka packages
+        v.q.enqueue(weka_packages.install_packages,"ubumlaas/weka/weka_packages.txt")
+      
 
     ######################
     ###  LOGIN CONFIG  ###
