@@ -106,7 +106,6 @@ def change_column_list():
     dataset = form_e.data.data
     upload_folder = "ubumlaas/datasets/"+current_user.username+"/"
     df = pd.read_csv(upload_folder+dataset)
-    form_c.add_target_candidates(df.columns)
     pretty_df = generate_df_head_html(df)
     to_return = {"html": render_template("blocks/show_columns.html", data=df),
                  "df": generate_df_head_html(df)}
