@@ -167,10 +167,8 @@ def generate_df_head_html(df):
                 {'selector': 'td',
                     'props': [('font-family', 'verdana')]}]
         ).hide_index()
-
-    return df.to_html(classes=["table-responsive", "table-borderless",
-                               "table-striped", "table-hover", "table-sm"],
-                      max_rows=6, justify="justify")
+    html_table = df.to_html(classes=["table", "table-borderless", "table-striped", "table-hover"], max_rows=6, justify="justify")
+    return html_table
 
 
 @login_required
