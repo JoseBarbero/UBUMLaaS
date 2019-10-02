@@ -167,12 +167,26 @@ def execute_weka(experiment, path, X_train, X_test, y_train, y_test):
 
 
 def create_weka_dataset(X, y):
+    """Create weka dataset using temporaly file
+    
+    Arguments:
+        X {array like} -- non target class instances
+        y {array like} -- target class instances
+    
+    Returns:
+        java object wrapped -- weka dataset
+    """
     try:
+        #Create new temporal file
         temp = tempfile.NamedTemporaryFile()
+
+        #Concat X and y. Write csv to temporaly file.
         X_df = pd.DataFrame(X)
         y_df = pd.DataFrame(y)
         dataframe = pd.concat([X_df, y_df], axis=1)
         dataframe.to_csv(temp.name, index=None)
+
+        #Find uniques values from target
         y_uniques = y_df[y_df.columns[0]].unique()
         y_uniques.sort()
         loader = Loader(classname="weka.core.converters.CSVLoader",
