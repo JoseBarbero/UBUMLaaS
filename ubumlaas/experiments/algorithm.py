@@ -57,7 +57,7 @@ def task_skeleton(experiment, current_user):
         models_dir = "ubumlaas/models/{}/".format(current_user["username"])
         if not os.path.exists(models_dir):
             os.makedirs(models_dir)
-        y_pred = apps_functions[type_app](experiment,
+        y_pred, y_score = apps_functions[type_app](experiment,
                                           "{}{}.model".
                                           format(models_dir, experiment['id']),
                                           X_train, X_test, y_train, y_test)
@@ -69,7 +69,7 @@ def task_skeleton(experiment, current_user):
             score = sklearn.metrics.mean_squared_error(y_test, y_pred)
         elif experiment["alg"]["alg_typ"] == "Classification":
             score_text = "Confussion Matrix"
-            score = sklearn.metrics.confusion_matrix(y_test, y_pred)
+            score = sklearn.metrics.confusion_matrix(y_test, y_pred, y_score)
         state = 1
         result = score_text+": "+str(score)
     except Exception:
@@ -106,10 +106,13 @@ def execute_sklearn(experiment, path, X_train, X_test, y_train, y_test):
     model = eval(experiment["alg"]["alg_name"]+"(**alg_config)")
     model.fit(X_train, y_train)
     y_pred = model.predict(X_test)
+    y_score = None
+    if (experiment["alg"]["alg_typ"] == "Classification"):
+        y_score = model.predict_proba(X_test)
 
     pickle.dump(model, open(path, 'wb'))
 
-    return y_pred
+    return y_pred, y_score
 
 
 def execute_weka(experiment, path, X_train, X_test, y_train, y_test):
@@ -184,3 +187,28 @@ def create_weka_dataset(X, y):
     finally:
         temp.close()
     return data
+
+
+def classification_metrics(y_test, y_pred, y_score):
+    """Compute classification metrics
+    
+    Arguments:
+        y_test {1d array} -- test output
+        y_pred {[type]} -- model output
+    
+    Returns:
+        dict -- metrics with computed value
+    """
+    score = {}
+
+    # First confuse matrix
+    conf_matrix = sklearn.metrics.confusion_matrix(y_test, t_pred)
+    score["conf_matrix"] = conf_matrix
+    if conf_matrix.shape[0] == 2:
+        # Boolean metrics
+        if y_test.dtype == np.bool:
+            fpr, tpr = sklearn.metrics.roc_curve(y_test, y_score)
+            score["ROC"] = [fpr, tpr]
+            score["AUC"] = sklearn.metrics.auc(fpr, tpr)
+
+    return score
