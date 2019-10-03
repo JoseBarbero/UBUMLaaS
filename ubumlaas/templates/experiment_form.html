@@ -29,15 +29,15 @@
         </div>
     </div>
     <fieldset>
-            <form class="col-12" id="form_dataset_configuration">
+            <form class="col-12 table-responsive" id="form_dataset_configuration">
                 <div id="dataset_parameters" class="form-group">
                     {% include 'blocks/show_columns.html' %}
                 </div>
+                <div id="show_dataset" class="form-group">
+                    {% include 'blocks/show_dataset.html' %}
+                </div>
             </form>
         </fieldset>
-    <div id="show_dataset" class="table-responsive col-12">
-        {% include 'blocks/show_dataset.html' %}
-    </div>
     <fieldset>
         <form class="col-md-6 offset-md-3" id="form_dataset_parameters">
 

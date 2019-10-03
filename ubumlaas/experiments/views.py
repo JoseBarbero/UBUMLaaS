@@ -139,12 +139,10 @@ def add_new_dataset():
         file_df = form_d.to_dataframe(filename, upload_folder)
 
         df_html = generate_df_html(file_df)
-
         return render_template("blocks/show_dataset.html", data=df_html,
                                exists=exists, name=filename)
     else:
         return "Error", 400
-
 
 def generate_df_html(df):
     """Generates an html table from a dataframe.
@@ -167,7 +165,7 @@ def generate_df_html(df):
                 {'selector': 'td',
                     'props': [('font-family', 'verdana')]}]
         ).hide_index()
-    html_table = df.to_html(classes=["table", "table-borderless", "table-striped", "table-hover"], max_rows=6, justify="justify")
+    html_table = df.to_html(classes=["table", "table-borderless", "table-striped", "table-hover"], max_rows=6, justify="center").replace("border=\"1\"", "border=\"0\"")
     return html_table
 
 
