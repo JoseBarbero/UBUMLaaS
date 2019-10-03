@@ -8,6 +8,9 @@ import sklearn.metrics
 import sklearn.ensemble
 import sklearn.neighbors
 import sklearn.model_selection
+import sklearn.preprocessing
+import sklearn.multiclass
+
 from ubumlaas import create_app
 import pandas as pd
 import variables as v
@@ -34,14 +37,15 @@ def task_skeleton(experiment, current_user):
     """Base skeleton to execute an experiment.
 
     Arguments:
-        experiment {dict} -- experiment information (see model.Experiment.to_dict)
+        experiment {dict} -- experiment information
+                             (see model.Experiment.to_dict)
         current_user {dict} -- user information (see model.User.to_dict)
     """
     # Task need app environment
-    create_app('subprocess') #No generate new workers
-    #Diference sklearn executor and weka executor
+    create_app('subprocess')  # No generate new workers
+    # Diference sklearn executor and weka executor
     apps_functions = {"sklearn": execute_sklearn, "weka": execute_weka}
-    #Get algorithm type
+    # Get algorithm type
     type_app = experiment["alg"]["alg_name"].split(".", 1)[0]
     try:
         exp_config = json.loads(experiment["exp_config"])
@@ -54,7 +58,7 @@ def task_skeleton(experiment, current_user):
         X_train, X_test, y_train, y_test = \
             sklearn.model_selection. \
             train_test_split(X, y, test_size=1-exp_config["split"]/100)
-            
+
         models_dir = "ubumlaas/models/{}/".format(current_user["username"])
         if not os.path.exists(models_dir):
             os.makedirs(models_dir)
@@ -66,8 +70,7 @@ def task_skeleton(experiment, current_user):
         score_text = ""
         score = 0
         if experiment["alg"]["alg_typ"] == "Regression":
-            score_text = "Mean squared error"
-            score = sklearn.metrics.mean_squared_error(y_test, y_pred)
+            score = regression_metrics(y_test, y_pred)
         elif experiment["alg"]["alg_typ"] == "Classification":
             score = classification_metrics(y_test, y_pred, y_score)
         state = 1
@@ -141,7 +144,7 @@ def execute_weka(experiment, path, X_train, X_test, y_train, y_test):
         v = alg_config[i]
         if v is not False:
             lincom.append(conf[i]["command"])
-        if not isinstance(v,bool):
+        if not isinstance(v, bool):
             lincom.append(str(v))
 
     data = create_weka_dataset(X_train, y_train)
@@ -151,8 +154,10 @@ def execute_weka(experiment, path, X_train, X_test, y_train, y_test):
     classifier.build_classifier(data)
     data_test = create_weka_dataset(X_test, y_test)
     function = None
+    y_score = None
     if experiment["alg"]["alg_typ"] == "Classification":
         function = lambda p: data_test.class_attribute.value(int(p))
+        y_score = classifier.distributions_for_instances(data_test)
     elif experiment["alg"]["alg_typ"] == "Regression":
         function = lambda p: p
     y_pred = []
@@ -163,30 +168,30 @@ def execute_weka(experiment, path, X_train, X_test, y_train, y_test):
     serialization.write(path, classifier)
     jvm.stop()
 
-    return y_pred
+    return y_pred, y_score
 
 
 def create_weka_dataset(X, y):
     """Create weka dataset using temporaly file
-    
+
     Arguments:
         X {array like} -- non target class instances
         y {array like} -- target class instances
-    
+
     Returns:
         java object wrapped -- weka dataset
     """
     try:
-        #Create new temporal file
+        # Create new temporal file
         temp = tempfile.NamedTemporaryFile()
 
-        #Concat X and y. Write csv to temporaly file.
+        # Concat X and y. Write csv to temporaly file.
         X_df = pd.DataFrame(X)
         y_df = pd.DataFrame(y)
         dataframe = pd.concat([X_df, y_df], axis=1)
         dataframe.to_csv(temp.name, index=None)
 
-        #Find uniques values from target
+        # Find uniques values from target
         y_uniques = y_df[y_df.columns[0]].unique()
         y_uniques.sort()
         loader = Loader(classname="weka.core.converters.CSVLoader",
@@ -202,11 +207,12 @@ def create_weka_dataset(X, y):
 
 def classification_metrics(y_test, y_pred, y_score):
     """Compute classification metrics
-    
+
     Arguments:
         y_test {1d array} -- test output
-        y_pred {[type]} -- model output
-    
+        y_pred {1d array} -- model output
+        y_score {1d array} -- model score output
+
     Returns:
         dict -- metrics with computed value
     """
@@ -214,7 +220,7 @@ def classification_metrics(y_test, y_pred, y_score):
 
     # First confuse matrix
     conf_matrix = sklearn.metrics.confusion_matrix(y_test, y_pred)
-    score["conf_matrix"] = conf_matrix.tolist()
+    score["confussion matrix"] = conf_matrix.tolist()
     y_b_score = y_score.max(axis=1)
     if conf_matrix.shape[0] == 2:
         # Boolean metrics
@@ -227,6 +233,8 @@ def classification_metrics(y_test, y_pred, y_score):
         score["ROC"] = [fpr.tolist(), tpr.tolist()]
         score["AUC"] = sklearn.metrics.auc(fpr, tpr)
         score["kappa"] = sklearn.metrics.cohen_kappa_score(y_test, y_pred)
+        score["accuracy"] = sklearn.metrics.accuracy_score(y_test, y_pred)
+        score["f1 score"] = sklearn.metrics.f1_score(y_test, y_pred)
 
     return score
 
@@ -246,9 +254,9 @@ def value_to_bool(y_test, y_pred):
     return y_test.map(d), pd.Series(y_pred).map(d)
 
 
-def regression_metrics(y_test,y_pred):
+def regression_metrics(y_test, y_pred):
     """Compute Regression metrics
-    
+
     Arguments:
         y_test {pandas} -- test output
         y_pred {pandas} -- model output
@@ -258,8 +266,8 @@ def regression_metrics(y_test,y_pred):
     """
     score = {}
 
-    score["max_error"] = metrics.max_error(y_test,y_pred)
-    score["mean_score_error"] = metrics.mean_squared_error(y_test,y_pred)
-    score["mean_absolute_error"] = metrics.mean_absolute_error(y_test,y_pred)
+    score["max_error"] = sklearn.metrics.max_error(y_test, y_pred)
+    score["mean_score_error"] = sklearn.metrics.mean_squared_error(y_test, y_pred)
+    score["mean_absolute_error"] = sklearn.metrics.mean_absolute_error(y_test, y_pred)
 
     return score
