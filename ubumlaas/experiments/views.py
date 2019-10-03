@@ -106,16 +106,16 @@ def change_column_list():
     dataset = form_e.data.data
     upload_folder = "ubumlaas/datasets/"+current_user.username+"/"
     df = pd.read_csv(upload_folder+dataset)
-    pretty_df = generate_df_head_html(df)
+    pretty_df = generate_df_html(df)
     to_return = {"html": render_template("blocks/show_columns.html", data=df),
-                 "df": generate_df_head_html(df)}
+                 "df": generate_df_html(df)}
     return jsonify(to_return)
 
 
 @login_required
 @experiments.route("/new_experiment/new_dataset", methods=["POST"])
 def add_new_dataset():
-    """Upload a new dataset.
+    """Uploads a new dataset and displays it as html table.
 
     Returns:
         str -- HTTP response 200 if dataset is upload or 400  if failed.
@@ -138,16 +138,16 @@ def add_new_dataset():
 
         file_df = form_d.to_dataframe(filename, upload_folder)
 
-        pretty_df = generate_df_head_html(file_df)
+        df_html = generate_df_html(file_df)
 
-        return render_template("blocks/show_dataset.html", data=pretty_df,
+        return render_template("blocks/show_dataset.html", data=df_html,
                                exists=exists, name=filename)
     else:
         return "Error", 400
 
 
-def generate_df_head_html(df):
-    """Generate a html from dataframe head.
+def generate_df_html(df):
+    """Generates an html table from a dataframe.
     
     Arguments:
         df {dataframe} -- pandas dataframe with dataset
@@ -167,10 +167,8 @@ def generate_df_head_html(df):
                 {'selector': 'td',
                     'props': [('font-family', 'verdana')]}]
         ).hide_index()
-
-    return df.to_html(classes=["table-responsive", "table-borderless",
-                               "table-striped", "table-hover", "table-sm"],
-                      max_rows=6, justify="justify")
+    html_table = df.to_html(classes=["table", "table-borderless", "table-striped", "table-hover"], max_rows=6, justify="justify")
+    return html_table
 
 
 @login_required
