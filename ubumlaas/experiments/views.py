@@ -222,3 +222,47 @@ def download_model(id):
         return send_file(path, attachment_filename=download_filename, as_attachment=True)
     except FileNotFoundError:
         abort(404)
+
+
+@login_required
+@experiments.route("/experiment/<id>/predict_dataset",methods=["POST"])
+def add_predict_dataset(id):
+    """Uploads a new dataset and displays it as html table.
+
+    Returns:
+        str -- HTTP response 200 if dataset is upload or 400  if failed.
+    """
+    form_pr = DatasetForm()
+    upload_folder = "/tmp/"+current_user.username+"/"
+
+    if form_pr.validate():
+        filename = secure_filename(form_pr.dataset.data.filename)
+        if not os.path.exists(upload_folder):
+            os.makedirs(upload_folder)
+
+        exists = os.path.exists(upload_folder + filename)
+        if(exists):
+            basename, ext = os.path.splitext(os.path.basename(filename))
+
+            filename = basename+"-"+str(calendar.timegm(time.gmtime()))+ext
+
+        form_pr.dataset.data.save(upload_folder + filename)
+
+        file_df = form_pr.to_dataframe(filename, upload_folder)
+
+        df_html = generate_df_html(file_df)
+        return render_template("blocks/show_dataset.html", data=df_html,
+                               exists=exists, name=filename)
+    else:
+        return "Error", 400
+
+@login_required
+@experiments.route("/experiment/<id>/predict")
+def predict(id):
+    form_pr = DatasetForm()
+
+    return render_template("predict.html", form_pr=form_pr,id=id,title="Predict")
+
+
+
+

@@ -27,7 +27,14 @@
                     </div>
                 {% endfor %}
                 {% if experiment.state == 1 %}
-                <a class="btn btn-primary" role="button" href={{url_for("experiments.download_model",id=experiment.id)}} >Download model</a>
+                <div class="row">
+                    <div class="col-md-6">
+                        <a class="btn btn-primary" role="button" href={{url_for("experiments.download_model",id=experiment.id)}} >Download model</a>
+                    </div>
+                    <div class="col-md-6">
+                        <a class="btn btn-primary" role="button" href={{url_for("")}}>Predict</a>
+                    </div>
+                </div>
                 {% endif %}
             </div>
         </div>
