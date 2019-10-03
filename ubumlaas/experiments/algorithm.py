@@ -130,7 +130,8 @@ def execute_weka(experiment, path, X_train, X_test, y_train, y_test):
         y_test {dataframe} -- test output
 
     Returns:
-        dataframe -- output of X_test in trained model.
+        y_pred {array of predictions} 
+        y_score {2d array of class distribution of every instance}
     """
     jvm.start(packages=True)
 
@@ -168,6 +169,11 @@ def execute_weka(experiment, path, X_train, X_test, y_train, y_test):
     serialization.write(path, classifier)
     jvm.stop()
 
+    try: #Trying to convert to int
+        y_pred = [int(pred) for pred in y_pred]
+    except ValueError:
+        pass
+
     return y_pred, y_score
 
 
@@ -196,7 +202,7 @@ def create_weka_dataset(X, y):
         y_uniques.sort()
         loader = Loader(classname="weka.core.converters.CSVLoader",
                         options=["-L", "{}:{}".format(dataframe.shape[1],
-                                 ",".join(y_uniques))])
+                                 ",".join(map(str, y_uniques)))])
         data = loader.load_file(temp.name)
         # Last column of data is target
         data.class_is_last()
@@ -217,6 +223,8 @@ def classification_metrics(y_test, y_pred, y_score):
         dict -- metrics with computed value
     """
     score = {}
+
+
 
     # First confuse matrix
     conf_matrix = sklearn.metrics.confusion_matrix(y_test, y_pred)
