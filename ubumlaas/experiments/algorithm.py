@@ -18,6 +18,7 @@ from ubumlaas.utils import send_email
 from time import time
 import json
 import os
+import numpy as np
 
 import weka.core.jvm as jvm
 from weka.classifiers import Classifier
@@ -68,10 +69,9 @@ def task_skeleton(experiment, current_user):
             score_text = "Mean squared error"
             score = sklearn.metrics.mean_squared_error(y_test, y_pred)
         elif experiment["alg"]["alg_typ"] == "Classification":
-            score_text = "Confussion Matrix"
-            score = sklearn.metrics.confusion_matrix(y_test, y_pred, y_score)
+            score = classification_metrics(y_test, y_pred, y_score)
         state = 1
-        result = score_text+": "+str(score)
+        result = json.dumps(score)
     except Exception:
         # If algoritm failed it save traceback as result
         result = str(traceback.format_exc())
@@ -144,9 +144,6 @@ def execute_weka(experiment, path, X_train, X_test, y_train, y_test):
         if not isinstance(v,bool):
             lincom.append(str(v))
 
-    print(lincom)
-
-
     data = create_weka_dataset(X_train, y_train)
 
     classifier = Classifier(classname=experiment["alg"]["alg_name"], options=lincom)
@@ -202,37 +199,37 @@ def classification_metrics(y_test, y_pred, y_score):
     score = {}
 
     # First confuse matrix
-    conf_matrix = sklearn.metrics.confusion_matrix(y_test, t_pred)
-    score["conf_matrix"] = conf_matrix
+    conf_matrix = sklearn.metrics.confusion_matrix(y_test, y_pred)
+    score["conf_matrix"] = conf_matrix.tolist()
+    y_b_score = y_score.max(axis=1)
     if conf_matrix.shape[0] == 2:
         # Boolean metrics
         if y_test.dtype != np.bool:
-            y_b_test,y_b_pred = value_to_bool(y_test.copy(),y_pred.copy())
+            y_b_test, y_b_pred = value_to_bool(y_test.copy(), y_pred.copy())
         else:
             y_b_test = y_test
             y_b_pred = y_pred
-
-        fpr, tpr = sklearn.metrics.roc_curve(y_b_test, y_score)
-        score["ROC"] = [fpr, tpr]
+        fpr, tpr, _ = sklearn.metrics.roc_curve(y_b_test, y_b_score)
+        score["ROC"] = [fpr.tolist(), tpr.tolist()]
         score["AUC"] = sklearn.metrics.auc(fpr, tpr)
-        score["KAP"] = sklearn.metrics.cohen_kappa_score(y_test,y_pred)
+        score["kappa"] = sklearn.metrics.cohen_kappa_score(y_test, y_pred)
 
     return score
 
 
-def value_to_bool(y_test,y_pred):
+def value_to_bool(y_test, y_pred):
     """Transform a pandas non boolean column in boolean column
-    
+
     Arguments:
         y_test {pandas} -- test output
         y_pred {pandas} -- model output
-    
+
     Returns:
         [pandas,pandas] -- test output boolean, model output boolean
     """
     un = y_test.unique()
-    d = {un[0]:True,un[1]:False}
-    return y_test.map(d),y_pred.map(d)
+    d = {un[0]:True, un[1]:False}
+    return y_test.map(d), pd.Series(y_pred).map(d)
 
 
 def regression_metrics(y_test,y_pred):
@@ -247,8 +244,8 @@ def regression_metrics(y_test,y_pred):
     """
     score = {}
 
-    score["ME"] = metrics.max_error(y_test,y_pred)
-    score["MSE"] = metrics.mean_squared_error(y_test,y_pred)
-    score["MAE"] = metrics.mean_absolute_error(y_test,y_pred)
+    score["max_error"] = metrics.max_error(y_test,y_pred)
+    score["mean_score_error"] = metrics.mean_squared_error(y_test,y_pred)
+    score["mean_absolute_error"] = metrics.mean_absolute_error(y_test,y_pred)
 
     return score
