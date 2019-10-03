@@ -127,7 +127,8 @@ def execute_weka(experiment, path, X_train, X_test, y_train, y_test):
         y_test {dataframe} -- test output
 
     Returns:
-        dataframe -- output of X_test in trained model.
+        y_pred {array of predictions} 
+        y_score {2d array of class distribution of every instance}
     """
     jvm.start(packages=True)
 
@@ -151,8 +152,10 @@ def execute_weka(experiment, path, X_train, X_test, y_train, y_test):
     classifier.build_classifier(data)
     data_test = create_weka_dataset(X_test, y_test)
     function = None
+    y_score = None
     if experiment["alg"]["alg_typ"] == "Classification":
         function = lambda p: data_test.class_attribute.value(int(p))
+        y_score = classifier.distributions_for_instances(data_test)
     elif experiment["alg"]["alg_typ"] == "Regression":
         function = lambda p: p
     y_pred = []
@@ -163,7 +166,13 @@ def execute_weka(experiment, path, X_train, X_test, y_train, y_test):
     serialization.write(path, classifier)
     jvm.stop()
 
-    return y_pred
+    try: #Trying to convert to int
+        y_pred = [int(pred) for pred in y_pred]
+    except ValueError:
+        pass
+    
+
+    return y_pred, y_score
 
 
 def create_weka_dataset(X, y):
@@ -191,7 +200,7 @@ def create_weka_dataset(X, y):
         y_uniques.sort()
         loader = Loader(classname="weka.core.converters.CSVLoader",
                         options=["-L", "{}:{}".format(dataframe.shape[1],
-                                 ",".join(y_uniques))])
+                                 ",".join(map(str, y_uniques)))])
         data = loader.load_file(temp.name)
         # Last column of data is target
         data.class_is_last()
@@ -211,6 +220,8 @@ def classification_metrics(y_test, y_pred, y_score):
         dict -- metrics with computed value
     """
     score = {}
+
+
 
     # First confuse matrix
     conf_matrix = sklearn.metrics.confusion_matrix(y_test, y_pred)
@@ -263,3 +274,4 @@ def regression_metrics(y_test,y_pred):
     score["mean_absolute_error"] = metrics.mean_absolute_error(y_test,y_pred)
 
     return score
+
