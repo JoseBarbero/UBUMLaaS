@@ -16,8 +16,8 @@ $("document").ready(function(){
 
 function verify_all(){
     submit_experiment.attr("disabled",true);
-    let invalidate = [];
-    let validate = [];
+    invalidate = [];
+    validate = [];
     let show = [];
     let hide = [];
 

@@ -87,12 +87,14 @@
 
                 let div = $("<div></div>",{class: "col-12 row", id: i+"_chart", style: "display: none;"});
                 switch(i){
+                    case "AUC":
+                        result[i] = 1-result[i];
                     case "max_error":
                     case "mean_score_error":
                     case "mean_absolute_error":
                     case "kappa":
-                    case "accuracy":
-                    case "AUC":
+                    case "accuracy":                    
+                    case "f1_score":
                         let k = $("<p></p>", {class: "col-md-5 font-weight-bold"});
                         let v = $("<p></p>", {class: "col-md-7"});
                         k.text("Value:");
@@ -100,7 +102,7 @@
                         div.append(k, v);
                         break;
                     case "ROC":
-                        let label = "AUC="+result["AUC"];
+                        let label = "AUC="+(1-result["AUC"]);
                         var canvas = $("<canvas></canvas>", {id:i+"_canvas", width: "100%"});
                         var ctx = canvas.get(0).getContext('2d');
                         
@@ -135,7 +137,7 @@
                         })
                         div.append(canvas);
                         break;
-                    case "conf_matrix":
+                    case "confussion_matrix":
                         var canvas = $("<div></div>", {id:i+"_canvas", width: "100%"});
                         let opt = {
                             chart: {
@@ -177,7 +179,7 @@
     function x_y_convert(xy){
         let data = [];
         for(let i=0; i<xy[0].length; i++){
-            data.push({x: xy[0][i],y:xy[1][i]});
+            data.push({x: xy[1][i],y:xy[0][i]});
         }
         return data;
     }
