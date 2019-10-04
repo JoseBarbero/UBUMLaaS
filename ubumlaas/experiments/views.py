@@ -35,12 +35,11 @@ def new_experiment():
 
     form_d = DatasetForm()
 
-
     form_p = DatasetParametersForm()
 
     return render_template("experiment_form.html", form_e=form_e,
-                            form_d=form_d, form_p=form_p,
-                            title="New experiment")
+                           form_d=form_d, form_p=form_p,
+                           title="New experiment")
 
 
 @login_required
