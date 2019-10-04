@@ -75,9 +75,10 @@ def task_skeleton(experiment, current_user):
             score = classification_metrics(y_test, y_pred, y_score)
         state = 1
         result = json.dumps(score)
-    except Exception:
+    except Exception as ex:
         # If algoritm failed it save traceback as result
-        result = str(traceback.format_exc())
+        result = str(ex)
+        print(traceback.format_exc())
         state = 2
 
     from ubumlaas.models import Experiment

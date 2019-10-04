@@ -39,7 +39,9 @@
 
                 {% if experiment.state == 2  %}
                     <h3 class="text-center">Error</h3>
-                    {{ experiment.result }}
+                    <p class="text-danger" ><i class="material-icons" >
+                        error
+                        </i>{{ experiment.result }}</p>
                 {% elif experiment.state == 1 %}
                     <h3 class="text-center">Finished</h3>
                     <div class="container-fluid" id="success_result">
