@@ -49,6 +49,7 @@
                             <th scope="col">Finish Date</th>
                             <th scope="col">State</th>
                             <th scope="col">View Result</th>
+                            <th scope="col">Reuse experiment</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -81,6 +82,9 @@
                                 </td>
                                 <td>
                                     <a href=" {{ url_for("experiments.result_experiment",id=e.id) }} ">See</a>
+                                </td>
+                                <td>
+                                    <a href=" {{ url_for("experiments.new_experiment") }} ">Reuse</a>
                                 </td>
                         </tr>
                         {% endfor %}

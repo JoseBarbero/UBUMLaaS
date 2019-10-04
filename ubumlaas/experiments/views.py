@@ -222,3 +222,25 @@ def download_model(id):
         return send_file(path, attachment_filename=download_filename, as_attachment=True)
     except FileNotFoundError:
         abort(404)
+
+@login_required
+@experiments.route("/experiment/<int:id>/reuse")
+def reuse_experiment(id):
+    exp = load_experiment(id)
+
+    if not exp or exp.idu != current_user.id:
+        abort(404)
+
+    form_e = ExperimentForm()
+   
+    form_e.dataset_list()
+    form_e.process()
+
+    form_d = DatasetForm()
+
+
+    form_p = DatasetParametersForm()
+
+    return render_template("experiment_form.html", form_e=form_e,
+                        form_d=form_d, form_p=form_p,
+                        title="New experiment")
