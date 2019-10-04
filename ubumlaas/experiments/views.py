@@ -309,8 +309,11 @@ def start_predict():
     delete_file()
     if not os.path.exists(upload_folder):
             os.makedirs(upload_folder)
-    fil.to_csv(r''+upload_folder + "predict_"+exp_id+"-"+ datetime.datetime.now().strftime("%d_%m_%Y-%H_%M_%S")+".csv")
-    return 
+    fil_name = "predict_"+exp_id+"-"+ datetime.datetime.now().strftime("%d_%m_%Y-%H_%M_%S")+".csv"
+    fil.to_csv(r''+ upload_folder + fil_name)
+    df_html = generate_df_html(fil)
+    return render_template("blocks/predict_result.html", data=df_html,file=fil_name)
+
 
 @login_required
 @experiments.route("/experiment/delete_file",methods=['DELETE'])
@@ -323,3 +326,20 @@ def delete_file():
     upload_folder = "/tmp/"+current_user.username+"/"
     shutil.rmtree(upload_folder)
     return "",200
+
+@login_required
+@experiments.route("/experiment/<name>/download_result")
+def download_result(name):
+    """Download csv file with prediction
+    
+    Arguments:
+        name {str} -- csv file name
+    
+    Returns:
+        send file -- download file
+    """
+    upload_folder = "/tmp/"+current_user.username+"/"
+    try:
+        return send_file(upload_folder+name, attachment_filename="prediction.csv", as_attachment=True)
+    except FileNotFoundError:
+        abort(404)
