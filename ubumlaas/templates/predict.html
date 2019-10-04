@@ -1,16 +1,43 @@
 {% extends "base.html" %}
+
+{% block before_anyelse %}
+
+<div id="loader-div" style="display: none">
+        <div id="loader">
+                <img src="{{ url_for("static",filename="img/thinking2.gif") }}"/>
+        </div>
+</div>
+
+{% endblock %}
+
 {% block content %}
+
 <div class="jumbotron">
         <h3 class="text-center">Predict</h3>
+        <div class="col-6 center">
+                <fieldset>
+                        <form class="mt-4" id="form_pred">
+                                {{ form_pr.hidden_tag() }}
+                                <div class="form-group custom-file">
+                                        {{ form_pr.dataset(class="custom-file-input") }}
+                                        {{ form_pr.dataset.label(class="custom-file-label",id="datasetLabel") }}
+                                </div>
+                                <div class="form-group">
+                                        <button class="btn btn-secondary btn-block" id="uploadDataset">Upload</button>
+                                </div>
+                        </form>
+                </fieldset>
+        </div>
+        <div class="col-12 center">
+                <div id="show_dataset" class="col-12 form-group table-responsive">
+                        {% include 'blocks/show_dataset.html' %}
+                </div>
+        </div>
         <fieldset>
-                <form class="col-md-6 offset-md-3 mt-4" id="form_pred">
+                <form class="col-md-6 offset-3" id="submit_completed_experiment">
                         {{ form_pr.hidden_tag() }}
-                        <div class="form-group custom-file">
-                                {{ form_pr.dataset(class="custom-file-input") }}
-                                {{ form_pr.dataset.label(class="custom-file-label",id="datasetLabel") }}
-                        </div>
                         <div class="form-group">
-                                <button class="btn btn-secondary btn-block" id="uploadDataset">Upload</button>
+                                <input type="submit" class="btn btn-primary btn-block btn-lg mt-4" value="Predict"/>
                         </div>
                 </form>
         </fieldset>
@@ -38,5 +65,51 @@
                 processData: false
                 });
         });
+
+        function update_datasets() {
+                $.ajax({
+                        url: '{{ url_for("experiments.update_dataset_list") }}',
+                        type: 'POST',
+                        success: function (result) {
+                                $("#select_dataset").html(result);
+                        }
+                })
+        }
+
+        $("#dataset").change(function(){
+            var filename =  $("#dataset").val().replace(/C:\\fakepath\\/i, '')
+            $("#datasetLabel").text(filename);
+        });
+
+        $("form#submit_completed_experiment").submit(function (e) {
+                e.preventDefault();
+                //TODO: Verify all
+                var exp= {{ id }};
+                var name = $("#dataset").val().replace(/C:\\fakepath\\/i, '')
+                $.ajax({
+                url: '{{ url_for("experiments.start_predict") }}',
+                type: 'POST',
+                contentType: 'application/x-www-form-urlencoded',
+                data: "exp_id="+exp+"&filename="+name,
+                success: function (result) {
+                       $("#loader-div").toggle(); 
+                },
+                error: function (result) {
+                        alert("Prediction error");
+                        delete_file();
+                }
+                });
+                $("#loader-div").toggle();
+        });
+
+        function delete_file(){
+                $.ajax({
+                        url:"{{ url_for("experiments.delete_file")}}",
+                        type: 'DELETE',
+                        success: function (result){
+                                location.reload();
+                        }
+                });
+        }
 </script>
 {% endblock %}

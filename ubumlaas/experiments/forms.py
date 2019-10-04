@@ -72,6 +72,7 @@ class DatasetForm(FlaskForm):
             flash("File format not allowed")
         return file_df
 
+    
 
 class DatasetParametersForm(FlaskForm):
     """Dataset configuration with static parameters.

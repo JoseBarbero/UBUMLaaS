@@ -15,6 +15,9 @@ import json
 from urllib.parse import unquote
 import calendar
 import time
+import shutil
+import pickle
+import datetime
 
 from ubumlaas.experiments.algorithm import task_skeleton
 
@@ -259,10 +262,64 @@ def add_predict_dataset(id):
 @login_required
 @experiments.route("/experiment/<id>/predict")
 def predict(id):
+    """Render predict html.
+    
+    Arguments:
+        id {int} -- experiment identificator.
+    
+    Returns:
+        str -- render predict html.
+    """
     form_pr = DatasetForm()
 
     return render_template("predict.html", form_pr=form_pr,id=id,title="Predict")
 
 
+@login_required
+@experiments.route("/experiment/predict",methods=['POST'])
+def start_predict():
+    """Start prediction
+    
+    Returns:
+        [type] -- [description]
+    """
+    exp_id = request.form.get('exp_id')
+    filename = request.form.get('filename')
+    upload_folder = "/tmp/"+current_user.username+"/"
 
+    if filename.split(".")[-1] == "csv":
+        file_df = pd.read_csv(upload_folder + filename)
+    elif filename.split(".")[-1] == "xls":
+        file_df = pd.read_excel(upload_folder + filename)
 
+    exp = load_experiment(exp_id)
+
+    alg = get_algorithm_by_name(exp.alg_name)
+    path = "ubumlaas/models/"+current_user.username+"/"+"{}.model".format(exp_id)
+    if alg.lib == "sklearn":
+        model = pickle.load(open(path,'rb'))
+        res = pd.DataFrame(model.predict(file_df))
+        fil = pd.concat([file_df, res], axis=1)
+
+    elif alg.lib == "weka":
+        p
+    else:
+        return "", 400
+
+    delete_file()
+    if not os.path.exists(upload_folder):
+            os.makedirs(upload_folder)
+    fil.to_csv(r''+upload_folder + "predict_"+exp_id+"-"+ datetime.datetime.now().strftime("%d_%m_%Y-%H_%M_%S")+".csv")
+    return 
+
+@login_required
+@experiments.route("/experiment/delete_file",methods=['DELETE'])
+def delete_file():
+    """Delete user temporal folder
+    
+    Returns:
+        "" -- 
+    """
+    upload_folder = "/tmp/"+current_user.username+"/"
+    shutil.rmtree(upload_folder)
+    return "",200

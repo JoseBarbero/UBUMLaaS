@@ -15,6 +15,9 @@
 
 <body>
 
+  {% block before_anyelse %}
+  {% endblock %}
+
   <nav class="navbar sticky-top navbar-expand-lg navbar-dark" style="background-color: #A7253B;">
     <div class="rounded float-left">
       <img class="navbar-brand mx-auto" src={{ url_for("static",filename="img/onlyA-32x32.svg") }}>
@@ -117,7 +120,7 @@
       </div>
     </div>
   </footer>
-  <script src="static/js/bootstrap.js"></script>
+  <script src="{{ url_for('static', filename="js/bootstrap.js") }}"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
     integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
     crossorigin="anonymous"></script>
