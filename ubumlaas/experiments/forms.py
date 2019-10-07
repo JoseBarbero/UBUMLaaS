@@ -25,7 +25,7 @@ class ExperimentForm(FlaskForm):
                            choices=[])
 
     data = SelectField("Select Dataset", validators=[DataRequired()],
-                       choices=[("","---")])
+                       choices=[("", "---")])
 
     def alg_list(self, alg_typ):
         """Generate a list of supported algorithms by type.
@@ -33,7 +33,7 @@ class ExperimentForm(FlaskForm):
         Arguments:
             alg_typ {str} -- Type of algorithm (Regression, Classification etc.)
         """
-        self.alg_name.choices = [(x.alg_name, x.web_name)
+        self.alg_name.choices = [("", "---")]+[(x.alg_name, x.web_name)
                                  for x in get_algorithms(alg_typ)]
 
     def dataset_list(self):
