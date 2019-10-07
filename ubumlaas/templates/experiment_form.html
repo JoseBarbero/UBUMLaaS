@@ -200,4 +200,87 @@
         test_perc.innerHTML = "Test: " + (100 - this.value) + " %";
     }
 </script>
+
+{% if experiment != none %}
+<script>
+    function set_dataset_parameters(){
+        if(dataset_columns.length === 0){
+            setTimeout(set_dataset_parameters, 10);
+            return;
+        }
+         
+        for(let i=0; i<dataset_columns.length; i++){
+            var use = $("#col"+i+"_use");
+            var target = $("#col"+i+"_target");
+            use.prop('checked', false);
+            target.prop('checked', false);
+            if (exp_config.columns.includes(dataset_columns[i])){
+                use.prop('checked', true);
+            }else if (exp_config.target === dataset_columns[i]){
+                target.prop('checked', true);
+            }
+        }
+    }
+    function config_algorithm(){
+        let alg_name = $("#alg_name");
+        if(alg_name.val() === null){
+            setTimeout(config_algorithm, 10);
+            return;
+        }
+        alg_name.val(algorithm_selected.alg_name);
+        alg_name.change();
+        load_config();
+        add_algorithm_parameters();
+    }
+
+    function add_algorithm_parameters(){        
+        if($.trim($("#form_config_alg").html())===""){
+            setTimeout(add_algorithm_parameters, 10);
+            return;
+        }
+        base_alg_config = JSON.parse(algorithm_selected.config);
+        alg_config = JSON.parse(experiment.alg_config);
+        var parameters = Object.keys(base_alg_config);
+        var sel_parameters = Object.keys(alg_config);
+        parameters.forEach(function(i){
+            var p = $("#"+i+"_value");
+            if(base_alg_config[i].type != "boolean"){
+                if(!sel_parameters.includes(i)){
+                    change_validate(i);
+                }else{
+                    p.val(alg_config[i]);
+                    p.change();
+                }
+            }else{
+                p.prop("checked",alg_config[i]);
+                console.log(p.toArray()[0].id+": "+alg_config[i]);
+                if(alg_config[i] != base_alg_config[i].default){
+                    p.click();
+                }
+            }
+        });
+    }
+    $("document").ready(function(){
+        experiment = {{ experiment | safe }};
+        exp_config = JSON.parse(experiment.exp_config);
+        //Dataset
+        let dataset = $("#data");
+        dataset.val(experiment.data);
+        dataset.change();
+        //Try to set dataset configuration:
+        set_dataset_parameters();
+        //Slider
+        let slider = $("#train_slider");
+        slider.val(exp_config.split);
+        slider.trigger("input");
+        //Algorithm
+        algorithm_selected = experiment.alg;
+        let alg_typ = $("#alg_typ");
+        alg_typ.val(algorithm_selected.alg_typ);
+        alg_typ.change();
+        config_algorithm();
+        add_algorithm_parameters();
+    });
+</script>
+{% endif %}
 {% endblock %}

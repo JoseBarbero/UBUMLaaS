@@ -27,8 +27,8 @@
                     <tbody>
                         {% for d in datasets %}
                         <tr>
-                                <td scope="col">{{ loop.index }}</td>
-                                <td scope="col">{{ d }}</td>
+                            <td scope="col">{{ loop.index }}</td>
+                            <td scope="col">{{ d }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -81,10 +81,10 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <a href=" {{ url_for("experiments.result_experiment",id=e.id) }} ">See</a>
+                                    <a href="{{ url_for("experiments.result_experiment",id=e.id) }}">See</a>
                                 </td>
                                 <td>
-                                    <a href=" {{ url_for("experiments.new_experiment") }} ">Reuse</a>
+                                    <a href="{{ url_for("experiments.new_experiment") }}?exp={{e.id}}">Reuse</a>
                                 </td>
                         </tr>
                         {% endfor %}
