@@ -295,10 +295,10 @@ def start_predict():
     path = "ubumlaas/models/"+current_user.username+"/"+"{}.model".format(exp_id)
     if alg.lib == "sklearn":
         # Open experiment configuration
-        dataset = get_dataframe_from_file("ubumlaas/datasets/"+current_user.username +
-                           "/", exp.data)
+        exp_config = json.loads(exp.exp_config)
+
         file_df = get_dataframe_from_file(upload_folder, filename)
-        
+        file_df = file_df[exp_config["columns"]]
         
         model = pickle.load(open(path,'rb'))
         res = pd.DataFrame(model.predict(file_df))
@@ -307,7 +307,7 @@ def start_predict():
         delete_file()
         if not os.path.exists(upload_folder):
             os.makedirs(upload_folder)
-        fil.to_csv(r''+ upload_folder + fil_name)
+        fil.to_csv(upload_folder + fil_name, index = None)
 
     elif alg.lib == "weka":
         job = v.q.enqueue(execute_weka_predict, args=(current_user.username,exp_id,filename,path,fil_name))
@@ -353,6 +353,6 @@ def download_result(name):
     """
     upload_folder = "/tmp/"+current_user.username+"/"
     try:
-        return send_file(upload_folder+name, attachment_filename="prediction.csv", as_attachment=True)
+        return send_file(upload_folder+name, attachment_filename=name, as_attachment=True)
     except FileNotFoundError:
         abort(404)

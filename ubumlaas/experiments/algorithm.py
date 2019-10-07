@@ -205,8 +205,13 @@ def execute_weka_predict(username,exp_id,filename, model_path,fil_name):
 
     create_app('subprocess') #No generate new workers
     upload_folder = "/tmp/"+username+"/"
-
+    from ubumlaas.models import Experiment, load_experiment
+    experiment = load_experiment(exp_id)
+    exp_config = json.loads(experiment.exp_config)
     file_df = get_dataframe_from_file(upload_folder, filename)
+
+    file_df = file_df[exp_config["columns"]]
+    
     
     try:
         jvm.start(packages=True)
@@ -214,11 +219,9 @@ def execute_weka_predict(username,exp_id,filename, model_path,fil_name):
         model = Classifier(jobject=serialization.read(model_path))
         
 
-        from ubumlaas.models import Experiment, load_experiment
-        experiment = load_experiment(exp_id)
         
-
-        exp_config = json.loads(experiment.exp_config)
+        
+        
         # Open experiment configuration
         data = get_dataframe_from_file("ubumlaas/datasets/"+username +
                            "/", experiment.data)
