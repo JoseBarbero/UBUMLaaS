@@ -96,7 +96,7 @@
                 generateForm(JSON.parse(result.alg_config));
             },
             error: function(result){
-                console.log(result);
+                generateForm({})
             }
         })
     }
@@ -171,7 +171,7 @@
                 data: "alg_typ=" + $("#alg_typ").val(),
                 success: function (result) {
                     $("#show_algorithms").html(result);
-                    load_config();
+                    console.log("Alg_Typ ejecutando");
                 },
                 error: function (result) {
                     alert("Failed")
@@ -220,7 +220,16 @@
                 target.prop('checked', true);
             }
         }
+        configure_algorithm();
     }
+
+    function configure_algorithm(){
+        let alg_typ = $("#alg_typ");
+        alg_typ.val(algorithm_selected.alg_typ);
+        alg_typ.change();
+        config_algorithm();
+    }
+
     function config_algorithm(){
         let alg_name = $("#alg_name");
         if(alg_name.val() === null){
@@ -229,12 +238,11 @@
         }
         alg_name.val(algorithm_selected.alg_name);
         alg_name.change();
-        load_config();
         add_algorithm_parameters();
     }
 
     function add_algorithm_parameters(){        
-        if($.trim($("#form_config_alg").html())===""){
+        if($(".timeout-finished").length == 0){
             setTimeout(add_algorithm_parameters, 10);
             return;
         }
@@ -252,14 +260,15 @@
                     p.change();
                 }
             }else{
-                p.prop("checked",alg_config[i]);
-                console.log(p.toArray()[0].id+": "+alg_config[i]);
+                //p.prop("checked",alg_config[i]);
                 if(alg_config[i] != base_alg_config[i].default){
-                    p.click();
+                    p.next().click();
                 }
             }
         });
     }
+
+    
     $("document").ready(function(){
         experiment = {{ experiment | safe }};
         exp_config = JSON.parse(experiment.exp_config);
@@ -267,19 +276,14 @@
         let dataset = $("#data");
         dataset.val(experiment.data);
         dataset.change();
-        //Try to set dataset configuration:
-        set_dataset_parameters();
         //Slider
         let slider = $("#train_slider");
         slider.val(exp_config.split);
         slider.trigger("input");
         //Algorithm
         algorithm_selected = experiment.alg;
-        let alg_typ = $("#alg_typ");
-        alg_typ.val(algorithm_selected.alg_typ);
-        alg_typ.change();
-        config_algorithm();
-        add_algorithm_parameters();
+        //Try to set dataset configuration:
+        set_dataset_parameters();        
     });
 </script>
 {% endif %}
