@@ -39,16 +39,167 @@
 
                 {% if experiment.state == 2  %}
                     <h3 class="text-center">Error</h3>
-                
+                    <p class="text-danger" ><i class="material-icons" >
+                        error
+                        </i>{{ experiment.result }}</p>
                 {% elif experiment.state == 1 %}
                     <h3 class="text-center">Finished</h3>
-                {% endif %}
-
-                {{experiment.result}}
+                    <div class="container-fluid" id="success_result">
+                    
+                    </div>
+                {% endif %}                
 
             {% endif %}
         </div>
     </div>
 </div>
 
+{% endblock %}
+{% block js %}
+<script src="{{ url_for('static', filename="js/config_alg.js") }}"></script>
+<script>
+    {% if experiment.state == 1 %}
+        to_render = [];
+        $("document").ready(function(){
+            result = {{ experiment.result|safe  }};
+
+            var place_in = $("#success_result");
+            place_in.html("");
+            var parameters = Object.keys(result);
+            var row_number = 0;
+            parameters.forEach(function(i){
+                row_number += 1;
+                let parameter = result[i];
+                let row = $("<div></div>", {class: "row"});
+                let block = $("<div></div>", {id: i, class: "col-12"});
+                if (row_number%2 == 1){
+                    block.addClass("row-odd");
+                }
+                row.append(block);
+                block.html("<label for=\""+i+"_value"+"\">"+
+                                i+
+                            "</label>");
+                block.append($("<a onClick=\"toggle_click('"+i+"_chart"+"','"+i+"_not_exists"+"')\" href=\"#a\" id=\""+i+"_open"+"\">"+
+                                    "<i class=\"material-icons\" style=\"float: right;\">"+
+                                        "arrow_drop_down_circle"+
+                                    "</i>"+
+                            "</a>"));
+
+                let div = $("<div></div>",{class: "col-12 row", id: i+"_chart", style: "display: none;"});
+                switch(i){
+                    case "AUC":
+                        result[i] = 1-result[i];
+                    case "max_error":
+                    case "mean_score_error":
+                    case "mean_absolute_error":
+                    case "kappa":
+                    case "accuracy":                    
+                    case "f1_score":
+                        let k = $("<p></p>", {class: "col-md-5 font-weight-bold"});
+                        let v = $("<p></p>", {class: "col-md-7"});
+                        k.text("Value:");
+                        v.text(result[i]);
+                        div.append(k, v);
+                        break;
+                    case "ROC":
+                        let label = "AUC="+(1-result["AUC"]);
+                        var canvas = $("<canvas></canvas>", {id:i+"_canvas", width: "100%"});
+                        var ctx = canvas.get(0).getContext('2d');
+                        
+                        var myChart = new Chart(ctx, {
+                            type: 'line',
+                            data: {
+                                datasets: [{
+                                    label: label,
+                                    data: x_y_convert(result[i]),
+                                    backgroundColor: convertHex(GLOBAL_STYLE.getPropertyValue('--primary'),50),
+                                    borderColor: GLOBAL_STYLE.getPropertyValue('--primary'),
+
+                                }]
+                            },
+                            options: {
+                                elements: {
+                                    point: {
+                                        radius: 0
+                                    }
+                                },                                
+                                scales: {
+                                    xAxes: [{
+                                        type: "linear"
+                                    }],
+                                    yAxes: [{
+                                        ticks: {
+                                            beginAtZero: true
+                                        }
+                                    }]
+                                }
+                            }
+                        })
+                        div.append(canvas);
+                        break;
+                    case "confussion_matrix":
+                        var canvas = $("<div></div>", {id:i+"_canvas", width: "100%"});
+                        let opt = {
+                            chart: {
+                                type: "heatmap"
+                            },
+                            dataLabels: {
+                                style: { colors: ["black"]}
+                            },
+                            colors: [$.trim(GLOBAL_STYLE.getPropertyValue('--primary'))],
+                            series: get_series(result[i]),
+                            xaxis: {
+                                labels: {
+                                    show: false
+                                }
+                            },
+                            yaxis: {
+                                show: false
+                            },
+                            plotOptions: {
+                                heatmap: {
+                                    distributed: true
+                                }
+                            }
+                        }
+                        var chart = new ApexCharts(canvas.get(0), opt);
+                        to_render.push(chart);
+                        div.append(canvas);
+                        break;                  
+                }
+                row.append(div);
+                place_in.append(row);
+            });
+            to_render.forEach(function(e){
+                e.render();
+            });
+        });
+    {% endif %}
+
+    function x_y_convert(xy){
+        let data = [];
+        for(let i=0; i<xy[0].length; i++){
+            data.push({x: xy[1][i],y:xy[0][i]});
+        }
+        return data;
+    }
+    function convertHex(hex,opacity){
+        hex = hex.replace('#','');
+        r = parseInt(hex.substring(0,2), 16);
+        g = parseInt(hex.substring(2,4), 16);
+        b = parseInt(hex.substring(4,6), 16);
+
+        let result = 'rgba('+r+','+g+','+b+','+opacity/100+')';
+        return result;
+    }
+
+    function get_series(matrix){
+        let data = [];
+        for(let i=matrix.length-1; i>=0; i--){
+            data.push({data: matrix[i]});
+        }
+        return data;
+    }
+    
+</script>
 {% endblock %}
