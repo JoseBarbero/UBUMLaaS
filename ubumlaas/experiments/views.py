@@ -19,8 +19,8 @@ import shutil
 import pickle
 import datetime
 
-from ubumlaas.experiments.algorithm import task_skeleton
-
+from ubumlaas.experiments.algorithm import task_skeleton, execute_weka_predict
+from ubumlaas.util import get_dataframe_from_file
 experiments = Blueprint("experiments", __name__)
 
 
@@ -108,7 +108,7 @@ def change_column_list():
     form_e = ExperimentForm()
     dataset = form_e.data.data
     upload_folder = "ubumlaas/datasets/"+current_user.username+"/"
-    df = pd.read_csv(upload_folder+dataset)
+    df = get_dataframe_from_file(upload_folder, dataset)
     pretty_df = generate_df_html(df)
     to_return = {"html": render_template("blocks/show_columns.html", data=df),
                  "df": generate_df_html(df)}
@@ -286,33 +286,46 @@ def start_predict():
     exp_id = request.form.get('exp_id')
     filename = request.form.get('filename')
     upload_folder = "/tmp/"+current_user.username+"/"
+    fil_name = "predict_"+exp_id+"-"+ datetime.datetime.now().strftime("%d_%m_%Y-%H_%M_%S")+".csv"
 
-    if filename.split(".")[-1] == "csv":
-        file_df = pd.read_csv(upload_folder + filename)
-    elif filename.split(".")[-1] == "xls":
-        file_df = pd.read_excel(upload_folder + filename)
 
     exp = load_experiment(exp_id)
 
     alg = get_algorithm_by_name(exp.alg_name)
     path = "ubumlaas/models/"+current_user.username+"/"+"{}.model".format(exp_id)
     if alg.lib == "sklearn":
+        # Open experiment configuration
+        dataset = get_dataframe_from_file("ubumlaas/datasets/"+current_user.username +
+                           "/", exp.data)
+        file_df = get_dataframe_from_file(upload_folder, filename)
+        
+        
         model = pickle.load(open(path,'rb'))
         res = pd.DataFrame(model.predict(file_df))
         fil = pd.concat([file_df, res], axis=1)
 
+        delete_file()
+        if not os.path.exists(upload_folder):
+            os.makedirs(upload_folder)
+        fil.to_csv(r''+ upload_folder + fil_name)
+
     elif alg.lib == "weka":
-        p
+        job = v.q.enqueue(execute_weka_predict, args=(current_user.username,exp_id,filename,path,fil_name))
+        while job.result is None:
+            time.sleep(2)
+        fil= get_dataframe_from_file(upload_folder, fil_name)
+        
     else:
         return "", 400
 
-    delete_file()
-    if not os.path.exists(upload_folder):
-            os.makedirs(upload_folder)
-    fil_name = "predict_"+exp_id+"-"+ datetime.datetime.now().strftime("%d_%m_%Y-%H_%M_%S")+".csv"
-    fil.to_csv(r''+ upload_folder + fil_name)
+
+    
+    
     df_html = generate_df_html(fil)
     return render_template("blocks/predict_result.html", data=df_html,file=fil_name)
+
+
+
 
 
 @login_required

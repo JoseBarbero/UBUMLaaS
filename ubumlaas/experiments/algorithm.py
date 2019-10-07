@@ -25,8 +25,10 @@ from weka.core.classes import Random
 from weka.classifiers import Evaluation
 from weka.core.converters import Loader
 import weka.core.serialization as serialization
+from ubumlaas.util import get_dataframe_from_file
 
 import tempfile
+import shutil
 
 
 def task_skeleton(experiment, current_user):
@@ -45,8 +47,8 @@ def task_skeleton(experiment, current_user):
     try:
         exp_config = json.loads(experiment["exp_config"])
         # Open experiment configuration
-        data = pd.read_csv("ubumlaas/datasets/"+current_user["username"] +
-                           "/"+experiment['data'])
+        data = get_dataframe_from_file("ubumlaas/datasets/"+current_user["username"] +"/"
+                           ,experiment['data'])
         X = data.loc[:, exp_config["columns"]]
         y = data[exp_config["target"]]
         # Split dataset (if unsupervised it will be modified)
@@ -198,3 +200,59 @@ def create_weka_dataset(X, y):
     finally:
         temp.close()
     return data
+
+def execute_weka_predict(username,exp_id,filename, model_path,fil_name):
+
+    create_app('subprocess') #No generate new workers
+    upload_folder = "/tmp/"+username+"/"
+
+    file_df = get_dataframe_from_file(upload_folder, filename)
+    
+    try:
+        jvm.start(packages=True)
+
+        model = Classifier(jobject=serialization.read(model_path))
+        
+
+        from ubumlaas.models import Experiment, load_experiment
+        experiment = load_experiment(exp_id)
+        
+
+        exp_config = json.loads(experiment.exp_config)
+        # Open experiment configuration
+        data = get_dataframe_from_file("ubumlaas/datasets/"+username +
+                           "/", experiment.data)
+        y_uniques = data[exp_config["target"]].unique()
+        y_uniques.sort()
+        class_attribute_name = exp_config["target"]
+        
+        try:
+            #Create new temporal file
+            temp = tempfile.NamedTemporaryFile(suffix='.csv')
+            #Add class column with "?" values
+            file_df[class_attribute_name]= ["?"]*len(file_df.index)
+            file_df.to_csv(temp.name, index=None)
+            print(file_df)
+            loader = Loader(classname="weka.core.converters.CSVLoader",options=["-L", "{}:{}".format(class_attribute_name,
+                                 ",".join(map(str,y_uniques)))])
+            data = loader.load_file(temp.name)
+            # Last column of data is target
+            data.class_is_last()
+        finally:
+            temp.close()
+        
+    
+        y_pred = []
+        for instance in data:
+            pred = model.classify_instance(instance)
+            y_pred.append(data.class_attribute.value(int(pred)))
+        
+        file_df[class_attribute_name] = y_pred
+        shutil.rmtree(upload_folder)
+        if not os.path.exists(upload_folder):
+            os.makedirs(upload_folder)
+
+        file_df.to_csv(upload_folder + fil_name, index=None)
+    finally:
+        jvm.stop()
+    return True
