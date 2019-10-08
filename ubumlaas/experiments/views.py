@@ -177,7 +177,7 @@ def generate_df_html(df,num=6):
                 {'selector': 'td',
                     'props': [('font-family', 'verdana')]}]
         ).hide_index()
-    html_table = df.to_html(classes=["table", "table-borderless", "table-striped", "table-hover"], col_space="100px", max_rows=num, justify="center").replace("border=\"1\"", "border=\"0\"").replace('<tr>', '<tr align="center">')
+    html_table = df.to_html(classes=["table", "table-borderless", "table-striped", "table-hover"], table_id="dfdatatable",col_space="100px", max_rows=num, justify="center").replace("border=\"1\"", "border=\"0\"").replace('<tr>', '<tr align="center">')
     return html_table
 
 
