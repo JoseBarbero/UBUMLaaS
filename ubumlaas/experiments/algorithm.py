@@ -235,7 +235,6 @@ def execute_weka_predict(username,exp_id,filename, model_path,fil_name):
             #Add class column with "?" values
             file_df[class_attribute_name]= ["?"]*len(file_df.index)
             file_df.to_csv(temp.name, index=None)
-            print(file_df)
             loader = Loader(classname="weka.core.converters.CSVLoader",options=["-L", "{}:{}".format(class_attribute_name,
                                  ",".join(map(str,y_uniques)))])
             data = loader.load_file(temp.name)

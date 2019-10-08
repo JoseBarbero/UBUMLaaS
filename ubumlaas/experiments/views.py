@@ -147,7 +147,7 @@ def add_new_dataset():
     else:
         return "Error", 400
 
-def generate_df_html(df):
+def generate_df_html(df,num=6):
     """Generates an html table from a dataframe.
     
     Arguments:
@@ -168,7 +168,7 @@ def generate_df_html(df):
                 {'selector': 'td',
                     'props': [('font-family', 'verdana')]}]
         ).hide_index()
-    html_table = df.to_html(classes=["table", "table-borderless", "table-striped", "table-hover"], col_space="100px", max_rows=6, justify="center").replace("border=\"1\"", "border=\"0\"").replace('<tr>', '<tr align="center">')
+    html_table = df.to_html(classes=["table", "table-borderless", "table-striped", "table-hover"], col_space="100px", max_rows=num, justify="center").replace("border=\"1\"", "border=\"0\"").replace('<tr>', '<tr align="center">')
     return html_table
 
 
@@ -321,7 +321,7 @@ def start_predict():
 
     
     
-    df_html = generate_df_html(fil)
+    df_html = generate_df_html(fil,num=None)
     return render_template("blocks/predict_result.html", data=df_html,file=fil_name)
 
 
