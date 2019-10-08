@@ -48,8 +48,8 @@
                             <th scope="col">Init Date</th>
                             <th scope="col">Finish Date</th>
                             <th scope="col">State</th>
-                            <th scope="col">View Result</th>
-                            <th scope="col">Reuse experiment</th>
+                            <th scope="col" class="no-sort">View Result</th>
+                            <th scope="col" class="no-sort">Reuse experiment</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -99,7 +99,11 @@
 <script>
 $(document).ready(function() {
     $('#exper').DataTable( {
-        "order": [[ 0, "desc" ]]
+        "order": [[ 0, "desc" ]],
+        "columnDefs": [ {
+          "targets": 'no-sort',
+          "orderable": false,
+    } ]
     } );
 } );
 </script>
