@@ -328,22 +328,26 @@ def start_predict():
         exp_config = json.loads(exp.exp_config)
 
         file_df = get_dataframe_from_file(upload_folder, filename)
-        file_df = file_df[exp_config["columns"]]
+        prediction_df = file_df[exp_config["columns"]]
         
         model = pickle.load(open(path,'rb'))
-        res = pd.DataFrame(model.predict(file_df))
-        fil = pd.concat([file_df, res], axis=1)
+        predictions = model.predict(prediction_df)
+        if exp_config["target"] in file_df:
+            prediction_df[exp_config["target"]] = file_df[exp_config["target"]]
+        prediction_df["prediction_"+exp_config["target"]] = predictions
 
         delete_file()
         if not os.path.exists(upload_folder):
             os.makedirs(upload_folder)
-        fil.to_csv(upload_folder + fil_name, index = None)
+        prediction_df.to_csv(upload_folder + fil_name, index = None)
 
     elif alg.lib == "weka":
         job = v.q.enqueue(execute_weka_predict, args=(current_user.username,exp_id,filename,path,fil_name))
         while job.result is None:
             time.sleep(2)
-        fil= get_dataframe_from_file(upload_folder, fil_name)
+        if job.result is False:
+            return "", 400
+        prediction_df = get_dataframe_from_file(upload_folder, fil_name)
         
     else:
         return "", 400
@@ -351,7 +355,7 @@ def start_predict():
 
     
     
-    df_html = generate_df_html(fil,num=None)
+    df_html = generate_df_html(prediction_df,num=None)
     return render_template("blocks/predict_result.html", data=df_html,file=fil_name)
 
 
