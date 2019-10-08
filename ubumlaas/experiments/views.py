@@ -1,5 +1,6 @@
 from flask import \
-    (render_template, url_for, flash, redirect, request, Blueprint, jsonify, send_file, abort, safe_join)
+    (render_template, url_for, flash, redirect, request, Blueprint, jsonify,
+     send_file, abort, safe_join)
 import variables as v
 from ubumlaas.models import \
     (User, Experiment, load_user, load_experiment, get_algorithm_by_name)
@@ -25,7 +26,7 @@ experiments = Blueprint("experiments", __name__)
 @experiments.route("/new_experiment", methods=["GET"])
 def new_experiment():
     """Render a empty experiment page.
-    
+
     Returns:
         str -- HTTP response with rendered page.
     """
@@ -37,9 +38,15 @@ def new_experiment():
 
     form_p = DatasetParametersForm()
 
+    exp = request.args.get("exp", None)
+    experiment = None
+    if exp is not None:
+        experiment = load_experiment(exp).to_dict()
+
     return render_template("experiment_form.html", form_e=form_e,
                            form_d=form_d, form_p=form_p,
-                           title="New experiment")
+                           title="New experiment", experiment=experiment)
+
 
 
 @login_required
@@ -67,11 +74,12 @@ def launch_experiment():
 
     return redirect(url_for("experiments.new_experiment"))
 
+
 @login_required
 @experiments.route("/update_dataset_list", methods=["POST"])
 def update_dataset_list():
     """Update dataset list
-    
+
     Returns:
         str -- HTTP response with rendered dataset selector
     """
@@ -97,7 +105,7 @@ def change_alg():
 @experiments.route("/update_column_list", methods=["POST"])
 def change_column_list():
     """Render dataset form configuration and dataset head.
-    
+
     Returns:
         str -- HTTP response with JSON
     """
@@ -105,16 +113,16 @@ def change_column_list():
     dataset = form_e.data.data
     upload_folder = "ubumlaas/datasets/"+current_user.username+"/"
     df = pd.read_csv(upload_folder+dataset)
-    pretty_df = generate_df_head_html(df)
+    pretty_df = generate_df_html(df)
     to_return = {"html": render_template("blocks/show_columns.html", data=df),
-                 "df": generate_df_head_html(df)}
+                 "df": generate_df_html(df)}
     return jsonify(to_return)
 
 
 @login_required
 @experiments.route("/new_experiment/new_dataset", methods=["POST"])
 def add_new_dataset():
-    """Upload a new dataset.
+    """Uploads a new dataset and displays it as html table.
 
     Returns:
         str -- HTTP response 200 if dataset is upload or 400  if failed.
@@ -137,20 +145,19 @@ def add_new_dataset():
 
         file_df = form_d.to_dataframe(filename, upload_folder)
 
-        pretty_df = generate_df_head_html(file_df)
-
-        return render_template("blocks/show_dataset.html", data=pretty_df,
+        df_html = generate_df_html(file_df)
+        return render_template("blocks/show_dataset.html", data=df_html,
                                exists=exists, name=filename)
     else:
         return "Error", 400
 
 
-def generate_df_head_html(df):
-    """Generate a html from dataframe head.
-    
+def generate_df_html(df):
+    """Generates an html table from a dataframe.
+
     Arguments:
         df {dataframe} -- pandas dataframe with dataset
-    
+
     Returns:
         str -- html dataframe
     """
@@ -166,10 +173,8 @@ def generate_df_head_html(df):
                 {'selector': 'td',
                     'props': [('font-family', 'verdana')]}]
         ).hide_index()
-
-    return df.to_html(classes=["table-responsive", "table-borderless",
-                               "table-striped", "table-hover", "table-sm"],
-                      max_rows=6, justify="justify")
+    html_table = df.to_html(classes=["table", "table-borderless", "table-striped", "table-hover"], col_space="100px", max_rows=6, justify="center").replace("border=\"1\"", "border=\"0\"").replace('<tr>', '<tr align="center">')
+    return html_table
 
 
 @login_required
@@ -200,14 +205,15 @@ def form_generator():
     alg = get_algorithm_by_name(alg_name)
     return jsonify({"alg_config": alg.config})
 
+
 @login_required
 @experiments.route("/experiment/<int:id>/download_model")
 def download_model(id):
     """Download model file using the experiment id
-    
+
     Arguments:
         id int -- experiment id
-    
+
     Returns:
         file -- model file
     """
@@ -216,12 +222,34 @@ def download_model(id):
 
     if not exp or exp.idu != current_user.id:
         abort(404)
- 
+
     path = safe_join("models/"+current_user.username+"/","{}.model".format(id))
 
     download_filename = "UBUMLaaS_{}_{}.model".format(id, get_algorithm_by_name(exp.alg_name).lib)
-    
+
     try:
         return send_file(path, attachment_filename=download_filename, as_attachment=True)
     except FileNotFoundError:
         abort(404)
+
+
+@login_required
+@experiments.route("/experiment/<int:id>/reuse")
+def reuse_experiment(id):
+    exp = load_experiment(id)
+
+    if not exp or exp.idu != current_user.id:
+        abort(404)
+
+    form_e = ExperimentForm()
+
+    form_e.dataset_list()
+    form_e.process()
+
+    form_d = DatasetForm()
+
+    form_p = DatasetParametersForm()
+
+    return render_template("experiment_form.html", form_e=form_e,
+                           form_d=form_d, form_p=form_p,
+                           title="New experiment")

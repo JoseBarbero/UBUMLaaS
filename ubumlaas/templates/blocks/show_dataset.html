@@ -1,11 +1,11 @@
 {% if exists %}
 <div class="alert alert-warning alert-dismissible fade show" role="alert">
-    <strong>Dataset already exists!</strong> Its is saved with the name: {{name}}.
+    <strong>Dataset already exists!</strong> It's been saved with the name: {{name}}.
     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
         <span aria-hidden="true">&times;</span>
     </button>
 </div>
 {% endif %}
 {% if data %}
-    {{data | safe}}
+    {{ data | safe }}
 {% endif %}

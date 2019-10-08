@@ -229,7 +229,7 @@ def classification_metrics(y_test, y_pred, y_score):
 
     # First confuse matrix
     conf_matrix = sklearn.metrics.confusion_matrix(y_test, y_pred)
-    score["confussion matrix"] = conf_matrix.tolist()
+    score["confussion_matrix"] = conf_matrix.tolist()
     y_b_score = y_score.max(axis=1)
     if conf_matrix.shape[0] == 2:
         # Boolean metrics
@@ -243,7 +243,7 @@ def classification_metrics(y_test, y_pred, y_score):
         score["AUC"] = sklearn.metrics.auc(fpr, tpr)
         score["kappa"] = sklearn.metrics.cohen_kappa_score(y_test, y_pred)
         score["accuracy"] = sklearn.metrics.accuracy_score(y_test, y_pred)
-        score["f1 score"] = sklearn.metrics.f1_score(y_test, y_pred)
+        score["f1_score"] = sklearn.metrics.f1_score(y_test, y_pred)
 
     return score
 
