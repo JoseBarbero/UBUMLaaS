@@ -18,4 +18,18 @@
 
 .material-icons {
     font-size: inherit !important;
+
+#loader-div {
+    background-color: var(--primary);
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    z-index: 999;
+}
+
+#loader {
+    position: absolute;
+    left: 40%;
+    top: 36%;
+
 }

@@ -16,9 +16,12 @@ import json
 from urllib.parse import unquote
 import calendar
 import time
+import shutil
+import pickle
+import datetime
 
-from ubumlaas.experiments.algorithm import task_skeleton
-
+from ubumlaas.experiments.algorithm import task_skeleton, execute_weka_predict
+from ubumlaas.util import get_dataframe_from_file
 experiments = Blueprint("experiments", __name__)
 
 
@@ -112,7 +115,7 @@ def change_column_list():
     form_e = ExperimentForm()
     dataset = form_e.data.data
     upload_folder = "ubumlaas/datasets/"+current_user.username+"/"
-    df = pd.read_csv(upload_folder+dataset)
+    df = get_dataframe_from_file(upload_folder, dataset)
     pretty_df = generate_df_html(df)
     to_return = {"html": render_template("blocks/show_columns.html", data=df),
                  "df": generate_df_html(df)}
@@ -152,7 +155,8 @@ def add_new_dataset():
         return "Error", 400
 
 
-def generate_df_html(df):
+def generate_df_html(df,num=6):
+
     """Generates an html table from a dataframe.
 
     Arguments:
@@ -173,7 +177,7 @@ def generate_df_html(df):
                 {'selector': 'td',
                     'props': [('font-family', 'verdana')]}]
         ).hide_index()
-    html_table = df.to_html(classes=["table", "table-borderless", "table-striped", "table-hover"], col_space="100px", max_rows=6, justify="center").replace("border=\"1\"", "border=\"0\"").replace('<tr>', '<tr align="center">')
+    html_table = df.to_html(classes=["table", "table-borderless", "table-striped", "table-hover"], col_space="100px", max_rows=num, justify="center").replace("border=\"1\"", "border=\"0\"").replace('<tr>', '<tr align="center">')
     return html_table
 
 
@@ -253,3 +257,133 @@ def reuse_experiment(id):
     return render_template("experiment_form.html", form_e=form_e,
                            form_d=form_d, form_p=form_p,
                            title="New experiment")
+ 
+@experiments.route("/experiment/<id>/predict_dataset",methods=["POST"])
+def add_predict_dataset(id):
+    """Uploads a new dataset and displays it as html table.
+
+    Returns:
+        str -- HTTP response 200 if dataset is upload or 400  if failed.
+    """
+    form_pr = DatasetForm()
+    upload_folder = "/tmp/"+current_user.username+"/"
+
+    if form_pr.validate():
+        filename = secure_filename(form_pr.dataset.data.filename)
+        if not os.path.exists(upload_folder):
+            os.makedirs(upload_folder)
+
+        exists = os.path.exists(upload_folder + filename)
+        if(exists):
+            basename, ext = os.path.splitext(os.path.basename(filename))
+
+            filename = basename+"-"+str(calendar.timegm(time.gmtime()))+ext
+
+        form_pr.dataset.data.save(upload_folder + filename)
+
+        file_df = form_pr.to_dataframe(filename, upload_folder)
+
+        df_html = generate_df_html(file_df)
+        return render_template("blocks/show_dataset.html", data=df_html,
+                               exists=exists, name=filename)
+    else:
+        return "Error", 400
+
+@login_required
+@experiments.route("/experiment/<id>/predict")
+def predict(id):
+    """Render predict html.
+    
+    Arguments:
+        id {int} -- experiment identificator.
+    
+    Returns:
+        str -- render predict html.
+    """
+    form_pr = DatasetForm()
+
+    return render_template("predict.html", form_pr=form_pr,id=id,title="Predict")
+
+
+@login_required
+@experiments.route("/experiment/predict",methods=['POST'])
+def start_predict():
+    """Start prediction
+    
+    Returns:
+        [type] -- [description]
+    """
+    exp_id = request.form.get('exp_id')
+    filename = request.form.get('filename')
+    upload_folder = "/tmp/"+current_user.username+"/"
+    fil_name = "predict_"+exp_id+"-"+ datetime.datetime.now().strftime("%d_%m_%Y-%H_%M_%S")+".csv"
+
+
+    exp = load_experiment(exp_id)
+
+    alg = get_algorithm_by_name(exp.alg_name)
+    path = "ubumlaas/models/"+current_user.username+"/"+"{}.model".format(exp_id)
+    if alg.lib == "sklearn":
+        # Open experiment configuration
+        exp_config = json.loads(exp.exp_config)
+
+        file_df = get_dataframe_from_file(upload_folder, filename)
+        file_df = file_df[exp_config["columns"]]
+        
+        model = pickle.load(open(path,'rb'))
+        res = pd.DataFrame(model.predict(file_df))
+        fil = pd.concat([file_df, res], axis=1)
+
+        delete_file()
+        if not os.path.exists(upload_folder):
+            os.makedirs(upload_folder)
+        fil.to_csv(upload_folder + fil_name, index = None)
+
+    elif alg.lib == "weka":
+        job = v.q.enqueue(execute_weka_predict, args=(current_user.username,exp_id,filename,path,fil_name))
+        while job.result is None:
+            time.sleep(2)
+        fil= get_dataframe_from_file(upload_folder, fil_name)
+        
+    else:
+        return "", 400
+
+
+    
+    
+    df_html = generate_df_html(fil,num=None)
+    return render_template("blocks/predict_result.html", data=df_html,file=fil_name)
+
+
+
+
+
+@login_required
+@experiments.route("/experiment/delete_file",methods=['DELETE'])
+def delete_file():
+    """Delete user temporal folder
+    
+    Returns:
+        "" -- 
+    """
+    upload_folder = "/tmp/"+current_user.username+"/"
+    shutil.rmtree(upload_folder)
+    return "",200
+
+@login_required
+@experiments.route("/experiment/<name>/download_result")
+def download_result(name):
+    """Download csv file with prediction
+    
+    Arguments:
+        name {str} -- csv file name
+    
+    Returns:
+        send file -- download file
+    """
+    upload_folder = "/tmp/"+current_user.username+"/"
+    try:
+        return send_file(upload_folder+name, attachment_filename=name, as_attachment=True)
+    except FileNotFoundError:
+        abort(404)
+
