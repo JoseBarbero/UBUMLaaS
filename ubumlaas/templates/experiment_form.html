@@ -45,6 +45,7 @@
             <div class="form-group">
                 {{ form_p.train_partition.label(class="form-control-label mt-4 h5") }}
                 {{ form_p.train_partition(id="train_slider", class="form-control custom-range", min=1, max=99) }}
+                <div id="train_partition_feedback" class="invalid-feedback" style="display: hidden">Train partition cannot be 0</div>
                 <label id="train_value" , class="align-left">Train value:</label>
                 <label id="test_value" , class="align-right">Test value:</label>
             </div>
@@ -56,6 +57,7 @@
                 <div class="form-group control-group">
                     {{ form_e.alg_typ.label(class="form-control-label mt-4 h5") }}
                     {{ form_e.alg_typ(class="form-control") }}
+                    <div id="alg_typ_feedback" class="invalid-feedback" style="display: hidden">You must select an algorithm type</div>
                 </div>
                 <div id="show_algorithms" class="form-group" style="text-align: center;">
                     {% include 'blocks/show_algorithms.html' %}
@@ -83,6 +85,7 @@
 {% block js %}
 <script src="{{ url_for('static', filename="js/config_alg.js") }}"></script>
 <script src="{{ url_for('static', filename="js/config_dataset.js") }}"></script>
+<script src="{{ url_for('static', filename="js/validations.js") }}"></script>
 
 <script>
     function load_config(){
@@ -96,7 +99,7 @@
                 generateForm(JSON.parse(result.alg_config));
             },
             error: function(result){
-                console.log(result);
+                generateForm({})
             }
         })
     }
@@ -121,7 +124,6 @@
 
     $("form#submit_completed_experiment").submit(function (e) {
         e.preventDefault();
-        //TODO: Verify all
         var alg_name = $("#alg_name").val();
         var data = $("#data").val();        
         var alg_config = encodeURIComponent(JSON.stringify(get_config_form()));
@@ -142,6 +144,7 @@
     });
 
     $("form#form_dataset").submit(function (e) {
+        verify_all();
         e.preventDefault();
         var formData = new FormData(this)
         $.ajax({
@@ -170,15 +173,16 @@
                 contentType: 'application/x-www-form-urlencoded',
                 data: "alg_typ=" + $("#alg_typ").val(),
                 success: function (result) {
-                    $("#show_algorithms").html(result);
-                    load_config();
+                    $("#show_algorithms").html(result);        
                 },
                 error: function (result) {
-                    alert("Failed")
+                    console.log("Fatal error");
+                    console.log(result);
                 },
                 cache: false,
                 processData: false
             });
+            verify_all();
         });
 
         $("#dataset").change(function(){
@@ -200,4 +204,91 @@
         test_perc.innerHTML = "Test: " + (100 - this.value) + " %";
     }
 </script>
+
+{% if experiment != none %}
+<script>
+    function set_dataset_parameters(){
+        if(dataset_columns.length === 0){
+            setTimeout(set_dataset_parameters, 10);
+            return;
+        }
+         
+        for(let i=0; i<dataset_columns.length; i++){
+            var use = $("#col"+i+"_use");
+            var target = $("#col"+i+"_target");
+            use.prop('checked', false);
+            target.prop('checked', false);
+            if (exp_config.columns.includes(dataset_columns[i])){
+                use.prop('checked', true);
+            }else if (exp_config.target === dataset_columns[i]){
+                target.prop('checked', true);
+            }
+        }
+        configure_algorithm();
+    }
+
+    function configure_algorithm(){
+        let alg_typ = $("#alg_typ");
+        alg_typ.val(algorithm_selected.alg_typ);
+        alg_typ.change();
+        config_algorithm();
+    }
+
+    function config_algorithm(){
+        let alg_name = $("#alg_name");
+        if(alg_name.val() === null){
+            setTimeout(config_algorithm, 10);
+            return;
+        }
+        alg_name.val(algorithm_selected.alg_name);
+        alg_name.change();
+        add_algorithm_parameters();
+    }
+
+    function add_algorithm_parameters(){        
+        if($(".timeout-finished").length == 0){
+            setTimeout(add_algorithm_parameters, 10);
+            return;
+        }
+        base_alg_config = JSON.parse(algorithm_selected.config);
+        alg_config = JSON.parse(experiment.alg_config);
+        var parameters = Object.keys(base_alg_config);
+        var sel_parameters = Object.keys(alg_config);
+        parameters.forEach(function(i){
+            var p = $("#"+i+"_value");
+            if(base_alg_config[i].type != "boolean"){
+                if(!sel_parameters.includes(i)){
+                    change_validate(i);
+                }else{
+                    p.val(alg_config[i]);
+                    p.change();
+                }
+            }else{
+                //p.prop("checked",alg_config[i]);
+                if(alg_config[i] != base_alg_config[i].default){
+                    p.next().click();
+                }
+            }
+        });
+    }
+
+    
+    $("document").ready(function(){
+        experiment = {{ experiment | safe }};
+        exp_config = JSON.parse(experiment.exp_config);
+        //Dataset
+        let dataset = $("#data");
+        dataset.val(experiment.data);
+        dataset.change();
+        //Slider
+        let slider = $("#train_slider");
+        slider.val(exp_config.split);
+        slider.trigger("input");
+        //Algorithm
+        algorithm_selected = experiment.alg;
+        //Try to set dataset configuration:
+        set_dataset_parameters();        
+    });
+</script>
+{% endif %}
 {% endblock %}

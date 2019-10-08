@@ -21,7 +21,6 @@
 
 $("document").ready(function(){
     $(".open_click").click(function(e){
-        /** */
         e.preventDefault();
     })
 })
@@ -36,7 +35,7 @@ function change_value(e){
     let span = $("#"+e+"_span");
     let text = "("+value.val()+")"
     if (value.attr('type') == 'checkbox'){
-        text = "("+!value.is(":checked")+")"
+        text = "("+value.is(":checked")+")"
     }
     span.text(text);
 }
@@ -134,6 +133,7 @@ function generateForm(alg_config){
         block.append(content);
         place_in.append(row);
     });
+    place_in.append($("<div></div>", {class: "timeout-finished"}));
 }
 
 function give_me_activator(content, i){

@@ -16,6 +16,9 @@
     margin-bottom: 0.4rem;
 }
 
+.material-icons {
+    font-size: inherit !important;
+
 #loader-div {
     background-color: var(--primary);
     width: 100%;
@@ -28,4 +31,5 @@
     position: absolute;
     left: 40%;
     top: 36%;
+
 }
