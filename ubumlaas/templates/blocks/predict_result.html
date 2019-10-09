@@ -6,3 +6,12 @@
 <div class="col-md-6 center">
     <a class="btn btn-primary btn-block btn-lg mt-4" role="button" href="{{url_for("experiments.download_result",name=file)}}">Download</a>
 </div>
+
+{% block js %}
+<script>
+
+    $($($("#div_res").children()[0]).children()[0]).DataTable();
+
+</script>
+
+{% endblock js %}

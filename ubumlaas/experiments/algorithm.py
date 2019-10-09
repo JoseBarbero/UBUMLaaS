@@ -286,37 +286,48 @@ def regression_metrics(y_test, y_pred):
 
 def execute_weka_predict(username,exp_id,filename, model_path,fil_name):
 
-    create_app('subprocess') #No generate new workers
-    upload_folder = "/tmp/"+username+"/"
-    from ubumlaas.models import Experiment, load_experiment
-    experiment = load_experiment(exp_id)
-    exp_config = json.loads(experiment.exp_config)
-    file_df = get_dataframe_from_file(upload_folder, filename)
 
-    file_df = file_df[exp_config["columns"]]
-    
     
     try:
+        create_app('subprocess') #No generate new workers
+        upload_folder = "/tmp/"+username+"/"
+
+    
+        file_df = get_dataframe_from_file(upload_folder, filename)
+        
+
+        from ubumlaas.models import Experiment, load_experiment
+        experiment = load_experiment(exp_id)
+        exp_config = json.loads(experiment.exp_config)
+        class_attribute_name = exp_config["target"]
+
+    
+
+        # Open experiment configuration
+        data_df = get_dataframe_from_file("ubumlaas/datasets/"+username +
+                            "/", experiment.data)
+        
+        
+        file_columns = file_df.columns
+        file_df = file_df[exp_config["columns"]]
+        if class_attribute_name in file_columns:
+            file_df[class_attribute_name] = data_df[class_attribute_name]
+        else:
+            file_df[class_attribute_name] = ["?"]*len(file_df.index)
         jvm.start(packages=True)
+
 
         model = Classifier(jobject=serialization.read(model_path))
         
 
-        
-        
-        
-        # Open experiment configuration
-        data = get_dataframe_from_file("ubumlaas/datasets/"+username +
-                           "/", experiment.data)
-        y_uniques = data[exp_config["target"]].unique()
+        y_uniques = data_df[class_attribute_name].unique()
         y_uniques.sort()
-        class_attribute_name = exp_config["target"]
+        
         
         try:
             #Create new temporal file
             temp = tempfile.NamedTemporaryFile(suffix='.csv')
-            #Add class column with "?" values
-            file_df[class_attribute_name]= ["?"]*len(file_df.index)
+            
             file_df.to_csv(temp.name, index=None)
             loader = Loader(classname="weka.core.converters.CSVLoader",options=["-L", "{}:{}".format(class_attribute_name,
                                  ",".join(map(str,y_uniques)))])
@@ -326,18 +337,27 @@ def execute_weka_predict(username,exp_id,filename, model_path,fil_name):
         finally:
             temp.close()
         
-    
+        #predictions
         y_pred = []
         for instance in data:
             pred = model.classify_instance(instance)
             y_pred.append(data.class_attribute.value(int(pred)))
         
-        file_df[class_attribute_name] = y_pred
+        #remove "?" column if not exist original target
+        if class_attribute_name not in file_columns:
+            print(file_columns)
+            del file_df[class_attribute_name]
+            
+            
+        file_df["prediction_"+class_attribute_name] = y_pred
         shutil.rmtree(upload_folder)
         if not os.path.exists(upload_folder):
             os.makedirs(upload_folder)
 
         file_df.to_csv(upload_folder + fil_name, index=None)
+    except Exception:
+        print(traceback.format_exc())
+        return False
     finally:
         jvm.stop()
     return True
