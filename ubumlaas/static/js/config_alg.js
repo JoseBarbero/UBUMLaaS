@@ -30,6 +30,46 @@ function toggle_click(value,span){
     $("#"+value).toggle("slow");
 }
 
+function beautify_alg_config(){
+    let children = $(config_fieldset.children()[0]).children();
+    let offset = 0;
+    let base = 6;
+    if(children.length > 1){
+        base = 4;
+    }
+    if (children.length < 3){
+        offset = 4-children.length;
+    }
+    let loop = 0;
+    children.each(function(e){
+        let child = $(children[e]);
+        child.removeAttr("class");
+        if(loop == 0 && offset != 0){
+            child.addClass("offset-md-"+offset);
+        }
+        if (loop > 0){
+            child.prepend(name_of_base_clasifier(loop))
+            child.css("margin-top", (2*(loop-1))+"em");
+        }
+        child.addClass("col-md-"+base);
+        loop++;
+    });
+}
+
+function name_of_base_clasifier(level){
+    let basename = get_basename("base_estimator", level-1)
+    if($("#"+basename+"_title").length == 0){
+        let name = $("#"+basename+"_value option:selected").text();
+        let block = $("<div></div>", {class: "col-12", id: basename+"_title"});
+        let p = $("<p></p>", {class: "font-weight-bold center"});
+        p.text(name);
+        block.append(p);
+        return block;
+    }else{
+        return $("");
+    }
+}
+
 /**
  * Change span text when change for value in input.
  * 
@@ -69,7 +109,7 @@ function load_new_ensemble(alg_name, level = null){
         lvl.html("");
     }
     let alg_config = JSON.parse(load_config(false, alg_name, false));
-    generateForm(alg_config, id, sub_clasifiers_count);
+    generateForm(alg_config, id, level);
 }
 
 /**
@@ -245,10 +285,10 @@ function generateForm(alg_config, place_in_id="form_config_alg", level_to_modify
     place_in.append($("<div></div>", {class: "timeout-finished"}));
     if(new_subalgorithm != ""){
         load_new_ensemble(new_subalgorithm);
-    }
-    if(new_subalgorithm == "" && sub_clasifiers_count > level_to_modify){
+    }else if ( sub_clasifiers_count > level_to_modify){
         clean_levels(level_to_modify+1);            
-    }    
+    }
+    beautify_alg_config();
 }
 
 function load_next_ensemble(name, level){

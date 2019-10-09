@@ -19,3 +19,14 @@
 .material-icons {
     font-size: inherit !important;
 }
+
+.row-fluid{
+    white-space: nowrap;
+    display: flex !important;
+    align-items: flex-start !important;
+    -ms-flex-align: start !important;
+    display: -ms-flexbox !important;
+}
+.row-fluid > *{
+    display: inline-block;
+}

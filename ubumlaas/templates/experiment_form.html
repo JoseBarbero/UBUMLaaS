@@ -64,9 +64,9 @@
                 </div>
             </form>
         </fieldset>
-    <fieldset class="container" id="config_algorithm_fieldset">
-        <div class="row">
-            <div class="col-md-6 offset-md-3">
+    <fieldset class="container" id="config_algorithm_fieldset" style="overflow: auto">
+        <div class="row-fluid">
+            <div>
                 <div id="form_config_alg" class="form-group">
                     
                 </div>
@@ -92,8 +92,8 @@
 <script>
     function load_config(async=true, algorithm=null, reset=true){
         if (reset){
-            config_fieldset.html("<div class=\"row\">"+
-                                    "<div class=\"col-md-6 offset-md-3\">" +
+            config_fieldset.html("<div class=\"row-fluid\">"+
+                                    "<div>" +
                                         "<div id=\"form_config_alg\" class=\"form-group\">" +            
                                         "</div>" +
                                     "</div>" +
