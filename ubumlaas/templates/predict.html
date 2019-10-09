@@ -57,6 +57,7 @@
 {% endblock %}
 {% block js %}
 <script>
+        flag=false;
         $("form#form_pred").submit(function (e) {
                 e.preventDefault();
                 var formData = new FormData(this)
@@ -70,7 +71,7 @@
                         update_datasets();
                 },
                 error: function (result) {
-                        alert("Upload failed")
+                        alert("Upload failed");
                 },
                 cache: false,
                 contentType: false,
@@ -84,6 +85,7 @@
                         type: 'POST',
                         success: function (result) {
                                 $("#select_dataset").html(result);
+                                flag=true;
                         }
                 })
         }
@@ -94,27 +96,32 @@
         });
 
         $("form#submit_completed_experiment").submit(function (e) {
-                e.preventDefault();
-                //TODO: Verify all
-                var exp= {{ id }};
-                var name = $("#dataset").val().replace(/C:\\fakepath\\/i, '')
-                $.ajax({
-                url: '{{ url_for("experiments.start_predict") }}',
-                type: 'POST',
-                contentType: 'application/x-www-form-urlencoded',
-                data: "exp_id="+exp+"&filename="+name,
-                success: function (result) {
+                if(!flag){
+                        alert("You must upload a dataset.");
+                        return false;
+                }else{
+                        e.preventDefault();
+                        //TODO: Verify all
+                        var exp= {{ id }};
+                        var name = $("#dataset").val().replace(/C:\\fakepath\\/i, '')
+                        $.ajax({
+                        url: '{{ url_for("experiments.start_predict") }}',
+                        type: 'POST',
+                        contentType: 'application/x-www-form-urlencoded',
+                        data: "exp_id="+exp+"&filename="+name,
+                        success: function (result) {
+                                $("#loader-div").toggle();
+                                $("#updata").toggle();
+                                $("#div_res").toggle();
+                                $("#div_res").html(result);
+                        },
+                        error: function (result) {
+                                alert("Prediction error");
+                                delete_file();
+                        }
+                        });
                         $("#loader-div").toggle();
-                        $("#updata").toggle();
-                        $("#div_res").toggle();
-                        $("#div_res").html(result);
-                },
-                error: function (result) {
-                        alert("Prediction error");
-                        delete_file();
                 }
-                });
-                $("#loader-div").toggle();
         });
 
         function delete_file(){
