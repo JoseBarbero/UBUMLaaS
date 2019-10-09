@@ -259,7 +259,7 @@ def value_to_bool(y_test, y_pred):
         [pandas,pandas] -- test output boolean, model output boolean
     """
     un = y_test.unique()
-    d = {un[0]:True, un[1]:False}
+    d = {un[0]: True, un[1]: False}
     return y_test.map(d), pd.Series(y_pred).map(d)
 
 
@@ -276,7 +276,9 @@ def regression_metrics(y_test, y_pred):
     score = {}
 
     score["max_error"] = sklearn.metrics.max_error(y_test, y_pred)
-    score["mean_score_error"] = sklearn.metrics.mean_squared_error(y_test, y_pred)
-    score["mean_absolute_error"] = sklearn.metrics.mean_absolute_error(y_test, y_pred)
+    score["mean_score_error"] = sklearn.metrics.mean_squared_error(y_test,
+                                                                   y_pred)
+    score["mean_absolute_error"] = sklearn.metrics.mean_absolute_error(y_test,
+                                                                       y_pred)
 
     return score

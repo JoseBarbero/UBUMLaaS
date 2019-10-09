@@ -1,6 +1,7 @@
 import variables as v
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
+from sqlalchemy import and_
 
 from flask_login import UserMixin
 
@@ -37,7 +38,7 @@ def get_experiments(idu):
     Returns:
         experiments list -- all experiments from user with that id.
     """
-    listexp = Experiment.query.filter(Experiment.idu== idu).all()
+    listexp = Experiment.query.filter(Experiment.idu == idu).all()
     for i in listexp:
         i.starttime = datetime.fromtimestamp(i.starttime).strftime("%d/%m/%Y - %H:%M:%S")
         if i.endtime is not None:
@@ -45,16 +46,26 @@ def get_experiments(idu):
     return listexp
 
 
+def get_similar_algorithms(alg_name):
+    alg = get_algorithm_by_name(alg_name)
+    cond = Algorithm.lib == alg.lib
+    if alg.alg_typ != "Mixed":
+        cond = and_(cond, Algorithm.alg_typ == alg.alg_typ)
+    algorithms = Algorithm.query.filter(cond).all()
+
+    return algorithms
+
+
 def get_algorithms(alg_typ):
     """Get algorithms by type.
-    
+
     Arguments:
         alg_typ {string} -- algorithm type.
-    
+
     Returns:
         algorithm list -- all algorithm of that type.
     """
-    return Algorithm.query.filter(Algorithm.alg_typ==alg_typ).all()
+    return Algorithm.query.filter(Algorithm.alg_typ == alg_typ).all()
 
 
 def get_algorithm_by_name(name):

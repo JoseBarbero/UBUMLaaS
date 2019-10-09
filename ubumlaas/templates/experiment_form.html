@@ -64,10 +64,12 @@
                 </div>
             </form>
         </fieldset>
-    <fieldset>
-        <div class="col-md-6 offset-md-3">
-            <div id="form_config_alg" class="form-group">
-        
+    <fieldset class="container" id="config_algorithm_fieldset">
+        <div class="row">
+            <div class="col-md-6 offset-md-3">
+                <div id="form_config_alg" class="form-group">
+                    
+                </div>
             </div>
         </div>
     </fieldset>
@@ -88,20 +90,56 @@
 <script src="{{ url_for('static', filename="js/validations.js") }}"></script>
 
 <script>
-    function load_config(){
-        var alg_name = $("#alg_name").val();
+    function load_config(async=true, algorithm=null, reset=true){
+        if (reset){
+            config_fieldset.html("<div class=\"row\">"+
+                                    "<div class=\"col-md-6 offset-md-3\">" +
+                                        "<div id=\"form_config_alg\" class=\"form-group\">" +            
+                                        "</div>" +
+                                    "</div>" +
+                                 "</div>");
+            sub_clasifiers_count = 0;
+        }
+        let alg_name;
+        if(algorithm == null){
+            alg_name = $("#alg_name").val();
+        }else{
+            alg_name = algorithm;
+        }
+        let result_ = {};
         $.ajax({
             url: '{{ url_for("experiments.form_generator") }}',
             type: 'POST',
             contentType: 'application/x-www-form-urlencoded',
             data: "alg_name=" + alg_name,
             success: function (result) {
-                generateForm(JSON.parse(result.alg_config));
+                if(!async){
+                    result_ = result.alg_config;
+                }else{
+                    generateForm(JSON.parse(result.alg_config));
+                }
             },
             error: function(result){
                 generateForm({})
-            }
-        })
+            },
+            async: async
+        });
+        return result_;
+    }
+
+    function give_me_base_estimators(petition){
+        var result_ = {};
+        $.ajax({
+            url: '{{ url_for("experiments.base_estimator_getter") }}',
+            type: 'POST',
+            contentType: 'application/x-www-form-urlencoded',
+            data: petition,
+            success: function(result){
+                result_ = result;
+            },
+            async: false
+        });
+        return result_.algorithms;
     }
 </script>
 <script>
@@ -166,6 +204,8 @@
     });
 
     $("document").ready(function () {
+        config_fieldset = $("#config_algorithm_fieldset");
+        sub_clasifiers_count = 0;
         $("#alg_typ").change(function () {
             $.ajax({
                 url: '{{ url_for("experiments.change_alg") }}',

@@ -30,110 +30,243 @@ function toggle_click(value,span){
     $("#"+value).toggle("slow");
 }
 
-function change_value(e){
+/**
+ * Change span text when change for value in input.
+ * 
+ * @param {basename of attribute} e 
+ * @param {if selectable is an ensemble} ensemble 
+ */
+function change_value(e, ensemble=False){
+    let val;
     let value = $("#"+e+"_value");
     let span = $("#"+e+"_span");
-    let text = "("+value.val()+")"
+    val = value.val()
+    if(ensemble){
+        val = $("#"+e+"_value option:selected").text();
+    }    
+    let text = "("+val+")"
     if (value.attr('type') == 'checkbox'){
         text = "("+value.is(":checked")+")"
     }
     span.text(text);
 }
 
+/**
+ * Generate an base estimator configuration for ensemble.
+ * 
+ * @param {*} alg_name 
+ */
+function load_new_ensemble(alg_name, level = null){
+    if(level == null){
+        level = sub_clasifiers_count;
+    }
+    let id = "form_config_alg_level"+level;
+    let lvl = $("#"+id);
+    if(lvl.length == 0){
+        lvl = $("<div></div>", {id: id});
+        $(config_fieldset.children()[0]).append(lvl);
+    }else{
+        lvl.html("");
+    }
+    let alg_config = JSON.parse(load_config(false, alg_name, false));
+    generateForm(alg_config, id, sub_clasifiers_count);
+}
+
+/**
+ * Change validity of input attribute
+ * 
+ * @param {basename of input attribute}
+ */
 function change_validate(e){
-    let value = $("#"+e+"_value");
-    if(!value.prop('disabled')){
-        value.attr({
+    let _value = $("#"+e+"_value");
+    if(!_value.prop('disabled')){
+        _value.attr({
             disabled: "disabled"
         });
     }else{
-        value.removeAttr("disabled");
+        _value.removeAttr("disabled");
     }    
 }
 
-function generateForm(alg_config){
+/**
+ * Basename of estimator attribute
+ * 
+ * @param {real name of parameter} param_name 
+ * @param {level of the estimator} level 
+ */
+function get_basename(param_name, level){
+    let basename = param_name;
+    if(level>0){
+        basename = "level"+level+"_"+basename;
+    }
+    return basename;
+}
+
+/**
+ * Generate a block to set input attribute.
+ * 
+ * @param {row from complete form} placein 
+ * @param {row content} block 
+ * @param {real name of the parameter} param_name 
+ * @param {parameter object} param 
+ * @param {level of the estimator} level 
+ */
+function get_base_block(placein, block, param_name, param, level){
+    let basename = get_basename(param_name, level);
+    //Label
+    let lbl = $("<label></label>", {
+                                        "data-toggle": "tooltip",
+                                        title: param.help,
+                                        for: basename+"_value"
+                                   });
+    let name = document.createTextNode(param_name);
+    let span = $("<span></span>", {
+                                        id: basename+"_span"
+                                  });
+    span.text("("+param.default+")");
+    lbl.append(name);
+    lbl.append(span);
+    //Dropdown button
+    let a = $("<a></a>", {
+                            onClick: "toggle_click('"+basename+"_value'"+",'"+basename+"_span'"+")",
+                            href: "#a",
+                            id: basename+"_open"
+                         });
+    let icon = $("<i></i>", {
+                                class: "material-icons float-right"
+                            });
+    icon.text("arrow_drop_down_circle")
+    a.append(icon);
+    block.append(lbl);
+    block.append(a);
+    placein.append(block);
+}
+
+/**
+ * Generate a form to configure algorithm
+ * 
+ * @param {algorithm object with base configuration} alg_config 
+ * @param {identifier of div where form be placed} place_in_id 
+ * @param {level of the estimator} level_to_modify 
+ */
+function generateForm(alg_config, place_in_id="form_config_alg", level_to_modify=0){
+    if(level_to_modify == sub_clasifiers_count){
+        sub_clasifiers_count++;
+    }
+    let new_subalgorithm = "";
     alg_config_reference = alg_config;
-    var place_in = $("#form_config_alg");
+    var place_in = $("#"+place_in_id);
     place_in.html("");
     var parameters = Object.keys(alg_config);
     var row_number = 0;
     parameters.forEach(function(i){
+        let basename = get_basename(i, level_to_modify);
         row_number += 1;
         let parameter = alg_config[i];
         let row = $("<div></div>", {class: "row"});
-        let block = $("<div></div>", {id: i, class: "col-12"});
+        let block = $("<div></div>", {id: basename, class: "col-12"});
         if (row_number%2 == 1){
             block.addClass("row-odd");
         }
-        row.append(block);
-        block.html("<label data-toggle=\"tooltip\" title=\""+parameter.help+"\" for=\""+i+"_value"+"\">"+
-                        i+
-                        " <span id=\""+i+"_span"+"\">("+parameter.default+")</span>"+
-                    "</label>");
-        block.append($("<a onClick=\"toggle_click('"+i+"_value"+"','"+i+"_span"+"')\" href=\"#a\" id=\""+i+"_open"+"\">"+
-                            "<i class=\"material-icons\" style=\"float: right;\">"+
-                                "arrow_drop_down_circle"+
-                            "</i>"+
-                       "</a>"));
-        
+        get_base_block(row, block, i, parameter, level_to_modify);        
         let content;
         switch(parameter.type){
+            case "ensemble":
+                content = $("<select></select>", {id: basename+"_value"});
+                let petition = "alg_name="+$("#alg_name").val();
+                let _options = give_me_base_estimators(petition);
+                _options.forEach(function (e) { 
+                    content.append($("<option value=\""+e.alg_name+"\">"+e.web_name+"</option>"));
+                 });
+                 content.val(parameter.default);
+                 new_subalgorithm = parameter.default;
+                 break;
             case "string":
-                content = $("<select></select>", {id: i+"_value"});
+                content = $("<select></select>", {id: basename+"_value"});
                 parameter.options.forEach(function(j){
                     content.append($("<option value=\""+j+"\">"+j+"</option>"));
-                });
+                });                
                 break;
             case "boolean":
-                let div = $("<div></div>",{class: "material-switch pull-right", id: i+"_div"});
-                let label = $("<label for=\""+i+"_value"+"\" onClick=\"change_value('"+i+"')\" class=\"badge-primary\"></label>");
-                content = $("<input/>", {type: "checkbox", id: i+"_value"});
+                let div = $("<div></div>",{class: "material-switch pull-right", id: basename+"_div"});
+                let label = $("<label for=\""+basename+"_value"+"\" onClick=\"change_value('"+basename+"')\" class=\"badge-primary\"></label>");
+                content = $("<input/>", {type: "checkbox", id: basename+"_value"});
                 if (parameter.default){
                     content.attr({checked: "checked"});
                 }
                 div.append(content);
                 div.append(label);
                 content = div;
-                block.children().eq(1).attr("onClick","toggle_click('"+i+"_div"+"','"+i+"_span"+"')");
+                block.children().eq(1).attr("onClick","toggle_click('"+basename+"_div"+"','"+basename+"_span"+"')");
                 break;
             case "float":
                 content = $("<input/>", {type: 'number',
                                          step: 'any',
-                                         id: i+"_value",
+                                         id: basename+"_value",
                                          min: convertExponentialToDecimal(parameter.min),
                                          max: convertExponentialToDecimal(parameter.max),
                                          value: parameter.default,
                                          class: "col-10 form-control"
                                         });
-                content = give_me_activator(content, i);
-                block.children().eq(1).attr("onClick","toggle_click('"+i+"_div"+"','"+i+"_span"+"')");
+                content = give_me_activator(content, basename);
+                block.children().eq(1).attr("onClick","toggle_click('"+basename+"_div"+"','"+basename+"_span"+"')");
                 break;
             case "integer":
                 content = $("<input/>", {type: 'number',
                                          step: 1,
-                                         id: i+"_value",
+                                         id: basename+"_value",
                                          min: parameter.min,
                                          max: parameter.max,
                                          value: parameter.default,
                                          class: "col-10 form-control"
                                         });
-                content = give_me_activator(content, i);
-                block.children().eq(1).attr("onClick","toggle_click('"+i+"_div"+"','"+i+"_span"+"')");
+                content = give_me_activator(content, basename);
+                block.children().eq(1).attr("onClick","toggle_click('"+basename+"_div"+"','"+basename+"_span"+"')");
                 break;
             default:
-                console.log("Parameter "+i+" has unrecognized type ("+parameter.type+")");
+                console.log("Parameter "+basename+" has unrecognized type ("+parameter.type+")");
         }
         
         content.attr({style: "display: none"});
-        if(parameter.type == 'string'){
+        if(parameter.type == 'string' || parameter.type == 'ensemble'){
             content.addClass("form-control");
         }
-        content.attr("onChange", "change_value('"+i+"')");
+        let func = "change_value('"+basename+"')";
+
+        content.attr("onChange", func);
         content.addClass("config_alg");
         block.append(content);
         place_in.append(row);
+        if(parameter.type == 'ensemble'){
+            content.attr("onChange", "change_value('"+basename+"', true); load_next_ensemble('"+basename+"',"+(level_to_modify+1)+")");
+            change_value(basename, true);
+        }
     });
     place_in.append($("<div></div>", {class: "timeout-finished"}));
+    if(new_subalgorithm != ""){
+        load_new_ensemble(new_subalgorithm);
+    }
+    if(new_subalgorithm == "" && sub_clasifiers_count > level_to_modify){
+        clean_levels(level_to_modify+1);            
+    }    
+}
+
+function load_next_ensemble(name, level){
+    let alg_name = $("#"+name+"_value").val();
+    load_new_ensemble(alg_name, level);
+}
+
+/**
+ * remove levels after base_level. Base level included.
+ * 
+ * @param {Level where start the removing} base_level 
+ */
+function clean_levels(base_level){
+    sub_clasifiers_count = base_level-1;
+    let children = $(config_fieldset.children()[0]).children();
+    for(let i = base_level; i<children.length; i++){
+        $(children[i]).remove();
+    }
 }
 
 function give_me_activator(content, i){
@@ -162,7 +295,7 @@ function get_config_form(){
             result[i] = parameter.val();            
             switch(par.type){
                 case "boolean":
-                        result[i]=parameter.is(":checked");
+                    result[i]=parameter.is(":checked");
                     break;
                 case "integer":
                     result[i] = parseInt(result[i]);
@@ -175,3 +308,4 @@ function get_config_form(){
     });
     return result;
 }
+

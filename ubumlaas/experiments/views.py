@@ -3,7 +3,7 @@ from flask import \
      send_file, abort, safe_join)
 import variables as v
 from ubumlaas.models import \
-    (User, Experiment, load_user, load_experiment, get_algorithm_by_name)
+    (User, Experiment, load_user, load_experiment, get_algorithm_by_name, get_similar_algorithms)
 from ubumlaas.experiments.forms import \
     (ExperimentForm, DatasetForm, DatasetParametersForm)
 from flask_login import (current_user, login_required)
@@ -46,7 +46,6 @@ def new_experiment():
     return render_template("experiment_form.html", form_e=form_e,
                            form_d=form_d, form_p=form_p,
                            title="New experiment", experiment=experiment)
-
 
 
 @login_required
@@ -173,7 +172,12 @@ def generate_df_html(df):
                 {'selector': 'td',
                     'props': [('font-family', 'verdana')]}]
         ).hide_index()
-    html_table = df.to_html(classes=["table", "table-borderless", "table-striped", "table-hover"], col_space="100px", max_rows=6, justify="center").replace("border=\"1\"", "border=\"0\"").replace('<tr>', '<tr align="center">')
+    html_table = df.to_html(classes=["table", "table-borderless",
+                                     "table-striped", "table-hover"],
+                            col_space="100px", max_rows=6, justify="center") \
+                   .replace("border=\"1\"", "border=\"0\"") \
+                   .replace('<tr>',
+                            '<tr align="center">')
     return html_table
 
 
@@ -191,7 +195,11 @@ def result_experiment(id):
     exp = load_experiment(id)
     if exp.idu != current_user.id:
         return "", 403
-    return render_template("result.html",experiment=exp,title="Experiment Result",dict_config=json.loads(exp.alg_config),conf=json.loads(get_algorithm_by_name(exp.alg_name).config))
+    return render_template("result.html", experiment=exp,
+                           title="Experiment Result",
+                           dict_config=json.loads(exp.alg_config),
+                           conf=json.loads(get_algorithm_by_name(
+                                               exp.alg_name).config))
 
 
 @experiments.route("/experiment/form_generator", methods=["POST"])
@@ -223,12 +231,15 @@ def download_model(id):
     if not exp or exp.idu != current_user.id:
         abort(404)
 
-    path = safe_join("models/"+current_user.username+"/","{}.model".format(id))
+    path = safe_join("models/"+current_user.username+"/", "{}.model"
+                                                          .format(id))
 
-    download_filename = "UBUMLaaS_{}_{}.model".format(id, get_algorithm_by_name(exp.alg_name).lib)
+    download_filename = "UBUMLaaS_{}_{}.model" \
+                        .format(id, get_algorithm_by_name(exp.alg_name).lib)
 
     try:
-        return send_file(path, attachment_filename=download_filename, as_attachment=True)
+        return send_file(path, attachment_filename=download_filename,
+                         as_attachment=True)
     except FileNotFoundError:
         abort(404)
 
@@ -253,3 +264,15 @@ def reuse_experiment(id):
     return render_template("experiment_form.html", form_e=form_e,
                            form_d=form_d, form_p=form_p,
                            title="New experiment")
+
+
+@experiments.route("/experiment/base_estimator_getter", methods=["POST"])
+def base_estimator_getter():
+    alg_name = request.form.get("alg_name", None)
+    algorithm = get_similar_algorithms(alg_name)
+
+    _ret = dict()
+    _ret["algorithms"] = []
+    for i in algorithm:
+        _ret["algorithms"].append(i.to_dict())
+    return jsonify(_ret)
