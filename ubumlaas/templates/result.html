@@ -26,21 +26,19 @@
                         <p class="col-md-7">{{ dict_config[i] }} </p>
                     </div>
                 {% endfor %}
-                {% if experiment.state == 1 %}
                 <div class="row">
-                    <div class="col-md-6">
-                        <a class="btn btn-primary" role="button" href={{url_for("experiments.download_model",id=experiment.id)}} >Download model</a>
+                    <div class="col-md-3">
+                            <a class="btn btn-primary btn-block" role="button" href={{ url_for("experiments.new_experiment") }}?exp={{experiment.id}} >Reuse</a>
                     </div>
+                {% if experiment.state == 1 %}
                     <div class="col-md-6">
-                        <a class="btn btn-primary" role="button" href={{url_for("experiments.predict",id=experiment.id)}}>Predict</a>
+                        <a class="btn btn-primary btn-block" role="button" href={{url_for("experiments.download_model",id=experiment.id)}} >Download model</a>
                     </div>
-                </div>
+                    <div class="col-md-3">
+                        <a class="btn btn-primary btn-block" role="button" href={{url_for("experiments.predict",id=experiment.id)}}>Predict</a>
+                    </div>
                 {% endif %}
-                <div class="row mt-4">
-                    <div class="col-md-6">
-                        <a class="btn btn-primary" role="button" href={{ url_for("experiments.new_experiment") }}?exp={{experiment.id}} >Reuse</a>
-                    </div>
-                </div>
+                </div>    
             </div>
         </div>
         <div class="col-md-6">
