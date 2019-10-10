@@ -28,9 +28,19 @@
                         </div>
                     {% endif %}
                 {% endfor %}
+                <div class="row">
+                    <div class="col-md-3">
+                            <a class="btn btn-primary btn-block" role="button" href={{ url_for("experiments.new_experiment") }}?exp={{experiment.id}} >Reuse</a>
+                    </div>
                 {% if experiment.state == 1 %}
-                <a class="btn btn-primary" role="button" href={{url_for("experiments.download_model",id=experiment.id)}} >Download model</a>
+                    <div class="col-md-6">
+                        <a class="btn btn-primary btn-block" role="button" href={{url_for("experiments.download_model",id=experiment.id)}} >Download model</a>
+                    </div>
+                    <div class="col-md-3">
+                        <a class="btn btn-primary btn-block" role="button" href={{url_for("experiments.predict",id=experiment.id)}}>Predict</a>
+                    </div>
                 {% endif %}
+                </div>    
             </div>
         </div>
         <div class="col-md-6">

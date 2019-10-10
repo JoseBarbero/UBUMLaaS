@@ -9,7 +9,7 @@ from flask_login import current_user
 from ubumlaas.models import User, get_algorithms
 import pandas as pd
 import os
-
+from ubumlaas.util import get_dataframe_from_file
 
 class ExperimentForm(FlaskForm):
     """Experiment basic form.
@@ -66,14 +66,13 @@ class DatasetForm(FlaskForm):
         Returns:
             [type] -- [description]
         """
-        if filename.split(".")[-1] == "csv":
-            file_df = pd.read_csv(upload_folder + filename)
-        elif filename.split(".")[-1] == "xls":
-            file_df = pd.read_excel(upload_folder + filename)
-        else:
+        try:
+            file_df = get_dataframe_from_file(upload_folder, filename)
+        except Exception:
             flash("File format not allowed")
         return file_df
 
+    
 
 class DatasetParametersForm(FlaskForm):
     """Dataset configuration with static parameters.

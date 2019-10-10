@@ -3,7 +3,6 @@ from flask_login import login_user, current_user, logout_user, login_required
 import variables as v
 from ubumlaas.users.forms import RegistrationForm, LoginForm
 from ubumlaas.models import User, get_experiments
-from flask_mail import Message
 import smtplib
 import os 
 
