@@ -47,8 +47,8 @@ def task_skeleton(experiment, current_user):
     create_app('subprocess')  # No generate new workers
     # Diference sklearn executor and weka executor
     apps_functions = {"sklearn": execute_sklearn, "weka": execute_weka}
-    # Get algorithm type
-    type_app = experiment["alg"]["alg_name"].split(".", 1)[0]
+    # Sklearn or weka
+    type_app = experiment["alg"]["lib"]
     try:
         exp_config = json.loads(experiment["exp_config"])
         # Open experiment configuration
@@ -59,7 +59,7 @@ def task_skeleton(experiment, current_user):
         # Split dataset (if unsupervised it will be modified)
         X_train, X_test, y_train, y_test = \
             sklearn.model_selection. \
-            train_test_split(X, y, test_size=1-exp_config["split"]/100)
+            train_test_split(X, y, train_size=exp_config["split"]/100)
 
         models_dir = "ubumlaas/models/{}/".format(current_user["username"])
         if not os.path.exists(models_dir):
@@ -67,6 +67,7 @@ def task_skeleton(experiment, current_user):
         y_pred, y_score = apps_functions[type_app](experiment,
                                           "{}{}.model".
                                           format(models_dir, experiment['id']),
+                                          X, y,
                                           X_train, X_test, y_train, y_test)
 
         score_text = ""
@@ -94,7 +95,7 @@ def task_skeleton(experiment, current_user):
     send_email(current_user["username"], current_user["email"], experiment["id"], str(exp.result))
 
 
-def execute_sklearn(experiment, path, X_train, X_test, y_train, y_test):
+def execute_sklearn(experiment, path, X, y, X_train, X_test, y_train, y_test):
     """It trains a sklearn model
 
     Arguments:
@@ -110,18 +111,21 @@ def execute_sklearn(experiment, path, X_train, X_test, y_train, y_test):
     """
     alg_config = json.loads(experiment["alg_config"])
     model = eval(experiment["alg"]["alg_name"]+"(**alg_config)")
+    model.fit(X, y)
+    pickle.dump(model, open(path, 'wb'))
+
+    model = eval(experiment["alg"]["alg_name"]+"(**alg_config)")
     model.fit(X_train, y_train)
     y_pred = model.predict(X_test)
     y_score = None
     if (experiment["alg"]["alg_typ"] == "Classification"):
         y_score = model.predict_proba(X_test)
 
-    pickle.dump(model, open(path, 'wb'))
 
     return y_pred, y_score
 
 
-def execute_weka(experiment, path, X_train, X_test, y_train, y_test):
+def execute_weka(experiment, path,X, y, X_train, X_test, y_train, y_test):
     """It trains a weka model
 
     Arguments:
@@ -150,12 +154,17 @@ def execute_weka(experiment, path, X_train, X_test, y_train, y_test):
             lincom.append(conf[i]["command"])
         if not isinstance(v, bool):
             lincom.append(str(v))
-
-    data = create_weka_dataset(X_train, y_train)
-
+    #Create model with all dataset
     classifier = Classifier(classname=experiment["alg"]["alg_name"], options=lincom)
-
+    data = create_weka_dataset(X, y)
     classifier.build_classifier(data)
+    serialization.write(path, classifier)
+
+    #Create model with train test dataset
+    classifier = Classifier(classname=experiment["alg"]["alg_name"], options=lincom)
+    data = create_weka_dataset(X_train, y_train)
+    classifier.build_classifier(data)
+    
     data_test = create_weka_dataset(X_test, y_test)
     function = None
     y_score = None
@@ -169,7 +178,7 @@ def execute_weka(experiment, path, X_train, X_test, y_train, y_test):
         pred = classifier.classify_instance(instance)
         y_pred.append(function(pred))
 
-    serialization.write(path, classifier)
+    
     jvm.stop()
 
     try: #Trying to convert to int
