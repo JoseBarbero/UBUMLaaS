@@ -64,10 +64,12 @@
                 </div>
             </form>
         </fieldset>
-    <fieldset>
-        <div class="col-md-6 offset-md-3">
-            <div id="form_config_alg" class="form-group">
-        
+    <fieldset class="container" id="config_algorithm_fieldset" style="overflow: auto">
+        <div class="row-fluid">
+            <div>
+                <div id="form_config_alg" class="form-group">
+                    
+                </div>
             </div>
         </div>
     </fieldset>
@@ -88,20 +90,56 @@
 <script src="{{ url_for('static', filename="js/validations.js") }}"></script>
 
 <script>
-    function load_config(){
-        var alg_name = $("#alg_name").val();
+    function load_config(async=true, algorithm=null, reset=true){
+        if (reset){
+            config_fieldset.html("<div class=\"row-fluid\">"+
+                                    "<div>" +
+                                        "<div id=\"form_config_alg\" class=\"form-group\">" +            
+                                        "</div>" +
+                                    "</div>" +
+                                 "</div>");
+            sub_clasifiers_count = 0;
+        }
+        let alg_name;
+        if(algorithm == null){
+            alg_name = $("#alg_name").val();
+        }else{
+            alg_name = algorithm;
+        }
+        let result_ = {};
         $.ajax({
             url: '{{ url_for("experiments.form_generator") }}',
             type: 'POST',
             contentType: 'application/x-www-form-urlencoded',
             data: "alg_name=" + alg_name,
             success: function (result) {
-                generateForm(JSON.parse(result.alg_config));
+                if(!async){
+                    result_ = result.alg_config;
+                }else{
+                    generateForm(JSON.parse(result.alg_config));
+                }
             },
             error: function(result){
                 generateForm({})
-            }
-        })
+            },
+            async: async
+        });
+        return result_;
+    }
+
+    function give_me_base_estimators(petition){
+        var result_ = {};
+        $.ajax({
+            url: '{{ url_for("experiments.base_estimator_getter") }}',
+            type: 'POST',
+            contentType: 'application/x-www-form-urlencoded',
+            data: petition,
+            success: function(result){
+                result_ = result;
+            },
+            async: false
+        });
+        return result_.algorithms;
     }
 </script>
 <script>
@@ -166,6 +204,8 @@
     });
 
     $("document").ready(function () {
+        config_fieldset = $("#config_algorithm_fieldset");
+        sub_clasifiers_count = 0;
         $("#alg_typ").change(function () {
             $.ajax({
                 url: '{{ url_for("experiments.change_alg") }}',
@@ -245,23 +285,44 @@
         add_algorithm_parameters();
     }
 
-    function add_algorithm_parameters(){        
+    function add_algorithm_parameters(alg=null, alg_config=null, level=0){  
         if($(".timeout-finished").length == 0){
             setTimeout(add_algorithm_parameters, 10);
             return;
         }
-        base_alg_config = JSON.parse(algorithm_selected.config);
-        alg_config = JSON.parse(experiment.alg_config);
+        let base_alg_config;
+        let prefix = "";
+        if(alg == null){
+            alg = algorithm_selected;
+            base_alg_config = JSON.parse(alg.config);
+        }else{
+            base_alg_config = JSON.parse(alg);
+        }
+
+        if(level>0){
+            prefix = "level"+level+"_";
+        }
+        
+        if(alg_config == null){
+            alg_config = JSON.parse(experiment.alg_config);
+        }
         var parameters = Object.keys(base_alg_config);
         var sel_parameters = Object.keys(alg_config);
         parameters.forEach(function(i){
-            var p = $("#"+i+"_value");
+            var p = $("#"+prefix+i+"_value");
             if(base_alg_config[i].type != "boolean"){
                 if(!sel_parameters.includes(i)){
                     change_validate(i);
                 }else{
-                    p.val(alg_config[i]);
-                    p.change();
+                    if(typeof(alg_config[i] == "object")){
+                        p.val(alg_config[i].alg_name);
+                        p.change();
+                        console.log(load_config(false, p.val(), false));
+                        add_algorithm_parameters(load_config(false, p.val(), false), alg_config[i].parameters, level+1);
+                    }else{
+                        p.val(alg_config[i]);
+                        p.change();
+                    }                    
                 }
             }else{
                 //p.prop("checked",alg_config[i]);

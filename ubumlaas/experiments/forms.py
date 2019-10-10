@@ -19,7 +19,9 @@ class ExperimentForm(FlaskForm):
     """
 
     alg_typ = SelectField("Algorithm Type", validators=[DataRequired()],
-                          choices=[("", "---"), ("Regression", "Regression"), ("Classification", "Classification")])
+                          choices=[("", "---"), ("Regression", "Regression"),
+                                   ("Classification", "Classification"),
+                                   ("Mixed", "Mixed")])
 
     alg_name = SelectField("Algorithm Name", validators=[DataRequired()],
                            choices=[])
