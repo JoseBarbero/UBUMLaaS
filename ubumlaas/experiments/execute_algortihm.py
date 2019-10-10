@@ -52,9 +52,6 @@ class AbstractExecute(ABC):
     def predict(self, model, X):
         pass
     @abstractmethod
-    def predict_proba(self, model, X):
-        pass
-    @abstractmethod
     def generate_train_test_split(self, X, y, train_size):
         if train_size == 100:
             return X, y, [], []
@@ -76,9 +73,15 @@ class AbstractExecute(ABC):
 
 class Execute_sklearn(AbstractExecute):
 
+    def __init__(experiment):
+        self.algorithm_name = experiment["alg"]["alg_name"] #example weka.classification.trees.J48
+        self.algorithm_type = experiment["alg"]["alg_typ"] #classification, reggression or mixed
+        self.algorithm_configuration = experiment["alg_config"] #configuration algorithm
+        self.configuration = experiment["alg"]["config"]
 
-    def create_model(self, algorithm_name, algorithm_configuration, ):
-        return eval(algorithm_name+"(**algorithm_configuration)")
+
+    def create_model(self):
+        return eval(self.algorithm_name+"(**self.algorithm_configuration)")
    
     def serialize(self, model, path):
         pickle.dump(model, open(path, 'wb'))
@@ -89,11 +92,8 @@ class Execute_sklearn(AbstractExecute):
     def train(self,model, X, y):
         model.fit(X, y)
 
-    def predict(self, model, X):
-        return model.predict(X)
-
-    def predict_proba(self, model, X):
-        model.predict_proba(X)
+    def predict(self, model, X, y=None):
+        return model.predict(X), model.predict_proba(X)       
 
     def generate_train_test_split(self, X, y, train_size):
         return super().generate_train_test_split( X, y, train_size)
@@ -102,6 +102,13 @@ class Execute_sklearn(AbstractExecute):
         return super().generate_KFolds( X, y, n_splits, shuffle, random_state) 
 
 class Execute_weka(AbstractExecute):
+
+    def __init__(experiment):
+        self.algorithm_name = experiment["alg"]["alg_name"] #example weka.classification.trees.J48
+        self.algorithm_type = experiment["alg"]["alg_typ"] #classification, reggression or mixed
+        self.algorithm_configuration = experiment["alg_config"] #configuration algorithm
+        self.configuration = experiment["alg"]["config"]
+        self.experiment_configuration = json.loads(experiment["exp_config"])
 
     def create_weka_dataset(self, X, y, y_uniques=None):
     """Create weka dataset using temporaly file
@@ -138,8 +145,8 @@ class Execute_weka(AbstractExecute):
     def create_model(self, algorithm_name, algorithm_configuration, configuration):
         lincom = []
 
-        for i in algorithm_configuration.keys():
-            v = algorithm_configuration[i]
+        for i in self.algorithm_configuration.keys():
+            v = self.algorithm_configuration[i]
             if v is not False:
                 lincom.append(configuration[i]["command"])
             if not isinstance(v, bool):
@@ -152,23 +159,26 @@ class Execute_weka(AbstractExecute):
     def deserialize(self, path):
         return Classifier(jobject=serialization.read(path))
 
-    def train(self, model, X, y, is_classification=False):
+    def train(self, model, X, y):
         y_unique=None
-        if classification:
+        if self.is_classification:
             y_unique = list(set(y))
             y_unique.sort()
         data = self.create_weka_dataset(X, y, y_unique)
         model.build_classifier(data)
         
+    def predict(self, model, X, y=None):
+        if y is None:
+            y = pd.DataFrame({self.experiment_configuration["target"]:["?"]*len(x)})
 
-    def predict(self, model, X, y):
-        pass
+        data_test = self.create_weka_dataset(X, y)
 
-    def predict_proba(self, model, X, y):
-        pass
 
     def generate_train_test_split(self, X, y, train_size):
         return super().generate_train_test_split( X, y, train_size)
 
     def generate_KFolds(self, X, y, n_splits=3, shuffle=False, random_state=None): 
         return super().generate_KFolds(X, y, n_splits, shuffle, random_state)
+
+    def is_classification(self):
+        return self.algorithm_type == "Classification"
