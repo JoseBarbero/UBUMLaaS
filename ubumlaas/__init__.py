@@ -48,7 +48,7 @@ def create_app(config_name):
     if config_name == "main_app":
         # Redis
         v.r = redis.Redis()
-        v.q = Queue(connection=v.r)
+        v.q = Queue(connection=v.r, default_timeout=-1)
 
         BASE_WORKERS = 3
         v.workers = 0

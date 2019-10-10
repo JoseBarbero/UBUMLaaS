@@ -69,9 +69,12 @@ def task_skeleton(experiment, current_user):
 
         score_text = ""
         score = 0
-        if experiment["alg"]["alg_typ"] == "Regression":
+        typ = experiment["alg"]["alg_typ"]
+        if typ == "Mixed":
+            typ = _know_type(experiment)
+        if typ == "Regression":
             score = regression_metrics(y_test, y_pred)
-        elif experiment["alg"]["alg_typ"] == "Classification":
+        elif typ == "Classification":
             score = classification_metrics(y_test, y_pred, y_score)
         state = 1
         result = json.dumps(score)
@@ -137,6 +140,33 @@ def execute_sklearn(experiment, path, X_train, X_test, y_train, y_test):
     return y_pred, y_score
 
 
+def __create_weka_parameters(alg_name, alg_config, baseconf=None):
+
+    if baseconf is None:
+        from ubumlaas.models import get_algorithm_by_name
+        exp = get_algorithm_by_name(alg_name)
+        baseconf = json.loads(exp.config)
+
+    lincom = []
+    print(alg_name)
+    print(baseconf)
+    for i in alg_config:
+        parameter = alg_config[i]
+        if type(parameter) == dict:
+            sub_list = __create_weka_parameters(parameter["alg_name"],
+                                                parameter["parameters"])
+            lincom += [baseconf[i]["command"], parameter["alg_name"], "--"]
+            lincom += sub_list
+        else:
+            if parameter is not False:
+                lincom.append(baseconf[i]["command"])
+            if not isinstance(parameter, bool):
+                lincom.append(str(parameter))
+
+    print(lincom)
+    return lincom
+
+
 def execute_weka(experiment, path, X_train, X_test, y_train, y_test):
     """It trains a weka model
 
@@ -158,14 +188,7 @@ def execute_weka(experiment, path, X_train, X_test, y_train, y_test):
 
     conf = json.loads(experiment["alg"]["config"])
 
-    lincom = []
-
-    for i in alg_config.keys():
-        v = alg_config[i]
-        if v is not False:
-            lincom.append(conf[i]["command"])
-        if not isinstance(v, bool):
-            lincom.append(str(v))
+    lincom = __create_weka_parameters(experiment["alg"]["alg_name"], alg_config, conf)
 
     data = create_weka_dataset(X_train, y_train)
 
@@ -175,10 +198,13 @@ def execute_weka(experiment, path, X_train, X_test, y_train, y_test):
     data_test = create_weka_dataset(X_test, y_test)
     function = None
     y_score = None
-    if experiment["alg"]["alg_typ"] == "Classification":
+    typ = experiment["alg"]["alg_typ"]
+    if typ == "Mixed":
+        typ = _know_type(experiment)
+    if typ == "Classification":
         function = lambda p: data_test.class_attribute.value(int(p))
         y_score = classifier.distributions_for_instances(data_test)
-    elif experiment["alg"]["alg_typ"] == "Regression":
+    elif typ == "Regression":
         function = lambda p: p
     y_pred = []
     for instance in data_test:
@@ -194,6 +220,18 @@ def execute_weka(experiment, path, X_train, X_test, y_train, y_test):
         pass
 
     return y_pred, y_score
+
+
+def _know_type(exp):
+    if exp["alg"]["alg_typ"] == "Mixed":
+        from ubumlaas.models import get_algorithm_by_name
+        config = json.loads(exp["alg_config"])
+        for c in config:
+            if type(config[c]) == dict:
+                new_exp = {"alg": get_algorithm_by_name(config[c]["alg_name"]).to_dict(),
+                           "alg_config": config[c]["parameters"]}
+                return _know_type(new_exp)
+    return exp["alg"]["alg_typ"]
 
 
 def create_weka_dataset(X, y):
