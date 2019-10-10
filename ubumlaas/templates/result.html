@@ -17,14 +17,16 @@
                 </div>
                 <div class="row">
                     <p class="col-md-5 font-weight-bold">Algorithm</p>
-                    <p class="col-md-7">{{ experiment.alg_name }} </p>
+                    <p class="col-md-7">{{ name }} </p>
                 </div>
                 <h5 class="text-center">Algorithm Parameters</h5>
                 {% for i in dict_config %}
-                    <div class="row">
-                        <p class="col-md-5 font-weight-bold" data-toggle="tooltip" title="{{ conf[i]['help'] }}">{{ i }}</p>
-                        <p class="col-md-7">{{ dict_config[i] }} </p>
-                    </div>
+                    {% if i != "base_estimator" %}
+                        <div class="row">
+                            <p class="col-md-5 font-weight-bold" data-toggle="tooltip" title="{{ conf[i]['help'] }}">{{ i }}</p>
+                            <p class="col-md-7">{{ dict_config[i] }} </p>
+                        </div>
+                    {% endif %}
                 {% endfor %}
                 {% if experiment.state == 1 %}
                 <a class="btn btn-primary" role="button" href={{url_for("experiments.download_model",id=experiment.id)}} >Download model</a>

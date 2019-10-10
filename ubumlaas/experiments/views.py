@@ -195,12 +195,22 @@ def result_experiment(id):
     exp = load_experiment(id)
     if exp.idu != current_user.id:
         return "", 403
-    return render_template("result.html", experiment=exp,
+    name = exp.alg_name
+    dict_config = json.loads(exp.alg_config)
+    if "base_estimator" in dict_config.keys():
+        name += "-" + get_ensem_alg_name(dict_config["base_estimator"])
+    return render_template("result.html", experiment=exp, 
+                           name=name,
                            title="Experiment Result",
-                           dict_config=json.loads(exp.alg_config),
+                           dict_config=dict_config,
                            conf=json.loads(get_algorithm_by_name(
                                                exp.alg_name).config))
 
+def get_ensem_alg_name(conf):
+    if "base_estimator" in conf["parameters"].keys():
+        return conf["alg_name"] + "-"+ get_ensem_alg_name(conf["parameters"]["base_estimator"])
+    else:
+        return conf["alg_name"]
 
 @experiments.route("/experiment/form_generator", methods=["POST"])
 def form_generator():
