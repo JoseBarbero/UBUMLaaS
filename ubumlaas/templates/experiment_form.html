@@ -285,23 +285,44 @@
         add_algorithm_parameters();
     }
 
-    function add_algorithm_parameters(){        
+    function add_algorithm_parameters(alg=null, alg_config=null, level=0){  
         if($(".timeout-finished").length == 0){
             setTimeout(add_algorithm_parameters, 10);
             return;
         }
-        base_alg_config = JSON.parse(algorithm_selected.config);
-        alg_config = JSON.parse(experiment.alg_config);
+        let base_alg_config;
+        let prefix = "";
+        if(alg == null){
+            alg = algorithm_selected;
+            base_alg_config = JSON.parse(alg.config);
+        }else{
+            base_alg_config = JSON.parse(alg);
+        }
+
+        if(level>0){
+            prefix = "level"+level+"_";
+        }
+        
+        if(alg_config == null){
+            alg_config = JSON.parse(experiment.alg_config);
+        }
         var parameters = Object.keys(base_alg_config);
         var sel_parameters = Object.keys(alg_config);
         parameters.forEach(function(i){
-            var p = $("#"+i+"_value");
+            var p = $("#"+prefix+i+"_value");
             if(base_alg_config[i].type != "boolean"){
                 if(!sel_parameters.includes(i)){
                     change_validate(i);
                 }else{
-                    p.val(alg_config[i]);
-                    p.change();
+                    if(typeof(alg_config[i] == "object")){
+                        p.val(alg_config[i].alg_name);
+                        p.change();
+                        console.log(load_config(false, p.val(), false));
+                        add_algorithm_parameters(load_config(false, p.val(), false), alg_config[i].parameters, level+1);
+                    }else{
+                        p.val(alg_config[i]);
+                        p.change();
+                    }                    
                 }
             }else{
                 //p.prop("checked",alg_config[i]);
