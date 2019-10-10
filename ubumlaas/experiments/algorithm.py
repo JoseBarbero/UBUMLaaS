@@ -89,7 +89,25 @@ def task_skeleton(experiment, current_user):
     exp.endtime = time()
     v.db.session.commit()
 
-    send_email(current_user["username"], current_user["email"], experiment["id"], str(exp.result))
+    send_email(current_user["username"], current_user["email"],
+               experiment["id"], str(exp.result))
+
+
+def __create_sklearn_model(alg_name, alg_config):
+    """Create a sklearn model recursive
+
+    Arguments:
+        alg_name {string} -- sklearn model name
+        alg_config {dict} -- parameters
+    """
+    for ac in alg_config:
+        if type(alg_config[ac]) == dict:
+            alg_config[ac] = __create_sklearn_model(
+                                    alg_config[ac]["alg_name"],
+                                    alg_config[ac]["parameters"])
+
+    model = eval(alg_name+"(**alg_config)")
+    return model
 
 
 def execute_sklearn(experiment, path, X_train, X_test, y_train, y_test):
@@ -107,7 +125,7 @@ def execute_sklearn(experiment, path, X_train, X_test, y_train, y_test):
         dataframe -- output of X_test in trained model.
     """
     alg_config = json.loads(experiment["alg_config"])
-    model = eval(experiment["alg"]["alg_name"]+"(**alg_config)")
+    model = __create_sklearn_model(experiment["alg"]["alg_name"], alg_config)
     model.fit(X_train, y_train)
     y_pred = model.predict(X_test)
     y_score = None

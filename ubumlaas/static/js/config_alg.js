@@ -76,7 +76,7 @@ function name_of_base_clasifier(level){
  * @param {basename of attribute} e 
  * @param {if selectable is an ensemble} ensemble 
  */
-function change_value(e, ensemble=False){
+function change_value(e, ensemble=false){
     let val;
     let value = $("#"+e+"_value");
     let span = $("#"+e+"_span");
@@ -281,6 +281,9 @@ function generateForm(alg_config, place_in_id="form_config_alg", level_to_modify
             content.attr("onChange", "change_value('"+basename+"', true); load_next_ensemble('"+basename+"',"+(level_to_modify+1)+")");
             change_value(basename, true);
         }
+        if(parameter.default == null){
+            $("#"+basename+"_activator_label").click();
+        }
     });
     place_in.append($("<div></div>", {class: "timeout-finished"}));
     if(new_subalgorithm != ""){
@@ -312,7 +315,7 @@ function clean_levels(base_level){
 function give_me_activator(content, i){
     let div = $("<div></div>",{class: "row", id: i+"_div"});
     let beauty_switch = $("<div></div>",{class: "material-switch pull-right col-2", id: i+"_beauty"});
-    let lbl = $("<label for=\""+i+"_activator"+"\" onClick=\"change_validate('"+i+"')\" class=\"badge-danger\"></label>");
+    let lbl = $("<label id=\""+i+"_activator_label\" for=\""+i+"_activator"+"\" onClick=\"change_validate('"+i+"')\" class=\"badge-danger\"></label>");
     let activator = $("<input/>", {type: "checkbox", id: i+"_activator", checked: "checked"});
     beauty_switch.append(activator);
     beauty_switch.append(lbl);
@@ -322,18 +325,30 @@ function give_me_activator(content, i){
     return content;
 }
 
-function get_config_form(){
-    if (alg_config_reference == null){
-        return {};
+function get_config_form(alg_name=null, level=0){
+    let name_prefix = "";
+    if (level > 0){
+        name_prefix = "level"+level+"_";
     }
-    var parameters = Object.keys(alg_config_reference);
+    if(alg_name == null){
+        alg_name = $("#alg_name").val();
+    }
+    let config = load_config(false, alg_name, false);
+    var config_refence = JSON.parse(config);
+    var parameters = Object.keys(config_refence);
     let result = {};
     parameters.forEach(function(i){
-        let par = alg_config_reference[i];
-        let parameter = $("#"+i+"_value");
+        let par = config_refence[i];
+        let parameter = $("#"+name_prefix+i+"_value");
         if(!parameter.prop('disabled')){
-            result[i] = parameter.val();            
+            result[i] = parameter.val();    
             switch(par.type){
+                case "ensemble":
+                    let ens = {};
+                    ens.alg_name = result[i];
+                    ens.parameters = get_config_form(ens.alg_name, level+1);
+                    result[i] = ens;
+                    break;
                 case "boolean":
                     result[i]=parameter.is(":checked");
                     break;
