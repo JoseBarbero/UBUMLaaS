@@ -22,8 +22,16 @@ function target_or_use(identifier, mode){
 }
 
 function get_dataset_config(){
-    dataset_config = {
-        train_partition: $("#train_slider").val()
+    dataset_config = {}
+    let mode = $("input[type=radio][name=experiment_mode]:checked").val();
+    dataset_config.mode = mode;
+    switch(mode){
+        case "cross":
+            dataset_config.k_folds = $("#k_folds").val();
+            break;
+        case "split":
+            dataset_config.train_partition = $("#train_slider").val();
+            break;
     }
     let selected_columns = [];
 
