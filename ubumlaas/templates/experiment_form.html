@@ -314,7 +314,7 @@
                 if(!sel_parameters.includes(i)){
                     change_validate(i);
                 }else{
-                    if(typeof(alg_config[i] == "object")){
+                    if(typeof(alg_config[i]) == "object"){
                         p.val(alg_config[i].alg_name);
                         p.change();
                         console.log(load_config(false, p.val(), false));
