@@ -27,10 +27,10 @@ function get_dataset_config(){
     dataset_config.mode = mode;
     switch(mode){
         case "cross":
-            dataset_config.k_folds = $("#k_folds").val();
+            dataset_config.k_folds = parseInt($("#k_folds").val());
             break;
         case "split":
-            dataset_config.train_partition = $("#train_slider").val();
+            dataset_config.train_partition = parseInt($("#train_slider").val());
             break;
     }
     let selected_columns = [];
@@ -46,6 +46,6 @@ function get_dataset_config(){
             selected_columns.push(current_column);
         }
     }
-    dataset_config.selected_columns = selected_columns;
+    dataset_config.columns = selected_columns;
     return dataset_config;
 }

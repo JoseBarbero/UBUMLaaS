@@ -37,7 +37,7 @@ import shutil
 class AbstractExecute(ABC):
 
     @abstractmethod
-    def create_model(self, algorithm_name, algorithm_configuration):
+    def create_model(self):
         pass
     @abstractmethod
     def serialize(self, model, path):
@@ -57,7 +57,7 @@ class AbstractExecute(ABC):
         y = data[target]  
         return X, y
     @abstractmethod
-    def close():
+    def close(self):
         pass
     @abstractmethod
     def find_y_uniques(self,y):
@@ -74,14 +74,22 @@ class AbstractExecute(ABC):
     def generate_KFolds(self, X, y, n_splits=3, shuffle=False, random_state=None): 
         folds=[] 
         kf = StratifiedKFold(n_splits=n_splits, shuffle=shuffle, random_state=random_state) 
-        for train_index, test_index in kf.split(X): 
+        for train_index, test_index in kf.split(X, y): 
             X_train, X_test = X[train_index], X[test_index] 
             y_train, y_test = y[train_index], y[test_index] 
             folds.append((X_train, X_test, y_train, y_test)) 
         return folds
-    @abstractmethod
-    def get_splits():
-        pass
+    
+    def _know_type(self, exp):
+        if exp["alg"]["alg_typ"] == "Mixed":
+            from ubumlaas.models import get_algorithm_by_name
+            config = json.loads(exp["alg_config"])
+            for c in config:
+                if type(config[c]) == dict:
+                    new_exp = {"alg": get_algorithm_by_name(config[c]["alg_name"]).to_dict(),
+                            "alg_config": config[c]["parameters"]}
+                    return self._know_type(new_exp)
+        return exp["alg"]["alg_typ"]
  
 
 
@@ -89,9 +97,9 @@ class Execute_sklearn(AbstractExecute):
 
     def __init__(self, experiment):
         self.algorithm_name = experiment["alg"]["alg_name"] #example weka.classification.trees.J48
-        self.algorithm_type = experiment["alg"]["alg_typ"] #classification, reggression or mixed
-        self.algorithm_configuration = experiment["alg_config"] #configuration algorithm
-        self.configuration = experiment["alg"]["config"]
+        self.algorithm_type = super()._know_type(experiment) #classification, reggression or mixed
+        self.algorithm_configuration = json.loads(experiment["alg_config"]) #configuration algorithm
+        self.configuration = json.loads(experiment["alg"]["config"])
         self.experiment_configuration = json.loads(experiment["exp_config"])
 
 
@@ -139,35 +147,23 @@ class Execute_sklearn(AbstractExecute):
         return super().generate_KFolds( X, y, n_splits, shuffle, random_state) 
     def is_classification(self):
         return self.algorithm_type == "Classification"
-    def close():
+    def close(self):
         pass
     def find_y_uniques(self, y):
         pass
-    def get_splits(self):
-        return self.experiment_configuration.get("splits")
 
 class Execute_weka(AbstractExecute):
 
     def __init__(self,experiment):
         jvm.start(packages=True)
         self.algorithm_name = experiment["alg"]["alg_name"] #for example: weka.classification.trees.J48
-        self.algorithm_type = self._know_type(experiment) #Classification, Reggression or Mixed
-        self.algorithm_configuration = experiment["alg_config"] #configuration algorithm
-        self.configuration = experiment["alg"]["config"]
+        self.algorithm_type = super()._know_type(experiment) #classification, reggression or mixed
+        self.algorithm_configuration = json.loads(experiment["alg_config"]) #configuration algorithm
+        self.configuration = json.loads(experiment["alg"]["config"])
         self.experiment_configuration = json.loads(experiment["exp_config"])
         
         self.y_uniques = None
     
-    def _know_type(self, exp):
-        if exp["alg"]["alg_typ"] == "Mixed":
-            from ubumlaas.models import get_algorithm_by_name
-            config = json.loads(exp["alg_config"])
-            for c in config:
-                if type(config[c]) == dict:
-                    new_exp = {"alg": get_algorithm_by_name(config[c]["alg_name"]).to_dict(),
-                            "alg_config": config[c]["parameters"]}
-                    return self._know_type(new_exp)
-        return exp["alg"]["alg_typ"]
 
     def create_weka_dataset(self, X, y):
         """Create weka dataset using temporaly file
@@ -227,9 +223,9 @@ class Execute_weka(AbstractExecute):
         print(lincom)
         return lincom
 
-    def create_model(self, algorithm_name, algorithm_configuration, configuration):
+    def create_model(self):
         lincom = self.__create_weka_parameters(self.algorithm_name, self.algorithm_configuration, self.configuration)
-        return Classifier(classname=algorithm_name, options=lincom)
+        return Classifier(classname=self.algorithm_name, options=lincom)
    
     def serialize(self, model, path):
         serialization.write(path, model)
@@ -256,8 +252,8 @@ class Execute_weka(AbstractExecute):
 
         try: #Trying to convert to int
             y_pred = [int(pred) for pred in y_pred]
-            except ValueError:
-                pass
+        except ValueError:
+            pass
         return y_pred, y_score
 
     def open_dataset(self, path, filename):
@@ -271,12 +267,10 @@ class Execute_weka(AbstractExecute):
 
     def is_classification(self):
         return self.algorithm_type == "Classification"
-    def get_splits(self):
-        return self.experiment_configuration.get("splits")
-    def close():
+    def close(self):
         jvm.stop()
     def find_y_uniques(self, y):
         if self.is_classification:
-            uniques = y[y.columns[0]].unique()
+            uniques = y.unique()
             uniques.sort()
             self.y_uniques = uniques

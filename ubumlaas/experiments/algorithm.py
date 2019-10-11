@@ -68,23 +68,30 @@ def task_skeleton(experiment, current_user):
         execution_lib.serialize(model, "{}{}.model".format(models_dir, experiment['id']))
 
         #TODO find variable mode
+        exp_config = execution_lib.experiment_configuration
         y_pred = None
         y_score = None
-        if mode = "split":
-            if execution_lib.get_splits() < 100:
-                X_train, X_test, y_train, y_test = execution_lib.generate_train_test_split(X, y, execution_lib.get_splits())
+        if exp_config["mode"] == "split":
+            if exp_config["train_partition"] < 100:
+                X_train, X_test, y_train, y_test = execution_lib.generate_train_test_split(X, y, exp_config["train_partition"])
                 model = execution_lib.create_model()
                 execution_lib.train(model, X_train, y_train)
                 y_pred, y_score = execution_lib.predict(model, X_test, y_test)
 
-        elif mode == "cross":
+        elif exp_config["mode"] == "cross":
+                y_pred = []
+                y_score = []
                 kfolds = execution_lib.generate_KFolds(X, y, )
+                for X_train, X_test, y_train, y_test in kfolds:
+                    model = execution_lib.create_model()
+                    execution_lib.train(model, X_train, y_train)
+                    y_predk, y_scorek = execution_lib.predict(model, X_test, y_test)
+                    y_pred.append(y_predk)
+                    y_score.append(y_scorek)
 
         score_text = ""
         score = 0
-        typ = experiment["alg"]["alg_typ"]
-        if typ == "Mixed":
-            typ = _know_type(experiment)
+        typ = execution_lib.algorithm_type
         if typ == "Regression":
             score = regression_metrics(y_test, y_pred)
         elif typ == "Classification":

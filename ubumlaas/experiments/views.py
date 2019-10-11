@@ -61,10 +61,7 @@ def launch_experiment():
     """
     user = current_user
     dataset_config = json.loads(unquote(request.form.get("dataset_config")))
-    exp_config = {"type": "partition",
-                  "split": int(dataset_config["train_partition"]),
-                  "target": dataset_config["target"],
-                  "columns": dataset_config["selected_columns"]}
+    exp_config = dataset_config
     exp = Experiment(user.id, request.form.get("alg_name"),
                      unquote(request.form.get("alg_config")),
                      json.dumps(exp_config), request.form.get("data"),
