@@ -30,6 +30,7 @@ from weka.classifiers import Evaluation
 from weka.core.converters import Loader
 import weka.core.serialization as serialization
 from ubumlaas.util import get_dataframe_from_file
+from ubumlaas.experiments.execute_algortihm import Execute_sklearn, Execute_weka
 
 import tempfile
 import shutil
@@ -46,28 +47,38 @@ def task_skeleton(experiment, current_user):
     # Task need app environment
     create_app('subprocess')  # No generate new workers
     # Diference sklearn executor and weka executor
-    apps_functions = {"sklearn": execute_sklearn, "weka": execute_weka}
+    apps_functions = {"sklearn": Execute_sklearn, "weka": Execute_weka}
     # Get algorithm type
     type_app = experiment["alg"]["alg_name"].split(".", 1)[0]
     try:
-        exp_config = json.loads(experiment["exp_config"])
-        # Open experiment configuration
-        data = get_dataframe_from_file("ubumlaas/datasets/"+current_user["username"] +"/"
+        execution_lib = apps_functions[type_app](experiment)
+        
+        X, y = execution_lib.open_dataset("ubumlaas/datasets/"+current_user["username"] +"/"
                            ,experiment['data'])
-        X = data.loc[:, exp_config["columns"]]
-        y = data[exp_config["target"]]
-        # Split dataset (if unsupervised it will be modified)
-        X_train, X_test, y_train, y_test = \
-            sklearn.model_selection. \
-            train_test_split(X, y, test_size=1-exp_config["split"]/100)
 
+        #Find uniques values in weka and is classification
+        execution_lib.find_y_uniques(y)
+
+        #Training with and serialize all dataset
         models_dir = "ubumlaas/models/{}/".format(current_user["username"])
         if not os.path.exists(models_dir):
             os.makedirs(models_dir)
-        y_pred, y_score = apps_functions[type_app](experiment,
-                                          "{}{}.model".
-                                          format(models_dir, experiment['id']),
-                                          X_train, X_test, y_train, y_test)
+        model = execution_lib.create_model()
+        execution_lib.train(model, X, y)
+        execution_lib.serialize(model, "{}{}.model".format(models_dir, experiment['id']))
+
+        #TODO find variable mode
+        y_pred = None
+        y_score = None
+        if mode = "split":
+            if execution_lib.get_splits() < 100:
+                X_train, X_test, y_train, y_test = execution_lib.generate_train_test_split(X, y, execution_lib.get_splits())
+                model = execution_lib.create_model()
+                execution_lib.train(model, X_train, y_train)
+                y_pred, y_score = execution_lib.predict(model, X_test, y_test)
+
+        elif mode == "cross":
+                kfolds = execution_lib.generate_KFolds(X, y, )
 
         score_text = ""
         score = 0
@@ -85,6 +96,8 @@ def task_skeleton(experiment, current_user):
         result = str(ex)
         print(traceback.format_exc())
         state = 2
+    finally:
+        execution_lib.close()
 
     from ubumlaas.models import Experiment
 

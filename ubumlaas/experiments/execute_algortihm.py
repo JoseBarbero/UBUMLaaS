@@ -9,7 +9,7 @@ import sklearn.neighbors
 import sklearn.model_selection
 import sklearn.preprocessing
 import sklearn.multiclass
-from sklearn.model_selection import KFold
+from sklearn.model_selection import StratifiedKFold
 
 from ubumlaas import create_app
 import pandas as pd
@@ -51,10 +51,21 @@ class AbstractExecute(ABC):
     @abstractmethod
     def predict(self, model, X):
         pass
+    def open_dataset(self, path, filename, columns, target):
+        data = get_dataframe_from_file(path, filename)
+        X = data.loc[:,columns]
+        y = data[target]  
+        return X, y
+    @abstractmethod
+    def close():
+        pass
+    @abstractmethod
+    def find_y_uniques(self,y):
+        pass
     @abstractmethod
     def generate_train_test_split(self, X, y, train_size):
         if train_size == 100:
-            return X, y, [], []
+            return X, [], y, []
 
         return sklearn.model_selection. \
             train_test_split(X, y, train_size=train_size/100)
@@ -62,26 +73,45 @@ class AbstractExecute(ABC):
     @abstractmethod
     def generate_KFolds(self, X, y, n_splits=3, shuffle=False, random_state=None): 
         folds=[] 
-        kf = KFold(n_splits=n_splits, shuffle=shuffle, random_state=random_state) 
+        kf = StratifiedKFold(n_splits=n_splits, shuffle=shuffle, random_state=random_state) 
         for train_index, test_index in kf.split(X): 
             X_train, X_test = X[train_index], X[test_index] 
             y_train, y_test = y[train_index], y[test_index] 
             folds.append((X_train, X_test, y_train, y_test)) 
-        return folds 
+        return folds
+    @abstractmethod
+    def get_splits():
+        pass
  
 
 
 class Execute_sklearn(AbstractExecute):
 
-    def __init__(experiment):
+    def __init__(self, experiment):
         self.algorithm_name = experiment["alg"]["alg_name"] #example weka.classification.trees.J48
         self.algorithm_type = experiment["alg"]["alg_typ"] #classification, reggression or mixed
         self.algorithm_configuration = experiment["alg_config"] #configuration algorithm
         self.configuration = experiment["alg"]["config"]
+        self.experiment_configuration = json.loads(experiment["exp_config"])
 
 
+    def __create_sklearn_model(self, alg_name, alg_config):
+        """Create a sklearn model recursive
+
+        Arguments:
+            alg_name {string} -- sklearn model name
+            alg_config {dict} -- parameters
+        """
+        for ac in alg_config:
+            if type(alg_config[ac]) == dict:
+                alg_config[ac] = self.__create_sklearn_model(
+                                        alg_config[ac]["alg_name"],
+                                        alg_config[ac]["parameters"])
+
+        model = eval(alg_name+"(**alg_config)")
+        return model
     def create_model(self):
-        return eval(self.algorithm_name+"(**self.algorithm_configuration)")
+        return self.__create_sklearn_model(self.algorithm_name, self.algorithm_configuration)
    
     def serialize(self, model, path):
         pickle.dump(model, open(path, 'wb'))
@@ -92,65 +122,113 @@ class Execute_sklearn(AbstractExecute):
     def train(self,model, X, y):
         model.fit(X, y)
 
-    def predict(self, model, X, y=None):
-        return model.predict(X), model.predict_proba(X)       
+    def predict(self, model, X, y):
+        predictions = model.predict(X)
+        y_score = None
+        if self.is_classification():
+            y_score = model.predict_proba(X) 
+        return predictions, y_score
+ 
+    def open_dataset(self, path, filename):
+        return super().open_dataset(path, filename, self.experiment_configuration["columns"], self.experiment_configuration["target"])
 
     def generate_train_test_split(self, X, y, train_size):
         return super().generate_train_test_split( X, y, train_size)
 
     def generate_KFolds(self, X, y, n_splits=3, shuffle=False, random_state=None): 
         return super().generate_KFolds( X, y, n_splits, shuffle, random_state) 
+    def is_classification(self):
+        return self.algorithm_type == "Classification"
+    def close():
+        pass
+    def find_y_uniques(self, y):
+        pass
+    def get_splits(self):
+        return self.experiment_configuration.get("splits")
 
 class Execute_weka(AbstractExecute):
 
-    def __init__(experiment):
-        self.algorithm_name = experiment["alg"]["alg_name"] #example weka.classification.trees.J48
-        self.algorithm_type = experiment["alg"]["alg_typ"] #classification, reggression or mixed
+    def __init__(self,experiment):
+        jvm.start(packages=True)
+        self.algorithm_name = experiment["alg"]["alg_name"] #for example: weka.classification.trees.J48
+        self.algorithm_type = self._know_type(experiment) #Classification, Reggression or Mixed
         self.algorithm_configuration = experiment["alg_config"] #configuration algorithm
         self.configuration = experiment["alg"]["config"]
         self.experiment_configuration = json.loads(experiment["exp_config"])
+        
+        self.y_uniques = None
+    
+    def _know_type(self, exp):
+        if exp["alg"]["alg_typ"] == "Mixed":
+            from ubumlaas.models import get_algorithm_by_name
+            config = json.loads(exp["alg_config"])
+            for c in config:
+                if type(config[c]) == dict:
+                    new_exp = {"alg": get_algorithm_by_name(config[c]["alg_name"]).to_dict(),
+                            "alg_config": config[c]["parameters"]}
+                    return self._know_type(new_exp)
+        return exp["alg"]["alg_typ"]
 
-    def create_weka_dataset(self, X, y, y_uniques=None):
-    """Create weka dataset using temporaly file
+    def create_weka_dataset(self, X, y):
+        """Create weka dataset using temporaly file
 
-    Arguments:
-        X {array like} -- non target class instances
-        y {array like} -- target class instances
+        Arguments:
+            X {array like} -- non target class instances
+            y {array like} -- target class instances
 
-    Returns:
-        java object wrapped -- weka dataset
-    """
-    try:
-        # Create new temporal file
-        temp = tempfile.NamedTemporaryFile()
+        Returns:
+            java object wrapped -- weka dataset
+        """
+        try:
+            # Create new temporal file
+            temp = tempfile.NamedTemporaryFile()
 
-        # Concat X and y. Write csv to temporaly file.
-        X_df = pd.DataFrame(X)
-        y_df = pd.DataFrame(y)
-        dataframe = pd.concat([X_df, y_df], axis=1)
-        dataframe.to_csv(temp.name, index=None)
+            # Concat X and y. Write csv to temporaly file.
+            X_df = pd.DataFrame(X)
+            y_df = pd.DataFrame(y)
+            dataframe = pd.concat([X_df, y_df], axis=1)
+            dataframe.to_csv(temp.name, index=None)
+            options = None
+            if self.y_uniques is not None:
+                options = ["-L", "{}:{}".format(dataframe.shape[1],
+                                    ",".join(map(str, self.y_uniques)))]
+            loader = Loader(classname="weka.core.converters.CSVLoader",
+                            options = options)
+            data = loader.load_file(temp.name)
+            # Last column of data is target
+            data.class_is_last()
+        finally:
+            temp.close()
+        return data
 
-        if y_uniques is not None:
-            options = ["-L", "{}:{}".format(dataframe.shape[1],
-                                ",".join(map(str, y_uniques)))]
-        loader = Loader(classname="weka.core.converters.CSVLoader",
-                        options = options)
-        data = loader.load_file(temp.name)
-        # Last column of data is target
-        data.class_is_last()
-    finally:
-        temp.close()
-    return data
+    def __create_weka_parameters(self, alg_name, alg_config, baseconf=None):
+
+        if baseconf is None:
+            from ubumlaas.models import get_algorithm_by_name
+            exp = get_algorithm_by_name(alg_name)
+            baseconf = json.loads(exp.config)
+
+        lincom = []
+        print(alg_name)
+        print(baseconf)
+        for i in alg_config:
+            parameter = alg_config[i]
+            if type(parameter) == dict:
+                sub_list = self.__create_weka_parameters(parameter["alg_name"],
+                                                    parameter["parameters"])
+                lincom += [baseconf[i]["command"], parameter["alg_name"], "--"]
+                lincom += sub_list
+            else:
+                if parameter is not False:
+                    lincom.append(baseconf[i]["command"])
+                if not isinstance(parameter, bool):
+                    lincom.append(str(parameter))
+
+        print(lincom)
+        return lincom
 
     def create_model(self, algorithm_name, algorithm_configuration, configuration):
-        lincom = []
-
-        for i in self.algorithm_configuration.keys():
-            v = self.algorithm_configuration[i]
-            if v is not False:
-                lincom.append(configuration[i]["command"])
-            if not isinstance(v, bool):
-                lincom.append(str(v))
+        lincom = self.__create_weka_parameters(self.algorithm_name, self.algorithm_configuration, self.configuration)
         return Classifier(classname=algorithm_name, options=lincom)
    
     def serialize(self, model, path):
@@ -160,19 +238,30 @@ class Execute_weka(AbstractExecute):
         return Classifier(jobject=serialization.read(path))
 
     def train(self, model, X, y):
-        y_unique=None
-        if self.is_classification:
-            y_unique = list(set(y))
-            y_unique.sort()
-        data = self.create_weka_dataset(X, y, y_unique)
+        data = self.create_weka_dataset(X, y)
         model.build_classifier(data)
         
-    def predict(self, model, X, y=None):
+    def predict(self, model, X, y):
         if y is None:
-            y = pd.DataFrame({self.experiment_configuration["target"]:["?"]*len(x)})
+            #TODO multi-label is different
+            y = pd.DataFrame({self.experiment_configuration["target"]:["?"]*len(X.index)})
 
         data_test = self.create_weka_dataset(X, y)
+        y_score = None
+        if self.is_classification:
+            y_pred = [data_test.class_attribute.value(int(model.classify_instance(instance)))for instance in data_test]
+            y_score = model.distributions_for_instances(data_test)
+        else:
+            y_pred = [model.classify_instance(instance) for instance in data_test]
 
+        try: #Trying to convert to int
+            y_pred = [int(pred) for pred in y_pred]
+            except ValueError:
+                pass
+        return y_pred, y_score
+
+    def open_dataset(self, path, filename):
+        return super().open_dataset(path, filename, self.experiment_configuration["columns"], self.experiment_configuration["target"])
 
     def generate_train_test_split(self, X, y, train_size):
         return super().generate_train_test_split( X, y, train_size)
@@ -182,3 +271,12 @@ class Execute_weka(AbstractExecute):
 
     def is_classification(self):
         return self.algorithm_type == "Classification"
+    def get_splits(self):
+        return self.experiment_configuration.get("splits")
+    def close():
+        jvm.stop()
+    def find_y_uniques(self, y):
+        if self.is_classification:
+            uniques = y[y.columns[0]].unique()
+            uniques.sort()
+            self.y_uniques = uniques
