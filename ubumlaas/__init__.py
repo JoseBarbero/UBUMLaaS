@@ -15,10 +15,10 @@ import time
 
 def create_app(config_name):
     """ Creata application.
-    
+
     Arguments:
         config_name {string} -- configuration.
-    
+
     Returns:
         Flask -- flask application.
     """
@@ -48,16 +48,16 @@ def create_app(config_name):
     if config_name == "main_app":
         # Redis
         v.r = redis.Redis()
-        v.q = Queue(connection=v.r)
+        v.q = Queue(connection=v.r, default_timeout=-1)
 
         BASE_WORKERS = 3
         v.workers = 0
         for _ in range(BASE_WORKERS):
             WorkerBuilder().set_queue(v.q).create().start()
 
-        #Install weka packages
-        v.q.enqueue(weka_packages.install_packages,"ubumlaas/weka/weka_packages.txt")
-      
+        # Install weka packages
+        v.q.enqueue(weka_packages.install_packages,
+                    "ubumlaas/weka/weka_packages.txt")
 
     ######################
     ###  LOGIN CONFIG  ###

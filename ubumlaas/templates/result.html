@@ -17,14 +17,16 @@
                 </div>
                 <div class="row">
                     <p class="col-md-5 font-weight-bold">Algorithm</p>
-                    <p class="col-md-7">{{ experiment.alg_name }} </p>
+                    <p class="col-md-7">{{ name }} </p>
                 </div>
                 <h5 class="text-center">Algorithm Parameters</h5>
                 {% for i in dict_config %}
-                    <div class="row">
-                        <p class="col-md-5 font-weight-bold" data-toggle="tooltip" title="{{ conf[i]['help'] }}">{{ i }}</p>
-                        <p class="col-md-7">{{ dict_config[i] }} </p>
-                    </div>
+                    {% if i != "base_estimator" %}
+                        <div class="row">
+                            <p class="col-md-5 font-weight-bold" data-toggle="tooltip" title="{{ conf[i]['help'] }}">{{ i }}</p>
+                            <p class="col-md-7">{{ dict_config[i] }} </p>
+                        </div>
+                    {% endif %}
                 {% endfor %}
                 <div class="row">
                     <div class="col-md-3">
@@ -95,89 +97,119 @@
                                     "</i>"+
                             "</a>"));
 
-                let div = $("<div></div>",{class: "col-12 row", id: i+"_chart", style: "display: none;"});
-                switch(i){
-                    case "AUC":
-                        result[i] = 1-result[i];
-                    case "max_error":
-                    case "mean_score_error":
-                    case "mean_absolute_error":
-                    case "kappa":
-                    case "accuracy":                    
-                    case "f1_score":
-                        let k = $("<p></p>", {class: "col-md-5 font-weight-bold"});
-                        let v = $("<p></p>", {class: "col-md-7"});
-                        k.text("Value:");
-                        v.text(result[i]);
-                        div.append(k, v);
-                        break;
-                    case "ROC":
-                        let label = "AUC="+(1-result["AUC"]);
-                        var canvas = $("<canvas></canvas>", {id:i+"_canvas", width: "100%"});
-                        var ctx = canvas.get(0).getContext('2d');
-                        
-                        var myChart = new Chart(ctx, {
-                            type: 'line',
-                            data: {
-                                datasets: [{
-                                    label: label,
-                                    data: x_y_convert(result[i]),
-                                    backgroundColor: convertHex(GLOBAL_STYLE.getPropertyValue('--primary'),50),
-                                    borderColor: GLOBAL_STYLE.getPropertyValue('--primary'),
+                
+                let nav = $("<ul></ul>", {class: "nav nav-tabs"})
+                let super_div = $("<div></div>", {class: "tab-content"})
 
-                                }]
-                            },
-                            options: {
-                                elements: {
-                                    point: {
-                                        radius: 0
-                                    }
-                                },                                
-                                scales: {
-                                    xAxes: [{
-                                        type: "linear"
-                                    }],
-                                    yAxes: [{
-                                        ticks: {
-                                            beginAtZero: true
-                                        }
+                for(let z=0; z<result[i].length; z++){
+                    let li = $("<li></li>");
+                    li.append($("<a></a>", {"data-toggle": "tab", href: "#"+i+"-"+z+"_tab",
+                                            class: "nav-link", id: i+"-"+z+"_tab-tab",
+                                            "aria-controls": i+"-"+z+"_tab"}));
+                    let a = $(li.children()[0]);
+                    a.text("k"+z);
+                    let tab_pane_div = $("<div></div>",{class: "tab-pane fade",
+                                                        id: i+"-"+z+"_tab", role: "tabpanel",
+                                                        "aria-labelledby": i+"-"+z+"_tab-tab"});
+                    let tab_container_div = $("<div></div>", {class: "container-fluid"});
+                    tab_pane_div.append(tab_container_div);
+                    let div = $("<div></div>", {class: "row"});
+                    if(z == 0){
+                        tab_pane_div.addClass("active");
+                        tab_pane_div.addClass("show");
+                        a.addClass("active");
+                        a.attr("aria-selected", true);
+                    }
+                    let result_val = result[i][z];
+                    switch(i){
+                        case "AUC":
+                        result_val = 1-result_val;
+                        case "max_error":
+                        case "mean_score_error":
+                        case "mean_absolute_error":
+                        case "kappa":
+                        case "accuracy":
+                        case "f1_score":
+                            let k = $("<p></p>", {class: "col-md-5 font-weight-bold"});
+                            let v = $("<p></p>", {class: "col-md-7"});
+                            k.text("Value:");
+                            v.text(result_val);
+                            div.append(k, v);
+                            break;
+                        case "ROC":
+                            let label = "AUC="+(1-result["AUC"][z]);
+                            var canvas = $("<canvas></canvas>", {id:i+"_canvas", width: "100%"});
+                            var ctx = canvas.get(0).getContext('2d');
+                            
+                            var myChart = new Chart(ctx, {
+                                type: 'line',
+                                data: {
+                                    datasets: [{
+                                        label: label,
+                                        data: x_y_convert(result_val),
+                                        backgroundColor: convertHex(GLOBAL_STYLE.getPropertyValue('--primary'),50),
+                                        borderColor: GLOBAL_STYLE.getPropertyValue('--primary'),
+
                                     }]
+                                },
+                                options: {
+                                    elements: {
+                                        point: {
+                                            radius: 0
+                                        }
+                                    },                                
+                                    scales: {
+                                        xAxes: [{
+                                            type: "linear"
+                                        }],
+                                        yAxes: [{
+                                            ticks: {
+                                                beginAtZero: true
+                                            }
+                                        }]
+                                    }
                                 }
-                            }
-                        })
-                        div.append(canvas);
-                        break;
-                    case "confussion_matrix":
-                        var canvas = $("<div></div>", {id:i+"_canvas", width: "100%"});
-                        let opt = {
-                            chart: {
-                                type: "heatmap"
-                            },
-                            dataLabels: {
-                                style: { colors: ["black"]}
-                            },
-                            colors: [$.trim(GLOBAL_STYLE.getPropertyValue('--primary'))],
-                            series: get_series(result[i]),
-                            xaxis: {
-                                labels: {
+                            })
+                            div.append(canvas);
+                            break;
+                        case "confussion_matrix":
+                            var canvas = $("<div></div>", {id:i+"_canvas", width: "100%"});
+                            let opt = {
+                                chart: {
+                                    type: "heatmap"
+                                },
+                                dataLabels: {
+                                    style: { colors: ["black"]}
+                                },
+                                colors: [$.trim(GLOBAL_STYLE.getPropertyValue('--primary'))],
+                                series: get_series(result_val),
+                                xaxis: {
+                                    labels: {
+                                        show: false
+                                    }
+                                },
+                                yaxis: {
                                     show: false
-                                }
-                            },
-                            yaxis: {
-                                show: false
-                            },
-                            plotOptions: {
-                                heatmap: {
-                                    distributed: true
+                                },
+                                plotOptions: {
+                                    heatmap: {
+                                        distributed: true
+                                    }
                                 }
                             }
-                        }
-                        var chart = new ApexCharts(canvas.get(0), opt);
-                        to_render.push(chart);
-                        div.append(canvas);
-                        break;                  
+                            var chart = new ApexCharts(canvas.get(0), opt);
+                            to_render.push(chart);
+                            div.append(canvas);
+                            break;                  
+                    }
+                    nav.append(li);
+                    tab_container_div.append(div);
+                    super_div.append(tab_pane_div);
                 }
-                row.append(div);
+                let super_container = $("<div></div>", {class: "tabs-container col-12", id: i+"_chart", style: "display: none;"});
+                super_container.append(nav);
+                super_container.append(super_div);
+                row.append(super_container);
                 place_in.append(row);
             });
             to_render.forEach(function(e){

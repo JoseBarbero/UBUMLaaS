@@ -3,7 +3,7 @@ from flask import \
      send_file, abort, safe_join)
 import variables as v
 from ubumlaas.models import \
-    (User, Experiment, load_user, load_experiment, get_algorithm_by_name)
+    (User, Experiment, load_user, load_experiment, get_algorithm_by_name, get_similar_algorithms)
 from ubumlaas.experiments.forms import \
     (ExperimentForm, DatasetForm, DatasetParametersForm)
 from flask_login import (current_user, login_required)
@@ -51,7 +51,6 @@ def new_experiment():
                            title="New experiment", experiment=experiment)
 
 
-
 @login_required
 @experiments.route("/new_experiment/launch", methods=["POST"])
 def launch_experiment():
@@ -62,10 +61,7 @@ def launch_experiment():
     """
     user = current_user
     dataset_config = json.loads(unquote(request.form.get("dataset_config")))
-    exp_config = {"type": "partition",
-                  "split": int(dataset_config["train_partition"]),
-                  "target": dataset_config["target"],
-                  "columns": dataset_config["selected_columns"]}
+    exp_config = dataset_config
     exp = Experiment(user.id, request.form.get("alg_name"),
                      unquote(request.form.get("alg_config")),
                      json.dumps(exp_config), request.form.get("data"),
@@ -177,7 +173,12 @@ def generate_df_html(df,num=6):
                 {'selector': 'td',
                     'props': [('font-family', 'verdana')]}]
         ).hide_index()
-    html_table = df.to_html(classes=["table", "table-borderless", "table-striped", "table-hover"], table_id="dfdatatable",col_space="100px", max_rows=num, justify="center").replace("border=\"1\"", "border=\"0\"").replace('<tr>', '<tr align="center">')
+    html_table = df.to_html(classes=["table", "table-borderless",
+                                     "table-striped", "table-hover"],
+                            col_space="100px", max_rows=num, justify="center") \
+                   .replace("border=\"1\"", "border=\"0\"") \
+                   .replace('<tr>',
+                            '<tr align="center">')
     return html_table
 
 
@@ -195,8 +196,22 @@ def result_experiment(id):
     exp = load_experiment(id)
     if exp.idu != current_user.id:
         return "", 403
-    return render_template("result.html",experiment=exp,title="Experiment Result",dict_config=json.loads(exp.alg_config),conf=json.loads(get_algorithm_by_name(exp.alg_name).config))
+    name = exp.alg_name
+    dict_config = json.loads(exp.alg_config)
+    if "base_estimator" in dict_config.keys():
+        name += "-" + get_ensem_alg_name(dict_config["base_estimator"])
+    return render_template("result.html", experiment=exp, 
+                           name=name,
+                           title="Experiment Result",
+                           dict_config=dict_config,
+                           conf=json.loads(get_algorithm_by_name(
+                                               exp.alg_name).config))
 
+def get_ensem_alg_name(conf):
+    if "base_estimator" in conf["parameters"].keys():
+        return conf["alg_name"] + "-"+ get_ensem_alg_name(conf["parameters"]["base_estimator"])
+    else:
+        return conf["alg_name"]
 
 @experiments.route("/experiment/form_generator", methods=["POST"])
 def form_generator():
@@ -227,12 +242,15 @@ def download_model(id):
     if not exp or exp.idu != current_user.id:
         abort(404)
 
-    path = safe_join("models/"+current_user.username+"/","{}.model".format(id))
+    path = safe_join("models/"+current_user.username+"/", "{}.model"
+                                                          .format(id))
 
-    download_filename = "UBUMLaaS_{}_{}.model".format(id, get_algorithm_by_name(exp.alg_name).lib)
+    download_filename = "UBUMLaaS_{}_{}.model" \
+                        .format(id, get_algorithm_by_name(exp.alg_name).lib)
 
     try:
-        return send_file(path, attachment_filename=download_filename, as_attachment=True)
+        return send_file(path, attachment_filename=download_filename,
+                         as_attachment=True)
     except FileNotFoundError:
         abort(404)
 
@@ -257,6 +275,17 @@ def reuse_experiment(id):
     return render_template("experiment_form.html", form_e=form_e,
                            form_d=form_d, form_p=form_p,
                            title="New experiment")
+
+@experiments.route("/experiment/base_estimator_getter", methods=["POST"])
+def base_estimator_getter():
+    alg_name = request.form.get("alg_name", None)
+    algorithm = get_similar_algorithms(alg_name)
+
+    _ret = dict()
+    _ret["algorithms"] = []
+    for i in algorithm:
+        _ret["algorithms"].append(i.to_dict())
+    return jsonify(_ret)
  
 @experiments.route("/experiment/<id>/predict_dataset",methods=["POST"])
 def add_predict_dataset(id):
@@ -353,7 +382,7 @@ def start_predict():
         return "", 400
 
 
-    
+    print(prediction_df)
     
     df_html = generate_df_html(prediction_df,num=None)
     return render_template("blocks/predict_result.html", data=df_html,file=fil_name)
@@ -390,4 +419,3 @@ def download_result(name):
         return send_file(upload_folder+name, attachment_filename=name, as_attachment=True)
     except FileNotFoundError:
         abort(404)
-

@@ -20,7 +20,7 @@ function verify_all(){
     validate = [];
     let show = [];
     let hide = [];
-
+    select_dataset = $("#data");
     if (select_dataset.val() === ""){
         invalidate.push(select_dataset);
         show.push(select_dataset_feedback);

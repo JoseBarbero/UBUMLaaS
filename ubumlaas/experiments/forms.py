@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import SelectField, SubmitField
-from wtforms.fields.html5 import IntegerRangeField
+from wtforms.fields.html5 import IntegerRangeField, IntegerField
 from wtforms.validators import DataRequired, NumberRange
 from wtforms import ValidationError
 from flask_wtf.file import FileField, FileAllowed
@@ -19,7 +19,9 @@ class ExperimentForm(FlaskForm):
     """
 
     alg_typ = SelectField("Algorithm Type", validators=[DataRequired()],
-                          choices=[("", "---"), ("Regression", "Regression"), ("Classification", "Classification")])
+                          choices=[("", "---"), ("Regression", "Regression"),
+                                   ("Classification", "Classification"),
+                                   ("Mixed", "Mixed")])
 
     alg_name = SelectField("Algorithm Name", validators=[DataRequired()],
                            choices=[])
@@ -79,4 +81,9 @@ class DatasetParametersForm(FlaskForm):
         FlaskForm
     """
 
-    train_partition = IntegerRangeField("Train/Test partition", default=70, validators=[NumberRange(1,100)])
+    train_partition = IntegerRangeField("Train/Test partition",
+                                        default=70,
+                                        validators=[NumberRange(1, 100)])
+    k_folds = IntegerField("Number of folds",
+                           default=2,
+                           validators=[NumberRange(2)])
