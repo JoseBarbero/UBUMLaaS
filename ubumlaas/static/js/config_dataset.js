@@ -22,11 +22,18 @@ function target_or_use(identifier, mode){
 }
 
 function get_dataset_config(){
-    dataset_config = {
-        train_partition: $("#train_slider").val()
+    dataset_config = {}
+    let mode = $("input[type=radio][name=experiment_mode]:checked").val();
+    dataset_config.mode = mode;
+    switch(mode){
+        case "cross":
+            dataset_config.k_folds = parseInt($("#k_folds").val());
+            break;
+        case "split":
+            dataset_config.train_partition = parseInt($("#train_slider").val());
+            break;
     }
     let selected_columns = [];
-
     let columns = $(".column-dataset");
     for(var i=0; i<columns.length; i++){
         var current_column = dataset_columns[i];
@@ -38,6 +45,6 @@ function get_dataset_config(){
             selected_columns.push(current_column);
         }
     }
-    dataset_config.selected_columns = selected_columns;
+    dataset_config.columns = selected_columns;
     return dataset_config;
 }

@@ -61,10 +61,7 @@ def launch_experiment():
     """
     user = current_user
     dataset_config = json.loads(unquote(request.form.get("dataset_config")))
-    exp_config = {"type": "partition",
-                  "split": int(dataset_config["train_partition"]),
-                  "target": dataset_config["target"],
-                  "columns": dataset_config["selected_columns"]}
+    exp_config = dataset_config
     exp = Experiment(user.id, request.form.get("alg_name"),
                      unquote(request.form.get("alg_config")),
                      json.dumps(exp_config), request.form.get("data"),
@@ -178,7 +175,7 @@ def generate_df_html(df,num=6):
         ).hide_index()
     html_table = df.to_html(classes=["table", "table-borderless",
                                      "table-striped", "table-hover"],
-                            col_space="100px", max_rows=6, justify="center") \
+                            col_space="100px", max_rows=num, justify="center") \
                    .replace("border=\"1\"", "border=\"0\"") \
                    .replace('<tr>',
                             '<tr align="center">')
@@ -385,7 +382,7 @@ def start_predict():
         return "", 400
 
 
-    
+    print(prediction_df)
     
     df_html = generate_df_html(prediction_df,num=None)
     return render_template("blocks/predict_result.html", data=df_html,file=fil_name)

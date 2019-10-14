@@ -40,14 +40,28 @@
         </fieldset>
     <fieldset>
         <form class="col-md-6 offset-md-3" id="form_dataset_parameters">
-
-            
-            <div class="form-group">
+            <div class="form-group row">
+                <div class="center float-left">
+                    <label class="pure-material-radio mr-2">
+                        <input type="radio" checked="checked" value="split" name="experiment_mode">
+                        <span><br>Train - Test</span>
+                    </label>
+                    <label class="pure-material-radio ml-2">
+                        <input type="radio" value="cross" name="experiment_mode">                    
+                        <span><br>Cross Validation</span>
+                    </label>
+                </div>
+            </div>       
+            <div class="form-group" id="train_test_div">
                 {{ form_p.train_partition.label(class="form-control-label mt-4 h5") }}
-                {{ form_p.train_partition(id="train_slider", class="form-control custom-range", min=1, max=99) }}
+                {{ form_p.train_partition(id="train_slider", class="form-control custom-range", min=1, max=100) }}
                 <div id="train_partition_feedback" class="invalid-feedback" style="display: hidden">Train partition cannot be 0</div>
                 <label id="train_value" , class="align-left">Train value:</label>
                 <label id="test_value" , class="align-right">Test value:</label>
+            </div>
+            <div class="form-group" id="cross_validation_div" style="display: none">
+                {{ form_p.k_folds.label(class="form-control-label mt-4 h5") }}
+                {{ form_p.k_folds(id="k_folds", class="form-control", min=2) }}
             </div>
         </form>
     </fieldset>
@@ -85,271 +99,5 @@
 </div>
 {% endblock %}
 {% block js %}
-<script src="{{ url_for('static', filename="js/config_alg.js") }}"></script>
-<script src="{{ url_for('static', filename="js/config_dataset.js") }}"></script>
-<script src="{{ url_for('static', filename="js/validations.js") }}"></script>
-
-<script>
-    function load_config(async=true, algorithm=null, reset=true){
-        if (reset){
-            config_fieldset.html("<div class=\"row-fluid\">"+
-                                    "<div>" +
-                                        "<div id=\"form_config_alg\" class=\"form-group\">" +            
-                                        "</div>" +
-                                    "</div>" +
-                                 "</div>");
-            sub_clasifiers_count = 0;
-        }
-        let alg_name;
-        if(algorithm == null){
-            alg_name = $("#alg_name").val();
-        }else{
-            alg_name = algorithm;
-        }
-        let result_ = {};
-        $.ajax({
-            url: '{{ url_for("experiments.form_generator") }}',
-            type: 'POST',
-            contentType: 'application/x-www-form-urlencoded',
-            data: "alg_name=" + alg_name,
-            success: function (result) {
-                if(!async){
-                    result_ = result.alg_config;
-                }else{
-                    generateForm(JSON.parse(result.alg_config));
-                }
-            },
-            error: function(result){
-                generateForm({})
-            },
-            async: async
-        });
-        return result_;
-    }
-
-    function give_me_base_estimators(petition){
-        var result_ = {};
-        $.ajax({
-            url: '{{ url_for("experiments.base_estimator_getter") }}',
-            type: 'POST',
-            contentType: 'application/x-www-form-urlencoded',
-            data: petition,
-            success: function(result){
-                result_ = result;
-            },
-            async: false
-        });
-        return result_.algorithms;
-    }
-</script>
-<script>
-    function unselect(e){
-        let select = $("#"+e+"_select");
-        let ignore = $("#"+e+"_ignore");
-        select.prop('checked', false);
-        ignore.prop('checked', false);
-    }
-
-    function update_datasets() {
-        $.ajax({
-            url: '{{ url_for("experiments.update_dataset_list") }}',
-            type: 'POST',
-            success: function (result) {
-                $("#select_dataset").html(result);
-            }
-        })
-    }
-
-    $("form#submit_completed_experiment").submit(function (e) {
-        e.preventDefault();
-        var alg_name = $("#alg_name").val();
-        var data = $("#data").val();        
-        var alg_config = encodeURIComponent(JSON.stringify(get_config_form()));
-        var dataset_config = encodeURIComponent(JSON.stringify(get_dataset_config()));
-        $.ajax({
-            url: '{{ url_for("experiments.launch_experiment") }}',
-            type: 'POST',
-            contentType: 'application/x-www-form-urlencoded',
-            data: "alg_name=" + alg_name + "&data=" + data + 
-                "&alg_config="+alg_config+"&dataset_config="+dataset_config,
-            success: function (result) {
-                window.location.replace("{{ url_for('users.profile') }}")
-            },
-            error: function (result) {
-                alert("Experiment launch error");
-            }
-        });
-    });
-
-    $("form#form_dataset").submit(function (e) {
-        verify_all();
-        e.preventDefault();
-        var formData = new FormData(this)
-        $.ajax({
-            url: '{{ url_for("experiments.add_new_dataset") }}',
-            type: 'POST',
-            contentType: "multipart/form-data",
-            data: formData,
-            success: function (result) {
-                $("#show_dataset").html(result);
-                update_datasets();
-            },
-            error: function (result) {
-                alert("Upload failed")
-            },
-            cache: false,
-            contentType: false,
-            processData: false
-        });
-    });
-
-    $("document").ready(function () {
-        config_fieldset = $("#config_algorithm_fieldset");
-        sub_clasifiers_count = 0;
-        $("#alg_typ").change(function () {
-            $.ajax({
-                url: '{{ url_for("experiments.change_alg") }}',
-                type: 'POST',
-                contentType: 'application/x-www-form-urlencoded',
-                data: "alg_typ=" + $("#alg_typ").val(),
-                success: function (result) {
-                    $("#show_algorithms").html(result);        
-                },
-                error: function (result) {
-                    console.log("Fatal error");
-                    console.log(result);
-                },
-                cache: false,
-                processData: false
-            });
-            verify_all();
-        });
-
-        $("#dataset").change(function(){
-            var filename =  $("#dataset").val().replace(/C:\\fakepath\\/i, '')
-            $("#datasetLabel").text(filename);
-        })
-        
-    });
-    
-    // Slider
-    var slider = document.getElementById("train_slider");
-    var train_perc = document.getElementById("train_value");
-    var test_perc = document.getElementById("test_value");
-    train_perc.innerHTML = "Train: " + slider.value + " %";
-    test_perc.innerHTML = "Test: " + (100 - slider.value) + " %";
-
-    slider.oninput = function () {
-        train_perc.innerHTML = "Train: " + this.value + " %";
-        test_perc.innerHTML = "Test: " + (100 - this.value) + " %";
-    }
-</script>
-
-{% if experiment != none %}
-<script>
-    function set_dataset_parameters(){
-        if(dataset_columns.length === 0){
-            setTimeout(set_dataset_parameters, 10);
-            return;
-        }
-         
-        for(let i=0; i<dataset_columns.length; i++){
-            var use = $("#col"+i+"_use");
-            var target = $("#col"+i+"_target");
-            use.prop('checked', false);
-            target.prop('checked', false);
-            if (exp_config.columns.includes(dataset_columns[i])){
-                use.prop('checked', true);
-            }else if (exp_config.target === dataset_columns[i]){
-                target.prop('checked', true);
-            }
-        }
-        configure_algorithm();
-    }
-
-    function configure_algorithm(){
-        let alg_typ = $("#alg_typ");
-        alg_typ.val(algorithm_selected.alg_typ);
-        alg_typ.change();
-        config_algorithm();
-    }
-
-    function config_algorithm(){
-        let alg_name = $("#alg_name");
-        if(alg_name.val() === null){
-            setTimeout(config_algorithm, 10);
-            return;
-        }
-        alg_name.val(algorithm_selected.alg_name);
-        alg_name.change();
-        add_algorithm_parameters();
-    }
-
-    function add_algorithm_parameters(alg=null, alg_config=null, level=0){  
-        if($(".timeout-finished").length == 0){
-            setTimeout(add_algorithm_parameters, 10);
-            return;
-        }
-        let base_alg_config;
-        let prefix = "";
-        if(alg == null){
-            alg = algorithm_selected;
-            base_alg_config = JSON.parse(alg.config);
-        }else{
-            base_alg_config = JSON.parse(alg);
-        }
-
-        if(level>0){
-            prefix = "level"+level+"_";
-        }
-        
-        if(alg_config == null){
-            alg_config = JSON.parse(experiment.alg_config);
-        }
-        var parameters = Object.keys(base_alg_config);
-        var sel_parameters = Object.keys(alg_config);
-        parameters.forEach(function(i){
-            var p = $("#"+prefix+i+"_value");
-            if(base_alg_config[i].type != "boolean"){
-                if(!sel_parameters.includes(i)){
-                    change_validate(i);
-                }else{
-                    if(typeof(alg_config[i]) == "object"){
-                        p.val(alg_config[i].alg_name);
-                        p.change();
-                        console.log(load_config(false, p.val(), false));
-                        add_algorithm_parameters(load_config(false, p.val(), false), alg_config[i].parameters, level+1);
-                    }else{
-                        p.val(alg_config[i]);
-                        p.change();
-                    }                    
-                }
-            }else{
-                //p.prop("checked",alg_config[i]);
-                if(alg_config[i] != base_alg_config[i].default){
-                    p.next().click();
-                }
-            }
-        });
-    }
-
-    
-    $("document").ready(function(){
-        experiment = {{ experiment | safe }};
-        exp_config = JSON.parse(experiment.exp_config);
-        //Dataset
-        let dataset = $("#data");
-        dataset.val(experiment.data);
-        dataset.change();
-        //Slider
-        let slider = $("#train_slider");
-        slider.val(exp_config.split);
-        slider.trigger("input");
-        //Algorithm
-        algorithm_selected = experiment.alg;
-        //Try to set dataset configuration:
-        set_dataset_parameters();        
-    });
-</script>
-{% endif %}
+    {% include "blocks/experiment_form_js.html" %}
 {% endblock %}
