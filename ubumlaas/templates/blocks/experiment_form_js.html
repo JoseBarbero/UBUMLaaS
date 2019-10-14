@@ -268,10 +268,16 @@
         let dataset = $("#data");
         dataset.val(experiment.data);
         dataset.change();
-        //Slider
-        let slider = $("#train_slider");
-        slider.val(exp_config.split);
-        slider.trigger("input");
+        //Slider or CrossVal
+        if(exp_config.mode == "split"){
+            let slider = $("#train_slider");
+            slider.val(exp_config.train_partition);
+            slider.trigger("input");
+        }else if(exp_config.mode == "cross"){
+            let cross = $($("input[type=radio][name=experiment_mode]")[1]);
+            cross.click();
+            $("#k_folds").val(exp_config.k_folds);
+        }
         //Algorithm
         algorithm_selected = experiment.alg;
         //Try to set dataset configuration:
