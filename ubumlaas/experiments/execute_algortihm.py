@@ -54,7 +54,7 @@ class AbstractExecute(ABC):
     def open_dataset(self, path, filename, columns, target):
         data = get_dataframe_from_file(path, filename)
         X = data.loc[:, columns]
-        y = data.loc[:, target]  
+        y = data[target]  
         return X, y
     @abstractmethod
     def close(self):
@@ -77,7 +77,7 @@ class AbstractExecute(ABC):
         for train_index, test_index in kf.split(X, y): 
 
             X_train, X_test = X.iloc[train_index,:], X.iloc[test_index,:] 
-            y_train, y_test = y.iloc[train_index, :], y.iloc[test_index, :] #TODO in multilabel not works
+            y_train, y_test = y.iloc[train_index], y.iloc[test_index] #TODO in multilabel not works
             folds.append((X_train, X_test, y_train, y_test)) 
         return folds
     

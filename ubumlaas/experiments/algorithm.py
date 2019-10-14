@@ -143,6 +143,7 @@ def classification_metrics(y_test_param, y_pred_param, y_score_param):
         y_b_score = y_score.max(axis=1)
         if conf_matrix.shape[0] == 2:
             # Boolean metrics
+            
             if y_test.dtype != np.bool:
                 y_b_test, y_b_pred = value_to_bool(y_test.copy(), y_pred.copy())
             else:

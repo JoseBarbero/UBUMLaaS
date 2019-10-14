@@ -34,14 +34,13 @@ function get_dataset_config(){
             break;
     }
     let selected_columns = [];
-    dataset_config.target = [];
     let columns = $(".column-dataset");
     for(var i=0; i<columns.length; i++){
         var current_column = dataset_columns[i];
         var use = $("#col"+i+"_use");
         var target = $("#col"+i+"_target");
         if (target.is(":checked")){
-            dataset_config.target.add(current_column);
+            dataset_config.target = current_column;
         }else if(use.is(":checked")){
             selected_columns.push(current_column);
         }
