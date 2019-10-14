@@ -27,25 +27,25 @@ function get_dataset_config(){
     dataset_config.mode = mode;
     switch(mode){
         case "cross":
-            dataset_config.k_folds = $("#k_folds").val();
+            dataset_config.k_folds = parseInt($("#k_folds").val());
             break;
         case "split":
-            dataset_config.train_partition = $("#train_slider").val();
+            dataset_config.train_partition = parseInt($("#train_slider").val());
             break;
     }
     let selected_columns = [];
-
+    dataset_config.target = [];
     let columns = $(".column-dataset");
     for(var i=0; i<columns.length; i++){
         var current_column = dataset_columns[i];
         var use = $("#col"+i+"_use");
         var target = $("#col"+i+"_target");
         if (target.is(":checked")){
-            dataset_config.target = current_column;
+            dataset_config.target.add(current_column);
         }else if(use.is(":checked")){
             selected_columns.push(current_column);
         }
     }
-    dataset_config.selected_columns = selected_columns;
+    dataset_config.columns = selected_columns;
     return dataset_config;
 }
