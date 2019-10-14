@@ -53,8 +53,8 @@ class AbstractExecute(ABC):
         pass
     def open_dataset(self, path, filename, columns, target):
         data = get_dataframe_from_file(path, filename)
-        X = data.loc[:,columns]
-        y = data[target]  
+        X = data.loc[:, columns]
+        y = data.loc[:, target]  
         return X, y
     @abstractmethod
     def close(self):
@@ -75,8 +75,9 @@ class AbstractExecute(ABC):
         folds=[] 
         kf = StratifiedKFold(n_splits=n_splits, shuffle=shuffle, random_state=random_state) 
         for train_index, test_index in kf.split(X, y): 
-            X_train, X_test = X[train_index], X[test_index] 
-            y_train, y_test = y[train_index], y[test_index] 
+
+            X_train, X_test = X.iloc[train_index,:], X.iloc[test_index,:] 
+            y_train, y_test = y.iloc[train_index, :], y.iloc[test_index, :] #TODO in multilabel not works
             folds.append((X_train, X_test, y_train, y_test)) 
         return folds
     

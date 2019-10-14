@@ -71,33 +71,38 @@ def task_skeleton(experiment, current_user):
         exp_config = execution_lib.experiment_configuration
         y_pred = None
         y_score = None
-        if exp_config["mode"] == "split":
-            if exp_config["train_partition"] < 100:
-                X_train, X_test, y_train, y_test = execution_lib.generate_train_test_split(X, y, exp_config["train_partition"])
-                model = execution_lib.create_model()
-                execution_lib.train(model, X_train, y_train)
-                y_pred, y_score = execution_lib.predict(model, X_test, y_test)
+        if exp_config["mode"] == "split" and exp_config["train_partition"] < 100:
+            X_train, X_test, y_train, y_test = execution_lib.generate_train_test_split(X, y, exp_config["train_partition"])
+            model = execution_lib.create_model()
+            execution_lib.train(model, X_train, y_train)
+            y_pred, y_score = execution_lib.predict(model, X_test, y_test)
+            y_pred = [y_pred]
+            y_score = [y_score]
+            y_test = [y_test]
 
         elif exp_config["mode"] == "cross":
-                y_pred = []
-                y_score = []
-                kfolds = execution_lib.generate_KFolds(X, y, )
-                for X_train, X_test, y_train, y_test in kfolds:
-                    model = execution_lib.create_model()
-                    execution_lib.train(model, X_train, y_train)
-                    y_predk, y_scorek = execution_lib.predict(model, X_test, y_test)
-                    y_pred.append(y_predk)
-                    y_score.append(y_scorek)
+            y_pred = []
+            y_score = []
+            y_test = []
+            kfolds = execution_lib.generate_KFolds(X, y, exp_config["k_folds"])
+            for X_train, X_test, y_train, y_test_kfold in kfolds:
+                model = execution_lib.create_model()
+                execution_lib.train(model, X_train, y_train)
+                y_predk, y_scorek = execution_lib.predict(model, X_test, y_test_kfold)
+                y_pred.append(y_predk)
+                y_score.append(y_scorek)
+                y_test.append(y_test_kfold)
 
-        score_text = ""
-        score = 0
-        typ = execution_lib.algorithm_type
-        if typ == "Regression":
-            score = regression_metrics(y_test, y_pred)
-        elif typ == "Classification":
-            score = classification_metrics(y_test, y_pred, y_score)
-        state = 1
+        score = {}
+        if exp_config["mode"] == "cross" or exp_config["train_partition"] < 100:
+            
+            typ = execution_lib.algorithm_type
+            if typ == "Regression":
+                score = regression_metrics(y_test, y_pred)
+            elif typ == "Classification":
+                score = classification_metrics(y_test, y_pred, y_score)
         result = json.dumps(score)
+        state = 1
     except Exception as ex:
         # If algoritm failed it save traceback as result
         result = str(ex)
@@ -105,9 +110,9 @@ def task_skeleton(experiment, current_user):
         state = 2
     finally:
         execution_lib.close()
-
+    
     from ubumlaas.models import Experiment
-
+    print(result)
     exp = Experiment.query.filter_by(id=experiment['id']).first()
     exp.result = result
     exp.state = state
@@ -116,182 +121,8 @@ def task_skeleton(experiment, current_user):
 
     send_email(current_user["username"], current_user["email"],
                experiment["id"], str(exp.result))
-
-
-def __create_sklearn_model(alg_name, alg_config):
-    """Create a sklearn model recursive
-
-    Arguments:
-        alg_name {string} -- sklearn model name
-        alg_config {dict} -- parameters
-    """
-    for ac in alg_config:
-        if type(alg_config[ac]) == dict:
-            alg_config[ac] = __create_sklearn_model(
-                                    alg_config[ac]["alg_name"],
-                                    alg_config[ac]["parameters"])
-
-    model = eval(alg_name+"(**alg_config)")
-    return model
-
-
-def execute_sklearn(experiment, path, X_train, X_test, y_train, y_test):
-    """It trains a sklearn model
-
-    Arguments:
-        experiment {dict} -- experiment information (see model.Experiment.to_dict)
-        path {str} -- directory to save model
-        X_train {dataframe} -- training input
-        X_test {dataframe} -- test input
-        y_train {dataframe} -- training output
-        y_test {dataframe} -- test output
-
-    Returns:
-        dataframe -- output of X_test in trained model.
-    """
-    alg_config = json.loads(experiment["alg_config"])
-    model = __create_sklearn_model(experiment["alg"]["alg_name"], alg_config)
-    model.fit(X_train, y_train)
-    y_pred = model.predict(X_test)
-    y_score = None
-    if (experiment["alg"]["alg_typ"] == "Classification"):
-        y_score = model.predict_proba(X_test)
-
-    pickle.dump(model, open(path, 'wb'))
-
-    return y_pred, y_score
-
-
-def __create_weka_parameters(alg_name, alg_config, baseconf=None):
-
-    if baseconf is None:
-        from ubumlaas.models import get_algorithm_by_name
-        exp = get_algorithm_by_name(alg_name)
-        baseconf = json.loads(exp.config)
-
-    lincom = []
-    print(alg_name)
-    print(baseconf)
-    for i in alg_config:
-        parameter = alg_config[i]
-        if type(parameter) == dict:
-            sub_list = __create_weka_parameters(parameter["alg_name"],
-                                                parameter["parameters"])
-            lincom += [baseconf[i]["command"], parameter["alg_name"], "--"]
-            lincom += sub_list
-        else:
-            if parameter is not False:
-                lincom.append(baseconf[i]["command"])
-            if not isinstance(parameter, bool):
-                lincom.append(str(parameter))
-
-    print(lincom)
-    return lincom
-
-
-def execute_weka(experiment, path, X_train, X_test, y_train, y_test):
-    """It trains a weka model
-
-    Arguments:
-        experiment {dict} -- experiment information (see model.Experiment.to_dict)
-        path {str} -- directory to save model
-        X_train {dataframe} -- training input
-        X_test {dataframe} -- test input
-        y_train {dataframe} -- training output
-        y_test {dataframe} -- test output
-
-    Returns:
-        y_pred {array of predictions} 
-        y_score {2d array of class distribution of every instance}
-    """
-    jvm.start(packages=True)
-
-    alg_config = json.loads(experiment["alg_config"])
-
-    conf = json.loads(experiment["alg"]["config"])
-
-    lincom = __create_weka_parameters(experiment["alg"]["alg_name"], alg_config, conf)
-
-    data = create_weka_dataset(X_train, y_train)
-
-    classifier = Classifier(classname=experiment["alg"]["alg_name"], options=lincom)
-
-    classifier.build_classifier(data)
-    data_test = create_weka_dataset(X_test, y_test)
-    function = None
-    y_score = None
-    typ = experiment["alg"]["alg_typ"]
-    if typ == "Mixed":
-        typ = _know_type(experiment)
-    if typ == "Classification":
-        function = lambda p: data_test.class_attribute.value(int(p))
-        y_score = classifier.distributions_for_instances(data_test)
-    elif typ == "Regression":
-        function = lambda p: p
-    y_pred = []
-    for instance in data_test:
-        pred = classifier.classify_instance(instance)
-        y_pred.append(function(pred))
-
-    serialization.write(path, classifier)
-    jvm.stop()
-
-    try: #Trying to convert to int
-        y_pred = [int(pred) for pred in y_pred]
-    except ValueError:
-        pass
-
-    return y_pred, y_score
-
-
-def _know_type(exp):
-    if exp["alg"]["alg_typ"] == "Mixed":
-        from ubumlaas.models import get_algorithm_by_name
-        config = json.loads(exp["alg_config"])
-        for c in config:
-            if type(config[c]) == dict:
-                new_exp = {"alg": get_algorithm_by_name(config[c]["alg_name"]).to_dict(),
-                           "alg_config": config[c]["parameters"]}
-                return _know_type(new_exp)
-    return exp["alg"]["alg_typ"]
-
-
-def create_weka_dataset(X, y):
-    """Create weka dataset using temporaly file
-
-    Arguments:
-        X {array like} -- non target class instances
-        y {array like} -- target class instances
-
-    Returns:
-        java object wrapped -- weka dataset
-    """
-    try:
-        # Create new temporal file
-        temp = tempfile.NamedTemporaryFile()
-
-        # Concat X and y. Write csv to temporaly file.
-        X_df = pd.DataFrame(X)
-        y_df = pd.DataFrame(y)
-        dataframe = pd.concat([X_df, y_df], axis=1)
-        dataframe.to_csv(temp.name, index=None)
-
-        # Find uniques values from target
-        y_uniques = y_df[y_df.columns[0]].unique()
-        y_uniques.sort()
-        loader = Loader(classname="weka.core.converters.CSVLoader",
-                        options=["-L", "{}:{}".format(dataframe.shape[1],
-                                 ",".join(map(str, y_uniques)))])
-        data = loader.load_file(temp.name)
-        # Last column of data is target
-        data.class_is_last()
-    finally:
-        temp.close()
-    return data
-
-
-
-def classification_metrics(y_test, y_pred, y_score):
+               
+def classification_metrics(y_test_param, y_pred_param, y_score_param):
     """Compute classification metrics
 
     Arguments:
@@ -304,25 +135,25 @@ def classification_metrics(y_test, y_pred, y_score):
     """
     score = {}
 
+    for y_test, y_pred, y_score in zip(y_test_param,y_pred_param, y_score_param):
 
-
-    # First confuse matrix
-    conf_matrix = sklearn.metrics.confusion_matrix(y_test, y_pred)
-    score["confussion_matrix"] = conf_matrix.tolist()
-    y_b_score = y_score.max(axis=1)
-    if conf_matrix.shape[0] == 2:
-        # Boolean metrics
-        if y_test.dtype != np.bool:
-            y_b_test, y_b_pred = value_to_bool(y_test.copy(), y_pred.copy())
-        else:
-            y_b_test = y_test
-            y_b_pred = y_pred
-        fpr, tpr, _ = sklearn.metrics.roc_curve(y_b_test, y_b_score)
-        score["ROC"] = [fpr.tolist(), tpr.tolist()]
-        score["AUC"] = sklearn.metrics.auc(fpr, tpr)
-        score["kappa"] = sklearn.metrics.cohen_kappa_score(y_test, y_pred)
-        score["accuracy"] = sklearn.metrics.accuracy_score(y_test, y_pred)
-        score["f1_score"] = sklearn.metrics.f1_score(y_test, y_pred)
+        # First confuse matrix
+        conf_matrix = sklearn.metrics.confusion_matrix(y_test, y_pred)
+        score.setdefault("confussion_matrix", []).append(conf_matrix.tolist())
+        y_b_score = y_score.max(axis=1)
+        if conf_matrix.shape[0] == 2:
+            # Boolean metrics
+            if y_test.dtype != np.bool:
+                y_b_test, y_b_pred = value_to_bool(y_test.copy(), y_pred.copy())
+            else:
+                y_b_test = y_test
+                y_b_pred = y_pred
+            fpr, tpr, _ = sklearn.metrics.roc_curve(y_b_test, y_b_score)
+            score.setdefault("ROC", []).append([fpr.tolist(), tpr.tolist()])
+            score.setdefault("AUC", []).append(sklearn.metrics.auc(fpr, tpr))
+            score.setdefault("kappa", []).append(sklearn.metrics.cohen_kappa_score(y_test, y_pred))
+            score.setdefault("accuracy", []).append(sklearn.metrics.accuracy_score(y_test, y_pred))
+            score.setdefault("f1_score", []).append(sklearn.metrics.f1_score(y_test, y_pred))
 
     return score
 
@@ -342,7 +173,7 @@ def value_to_bool(y_test, y_pred):
     return y_test.map(d), pd.Series(y_pred).map(d)
 
 
-def regression_metrics(y_test, y_pred):
+def regression_metrics(y_test_param, y_pred_param):
     """Compute Regression metrics
 
     Arguments:
@@ -353,16 +184,16 @@ def regression_metrics(y_test, y_pred):
         dict -- metrics with computed value
     """
     score = {}
-
-    score["max_error"] = sklearn.metrics.max_error(y_test, y_pred)
-    score["mean_score_error"] = sklearn.metrics.mean_squared_error(y_test,
-                                                                   y_pred)
-    score["mean_absolute_error"] = sklearn.metrics.mean_absolute_error(y_test,
-                                                                       y_pred)
+    for y_test, y_pred in zip(y_test_param, y_pred_param):
+        score.setdefault("max_error",[]).append(sklearn.metrics.max_error(y_test, y_pred))
+        score.setdefault("mean_score_error", []).append(sklearn.metrics.mean_squared_error(y_test,
+                                                                    y_pred))
+        score.setdefault("mean_absolute_error", []).append(sklearn.metrics.mean_absolute_error(y_test,
+                                                                        y_pred))
 
     return score
 
-def execute_weka_predict(username,exp_id,filename, model_path,fil_name):
+def execute_weka_predict(username,exp_id, tmp_filename, model_path,fil_name):
 
 
     
@@ -371,68 +202,51 @@ def execute_weka_predict(username,exp_id,filename, model_path,fil_name):
         upload_folder = "/tmp/"+username+"/"
 
     
-        file_df = get_dataframe_from_file(upload_folder, filename)
+        predict_df = get_dataframe_from_file(upload_folder, tmp_filename)
         
 
         from ubumlaas.models import Experiment, load_experiment
         experiment = load_experiment(exp_id)
-        exp_config = json.loads(experiment.exp_config)
-        class_attribute_name = exp_config["target"]
+        executor = Execute_weka(experiment.to_dict())
+        class_attribute_name = executor.experiment_configuration["target"]
 
     
 
         # Open experiment configuration
-        data_df = get_dataframe_from_file("ubumlaas/datasets/"+username +
+        model_df = get_dataframe_from_file("ubumlaas/datasets/"+username +
                             "/", experiment.data)
+        executor.find_y_uniques(model_df[class_attribute_name])
         
-        
-        file_columns = file_df.columns
-        file_df = file_df[exp_config["columns"]]
-        if class_attribute_name in file_columns:
-            file_df[class_attribute_name] = data_df[class_attribute_name]
+        predict_columns = predict_df.columns
+        print(predict_columns)
+        X = predict_df[executor.experiment_configuration["columns"]]
+        if class_attribute_name in predict_columns:
+            y = predict_df[class_attribute_name]
+            predict_has_target = True
         else:
-            file_df[class_attribute_name] = ["?"]*len(file_df.index)
+            y = ["?"]*len(predict_df.index)
+            predict_has_target = False
         jvm.start(packages=True)
 
 
-        model = Classifier(jobject=serialization.read(model_path))
+        model = executor.deserialize(model_path)
         
-
-        y_uniques = data_df[class_attribute_name].unique()
-        y_uniques.sort()
+        y_pred, y_score = executor.predict(model, X, y)
+    
         
-        
-        try:
-            #Create new temporal file
-            temp = tempfile.NamedTemporaryFile(suffix='.csv')
-            
-            file_df.to_csv(temp.name, index=None)
-            loader = Loader(classname="weka.core.converters.CSVLoader",options=["-L", "{}:{}".format(class_attribute_name,
-                                 ",".join(map(str,y_uniques)))])
-            data = loader.load_file(temp.name)
-            # Last column of data is target
-            data.class_is_last()
-        finally:
-            temp.close()
-        
-        #predictions
-        y_pred = []
-        for instance in data:
-            pred = model.classify_instance(instance)
-            y_pred.append(data.class_attribute.value(int(pred)))
-        
+        dataframes_final = [X]
         #remove "?" column if not exist original target
-        if class_attribute_name not in file_columns:
-            print(file_columns)
-            del file_df[class_attribute_name]
+        if predict_has_target:
+            dataframes_final.append(y)
             
-            
-        file_df["prediction_"+class_attribute_name] = y_pred
+        y_pred_df = pd.DataFrame(y_pred, columns=["prediction_"+class_attribute_name])
+        dataframes_final.append(y_pred_df)
+        dataframes = pd.concat(dataframes_final, axis=1)
         shutil.rmtree(upload_folder)
         if not os.path.exists(upload_folder):
             os.makedirs(upload_folder)
 
-        file_df.to_csv(upload_folder + fil_name, index=None)
+        dataframes.to_csv(upload_folder + fil_name, index=None)
     except Exception:
         print(traceback.format_exc())
         return False
