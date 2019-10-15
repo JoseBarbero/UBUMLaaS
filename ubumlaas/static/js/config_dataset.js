@@ -1,10 +1,15 @@
+const MULTITARGET = ["MultiClassification", "MultiRegression"];
+
 function only_one_target(target){
-    let target_candidates = $(".col_target");
-    target_candidates.each(function(){
-        if($(this).attr("id")!=target){
-            $(this).prop("checked",false);
-        }
-    });
+    let typ = $("#alg_typ").val();
+    if (!MULTITARGET.includes(typ)){
+        let target_candidates = $(".col_target");
+        target_candidates.each(function(){
+            if($(this).attr("id")!=target){
+                $(this).prop("checked",false);
+            }
+        });
+    }
 }
 
 function target_or_use(identifier, mode){
@@ -22,6 +27,7 @@ function target_or_use(identifier, mode){
 }
 
 function get_dataset_config(){
+    let typ = $("#alg_typ").val();
     dataset_config = {}
     let mode = $("input[type=radio][name=experiment_mode]:checked").val();
     dataset_config.mode = mode;
@@ -35,12 +41,20 @@ function get_dataset_config(){
     }
     let selected_columns = [];
     let columns = $(".column-dataset");
+    let multitarget = MULTITARGET.includes(typ);
+    if(multitarget){
+        dataset_config.target = [];
+    }
     for(var i=0; i<columns.length; i++){
         var current_column = dataset_columns[i];
         var use = $("#col"+i+"_use");
         var target = $("#col"+i+"_target");
         if (target.is(":checked")){
-            dataset_config.target = current_column;
+            if(multitarget){
+                dataset_config.target.push(current_column);
+            }else{
+                dataset_config.target = current_column;
+            }
         }else if(use.is(":checked")){
             selected_columns.push(current_column);
         }

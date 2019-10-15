@@ -3,6 +3,7 @@
 <script src="{{ url_for('static', filename="js/validations.js") }}"></script>
 
 <script>
+    before_typ = undefined;
     function load_config(async=true, algorithm=null, reset=true){
         if (reset){
             config_fieldset.html("<div class=\"row-fluid\">"+
@@ -136,6 +137,14 @@
                 processData: false
             });
             verify_all();
+            let current = $(this).val();
+            let before = before_typ;
+            before_typ = current;
+            console.log(before);
+            console.log(current);
+            if(MULTITARGET.includes(before) && !MULTITARGET.includes(current)){
+                $("#data").change();
+            }
         });
 
         $("input[type=radio][name=experiment_mode]").on("change", function(){
@@ -143,13 +152,6 @@
             let cv = $("#cross_validation_div");
             tt.toggle();
             cv.toggle();
-            /*switch($(this).val()) {
-                case "split":
-                    
-                    break;
-                case "cross":
-                    break;
-            }*/
         });
 
         $("#dataset").change(function(){

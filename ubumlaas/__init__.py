@@ -1,5 +1,5 @@
 import os
-from flask import Flask
+from flask import Flask, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
@@ -57,7 +57,7 @@ def create_app(config_name):
 
         # Install weka packages
         v.q.enqueue(weka_packages.install_packages,
-                    "ubumlaas/weka/weka_packages.txt")
+                    "ubumlaas/weka/weka_packages.txt")        
 
     ######################
     ###  LOGIN CONFIG  ###
