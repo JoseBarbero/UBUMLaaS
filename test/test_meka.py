@@ -1,7 +1,3 @@
-from skmultilearn.ext import download_meka
-
-meka_classpath = download_meka()
-print("MEKA_CLASSPATH=",meka_classpath)
 from skmultilearn.dataset import load_dataset
 
 X_train, y_train, _, _ = load_dataset('scene', 'train')
@@ -21,4 +17,4 @@ predictions = meka.predict(X_test)
 from sklearn.metrics import hamming_loss
 
 print(hamming_loss(y_test, predictions))
-print("Installed and tested")
+print("Correct")
