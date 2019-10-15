@@ -160,6 +160,19 @@ def classification_metrics(y_test_param, y_pred_param, y_score_param):
     return score
 
 
+def multiclassication_metrics(y_test_param, y_pred_param, y_score_param):
+    score = {}
+
+    for y_test, y_pred in zip(y_test_param, y_pred_param):
+        score.setdefault("accuracy", []).append(sklearn.metrics.accuracy_score(y_test, y_pred))
+        score.setdefault("hamming_loss", []).append(sklearn.metrics.hamming_loss(y_test, y_pred))
+        score.setdefault("f1_score_micro", []).append(sklearn.metrics.f1_score(y_test, y_pred, average="micro"))
+        score.setdefault("f1_score_macro", []).append(sklearn.metrics.f1_score(y_test, y_pred, average="macro"))
+        score.setdefault("zero_one_loss", []).append(sklearn.metrics.zero_one_loss(y_test, y_pred))
+        score.setdefault("label_ranking_loss", []).append(sklearn.metrics.label_ranking_loss(y_test, y_pred))
+    
+    return score
+
 def value_to_bool(y_test, y_pred):
     """Transform a pandas non boolean column in boolean column
 
