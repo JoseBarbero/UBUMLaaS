@@ -206,8 +206,7 @@ class Execute_weka(AbstractExecute):
             baseconf = json.loads(exp.config)
 
         lincom = []
-        print(alg_name)
-        print(baseconf)
+
         for i in alg_config:
             parameter = alg_config[i]
             if type(parameter) == dict:
@@ -245,16 +244,16 @@ class Execute_weka(AbstractExecute):
 
         data_test = self.create_weka_dataset(X, y)
         y_score = None
-        if self.is_classification:
+        if self.is_classification():
             y_pred = [data_test.class_attribute.value(int(model.classify_instance(instance)))for instance in data_test]
             y_score = model.distributions_for_instances(data_test)
+            try: #Trying to convert to int
+                y_pred = [float(pred) for pred in y_pred]
+            except ValueError:
+                pass
         else:
             y_pred = [model.classify_instance(instance) for instance in data_test]
-
-        try: #Trying to convert to int
-            y_pred = [int(pred) for pred in y_pred]
-        except ValueError:
-            pass
+ 
         return y_pred, y_score
 
     def open_dataset(self, path, filename):
@@ -271,7 +270,7 @@ class Execute_weka(AbstractExecute):
     def close(self):
         jvm.stop()
     def find_y_uniques(self, y):
-        if self.is_classification:
+        if self.is_classification():
             uniques = y.unique()
             uniques.sort()
             self.y_uniques = uniques
