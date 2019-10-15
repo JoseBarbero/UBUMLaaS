@@ -238,9 +238,7 @@
         parameters.forEach(function(i){
             var p = $("#"+prefix+i+"_value");
             if(base_alg_config[i].type != "boolean"){
-                if(!sel_parameters.includes(i)){
-                    change_validate(i);
-                }else{
+                if(sel_parameters.includes(i)){
                     if(typeof(alg_config[i]) == "object"){
                         p.val(alg_config[i].alg_name);
                         p.change();
