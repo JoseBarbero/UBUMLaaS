@@ -7,7 +7,6 @@ from ubumlaas.models import \
 from ubumlaas.experiments.forms import \
     (ExperimentForm, DatasetForm, DatasetParametersForm)
 from flask_login import (current_user, login_required)
-from flask_mail import Message
 from time import time
 from werkzeug.utils import secure_filename
 import os
