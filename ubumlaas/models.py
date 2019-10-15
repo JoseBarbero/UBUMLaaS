@@ -1,7 +1,7 @@
 import variables as v
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
-from sqlalchemy import and_
+from sqlalchemy import and_, text
 
 from flask_login import UserMixin
 
@@ -44,6 +44,13 @@ def get_experiments(idu):
         if i.endtime is not None:
             i.endtime = datetime.fromtimestamp(i.endtime).strftime("%d/%m/%Y - %H:%M:%S")
     return listexp
+
+
+def get_algorithms_type():
+    sql = text('SELECT DISTINCT alg_typ FROM algorithms')
+    result = v.db.engine.execute(sql)
+    types = [(row[0], row[0]) for row in result]
+    return types
 
 
 def get_similar_algorithms(alg_name):

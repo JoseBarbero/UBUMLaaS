@@ -6,10 +6,11 @@ from wtforms import ValidationError
 from flask_wtf.file import FileField, FileAllowed
 from flask import flash
 from flask_login import current_user
-from ubumlaas.models import User, get_algorithms
+from ubumlaas.models import User, get_algorithms, get_algorithms_type
 import pandas as pd
 import os
 from ubumlaas.util import get_dataframe_from_file
+
 
 class ExperimentForm(FlaskForm):
     """Experiment basic form.
@@ -19,9 +20,7 @@ class ExperimentForm(FlaskForm):
     """
 
     alg_typ = SelectField("Algorithm Type", validators=[DataRequired()],
-                          choices=[("", "---"), ("Regression", "Regression"),
-                                   ("Classification", "Classification"),
-                                   ("Mixed", "Mixed")])
+                          choices=[("", "---")] + get_algorithms_type())
 
     alg_name = SelectField("Algorithm Name", validators=[DataRequired()],
                            choices=[])
