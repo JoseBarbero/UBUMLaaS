@@ -18,6 +18,7 @@ import time
 import shutil
 import pickle
 import datetime
+import copy
 
 from ubumlaas.experiments.algorithm import task_skeleton, execute_weka_predict
 from ubumlaas.util import get_dataframe_from_file
@@ -199,6 +200,7 @@ def result_experiment(id):
     dict_config = json.loads(exp.alg_config)
     if "base_estimator" in dict_config.keys():
         name += "-" + get_ensem_alg_name(dict_config["base_estimator"])
+    dict_config = get_dict_exp(exp.alg_name,dict_config)
     return render_template("result.html", experiment=exp, 
                            name=name,
                            title="Experiment Result",
@@ -212,6 +214,18 @@ def get_ensem_alg_name(conf):
     else:
         return conf["alg_name"]
 
+def get_dict_exp(name,dict_config):
+    cd = copy.deepcopy(dict_config)
+    d = {name:cd}
+    if "base_estimator" in dict_config.keys():
+        del d[name]["base_estimator"]
+        d[name]["base_estimator"]=dict_config["base_estimator"]["alg_name"]
+        name += dict_config["base_estimator"]["alg_name"]
+        d.update(get_dict_exp(name,dict_config["base_estimator"]["parameters"]))
+        return d
+    else:
+        return d
+    
 @experiments.route("/experiment/form_generator", methods=["POST"])
 def form_generator():
     """Get algorithm configuration to generate a form.

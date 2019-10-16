@@ -80,4 +80,10 @@ def create_app(config_name):
     app.register_blueprint(error_pages)
     app.register_blueprint(experiments)
 
+    def split_dict_key(cad):
+        return cad.split(".")[-1]
+
+    app.jinja_env.filters["split"]=split_dict_key
+
     return app
+
