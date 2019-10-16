@@ -327,7 +327,6 @@ class Execute_meka(AbstractExecute):
         while len(parameters) > 0:
             p = parameters.pop(0)
             if p == "-W":
-                parameters.pop(1)
                 break
             meka_classifier += (" " + p)
 
