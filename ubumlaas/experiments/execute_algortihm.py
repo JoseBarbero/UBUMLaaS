@@ -22,7 +22,8 @@ from weka.core.converters import Loader
 import weka.core.serialization as serialization
 from ubumlaas.util import get_dataframe_from_file
 
-from skmultilearn.ext import Meka 
+from skmultilearn.ext import Meka
+from scipy.sparse import csr_matrix
 
 import tempfile
 
@@ -56,11 +57,9 @@ class AbstractExecute(ABC):
         y = data[target]
         return X, y
 
-    @abstractmethod
     def close(self):
         pass
 
-    @abstractmethod
     def find_y_uniques(self, y):
         pass
 
@@ -212,7 +211,7 @@ class Execute_weka(AbstractExecute):
             temp.close()
         return data
 
-    def __create_weka_parameters(cls, alg_name, alg_config, baseconf=None):
+    def create_weka_parameters(alg_name, alg_config, baseconf=None):
 
         if baseconf is None:
             from ubumlaas.models import get_algorithm_by_name
@@ -223,9 +222,8 @@ class Execute_weka(AbstractExecute):
         for i in alg_config:
             parameter = alg_config[i]
             if type(parameter) == dict:
-                sub_list = cls.\
-                    __create_weka_parameters(parameter["alg_name"],
-                                             parameter["parameters"])
+                sub_list = Execute_weka.create_weka_parameters(parameter["alg_name"],
+                                                                 parameter["parameters"])
                 lincom += [baseconf[i]["command"], parameter["alg_name"], "--"]
                 lincom += sub_list
             else:
@@ -237,7 +235,7 @@ class Execute_weka(AbstractExecute):
         return lincom
 
     def create_model(self):
-        lincom = self.__create_weka_parameters(self.algorithm_name,
+        lincom = self.create_weka_parameters(self.algorithm_name,
                                                self.algorithm_configuration,
                                                self.configuration)
         return Classifier(classname=self.algorithm_name, options=lincom)
@@ -303,7 +301,7 @@ class Execute_weka(AbstractExecute):
             self.y_uniques = uniques
 
 
-class ExecuteMeka(AbstractExecute):
+class Execute_meka(AbstractExecute):
 
     def __init__(self, experiment):
         self.algorithm_name = experiment["alg"]["alg_name"]  # example weka.classification.trees.J48
@@ -323,9 +321,9 @@ class ExecuteMeka(AbstractExecute):
     def _get_options(self):
         meka_classifier = self.algorithm_name
         weka_classifier = ""
-        parameters = Execute_weka.\
-            __create_weka_parameters(self.algorithm_name,
-                                     self.algorithm_configuration)
+        print(self.algorithm_name)
+        print(self.algorithm_configuration)
+        parameters = Execute_weka.create_weka_parameters(self.algorithm_name, self.algorithm_configuration)
         while len(parameters) > 0:
             p = parameters.pop(0)
             if p == "-W":
@@ -345,12 +343,19 @@ class ExecuteMeka(AbstractExecute):
         return pickle.load(open(path, 'rb'))
 
     def train(self, model, X, y):
-        model.fit(X, y)
+        model.fit(csr_matrix(X.values), csr_matrix(y.values))
 
     def predict(self, model, X, y):
-        predictions = model.predict(X)
+        predictions = model.predict(csr_matrix(X.values))
+        predictions = pd.DataFrame(predictions.toarray())
+        predictions.columns = y.columns
         y_score = None
         return predictions, y_score
 
     def is_classification(self):
         return self.algorithm_type == "MultiClassification"
+
+    def open_dataset(self, path, filename):
+        return super().open_dataset(path, filename,
+                                    self.experiment_configuration["columns"],
+                                    self.experiment_configuration["target"])

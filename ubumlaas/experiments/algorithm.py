@@ -30,7 +30,7 @@ from weka.classifiers import Evaluation
 from weka.core.converters import Loader
 import weka.core.serialization as serialization
 from ubumlaas.util import get_dataframe_from_file
-from ubumlaas.experiments.execute_algortihm import Execute_sklearn, Execute_weka
+from ubumlaas.experiments.execute_algortihm import Execute_sklearn, Execute_weka, Execute_meka
 
 import tempfile
 import shutil
@@ -47,9 +47,9 @@ def task_skeleton(experiment, current_user):
     # Task need app environment
     create_app('subprocess')  # No generate new workers
     # Diference sklearn executor and weka executor
-    apps_functions = {"sklearn": Execute_sklearn, "weka": Execute_weka}
+    apps_functions = {"sklearn": Execute_sklearn, "weka": Execute_weka, "meka": Execute_meka}
     # Get algorithm type
-    type_app = experiment["alg"]["alg_name"].split(".", 1)[0]
+    type_app = experiment["alg"]["lib"]
     try:
         execution_lib = apps_functions[type_app](experiment)
         
