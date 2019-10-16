@@ -1,3 +1,12 @@
+hr {
+    border-top: 1px solid #839fad;
+    margin-top: 0;
+}
+
+footer .main-footer {
+    background: #3f3f3f;
+}
+
 .square {
     width: 50%;
     height: 0;
@@ -44,4 +53,11 @@
     position: absolute;
     left: 40%;
     top: 36%;
+}
+
+#logos {
+    background: #e0e0e0;
+    -webkit-border-radius: 100px;
+    -moz-border-radius: 100px;
+    border-radius: 5px;
 }
