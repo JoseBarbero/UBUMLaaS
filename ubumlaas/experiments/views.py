@@ -19,7 +19,7 @@ import time
 import shutil
 import pickle
 import datetime
-
+from ubumlaas.experiments.execute_algortihm import Execute_meka
 from ubumlaas.experiments.algorithm import task_skeleton, execute_weka_predict
 from ubumlaas.util import get_dataframe_from_file
 experiments = Blueprint("experiments", __name__)
@@ -377,6 +377,12 @@ def start_predict():
         if job.result is False:
             return "", 400
         prediction_df = get_dataframe_from_file(upload_folder, fil_name)
+        
+    elif alg.lib == "meka":
+        meka = Execute_meka(exp.to_dict())
+        model_meka = meka.deserialize(path)
+        X, y = meka.open_dataset(upload_folder, fil_name)
+        prediction_df, _ = meka.predict(model_meka, X, y)
         
     else:
         return "", 400

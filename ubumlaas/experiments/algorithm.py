@@ -101,6 +101,8 @@ def task_skeleton(experiment, current_user):
                 score = regression_metrics(y_test, y_pred)
             elif typ == "Classification":
                 score = classification_metrics(y_test, y_pred, y_score)
+            elif typ == "MultiClassification":
+                score = multiclassication_metrics(y_test, y_pred)
         result = json.dumps(score)
         state = 1
     except Exception as ex:
@@ -160,7 +162,7 @@ def classification_metrics(y_test_param, y_pred_param, y_score_param):
     return score
 
 
-def multiclassication_metrics(y_test_param, y_pred_param, y_score_param):
+def multiclassication_metrics(y_test_param, y_pred_param):
     score = {}
 
     for y_test, y_pred in zip(y_test_param, y_pred_param):
@@ -172,6 +174,7 @@ def multiclassication_metrics(y_test_param, y_pred_param, y_score_param):
         score.setdefault("label_ranking_loss", []).append(sklearn.metrics.label_ranking_loss(y_test, y_pred))
     
     return score
+
 
 def value_to_bool(y_test, y_pred):
     """Transform a pandas non boolean column in boolean column

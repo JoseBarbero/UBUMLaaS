@@ -177,6 +177,7 @@
 {% if experiment != none %}
 <script>
     function set_dataset_parameters(){
+
         if(dataset_columns.length === 0){
             setTimeout(set_dataset_parameters, 10);
             return;
@@ -189,11 +190,18 @@
             target.prop('checked', false);
             if (exp_config.columns.includes(dataset_columns[i])){
                 use.prop('checked', true);
-            }else if (exp_config.target === dataset_columns[i]){
-                target.prop('checked', true);
+            }else { 
+                if(Array.isArray(exp_config.target)){
+                    if (exp_config.target.includes(dataset_columns[i])){
+                        target.prop('checked', true);
+                    }
+                }else{
+                    if (exp_config.target === dataset_columns[i]){
+                        target.prop('checked', true);
+                    }
+                }
             }
-        }
-        configure_algorithm();
+        }        
     }
 
     function configure_algorithm(){
@@ -201,6 +209,7 @@
         alg_typ.val(algorithm_selected.alg_typ);
         alg_typ.change();
         config_algorithm();
+        
     }
 
     function config_algorithm(){
@@ -258,6 +267,7 @@
                 }
             }
         });
+        set_dataset_parameters();
     }
 
     
@@ -281,7 +291,7 @@
         //Algorithm
         algorithm_selected = experiment.alg;
         //Try to set dataset configuration:
-        set_dataset_parameters();        
+        configure_algorithm();     
     });
 </script>
 {% endif %}

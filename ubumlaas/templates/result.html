@@ -122,20 +122,6 @@
                     }
                     let result_val = result[i][z];
                     switch(i){
-                        case "AUC":
-                        result_val = 1-result_val;
-                        case "max_error":
-                        case "mean_score_error":
-                        case "mean_absolute_error":
-                        case "kappa":
-                        case "accuracy":
-                        case "f1_score":
-                            let k = $("<p></p>", {class: "col-md-5 font-weight-bold"});
-                            let v = $("<p></p>", {class: "col-md-7"});
-                            k.text("Value:");
-                            v.text(result_val);
-                            div.append(k, v);
-                            break;
                         case "ROC":
                             let label = "AUC="+(1-result["AUC"][z]);
                             var canvas = $("<canvas></canvas>", {id:i+"_canvas", width: "100%"});
@@ -200,7 +186,16 @@
                             var chart = new ApexCharts(canvas.get(0), opt);
                             to_render.push(chart);
                             div.append(canvas);
-                            break;                  
+                            break;       
+                        case "AUC":
+                            result_val = 1-result_val;
+                        default:
+                            let k = $("<p></p>", {class: "col-md-5 font-weight-bold"});
+                            let v = $("<p></p>", {class: "col-md-7"});
+                            k.text("Value:");
+                            v.text(result_val);
+                            div.append(k, v);
+                            break;           
                     }
                     nav.append(li);
                     tab_container_div.append(div);

@@ -201,9 +201,9 @@ class Execute_weka(AbstractExecute):
             options = None
             if self.y_uniques is not None:
                 options = ["-L", "{}:{}".format(dataframe.shape[1],
-                                    ",".join(map(str, self.y_uniques)))]
+                           ",".join(map(str, self.y_uniques)))]
             loader = Loader(classname="weka.core.converters.CSVLoader",
-                            options = options)
+                            options=options)
             data = loader.load_file(temp.name)
             # Last column of data is target
             data.class_is_last()
@@ -222,8 +222,9 @@ class Execute_weka(AbstractExecute):
         for i in alg_config:
             parameter = alg_config[i]
             if type(parameter) == dict:
-                sub_list = Execute_weka.create_weka_parameters(parameter["alg_name"],
-                                                                 parameter["parameters"])
+                sub_list = Execute_weka.\
+                    create_weka_parameters(parameter["alg_name"],
+                                           parameter["parameters"])
                 lincom += [baseconf[i]["command"], parameter["alg_name"], "--"]
                 lincom += sub_list
             else:
@@ -235,9 +236,10 @@ class Execute_weka(AbstractExecute):
         return lincom
 
     def create_model(self):
-        lincom = self.create_weka_parameters(self.algorithm_name,
-                                               self.algorithm_configuration,
-                                               self.configuration)
+        lincom = Execute_weka.\
+            create_weka_parameters(self.algorithm_name,
+                                   self.algorithm_configuration,
+                                   self.configuration)
         return Classifier(classname=self.algorithm_name, options=lincom)
 
     def serialize(self, model, path):
@@ -336,16 +338,18 @@ class Execute_meka(AbstractExecute):
         return meka_classifier, weka_classifier
 
     def serialize(self, model, path):
-        pickle.dump(model, open(path, 'wb'))
+        model.save(path)
 
     def deserialize(self, path):
-        return pickle.load(open(path, 'rb'))
+        m = self.create_model()
+        m.load(path)
+        return m
 
     def train(self, model, X, y):
-        model.fit(csr_matrix(X.values), csr_matrix(y.values))
+        model.fit(X.values, y.values)
 
     def predict(self, model, X, y):
-        predictions = model.predict(csr_matrix(X.values))
+        predictions = model.predict(X.values)
         predictions = pd.DataFrame(predictions.toarray())
         predictions.columns = y.columns
         y_score = None
