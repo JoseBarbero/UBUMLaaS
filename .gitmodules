@@ -1,0 +1,3 @@
+[submodule "lib/scikit-multilearn-ubumlaas"]
+	path = lib/scikit-multilearn-ubumlaas
+	url = git@github.com:jlgarridol/scikit-multilearn-ubumlaas.git
