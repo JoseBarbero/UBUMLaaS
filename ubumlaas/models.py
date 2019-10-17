@@ -67,7 +67,6 @@ def get_similar_algorithms(alg_name):
         cond = and_(cond, Algorithm.alg_typ == alg.alg_typ)
     elif alg.lib != "meka":
         cond = and_(cond,or_(Algorithm.alg_typ == "Classification",Algorithm.alg_typ == "Regression"))
-    print(cond)
     algorithms = Algorithm.query.filter(cond).all()
     return algorithms
 

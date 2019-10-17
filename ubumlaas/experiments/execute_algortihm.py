@@ -22,8 +22,7 @@ from weka.core.converters import Loader
 import weka.core.serialization as serialization
 from ubumlaas.util import get_dataframe_from_file
 
-from skmultilearn.ext import Meka
-from scipy.sparse import csr_matrix
+from lib.skmultilearn.ext import Meka
 
 import tempfile
 
@@ -54,10 +53,7 @@ class AbstractExecute(ABC):
     def open_dataset(self, path, filename, columns, target):
         data = get_dataframe_from_file(path, filename)
         X = data.loc[:, columns]
-        if type(target) == list:
-            y = data[:, target]
-        else:
-            y = data[target]
+        y = data[target]
         return X, y
 
     def close(self):
@@ -326,8 +322,6 @@ class Execute_meka(AbstractExecute):
     def _get_options(self):
         meka_classifier = self.algorithm_name
         weka_classifier = ""
-        print(self.algorithm_name)
-        print(self.algorithm_configuration)
         parameters = Execute_weka.create_weka_parameters(self.algorithm_name, self.algorithm_configuration)
         while len(parameters) > 0:
             p = parameters.pop(0)

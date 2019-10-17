@@ -114,7 +114,6 @@ def task_skeleton(experiment, current_user):
         execution_lib.close()
     
     from ubumlaas.models import Experiment
-    print(result)
     exp = Experiment.query.filter_by(id=experiment['id']).first()
     exp.result = result
     exp.state = state
@@ -236,7 +235,6 @@ def execute_weka_predict(username,exp_id, tmp_filename, model_path,fil_name):
         executor.find_y_uniques(model_df[class_attribute_name])
         
         predict_columns = predict_df.columns
-        print(predict_columns)
         X = predict_df[executor.experiment_configuration["columns"]]
         if class_attribute_name in predict_columns:
             y = predict_df[class_attribute_name]
