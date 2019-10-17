@@ -386,15 +386,9 @@ def start_predict():
         
     else:
         return "", 400
-
-
-    print(prediction_df)
-    
+           
     df_html = generate_df_html(prediction_df,num=None)
     return render_template("blocks/predict_result.html", data=df_html,file=fil_name)
-
-
-
 
 
 @login_required

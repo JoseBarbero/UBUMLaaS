@@ -1,0 +1,44 @@
+# Template Description file for a Weka package
+#
+# 
+
+# Package name (required)
+PackageName=SPAARC
+
+# Version (required)
+Version=1.0
+
+#Date
+Date=2018-11-20
+
+# Title (required)
+Title=SPAARC: Constructs a Decision Tree using Split-Point Sampling and Node Attribute Subsampling.
+
+Category=Classification
+
+# Author (required)
+Author=Darren Yates
+
+# Maintainer (required)
+Maintainer=Darren Yates <dyates{at}csu.edu.au>
+
+# License (required)
+License=GPL 3.0
+
+# Description (required)
+Description=Class implementing decision tree algorithm SPAARC, using split-point sampling and node-attribute subsampling. Uses an altered version of SimpleCart. SPAARC builds trees with equivalent classification accuracy to SimpleCart, but does so with up to 69% greater speed. For more information, see: Darren Yates, Md Zahidul Islam, Junbin Gao (2018). SPAARC: A Fast Decision Tree Algorithm (AusDM 2018). Presented at the 2018 Australasian Data Mining conference (AusDM 2018) at Bathurst, NSW on 28-30 November 2018.
+
+# Package URL for obtaining the package archive (required)
+PackageURL=http://csusap.csu.edu.au/~zislam/code/SPAARC.zip
+
+# URL for further information
+URL=http://csusap.csu.edu.au/~zislam/
+
+# Enhances various other packages ?
+# Enhances=packageName1,packageName2,...
+
+# Related to other packages?
+Related=
+
+# Dependencies
+Depends=weka (>=3.7.1)

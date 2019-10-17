@@ -1,0 +1,38 @@
+# Template Description file for a Weka package
+#
+#
+
+# Package name (required)
+PackageName=CSForest
+
+# Version (required)
+Version=1.1
+
+#Date
+Date=2019-01-16
+
+# Title (required)
+Title=CSForest
+
+Category=Classification
+
+# Author (required)
+Author=Michael Furner
+
+# Maintainer (required)
+Maintainer=Michael Furner <mfurner@csu.edu.au>
+
+# License (required)
+License=GPL 3.0
+
+# Description (required)
+Description=Implementation of the cost-sensitive decision forest algorithm CSForest, which was published in: Siers, M. J., & Islam, M. Z. (2015). Software defect prediction using a cost  sensitive decision forest and voting, and a potential solution to the class imbalance problem. Information Systems, 51, 62-71. This cost-sensitive decision forest was originally designed for software defect prediction datasets with two class values ("defective" and "not-defective"). It has been extended here to work with an arbitrary number of class values. The structure of the program is taken from our previous implementation of SysFor, upon which CSForest was based (and which in turn had been based on the Weka implementation of MetaCost). As this uses code from the SysFor implementation in Weka, it is worth noting that the algorithm does not search for "good" attributes beyond the second level of the tree. For classification, the CSForest uses CSVoting, which is specified in the original paper.
+
+# Package URL for obtaining the package archive (required)
+PackageURL=http://csusap.csu.edu.au/~zislam/code/CSForestWeka.zip
+
+# URL for further information
+URL=http://csusap.csu.edu.au/~zislam/
+
+# Dependencies
+Depends=weka (>=3.7.1)

@@ -54,7 +54,10 @@ class AbstractExecute(ABC):
     def open_dataset(self, path, filename, columns, target):
         data = get_dataframe_from_file(path, filename)
         X = data.loc[:, columns]
-        y = data[target]
+        if type(target) == list:
+            y = data[:, target]
+        else:
+            y = data[target]
         return X, y
 
     def close(self):

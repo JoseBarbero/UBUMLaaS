@@ -1,0 +1,41 @@
+# Description file for Correlation-based Feature Weighted Naive Bayes (CFWNB)
+#
+# 
+
+# Package name (required)
+PackageName=CFWNB
+
+# Version (required)
+Version=1.0.0
+
+#Date
+Date=2018-10-25
+
+# Title (required)
+Title=Contructs Correlation-based Feature Weighted Naive Bayes (CFWNB)
+
+Category=Classification
+
+# Author (required)
+Author=Liangxiao Jiang <ljiang@cug.edu.cn>
+
+# Maintainer (required)
+Maintainer=Liangxiao Jiang <ljiang@cug.edu.cn>
+
+# License (required)
+License=GPL 3.0
+
+# Description (required)
+Description=Contructs Correlation-based Feature Weighted Naive Bayes (CFWNB). For more information refer to: L. Jiang, L. Zhang, C. Li and J. Wu, "A Correlation-based Feature Weighting Filter for Naive Bayes," in IEEE Transactions on Knowledge and Data Engineering. doi: 10.1109/TKDE.2018.2836440
+
+# Package URL for obtaining the package archive (required)
+PackageURL=https://github.com/jiangliangxiao/CFWNB/blob/master/CFWNB.zip?raw=true
+
+# URL for further information
+URL=http://www.escience.cn/people/jlx/publication.html
+
+# Related to other packages?
+Related=NaiveBayes
+
+# Dependencies
+Depends=weka (>=3.7.1)
