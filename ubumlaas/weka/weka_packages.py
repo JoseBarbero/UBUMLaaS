@@ -12,7 +12,7 @@ def install_packages(path):
     try:
         
         with open(path,"r") as f:
-            jvm.start(packages=True)
+            jvm.start()
             weka_packages = json.load(f)
             for package_name, package_path in weka_packages.items(): 
                 if not packages.is_installed(package_name):
@@ -21,4 +21,10 @@ def install_packages(path):
 
     finally:
         jvm.stop()
-        
+
+def uninstall_package(weka_package_name):
+    try:
+        jvm.start()
+        packages.uninstall_package(weka_package_name)
+    finally:
+        jvm.stop()
