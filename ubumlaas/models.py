@@ -1,7 +1,7 @@
 import variables as v
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
-from sqlalchemy import and_
+from sqlalchemy import and_,or_, text
 
 from flask_login import UserMixin
 
@@ -46,13 +46,28 @@ def get_experiments(idu):
     return listexp
 
 
+def get_algorithms_type():
+    sql = text('SELECT DISTINCT alg_typ FROM algorithms')
+    result = v.db.engine.execute(sql)
+    types = [(row[0], row[0]) for row in result]
+    return types
+
+
 def get_similar_algorithms(alg_name):
     alg = get_algorithm_by_name(alg_name)
-    cond = Algorithm.lib == alg.lib
-    if alg.alg_typ != "Mixed":
+    if alg.lib != "meka":
+        cond = Algorithm.lib == alg.lib
+    else:
+        cond = Algorithm.lib == "weka"
+        if alg.alg_typ == "MultiClassification":
+            cond = and_(cond,or_(Algorithm.alg_typ == "Classification",Algorithm.alg_typ == "Mixed"))
+        else:
+            cond = and_(cond,or_(Algorithm.alg_typ == "Regression",Algorithm.alg_typ == "Mixed"))
+    if alg.alg_typ != "Mixed" and alg.lib != "meka":
         cond = and_(cond, Algorithm.alg_typ == alg.alg_typ)
+    elif alg.lib != "meka":
+        cond = and_(cond,or_(Algorithm.alg_typ == "Classification",Algorithm.alg_typ == "Regression"))
     algorithms = Algorithm.query.filter(cond).all()
-
     return algorithms
 
 

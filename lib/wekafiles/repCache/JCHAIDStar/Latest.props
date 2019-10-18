@@ -1,0 +1,77 @@
+# Template Description file for a Weka package
+# 
+
+# Package name (required)
+PackageName=JCHAIDStar
+
+# Version (required)
+Version=1.1
+
+#Date (year-month-day)
+Date=2019-02-20
+
+# Title (required)
+Title=Class for generating a decision tree based on the CHAID* algorithm
+
+# Category (recommended)
+Category=Classification
+
+# Author (required)
+Author=Jesus M. Perez <txus.perez@ehu.eus>, Oscar Teixeira (oteixeira001@ikasle.ehu.eus)
+
+# Maintainer (required)
+Maintainer=Jesus M. Perez <txus.perez@ehu.eus>
+
+# License (required)
+License=GPL 3.0
+
+# Description (required)
+Description=Class for generating a decision tree based on the CHAID* algorithm a modified version of the CHAID decision tree induction algorithm that also handles continuous features and includes the same post-pruning mechanism used by C4.5. Unlike C4.5 algorithm (J48 class), CHAID uses chi-squared, X², to measure the correlation between the attributes and the class and it only handles discrete variables, although distinguishing between nominal and ordinal behaviour. New options are added to the J48 class related to the CHAID algorithm (CH). For more information, see:<br/><br/>Igor Ibarguren and Aritz Lasarguren and Jes&uacute;s M. P&eacute;rez and Javier Muguerza and Ibai Gurrutxaga and Olatz Arbelaitz. "BFPART: Best-First PART". Information Sciences (2016), 367-368, pp 927-952. <a href="10.1016/j.ins.2016.07.023" target="_blank">doi:10.1016/j.ins.2016.07.023</a><br/><br/>G. V. Kass. "An Exploratory Technique for Investigating Large Quantities of Categorical Data". Journal of the Royal Statistical Society. Series C (Applied Statistics) (1980), 29(2), pp 119-127. <a href="http://www.jstor.org/stable/2986296" target="_blank">http://www.jstor.org/stable/2986296</a><br/>
+
+# Package URL for obtaining the package archive (required)
+PackageURL=http://www.aldapa.eus/res/weka-jchaidstar/JCHAIDStar-v1.1.zip
+
+# URL for further information
+URL=http://www.aldapa.eus/res/weka-jchaidstar
+
+# Enhances various other packages ?
+Enhances=
+
+# Related to other packages?
+Related=
+
+# Dependencies (format: packageName (equality/inequality version_number)
+Depends=weka (>=3.8.4-SNAPSHOT|<3.9.0)
+
+# Message to display in installation. Can be used to provide
+# special instructions (e.g. manual stuff needed to complete
+# the installation process). (optional).
+#MessageToDisplayOnInstallation=
+
+# Prevent package from being loaded by Weka if the named
+# files/directories are not present (relative to the package's
+# root directory). Useful for packages that require the user
+# to manually install some third-party library(s). (optional)
+#DoNotLoadIfFileNotPresent=
+
+# Log message to be displayed if package can't be loaded due to
+# missing files/directories. (optional)
+#DoNotLoadIfFileNotPresentMessage=
+
+# Prevent package from being loaded by Weka if the named
+# classes can't be instantiated. Useful for packages that rely
+# on stuff that has to be installed manually (an example is
+# Java3D, which installs itself into the system JRE/JDK. (optional)
+#DoNotLoadIfClassNotPresent=
+
+# Log message to be displayed if package can't be loaded due to 
+# missing classes. (optional).
+#DoNotLoadIfClassNotPresentMessage=
+
+# Prevent package from being loaded by Weka if one or more (comma-separated)
+# environment variables or java properties are not set. (optional).
+#DoNotLoadIfEnvVarNotSet=
+
+# Log message to be displayed if package can't be loaded due to unset
+# environment variables or java properties.
+#DoNotLoadIfEnvVarNotSetMessage=

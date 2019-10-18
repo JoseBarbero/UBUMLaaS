@@ -18,8 +18,8 @@ import time
 import shutil
 import pickle
 import datetime
+from ubumlaas.experiments.execute_algortihm import Execute_meka
 import copy
-
 from ubumlaas.experiments.algorithm import task_skeleton, execute_weka_predict
 from ubumlaas.util import get_dataframe_from_file
 experiments = Blueprint("experiments", __name__)
@@ -371,8 +371,8 @@ def start_predict():
 
         file_df = get_dataframe_from_file(upload_folder, filename)
         prediction_df = file_df[exp_config["columns"]]
-        
-        model = pickle.load(open(path,'rb'))
+
+        model = pickle.load(open(path, 'rb'))
         predictions = model.predict(prediction_df)
         if exp_config["target"] in file_df:
             prediction_df[exp_config["target"]] = file_df[exp_config["target"]]
@@ -381,27 +381,41 @@ def start_predict():
         delete_file()
         if not os.path.exists(upload_folder):
             os.makedirs(upload_folder)
-        prediction_df.to_csv(upload_folder + fil_name, index = None)
+        prediction_df.to_csv(upload_folder + fil_name, index=None)
 
     elif alg.lib == "weka":
-        job = v.q.enqueue(execute_weka_predict, args=(current_user.username,exp_id,filename,path,fil_name))
+        job = v.q.enqueue(execute_weka_predict,
+                          args=(current_user.username,
+                                exp_id,
+                                filename,
+                                path,
+                                fil_name)
+                          )
         while job.result is None:
             time.sleep(2)
         if job.result is False:
             return "", 400
         prediction_df = get_dataframe_from_file(upload_folder, fil_name)
-        
+
+    elif alg.lib == "meka":
+        exp_config = json.loads(exp.exp_config)
+        meka = Execute_meka(exp.to_dict())
+        model_meka = meka.deserialize(path)
+        X, y = meka.open_dataset(upload_folder, filename)
+        prediction_df, _ = meka.predict(model_meka, X, y)
+
+        delete_file()
+        if not os.path.exists(upload_folder):
+            os.makedirs(upload_folder)
+        prediction_df.to_csv(upload_folder + fil_name, index=None)
+
     else:
         return "", 400
 
-
-    print(prediction_df)
-    
-    df_html = generate_df_html(prediction_df,num=None)
-    return render_template("blocks/predict_result.html", data=df_html,file=fil_name)
-
-
-
+    df_html = generate_df_html(prediction_df, num=None)
+    return render_template("blocks/predict_result.html",
+                           data=df_html,
+                           file=fil_name)
 
 
 @login_required

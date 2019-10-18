@@ -30,7 +30,7 @@ from weka.classifiers import Evaluation
 from weka.core.converters import Loader
 import weka.core.serialization as serialization
 from ubumlaas.util import get_dataframe_from_file
-from ubumlaas.experiments.execute_algortihm import Execute_sklearn, Execute_weka
+from ubumlaas.experiments.execute_algortihm import Execute_sklearn, Execute_weka, Execute_meka
 
 import tempfile
 import shutil
@@ -47,9 +47,9 @@ def task_skeleton(experiment, current_user):
     # Task need app environment
     create_app('subprocess')  # No generate new workers
     # Diference sklearn executor and weka executor
-    apps_functions = {"sklearn": Execute_sklearn, "weka": Execute_weka}
+    apps_functions = {"sklearn": Execute_sklearn, "weka": Execute_weka, "meka": Execute_meka}
     # Get algorithm type
-    type_app = experiment["alg"]["alg_name"].split(".", 1)[0]
+    type_app = experiment["alg"]["lib"]
     try:
         execution_lib = apps_functions[type_app](experiment)
         
@@ -97,10 +97,12 @@ def task_skeleton(experiment, current_user):
         if exp_config["mode"] == "cross" or exp_config["train_partition"] < 100:
             
             typ = execution_lib.algorithm_type
-            if typ == "Regression":
+            if typ == "Regression" or typ == "MultiRegression":
                 score = regression_metrics(y_test, y_pred)
             elif typ == "Classification":
                 score = classification_metrics(y_test, y_pred, y_score)
+            elif typ == "MultiClassification":
+                score = multiclassication_metrics(y_test, y_pred)
         result = json.dumps(score)
         state = 1
     except Exception as ex:
@@ -112,7 +114,6 @@ def task_skeleton(experiment, current_user):
         execution_lib.close()
     
     from ubumlaas.models import Experiment
-    print(result)
     exp = Experiment.query.filter_by(id=experiment['id']).first()
     exp.result = result
     exp.state = state
@@ -160,6 +161,20 @@ def classification_metrics(y_test_param, y_pred_param, y_score_param):
     return score
 
 
+def multiclassication_metrics(y_test_param, y_pred_param):
+    score = {}
+
+    for y_test, y_pred in zip(y_test_param, y_pred_param):
+        score.setdefault("accuracy", []).append(sklearn.metrics.accuracy_score(y_test, y_pred))
+        score.setdefault("hamming_loss", []).append(sklearn.metrics.hamming_loss(y_test, y_pred))
+        score.setdefault("f1_score_micro", []).append(sklearn.metrics.f1_score(y_test, y_pred, average="micro"))
+        score.setdefault("f1_score_macro", []).append(sklearn.metrics.f1_score(y_test, y_pred, average="macro"))
+        score.setdefault("zero_one_loss", []).append(sklearn.metrics.zero_one_loss(y_test, y_pred))
+        score.setdefault("label_ranking_loss", []).append(sklearn.metrics.label_ranking_loss(y_test, y_pred))
+
+    return score
+
+
 def value_to_bool(y_test, y_pred):
     """Transform a pandas non boolean column in boolean column
 
@@ -195,32 +210,26 @@ def regression_metrics(y_test_param, y_pred_param):
 
     return score
 
-def execute_weka_predict(username,exp_id, tmp_filename, model_path,fil_name):
 
+def execute_weka_predict(username, exp_id, tmp_filename, model_path, fil_name):
 
-    
     try:
-        create_app('subprocess') #No generate new workers
+        create_app('subprocess')  # No generate new workers
         upload_folder = "/tmp/"+username+"/"
 
-    
         predict_df = get_dataframe_from_file(upload_folder, tmp_filename)
-        
 
-        from ubumlaas.models import Experiment, load_experiment
+        from ubumlaas.models import load_experiment
         experiment = load_experiment(exp_id)
         executor = Execute_weka(experiment.to_dict())
         class_attribute_name = executor.experiment_configuration["target"]
 
-    
-
         # Open experiment configuration
         model_df = get_dataframe_from_file("ubumlaas/datasets/"+username +
-                            "/", experiment.data)
+                                           "/", experiment.data)
         executor.find_y_uniques(model_df[class_attribute_name])
-        
+
         predict_columns = predict_df.columns
-        print(predict_columns)
         X = predict_df[executor.experiment_configuration["columns"]]
         if class_attribute_name in predict_columns:
             y = predict_df[class_attribute_name]
@@ -230,18 +239,17 @@ def execute_weka_predict(username,exp_id, tmp_filename, model_path,fil_name):
             predict_has_target = False
         jvm.start(packages=True)
 
-
         model = executor.deserialize(model_path)
-        
+
         y_pred, y_score = executor.predict(model, X, y)
-    
-        
+
         dataframes_final = [X]
-        #remove "?" column if not exist original target
+        #  remove "?" column if not exist original target
         if predict_has_target:
             dataframes_final.append(y)
-            
-        y_pred_df = pd.DataFrame(y_pred, columns=["prediction_"+class_attribute_name])
+
+        y_pred_df = pd.DataFrame(y_pred,
+                                 columns=["prediction_" + class_attribute_name])
         dataframes_final.append(y_pred_df)
         dataframes = pd.concat(dataframes_final, axis=1)
         shutil.rmtree(upload_folder)
@@ -255,4 +263,3 @@ def execute_weka_predict(username,exp_id, tmp_filename, model_path,fil_name):
     finally:
         jvm.stop()
     return True
-
