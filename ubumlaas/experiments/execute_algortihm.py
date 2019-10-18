@@ -335,18 +335,16 @@ class Execute_meka(AbstractExecute):
         return meka_classifier, weka_classifier
 
     def serialize(self, model, path):
-        model.save(path)
+        pickle.dump(model, open(path, 'wb'))
 
     def deserialize(self, path):
-        m = self.create_model()
-        m.load(path)
-        return m
+        return pickle.load(open(path, 'rb'))
 
     def train(self, model, X, y):
         model.fit(X.values, y.values)
 
     def predict(self, model, X, y):
-        predictions = model.predict(X.values)
+        predictions = model.predict(X.values, y.values)
         predictions = pd.DataFrame(predictions.toarray())
         predictions.columns = y.columns
         y_score = None

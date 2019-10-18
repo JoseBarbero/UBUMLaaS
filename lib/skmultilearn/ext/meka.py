@@ -265,15 +265,7 @@ class Meka(MLClassifierBase):
 
         return self
 
-    def save(self, route):
-        with open(route, 'wb') as fp:
-            fp.write(self.classifier_dump)
-
-    def load(self, route):
-        with open(route, 'rb') as fp:
-            self.classifier_dump = fp.read()
-
-    def predict(self, X):
+    def predict(self, X, y):
         """Predict label assignments for X
 
         Internally this method dumps X to temporary arff files and
@@ -297,7 +289,8 @@ class Meka(MLClassifierBase):
 
         if self.classifier_dump is None:
             raise Exception('Not classified')
-
+        if self._label_count is None:
+            self._label_count = y.shape[1]
         sparse_y = sparse.coo_matrix((X.shape[0], self._label_count), dtype=int)
 
         try:
@@ -368,7 +361,6 @@ class Meka(MLClassifierBase):
             self._results = None
             self._statistics = None
             return None
-
         predictions_split_head = '==== PREDICTIONS'
         predictions_split_foot = '|==========='
 
@@ -438,7 +430,6 @@ class Meka(MLClassifierBase):
             command_args += ['-W', self.weka_classifier]
 
         meka_command = " ".join(command_args)
-
         if sys.platform != 'win32':
             meka_command = shlex.split(meka_command)
 

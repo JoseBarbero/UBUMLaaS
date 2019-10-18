@@ -46,7 +46,9 @@
         <div class="col-md-6">
             {% if experiment.state == 0 %}
                 <h3 class="text-center">In Progress</h3>
-                <img src="{{ url_for("static",filename="img/dude-mining.gif") }}"/>
+                <div class="col-12 d-flex align-center">
+                    <img src="{{ url_for("static",filename="img/dude-mining.gif") }}" class="" style="margin: 0 auto;">
+                </div>
             {% else %}
 
                 {% if experiment.state == 2  %}
