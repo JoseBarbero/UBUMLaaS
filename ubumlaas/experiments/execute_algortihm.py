@@ -28,38 +28,101 @@ import tempfile
 
 
 
-class AbstractExecute(ABC):
+class Abstract_execute(ABC):
+
+    def __init__(self, experiment):
+        """Initizialice attributes from experiment dict
+        
+        Arguments:
+            experiment {dict} -- experiment dictionary
+        """
+        self.algorithm_name = experiment["alg"]["alg_name"]  # for example: weka.classification.trees.J48
+        self.algorithm_type = Abstract_execute._know_type(experiment)  # classification, reggression or mixed
+        self.algorithm_configuration = json.loads(experiment["alg_config"])  # configuration algorithm
+        self.configuration = json.loads(experiment["alg"]["config"])
+        self.experiment_configuration = json.loads(experiment["exp_config"])
+
 
     @abstractmethod
     def create_model(self):
-        pass
+        """Create the model with experiment
+        
+        Returns:
+            [object] -- model with the experiment configuration
+        """
+        return None
 
     @abstractmethod
     def serialize(self, model, path):
+        """Serialize the model in specific path
+        
+        
+        Arguments:
+            model {object} -- the model to serialize
+            path {str} -- path to save the model serialized
+        """
         pass
 
     @abstractmethod
     def deserialize(self, path):
-        pass
+        """Deserialize the model in the specific path
+        
+        Arguments:
+            path {str} -- path with the model file saved
+        
+        Returns:
+            [object] -- model deserialized
+        """
+        return None
 
     @abstractmethod
-    def train(self, X, y):
+    def train(self, model, X, y):
+        """Train the model with attributes columns (X) and targets columns (Y)
+        
+        Arguments:
+            model {object} -- model to train
+            X {DataFrame} -- attributes columns
+            y {FataFrame} -- targets columns
+        """
         pass
 
     @abstractmethod
     def predict(self, model, X):
-        pass
+        """Predict with X columns values using the model
+        
+        Arguments:
+            model {object} -- model to use for predictions
+            X {DataFrame} -- dataframe with X columns values
+        
+        Returns:
+            list, list -- predictions values, distribution class if is classified or None otherwise
+        """
+        return None, None
 
     def kfold_algorithm(self):
+        """Return KFold algorithm if is classification or not
+        
+        Returns:
+            [func] -- StratifiedKafold if is classification or KFold in other case
+        """
         if self.is_classification():
-            return "StratifiedKFold"
+            return StratifiedKFold
         else:
-            return "KFold"
+            return KFold
 
-    def open_dataset(self, path, filename, columns, target):
-        data = get_dataframe_from_file(path, filename)
-        X = data.loc[:, columns]
-        y = data[target]
+    def open_dataset(self, path, filename):
+        """Open dataset file and return as X and y
+        
+        Arguments:
+            path {str} -- path without file nanme
+            filename {str} -- file name to open
+        
+        Returns:
+            DataFrame, DataFrame or Series -- X and Y DataFrame (Series if only one column)
+        """
+        data = get_dataframe_from_file(path, filename)     
+        X = data.loc[:, self.experiment_configuration["columns"]]
+        y = data[self.experiment_configuration["target"]]
         return X, y
 
     def close(self):
@@ -79,8 +142,7 @@ class AbstractExecute(ABC):
                         random_state=None):
         folds = []
 
-        kf = eval(self.kfold_algorithm()+"(n_splits=n_splits, shuffle=shuffle, \
-                             random_state=random_state)")
+        kf = self.kfold_algorithm()(n_splits=n_splits, shuffle=shuffle, random_state=random_state)
 
         for train_index, test_index in kf.split(X, y):
 
@@ -93,7 +155,8 @@ class AbstractExecute(ABC):
             folds.append((X_train, X_test, y_train, y_test))
         return folds
 
-    def _know_type(self, exp):
+    @staticmethod
+    def _know_type(exp):
         if exp["alg"]["alg_typ"] == "Mixed":
             from ubumlaas.models import get_algorithm_by_name
             config = json.loads(exp["alg_config"])
@@ -103,20 +166,19 @@ class AbstractExecute(ABC):
                                         config[c]["alg_name"]
                                       ).to_dict(),
                                "alg_config": config[c]["parameters"]}
-                    return self._know_type(new_exp)
+                    return Abstract_execute._know_type(new_exp)
         return exp["alg"]["alg_typ"]
 
+    def is_classification(self):
+        return self.algorithm_type == "Classification"
 
-class Execute_sklearn(AbstractExecute):
+class Execute_sklearn(Abstract_execute):
 
     def __init__(self, experiment):
-        self.algorithm_name = experiment["alg"]["alg_name"]  # example weka.classification.trees.J48
-        self.algorithm_type = super()._know_type(experiment)  # classification, reggression or mixed
-        self.algorithm_configuration = json.loads(experiment["alg_config"])  # configuration algorithm
-        self.configuration = json.loads(experiment["alg"]["config"])
-        self.experiment_configuration = json.loads(experiment["exp_config"])
+        Abstract_execute.__init__(self, experiment)
 
-    def __create_sklearn_model(self, alg_name, alg_config):
+    @staticmethod
+    def __create_sklearn_model(alg_name, alg_config):
         """Create a sklearn model recursive
 
         Arguments:
@@ -125,7 +187,7 @@ class Execute_sklearn(AbstractExecute):
         """
         for ac in alg_config:
             if type(alg_config[ac]) == dict:
-                alg_config[ac] = self.__create_sklearn_model(
+                alg_config[ac] = Execute_sklearn.__create_sklearn_model(
                                         alg_config[ac]["alg_name"],
                                         alg_config[ac]["parameters"])
 
@@ -133,7 +195,7 @@ class Execute_sklearn(AbstractExecute):
         return model
 
     def create_model(self):
-        return self.__create_sklearn_model(self.algorithm_name,
+        return Execute_sklearn.__create_sklearn_model(self.algorithm_name,
                                            self.algorithm_configuration)
 
     def serialize(self, model, path):
@@ -145,45 +207,19 @@ class Execute_sklearn(AbstractExecute):
     def train(self, model, X, y):
         model.fit(X, y)
 
-    def predict(self, model, X, y):
+    def predict(self, model, X):
         predictions = model.predict(X)
         y_score = None
         if self.is_classification():
             y_score = model.predict_proba(X)
         return predictions, y_score
 
-    def open_dataset(self, path, filename):
-        return super().open_dataset(path, filename,
-                                    self.experiment_configuration["columns"],
-                                    self.experiment_configuration["target"])
-
-    def generate_train_test_split(self, X, y, train_size):
-        return super().generate_train_test_split(X, y, train_size)
-
-    def generate_KFolds(self, X, y, n_splits=3,
-                        shuffle=False, random_state=None):
-        return super().generate_KFolds(X, y, n_splits, shuffle, random_state)
-
-    def is_classification(self):
-        return self.algorithm_type == "Classification"
-
-    def close(self):
-        pass
-
-    def find_y_uniques(self, y):
-        pass
-
-
-class Execute_weka(AbstractExecute):
+class Execute_weka(Abstract_execute):
 
     def __init__(self, experiment):
-        jvm.start(packages=True)
-        self.algorithm_name = experiment["alg"]["alg_name"]  # for example: weka.classification.trees.J48
-        self.algorithm_type = super()._know_type(experiment)  # classification, reggression or mixed
-        self.algorithm_configuration = json.loads(experiment["alg_config"])  # configuration algorithm
-        self.configuration = json.loads(experiment["alg"]["config"])
-        self.experiment_configuration = json.loads(experiment["exp_config"])
+        Abstract_execute.__init__(self, experiment)
 
+        jvm.start(packages=True)
         self.y_uniques = None
 
     def create_weka_dataset(self, X, y):
@@ -218,6 +254,7 @@ class Execute_weka(AbstractExecute):
             temp.close()
         return data
 
+    @staticmethod
     def create_weka_parameters(alg_name, alg_config, baseconf=None):
 
         if baseconf is None:
@@ -260,12 +297,10 @@ class Execute_weka(AbstractExecute):
         data = self.create_weka_dataset(X, y)
         model.build_classifier(data)
 
-    def predict(self, model, X, y):
-        if y is None:
-            # TODO multi-label is different
-            y = pd.DataFrame({
-                    self.experiment_configuration["target"]: ["?"]*len(X.index)
-                })
+    def predict(self, model, X):
+        y = pd.DataFrame({
+                self.experiment_configuration["target"]: ["?"]*len(X.index)
+            })
 
         data_test = self.create_weka_dataset(X, y)
         y_score = None
@@ -284,22 +319,7 @@ class Execute_weka(AbstractExecute):
                       for instance in data_test
                       ]
         return y_pred, y_score
-
-    def open_dataset(self, path, filename):
-        return super().open_dataset(path, filename,
-                                    self.experiment_configuration["columns"],
-                                    self.experiment_configuration["target"])
-
-    def generate_train_test_split(self, X, y, train_size):
-        return super().generate_train_test_split(X, y, train_size)
-
-    def generate_KFolds(self, X, y, n_splits=3,
-                        shuffle=False, random_state=None):
-        return super().generate_KFolds(X, y, n_splits, shuffle, random_state)
-
-    def is_classification(self):
-        return self.algorithm_type == "Classification"
-
+        
     def close(self):
         jvm.stop()
 
@@ -310,17 +330,13 @@ class Execute_weka(AbstractExecute):
             self.y_uniques = uniques
 
 
-class Execute_meka(AbstractExecute):
+class Execute_meka(Abstract_execute):
 
     def __init__(self, experiment):
-        self.algorithm_name = experiment["alg"]["alg_name"]  # example weka.classification.trees.J48
-        self.algorithm_type = super()._know_type(experiment)  # classification, reggression or mixed
-        self.algorithm_configuration = json.loads(experiment["alg_config"])  # configuration algorithm
-        self.configuration = json.loads(experiment["alg"]["config"])
-        self.experiment_configuration = json.loads(experiment["exp_config"])
+        Abstract_execute.__init__(self, experiment)
 
     def kfold_algorithm(self):
-        return "KFold"
+        return KFold
 
     def create_model(self):
         meka_classifier, weka_classifier = self._get_options()
@@ -354,17 +370,11 @@ class Execute_meka(AbstractExecute):
     def train(self, model, X, y):
         model.fit(X.values, y.values)
 
-    def predict(self, model, X, y):
-        predictions = model.predict(X.values, y.values)
-        predictions = pd.DataFrame(predictions.toarray())
-        predictions.columns = y.columns
+    def predict(self, model, X):
+        predictions = model.predict(X.values)
+        predictions = predictions.toarray()
         y_score = None
         return predictions, y_score
 
     def is_classification(self):
         return self.algorithm_type == "MultiClassification"
-
-    def open_dataset(self, path, filename):
-        return super().open_dataset(path, filename,
-                                    self.experiment_configuration["columns"],
-                                    self.experiment_configuration["target"])

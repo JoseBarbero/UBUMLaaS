@@ -265,19 +265,16 @@ class Meka(MLClassifierBase):
 
         return self
 
-    def predict(self, X, y):
+    def predict(self, X):
         """Predict label assignments for X
-
         Internally this method dumps X to temporary arff files and
         runs MEKA with relevant arguments using :func:`_run`. It uses a
         sparse DOK representation (:class:`scipy.sparse.dok_matrix`)
         of the X matrix.
-
         Parameters
         ----------
         X : numpy.ndarray or scipy.sparse
             input features of shape :code:`(n_samples, n_features)`
-
         Returns
         -------
         scipy.sparse of int
@@ -289,8 +286,7 @@ class Meka(MLClassifierBase):
 
         if self.classifier_dump is None:
             raise Exception('Not classified')
-        if self._label_count is None:
-            self._label_count = y.shape[1]
+
         sparse_y = sparse.coo_matrix((X.shape[0], self._label_count), dtype=int)
 
         try:
@@ -320,6 +316,7 @@ class Meka(MLClassifierBase):
             )
 
         return self._results
+
 
     def _run(self, train_file, test_file, additional_arguments=[]):
         """Runs the meka classifiers
