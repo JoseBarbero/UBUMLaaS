@@ -17,7 +17,7 @@ import variables as v
 import traceback
 import pickle
 
-from ubumlaas.utils import send_email
+from ubumlaas.util import send_email
 from time import time
 import json
 import os

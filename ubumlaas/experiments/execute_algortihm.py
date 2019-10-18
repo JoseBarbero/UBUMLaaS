@@ -226,6 +226,7 @@ class Execute_weka(AbstractExecute):
             baseconf = json.loads(exp.config)
 
         lincom = []
+
         for i in alg_config:
             parameter = alg_config[i]
             if type(parameter) == dict:
@@ -274,15 +275,14 @@ class Execute_weka(AbstractExecute):
                         )for instance in data_test
                       ]
             y_score = model.distributions_for_instances(data_test)
+            try: #Trying to convert to int
+                y_pred = [float(pred) for pred in y_pred]
+            except ValueError:
+                pass
         else:
             y_pred = [model.classify_instance(instance)
                       for instance in data_test
                       ]
-
-        try:  # Trying to convert to int
-            y_pred = [int(pred) for pred in y_pred]
-        except ValueError:
-            pass
         return y_pred, y_score
 
     def open_dataset(self, path, filename):
