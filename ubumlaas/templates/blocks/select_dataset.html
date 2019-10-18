@@ -12,6 +12,7 @@
                 data: "data=" + chosen_dataset,
                 success: function (result) {
                     $("#dataset_parameters").html(result.html);
+                    $("#reduced_parameters").html(result.html2);
                     $("#show_dataset").html(result.df);
                 },
                 error: function (result) {

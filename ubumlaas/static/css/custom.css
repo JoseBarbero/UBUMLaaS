@@ -61,3 +61,7 @@ footer .main-footer {
     -moz-border-radius: 100px;
     border-radius: 5px;
 }
+
+option.list-group-item{
+    padding: 0.25rem 1rem !important;
+}
