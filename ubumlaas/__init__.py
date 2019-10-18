@@ -57,7 +57,7 @@ def create_app(config_name):
 
         # Install weka packages
         v.q.enqueue(weka_packages.install_packages,
-                    "ubumlaas/weka/weka_packages.txt")        
+                    "ubumlaas/weka/weka_packages.json")        
 
     ######################
     ###  LOGIN CONFIG  ###
