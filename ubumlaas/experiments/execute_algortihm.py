@@ -9,7 +9,7 @@ import sklearn.neighbors
 import sklearn.model_selection
 import sklearn.preprocessing
 import sklearn.multiclass
-from sklearn.model_selection import StratifiedKFold
+from sklearn.model_selection import StratifiedKFold, KFold
 
 import pandas as pd
 import pickle
@@ -50,6 +50,12 @@ class AbstractExecute(ABC):
     def predict(self, model, X):
         pass
 
+    def kfold_algorithm(self):
+        if self.is_classification():
+            return "StratifiedKFold"
+        else:
+            return "KFold"
+
     def open_dataset(self, path, filename, columns, target):
         data = get_dataframe_from_file(path, filename)
         X = data.loc[:, columns]
@@ -72,8 +78,10 @@ class AbstractExecute(ABC):
     def generate_KFolds(self, X, y, n_splits=3, shuffle=False,
                         random_state=None):
         folds = []
-        kf = StratifiedKFold(n_splits=n_splits, shuffle=shuffle,
-                             random_state=random_state)
+
+        kf = eval(self.kfold_algorithm()+"(n_splits=n_splits, shuffle=shuffle, \
+                             random_state=random_state)")
+
         for train_index, test_index in kf.split(X, y):
 
             X_train, X_test = X.iloc[train_index, :], \
@@ -260,7 +268,7 @@ class Execute_weka(AbstractExecute):
 
         data_test = self.create_weka_dataset(X, y)
         y_score = None
-        if self.is_classification:
+        if self.is_classification():
             y_pred = [data_test.class_attribute.value(
                             int(model.classify_instance(instance))
                         )for instance in data_test
@@ -296,7 +304,7 @@ class Execute_weka(AbstractExecute):
         jvm.stop()
 
     def find_y_uniques(self, y):
-        if self.is_classification:
+        if self.is_classification():
             uniques = y.unique()
             uniques.sort()
             self.y_uniques = uniques
@@ -310,6 +318,9 @@ class Execute_meka(AbstractExecute):
         self.algorithm_configuration = json.loads(experiment["alg_config"])  # configuration algorithm
         self.configuration = json.loads(experiment["alg"]["config"])
         self.experiment_configuration = json.loads(experiment["exp_config"])
+
+    def kfold_algorithm(self):
+        return "KFold"
 
     def create_model(self):
         meka_classifier, weka_classifier = self._get_options()

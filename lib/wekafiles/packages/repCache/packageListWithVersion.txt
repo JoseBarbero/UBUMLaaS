@@ -19,7 +19,7 @@ EBMC:1.0.0
 EMImputation:1.0.1
 EvolutionarySearch:1.0.2
 ForestPA:1.0
-GPAttributeGeneration:1.0.0
+GPAttributeGeneration:1.0.1
 GenClustPlusPlus:1.5
 HMM:0.1.1
 IBkLG:1.0.1
