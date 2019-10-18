@@ -1,27 +1,29 @@
 from flask import \
-    (render_template, url_for, flash, redirect, request, Blueprint, jsonify,
+    (render_template, url_for, redirect, request, Blueprint, jsonify,
      send_file, abort, safe_join)
 import variables as v
 from ubumlaas.models import \
-    (User, Experiment, load_user, load_experiment, get_algorithm_by_name, get_similar_algorithms)
+    (Experiment, load_experiment,
+     get_algorithm_by_name, get_similar_algorithms)
 from ubumlaas.experiments.forms import \
     (ExperimentForm, DatasetForm, DatasetParametersForm)
 from flask_login import (current_user, login_required)
 from time import time
 from werkzeug.utils import secure_filename
 import os
-import pandas as pd
 import json
 from urllib.parse import unquote
 import calendar
-import time
 import shutil
+import time
 import pickle
 import datetime
 from ubumlaas.experiments.execute_algortihm import Execute_meka
 import copy
 from ubumlaas.experiments.algorithm import task_skeleton, execute_weka_predict
 from ubumlaas.util import get_dataframe_from_file
+from jinja2 import Environment, PackageLoader, select_autoescape
+
 experiments = Blueprint("experiments", __name__)
 
 
@@ -112,7 +114,6 @@ def change_column_list():
     dataset = form_e.data.data
     upload_folder = "ubumlaas/datasets/"+current_user.username+"/"
     df = get_dataframe_from_file(upload_folder, dataset)
-    pretty_df = generate_df_html(df)
     to_return = {"html": render_template("blocks/show_columns.html", data=df),
                  "df": generate_df_html(df)}
     return jsonify(to_return)
@@ -151,7 +152,7 @@ def add_new_dataset():
         return "Error", 400
 
 
-def generate_df_html(df,num=6):
+def generate_df_html(df, num=6):
 
     """Generates an html table from a dataframe.
 
@@ -175,57 +176,70 @@ def generate_df_html(df,num=6):
         ).hide_index()
     html_table = df.to_html(classes=["table", "table-borderless",
                                      "table-striped", "table-hover"],
-                            col_space="100px", max_rows=num, justify="center") \
+                            col_space="100px", max_rows=num, justify="center")\
                    .replace("border=\"1\"", "border=\"0\"") \
                    .replace('<tr>',
                             '<tr align="center">')
     return html_table
 
 
-@login_required
 @experiments.route("/experiment/<id>")
-def result_experiment(id):
+def result_experiment(id, admin=False):
     """See experiment information
 
     Arguments:
         id {int} -- experiment identifier
+        admin {boolean} -- administration petition.
+                           If True current user doesn't matters.
 
     Returns:
         str -- HTTP response with rendered experiment information
     """
     exp = load_experiment(id)
-    if exp.idu != current_user.id:
+    if not admin and exp.idu != current_user.id:
         return "", 403
     name = exp.alg_name
     dict_config = json.loads(exp.alg_config)
     if "base_estimator" in dict_config.keys():
         name += "-" + get_ensem_alg_name(dict_config["base_estimator"])
-    dict_config = get_dict_exp(exp.alg_name,dict_config)
-    return render_template("result.html", experiment=exp, 
-                           name=name,
-                           title="Experiment Result",
-                           dict_config=dict_config,
-                           conf=json.loads(get_algorithm_by_name(
-                                               exp.alg_name).config))
+    dict_config = get_dict_exp(exp.alg_name, dict_config)
+    template_info = {"experiment": exp,
+                     "name": name,
+                     "title": "Experiment Result",
+                     "dict_config": dict_config,
+                     "conf": json.loads(get_algorithm_by_name(
+                                        exp.alg_name).config)}
+    if not admin:
+        return render_template("result.html", **template_info)
+    else:
+        template_info["experiment"].result = \
+            json.loads(template_info["experiment"].result)
+        template = v.app.jinja_env.get_template('email.html')
+        return template.render(**template_info)
+
 
 def get_ensem_alg_name(conf):
     if "base_estimator" in conf["parameters"].keys():
-        return conf["alg_name"] + "-"+ get_ensem_alg_name(conf["parameters"]["base_estimator"])
+        return conf["alg_name"] + "-" + get_ensem_alg_name(
+            conf["parameters"]["base_estimator"])
     else:
         return conf["alg_name"]
 
-def get_dict_exp(name,dict_config):
+
+def get_dict_exp(name, dict_config):
     cd = copy.deepcopy(dict_config)
-    d = {name:cd}
+    d = {name: cd}
     if "base_estimator" in dict_config.keys():
         del d[name]["base_estimator"]
-        d[name]["base_estimator"]=dict_config["base_estimator"]["alg_name"]
+        d[name]["base_estimator"] = dict_config["base_estimator"]["alg_name"]
         name += dict_config["base_estimator"]["alg_name"]
-        d.update(get_dict_exp(name,dict_config["base_estimator"]["parameters"]))
+        d.update(get_dict_exp(name,
+                              dict_config["base_estimator"]["parameters"]))
         return d
     else:
         return d
-    
+
+
 @experiments.route("/experiment/form_generator", methods=["POST"])
 def form_generator():
     """Get algorithm configuration to generate a form.
@@ -289,6 +303,7 @@ def reuse_experiment(id):
                            form_d=form_d, form_p=form_p,
                            title="New experiment")
 
+
 @experiments.route("/experiment/base_estimator_getter", methods=["POST"])
 def base_estimator_getter():
     alg_name = request.form.get("alg_name", None)
@@ -299,8 +314,9 @@ def base_estimator_getter():
     for i in algorithm:
         _ret["algorithms"].append(i.to_dict())
     return jsonify(_ret)
- 
-@experiments.route("/experiment/<id>/predict_dataset",methods=["POST"])
+
+
+@experiments.route("/experiment/<id>/predict_dataset", methods=["POST"])
 def add_predict_dataset(id):
     """Uploads a new dataset and displays it as html table.
 
@@ -331,40 +347,43 @@ def add_predict_dataset(id):
     else:
         return "Error", 400
 
+
 @login_required
 @experiments.route("/experiment/<id>/predict")
 def predict(id):
     """Render predict html.
-    
+
     Arguments:
         id {int} -- experiment identificator.
-    
+
     Returns:
         str -- render predict html.
     """
     form_pr = DatasetForm()
 
-    return render_template("predict.html", form_pr=form_pr,id=id,title="Predict")
+    return render_template("predict.html", form_pr=form_pr,
+                           id=id, title="Predict")
 
 
 @login_required
-@experiments.route("/experiment/predict",methods=['POST'])
+@experiments.route("/experiment/predict", methods=['POST'])
 def start_predict():
     """Start prediction
-    
+
     Returns:
         [type] -- [description]
     """
     exp_id = request.form.get('exp_id')
     filename = request.form.get('filename')
     upload_folder = "/tmp/"+current_user.username+"/"
-    fil_name = "predict_"+exp_id+"-"+ datetime.datetime.now().strftime("%d_%m_%Y-%H_%M_%S")+".csv"
-
+    fil_name = "predict_" + exp_id + "-" + \
+               datetime.datetime.now().strftime("%d_%m_%Y-%H_%M_%S")+".csv"
 
     exp = load_experiment(exp_id)
 
     alg = get_algorithm_by_name(exp.alg_name)
-    path = "ubumlaas/models/"+current_user.username+"/"+"{}.model".format(exp_id)
+    path = "ubumlaas/models/" + current_user.username + \
+           "/"+"{}.model".format(exp_id)
     if alg.lib == "sklearn":
         # Open experiment configuration
         exp_config = json.loads(exp.exp_config)
@@ -419,30 +438,32 @@ def start_predict():
 
 
 @login_required
-@experiments.route("/experiment/delete_file",methods=['DELETE'])
+@experiments.route("/experiment/delete_file", methods=['DELETE'])
 def delete_file():
     """Delete user temporal folder
-    
+
     Returns:
-        "" -- 
+        "" --
     """
     upload_folder = "/tmp/"+current_user.username+"/"
     shutil.rmtree(upload_folder)
-    return "",200
+    return "", 200
+
 
 @login_required
 @experiments.route("/experiment/<name>/download_result")
 def download_result(name):
     """Download csv file with prediction
-    
+
     Arguments:
         name {str} -- csv file name
-    
+
     Returns:
         send file -- download file
     """
     upload_folder = "/tmp/"+current_user.username+"/"
     try:
-        return send_file(upload_folder+name, attachment_filename=name, as_attachment=True)
+        return send_file(upload_folder+name, attachment_filename=name,
+                         as_attachment=True)
     except FileNotFoundError:
         abort(404)

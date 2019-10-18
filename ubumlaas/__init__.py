@@ -84,6 +84,6 @@ def create_app(config_name):
         return cad.split(".")[-1]
 
     app.jinja_env.filters["split"]=split_dict_key
-
+    v.app = app
     return app
 
