@@ -13,7 +13,7 @@
         </div>
         <div class="row d-flex mt-3 align-items-stretch h-100">
             <div class="col-md-12 d-flex align-items-stretch">
-                <select class="custom-select" id="sel" {% if data|length > 15 %}size="15"{% endif %} multiple>
+                <select class="custom-select" id="sel" {% if data|length > 15 %}size="15" {% else %}size="{{ data|length }}"{% endif %} multiple>
                     {% for g in data %}
                         <option id="{{ loop.index0 }}_opt" class="list-group-item {% if loop.last %}list-group-item-success {% else %} list-group-item-primary{% endif %}" value="{{ g }}">{{ g }}</option>
                     {% endfor %}
@@ -28,22 +28,34 @@
     function onClickButton(idb){
         let lis = $("#sel option").filter(":selected");
         let cod;
-        switch(idb){
-            case "use":
-                cod="list-group-item-primary";
-                break;
-            case "nuse":
-                cod="list-group-item-secondary";
-                break;
-            case "target":
-                cod="list-group-item-success";
-                break;
+        let typ = $("#alg_typ").val();
+        if(lis.length > 1 && idb=="target" && !MULTITARGET.includes(typ)){
+            alert("You can't select more than 1 target in no multilabel algorithms.");
+        }else{
+            lis.each(function(e){
+                let v = $(lis[e]);
+                v.removeAttr('selected')
+                v.attr("selected", false);
+                let ids = "col" + v.attr("id").split("_")[0]
+                switch(idb){
+                    case "use":
+                        if(!v.hasClass("list-group-item-primary")){
+                            $("#"+ids+"_use_label").click();
+                        }
+                        break;
+                    case "nuse":
+                        if(!v.hasClass("list-group-item-secondary")){
+                            $("#"+ids+"_use_label").click();
+                        }
+                        break;
+                    case "target":
+                        if(!v.hasClass("list-group-item-success")){
+                            $("#"+ids+"_target_label").click();
+                        }
+                        break;
+                }
+            });
         }
-        lis.each(function(e){
-            let v = $(lis[e]);
-            v.removeClass("list-group-item-primary list-group-item-secondary list-group-item-success");
-            v.addClass(cod);
-        });
     }
 
 </script>
