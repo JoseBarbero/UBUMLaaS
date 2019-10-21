@@ -34,8 +34,6 @@
         }else{
             lis.each(function(e){
                 let v = $(lis[e]);
-                v.removeAttr('selected')
-                v.attr("selected", false);
                 let ids = "col" + v.attr("id").split("_")[0]
                 switch(idb){
                     case "use":
@@ -59,6 +57,8 @@
                         }
                         break;
                 }
+                v.removeAttr('selected');
+                v.prop("selected", false);
             });
         }
     }
