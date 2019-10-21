@@ -38,8 +38,8 @@ MLaaS platform based on ADMIRABLE and BEST-AI research groups methods.
     #!/bin/bash
 
     export SECRET_KEY=dev
-    export EMAIL_AC=ubumlaas@gmail.com
-    export EMAIL_PASS=rotationforest
+    export EMAIL_AC=<email>
+    export EMAIL_PASS=<email-password>
     LIBFOLDER=.
     export WEKA_HOME=$LIBFOLDER/lib/wekafiles/packages/
 
