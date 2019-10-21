@@ -41,20 +41,17 @@ function get_dataset_config(){
     }
     let selected_columns = [];
     let columns = $(".column-dataset");
-    let multitarget = MULTITARGET.includes(typ);
-    if(multitarget){
-        dataset_config.target = [];
-    }
+   
+    dataset_config.target = [];
+    
     for(var i=0; i<columns.length; i++){
         var current_column = dataset_columns[i];
         var use = $("#col"+i+"_use");
         var target = $("#col"+i+"_target");
         if (target.is(":checked")){
-            if(multitarget){
-                dataset_config.target.push(current_column);
-            }else{
-                dataset_config.target = current_column;
-            }
+
+            dataset_config.target.push(current_column);
+
         }else if(use.is(":checked")){
             selected_columns.push(current_column);
         }

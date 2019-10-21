@@ -30,7 +30,7 @@ from weka.classifiers import Evaluation
 from weka.core.converters import Loader
 import weka.core.serialization as serialization
 from ubumlaas.util import get_dataframe_from_file
-from ubumlaas.experiments.execute_algortihm import Execute_sklearn, Execute_weka, Execute_meka
+from ubumlaas.experiments.execute_algorithm import Execute_weka
 
 import tempfile
 import shutil
@@ -47,14 +47,16 @@ def task_skeleton(experiment, current_user):
     # Task need app environment
     create_app('subprocess')  # No generate new workers
     # Diference sklearn executor and weka executor
-    apps_functions = {"sklearn": Execute_sklearn, "weka": Execute_weka, "meka": Execute_meka}
+    
     # Get algorithm type
     type_app = experiment["alg"]["lib"]
     try:
-        execution_lib = apps_functions[type_app](experiment)
+        execution_lib = v.apps_functions[type_app](experiment)
+        
         
         X, y = execution_lib.open_dataset("ubumlaas/datasets/"+current_user["username"] +"/"
                            ,experiment['data'])
+        
 
         #Find uniques values in weka and is classification
         execution_lib.find_y_uniques(y)
@@ -67,7 +69,6 @@ def task_skeleton(experiment, current_user):
         execution_lib.train(model, X, y)
         execution_lib.serialize(model, "{}{}.model".format(models_dir, experiment['id']))
 
-        #TODO find variable mode
         exp_config = execution_lib.experiment_configuration
         y_pred = None
         y_score = None
@@ -75,7 +76,7 @@ def task_skeleton(experiment, current_user):
             X_train, X_test, y_train, y_test = execution_lib.generate_train_test_split(X, y, exp_config["train_partition"])
             model = execution_lib.create_model()
             execution_lib.train(model, X_train, y_train)
-            y_pred, y_score = execution_lib.predict(model, X_test, y_test)
+            y_pred, y_score = execution_lib.predict(model, X_test)
             y_pred = [y_pred]
             y_score = [y_score]
             y_test = [y_test]
@@ -88,7 +89,7 @@ def task_skeleton(experiment, current_user):
             for X_train, X_test, y_train, y_test_kfold in kfolds:
                 model = execution_lib.create_model()
                 execution_lib.train(model, X_train, y_train)
-                y_predk, y_scorek = execution_lib.predict(model, X_test, y_test_kfold)
+                y_predk, y_scorek = execution_lib.predict(model, X_test)
                 y_pred.append(y_predk)
                 y_score.append(y_scorek)
                 y_test.append(y_test_kfold)
@@ -136,7 +137,6 @@ def classification_metrics(y_test_param, y_pred_param, y_score_param):
         dict -- metrics with computed value
     """
     score = {}
-
     for y_test, y_pred, y_score in zip(y_test_param,y_pred_param, y_score_param):
 
         # First confuse matrix
@@ -146,7 +146,7 @@ def classification_metrics(y_test_param, y_pred_param, y_score_param):
         if conf_matrix.shape[0] == 2:
             # Boolean metrics
             
-            if y_test.dtype != np.bool:
+            if y_test.values.dtype != np.bool:
                 y_b_test, y_b_pred = value_to_bool(y_test.copy(), y_pred.copy())
             else:
                 y_b_test = y_test
@@ -211,7 +211,7 @@ def regression_metrics(y_test_param, y_pred_param):
     return score
 
 
-def execute_weka_predict(username, exp_id, tmp_filename, model_path, fil_name):
+def execute_weka_predict(username, experiment, tmp_filename, model_path, fil_name):
 
     try:
         create_app('subprocess')  # No generate new workers
@@ -219,14 +219,13 @@ def execute_weka_predict(username, exp_id, tmp_filename, model_path, fil_name):
 
         predict_df = get_dataframe_from_file(upload_folder, tmp_filename)
 
-        from ubumlaas.models import load_experiment
-        experiment = load_experiment(exp_id)
-        executor = Execute_weka(experiment.to_dict())
+   
+        executor = Execute_weka(experiment)
         class_attribute_name = executor.experiment_configuration["target"]
 
         # Open experiment configuration
         model_df = get_dataframe_from_file("ubumlaas/datasets/"+username +
-                                           "/", experiment.data)
+                                           "/", experiment["data"])
         executor.find_y_uniques(model_df[class_attribute_name])
 
         predict_columns = predict_df.columns
@@ -241,7 +240,7 @@ def execute_weka_predict(username, exp_id, tmp_filename, model_path, fil_name):
 
         model = executor.deserialize(model_path)
 
-        y_pred, y_score = executor.predict(model, X, y)
+        y_pred, y_score = executor.predict(model, X)
 
         dataframes_final = [X]
         #  remove "?" column if not exist original target
