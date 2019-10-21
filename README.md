@@ -65,8 +65,15 @@ MLaaS platform based on ADMIRABLE and BEST-AI research groups methods.
 
     export MEKA_CLASSPATH="$_res$LIBFOLDER/lib/scikit_ml_learn_data/meka/meka-release-1.9.2/lib/"
     ```
-8. Execute
+8. Install Redis-Server
+    ```bash
+    $ sudo apt install redis-server
+    $ sudo service redis-server start
+    $ sudo systemctl enable redis-server #If you want to initialize the service in startup
     ```
+    *Caution*: Close all workers of RQ before stop redis-server
+9.  Execute
+    ```bash
     python app.py
     ```
 
