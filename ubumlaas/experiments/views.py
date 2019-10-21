@@ -213,8 +213,6 @@ def result_experiment(id, admin=False):
     if not admin:
         return render_template("result.html", **template_info)
     else:
-        template_info["experiment"].result = \
-            json.loads(template_info["experiment"].result)
         template = v.app.jinja_env.get_template('email.html')
         return template.render(**template_info)
 
