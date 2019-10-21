@@ -96,3 +96,18 @@ def get_dict_exp(name, dict_config):
         return d
     else:
         return d
+        
+
+def value_to_bool(y_test, y_pred):
+    """Transform a pandas non boolean column in boolean column
+
+    Arguments:
+        y_test {pandas} -- test output
+        y_pred {pandas} -- model output
+
+    Returns:
+        [pandas,pandas] -- test output boolean, model output boolean
+    """
+    un = y_test.unique()
+    d = {un[0]: True, un[1]: False}
+    return y_test.map(d), pd.Series(y_pred).map(d)
