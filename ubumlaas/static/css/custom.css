@@ -61,3 +61,22 @@ footer .main-footer {
     -moz-border-radius: 100px;
     border-radius: 5px;
 }
+
+option.list-group-item{
+    padding: 0.25rem 1rem !important;
+}
+
+#sel[multiple] option.list-group-item-success:checked{
+    background-color: var(--success) !important;
+    color: #ffffff !important;
+}
+
+#sel[multiple] option.list-group-item-primary:checked{
+    background-color: var(--primary) !important;
+    color: #ffffff !important;
+}
+
+#sel[multiple]  option.list-group-item-secondary:checked{
+    background-color: var(--secondary) !important;
+    color: #ffffff !important;
+}

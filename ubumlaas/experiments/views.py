@@ -115,6 +115,7 @@ def change_column_list():
     upload_folder = "ubumlaas/datasets/"+current_user.username+"/"
     df = get_dataframe_from_file(upload_folder, dataset)
     to_return = {"html": render_template("blocks/show_columns.html", data=df),
+                 "html2": render_template("blocks/show_columns_reduced.html", data=df.columns),
                  "df": generate_df_html(df)}
     return jsonify(to_return)
 

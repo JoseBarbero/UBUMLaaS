@@ -18,7 +18,7 @@
                     <div class="material-switch" id="col{{ loop.index0 }}_use_div">
                         <input type="checkbox" id="col{{ loop.index0 }}_use" {% if not loop.last %} checked="checked"
                             {% endif %} />
-                        <label for="col{{ loop.index0 }}_use" class="badge-primary"
+                        <label for="col{{ loop.index0 }}_use" id="col{{ loop.index0 }}_use_label" class="badge-primary"
                             onclick="target_or_use('col{{ loop.index0 }}','use')"></label>
                     </div>
                 </td>
@@ -31,7 +31,7 @@
                     <div class="material-switch " id="col{{ loop.index0 }}_target_div">
                         <input type="checkbox" id="col{{ loop.index0 }}_target" class="col_target" {% if loop.last %}
                             checked="checked" {% endif %} />
-                        <label for="col{{ loop.index0 }}_target" class="badge-info"
+                        <label for="col{{ loop.index0 }}_target" id="col{{ loop.index0 }}_target_label" class="badge-info"
                             onclick="only_one_target('col{{ loop.index0 }}_target');target_or_use('col{{ loop.index0 }}','target')"></label>
                     </div>
                 </td>
