@@ -44,7 +44,12 @@
                         }
                         break;
                     case "nuse":
-                        if(!v.hasClass("list-group-item-secondary")){
+                        if(v.hasClass("list-group-item-success")){
+                             $("#"+ids+"_target_label").click();
+                             v.removeClass("list-group-item-success");
+                             v.addClass("list-group-item-secondary");
+                        }
+                        if(v.hasClass("list-group-item-primary")){
                             $("#"+ids+"_use_label").click();
                         }
                         break;

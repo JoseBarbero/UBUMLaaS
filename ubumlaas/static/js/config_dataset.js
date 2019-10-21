@@ -18,7 +18,6 @@ function only_one_target(target){
 }
 
 function target_or_use(identifier, mode){
-    console.log(identifier +"        " + mode);
     let id = identifier.split("col")[1];
     let use = $("#"+identifier+"_use");
     let target = $("#"+identifier+"_target");
