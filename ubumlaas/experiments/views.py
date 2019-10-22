@@ -381,12 +381,14 @@ def start_predict():
 
         model = execute.deserialize(path)
         predictions, _ = execute.predict(model, file_df)
+        columns=[prediction_df]
         if y is not None:
             y_df = pd.DataFrame(y, columns=exp_config["target"])
-            prediction_df = pd.concat([prediction_df,y_df], axis = 1)
+            columns.append(y_df)
         predictions_columns = ["prediction_"+target_name for target_name in exp_config["target"]]
         pred_df = pd.DataFrame(predictions, columns = predictions_columns)
-        prediction_df = pd.concat([prediction_df,pred_df], axis = 1)
+        columns.append(pred_df)
+        prediction_df = pd.concat(columns, axis = 1)
 
         delete_file()
         if not os.path.exists(upload_folder):
