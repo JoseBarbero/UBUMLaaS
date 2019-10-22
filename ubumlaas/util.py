@@ -1,6 +1,7 @@
 import pandas as pd
 import smtplib
 import os
+import numpy as np
 import variables as v
 import copy
 
@@ -96,7 +97,7 @@ def get_dict_exp(name, dict_config):
         return d
     else:
         return d
-        
+
 
 def value_to_bool(y_test, y_pred):
     """Transform a pandas non boolean column in boolean column
@@ -108,6 +109,6 @@ def value_to_bool(y_test, y_pred):
     Returns:
         [pandas,pandas] -- test output boolean, model output boolean
     """
-    un = y_test.unique()
+    un = np.unique(y_test.values)
     d = {un[0]: True, un[1]: False}
-    return y_test.map(d), pd.Series(y_pred).map(d)
+    return pd.Series(y_test.values).map(d), pd.Series(y_pred).map(d)
