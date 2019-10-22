@@ -54,11 +54,7 @@ def upload_dataset(base_folder):
         if not os.path.exists(upload_folder):
             os.makedirs(upload_folder)
 
-        exists = os.path.exists(upload_folder + filename)
-        if(exists):
-            basename, ext = os.path.splitext(os.path.basename(filename))
-
-            filename = basename+"-"+str(calendar.timegm(time.gmtime()))+ext
+        filename, exists = check_exists(upload_folder, filename)
 
         form_d.dataset.data.save(upload_folder + filename)
 
@@ -69,3 +65,13 @@ def upload_dataset(base_folder):
                                exists=exists, name=filename)
     else:
         return "Error", 400
+
+
+def check_exists(upload_folder, filename):
+    exists = os.path.exists(upload_folder + filename)
+    if(exists):
+        basename, ext = os.path.splitext(os.path.basename(filename))
+
+        filename = basename+"-"+str(calendar.timegm(time.gmtime()))+ext
+
+    return filename, exists
