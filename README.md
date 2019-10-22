@@ -79,9 +79,9 @@ MLaaS platform based on ADMIRABLE and BEST-AI research groups methods.
 
 ---
 <p align="center">
-<img align="center" width="20%" src="ubumlaas/static/img/FEDER.svg">
-<img align="center" width="20%" src="ubumlaas/static/img/MEC.svg">
-<img align="center" width="20%" src="ubumlaas/static/img/JCYL.svg">
-<img align="center" width="20%" src="ubumlaas/static/img/JCYL_impulsa.svg">
+<img hspace="2%" align="center" width="20%" src="ubumlaas/static/img/FEDER.svg">
+<img hspace="2%" align="center" width="20%" src="ubumlaas/static/img/MEC.svg">
+<img hspace="2%" align="center" width="20%" src="ubumlaas/static/img/JCYL.svg">
+<img hspace="2%" align="center" width="20%" src="ubumlaas/static/img/JCYL_impulsa.svg">
 </p>
         
