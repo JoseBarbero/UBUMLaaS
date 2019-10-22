@@ -27,7 +27,11 @@ function target_or_use(identifier, mode){
         if(use.is(":checked")){
             use.prop("checked", false);
         }
-        v.addClass("list-group-item-success");
+        if(!target.is(":checked")){
+            v.addClass("list-group-item-success");
+        }else{
+            v.addClass("list-group-item-secondary");
+        }
     }else if(mode == "use"){
         if(target.is(":checked")){
             target.prop("checked", false);
