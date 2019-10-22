@@ -37,7 +37,7 @@ MLaaS platform based on ADMIRABLE and BEST-AI research groups methods.
     ```bash
     #!/bin/bash
 
-    export SECRET_KEY=dev
+    export SECRET_KEY=<app secret key>
     export EMAIL_AC=<email>
     export EMAIL_PASS=<email-password>
     LIBFOLDER=.
@@ -79,9 +79,16 @@ MLaaS platform based on ADMIRABLE and BEST-AI research groups methods.
 
 ---
 <p align="center">
-<img hspace="2%" align="center" width="20%" src="ubumlaas/static/img/FEDER.svg">
-<img hspace="2%" align="center" width="20%" src="ubumlaas/static/img/MEC.svg">
-<img hspace="2%" align="center" width="20%" src="ubumlaas/static/img/JCYL.svg">
-<img hspace="2%" align="center" width="20%" src="ubumlaas/static/img/JCYL_impulsa.svg">
+    <a href="https://ec.europa.eu/regional_policy/es/funding/erdf/">
+        <img hspace="2%" align="center" width="20%" src="ubumlaas/static/img/FEDER.svg">
+    </a>
+    <a href="http://www.mineco.gob.es/portal/site/mineco/">
+        <img hspace="2%" align="center" width="20%" src="ubumlaas/static/img/MEC.svg"></a>
+    <a href="https://www.jcyl.es/">
+        <img hspace="2%" align="center" width="20%" src="ubumlaas/static/img/JCYL.svg">
+    </a>
+    <a href="https://www.educa.jcyl.es/universidad/es/fondos-europeos/fondo-europeo-desarrollo-regional-feder/">
+        <img hspace="2%" align="center" width="20%" src="ubumlaas/static/img/JCYL_impulsa.svg">
+    </a>
 </p>
         
