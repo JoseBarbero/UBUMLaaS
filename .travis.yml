@@ -27,8 +27,8 @@ before_script:
   - pip install -r requirements.txt
   - wget http://mirror.jkanetwork.com/Datasets/data.sqlite -O ./ubumlaas/data.sqlite
   - wget http://mirror.jkanetwork.com/Datasets/ubumlaas.tar -O /tmp/ubumlaas.tar
-  - mkdir -p ubumlaas/datasets/ubumlaas
-  - tar -xvf /tmp/ubumlaas.tar ubumlaas/datasets/ubumlaas
+  - mkdir -p $TRAVIS_BUILD_DIR/ubumlaas/datasets/ubumlaas
+  - tar -xvf /tmp/ubumlaas.tar $TRAVIS_BUILD_DIR/ubumlaas/datasets/ubumlaas
   - wget http://mirror.jkanetwork.com/Datasets/env_variables.sh -O env_variables.sh
   - bash env_variables.sh
 
