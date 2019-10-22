@@ -35,5 +35,4 @@ before_script:
   - bash env_variables.sh
 
 script:
-  - cd test
-  - python test_meka.py
+  - python test/test_meka.py

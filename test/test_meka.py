@@ -1,9 +1,9 @@
-from skmultilearn.dataset import load_dataset
+from lib.skmultilearn.dataset import load_dataset
 
 X_train, y_train, _, _ = load_dataset('scene', 'train')
 X_test,  y_test, _, _ = load_dataset('scene', 'test')
 
-from skmultilearn.ext import Meka
+from lib.skmultilearn.ext import Meka
 
 meka = Meka(
         meka_classifier = "meka.classifiers.multilabel.BR", # Binary Relevance
