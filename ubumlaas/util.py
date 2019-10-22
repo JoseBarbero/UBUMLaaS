@@ -1,7 +1,6 @@
 import pandas as pd
 import smtplib
 import os
-import numpy as np
 import variables as v
 import copy
 
@@ -109,6 +108,6 @@ def value_to_bool(y_test, y_pred):
     Returns:
         [pandas,pandas] -- test output boolean, model output boolean
     """
-    un = np.unique(y_test.values)
+    un = y_test.unique()
     d = {un[0]: True, un[1]: False}
-    return pd.Series(y_test.values).map(d), pd.Series(y_pred).map(d)
+    return y_test.map(d), pd.Series(y_pred).map(d)
