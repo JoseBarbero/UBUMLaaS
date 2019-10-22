@@ -23,7 +23,7 @@ before_install:
 before_script:
   - conda create -n UBUMLaaS python=3.6
   - conda activate UBUMLaaS
-  - cd $TRAVIS_BUILD_DIR/project
+  - cd $TRAVIS_BUILD_DIR
   - pip install -r requeriments.txt
   - wget http://mirror.jkanetwork.com/Datasets/data.sqlite -O ./ubumlaas/data.sqlite
   - wget http://mirror.jkanetwork.com/Datasets/ubumlaas.tar -O /tmp/ubumlaas.tar
