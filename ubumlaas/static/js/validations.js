@@ -11,66 +11,56 @@ $("document").ready(function(){
      train_slider_feedback = $("#train_slider_feedback");
      alg_typ_feedback = $("#alg_typ_feedback");
      alg_name_feedback = $("#alg_name_feedback");
+     //Conditions
+     verify_conditions = ["",0,"",""];
      verify_all();
 });
 
 function verify_all(){
     submit_experiment.attr("disabled",true);
-    invalidate = [];
-    validate = [];
+    let invalidate = [];
+    let validate = [];
     let show = [];
     let hide = [];
-    select_dataset = $("#data");
-    if (select_dataset.val() === ""){
-        invalidate.push(select_dataset);
-        show.push(select_dataset_feedback);
-    }else{
-        validate.push(select_dataset);
-        hide.push(select_dataset_feedback);
+    select_dataset = $("#data"); //Is necesary reload it
+    let elements = [select_dataset, train_slider, alg_typ, alg_name];
+    let elements_feedback = [select_dataset_feedback, train_slider_feedback, alg_typ_feedback, alg_name_feedback];
+    for(let i=0; i<elements.length; i++){
+        if(elements[i].val() === verify_conditions[i]){
+            _add(invalidate, show, elements[i], elements_feedback[i]);
+        }else{
+            _add(validate, hide, elements[i], elements_feedback[i]);
+        }
     }
-
-    if(train_slider.val() === 0){
-        invalidate.push(train_slider);
-        show.push(train_slider_feedback);
-    }else{
-        validate.push(train_slider);
-        hide.push(train_slider_feedback);
-    }
-
-    if(alg_name.val() === ""){
-        invalidate.push(alg_name);
-        show.push(alg_name_feedback);
-    }else{
-        validate.push(alg_name);
-        hide.push(alg_name_feedback);
-    }
-
-    if(alg_typ.val() === ""){
-        invalidate.push(alg_typ);
-        show.push(alg_typ_feedback);
-    }else{
-        validate.push(alg_typ);
-        hide.push(alg_typ_feedback);
-    }
-
-    _validate(validate, hide);
-    _invalidate(invalidate, show);
+  
+    _validate_or_invalidate(validate, hide, true);
+    _validate_or_invalidate(invalidate, show, false);
     if (invalidate.length == 0){
         submit_experiment.attr("disabled", false);
     }
 }
 
-function _validate(validate, hide){
-    for(let i = 0; i < validate.length; i++){
-        validate[i].removeClass('is-invalid')
-        hide[i].css("display","none")
-    }
+function _add(elements_list, feedback_list, element, feedback){
+    elements_list.push(element);
+    feedback_list.push(feedback);
 }
 
-function _invalidate(invalidate, show){
-    for(let i = 0; i < invalidate.length; i++){
-        invalidate[i].addClass('is-invalid')
-        show[i].css("display","")
+function _appear(input, label){
+    input.addClass('is-invalid')
+    label.css("display","")
+}
+
+function _disappear(input, label){
+    input.removeClass('is-invalid')
+    label.css("display","none")
+}
+
+function _validate_or_invalidate(input_list, label_list, opt){
+    for(let i = 0; i < input_list.length; i++){
+        if(opt)
+            _disappear(input_list[i], label_list[i]);
+        else
+            _appear(input_list[i], label_list[i]);
     }
 }
 

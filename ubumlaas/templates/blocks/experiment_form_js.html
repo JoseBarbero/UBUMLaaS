@@ -1,3 +1,4 @@
+<script src="{{ url_for('static', filename="js/include/generate_form_utils.js") }}"></script>
 <script src="{{ url_for('static', filename="js/config_alg.js") }}"></script>
 <script src="{{ url_for('static', filename="js/config_dataset.js") }}"></script>
 <script src="{{ url_for('static', filename="js/validations.js") }}"></script>
@@ -140,8 +141,6 @@
             let current = $(this).val();
             let before = before_typ;
             before_typ = current;
-            console.log(before);
-            console.log(current);
             if(MULTITARGET.includes(before) && !MULTITARGET.includes(current)){
                 $("#data").change();
             }
