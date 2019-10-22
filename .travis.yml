@@ -28,7 +28,7 @@ before_script:
   - wget http://mirror.jkanetwork.com/Datasets/data.sqlite -O ./ubumlaas/data.sqlite
   - wget http://mirror.jkanetwork.com/Datasets/ubumlaas.tar -O /tmp/ubumlaas.tar
   - mkdir -p $TRAVIS_BUILD_DIR/ubumlaas/datasets/ubumlaas
-  - tar -xvf /tmp/ubumlaas.tar $TRAVIS_BUILD_DIR/ubumlaas/datasets/ubumlaas
+  - tar -xvf /tmp/ubumlaas.tar -C $TRAVIS_BUILD_DIR/ubumlaas/datasets/ubumlaas
   - wget http://mirror.jkanetwork.com/Datasets/env_variables.sh -O env_variables.sh
   - bash env_variables.sh
 
