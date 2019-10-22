@@ -96,7 +96,7 @@ def get_dict_exp(name, dict_config):
         return d
     else:
         return d
-        
+
 
 def value_to_bool(y_test, y_pred):
     """Transform a pandas non boolean column in boolean column

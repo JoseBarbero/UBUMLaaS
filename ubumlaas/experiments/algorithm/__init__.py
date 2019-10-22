@@ -25,7 +25,7 @@ import os
 
 import weka.core.jvm as jvm
 from ubumlaas.util import get_dataframe_from_file
-from ubumlaas.experiments.execute_algorithm import Execute_weka
+from ubumlaas.experiments.execute_algorithm._weka import Execute_weka
 
 import shutil
 
