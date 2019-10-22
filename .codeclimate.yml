@@ -1,0 +1,5 @@
+exclude_patterns:
+- "lib/"
+- "test/"
+- "ubumlaas/static/css/bootstrap*"
+- "ubumlaas/static/js/bootstrap*"

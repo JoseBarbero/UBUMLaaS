@@ -4,35 +4,29 @@ import sklearn
 import sklearn.base
 import sklearn.cluster
 import sklearn.linear_model
-import sklearn.metrics
 import sklearn.ensemble
 import sklearn.neighbors
 import sklearn.model_selection
 import sklearn.preprocessing
 import sklearn.multiclass
+from ubumlaas.experiments.algorithm.metrics import \
+    (classification_metrics, multiclassication_metrics,
+     regression_metrics)
 
 from ubumlaas import create_app
 import pandas as pd
 import variables as v
 import traceback
-import pickle
 
 from ubumlaas.util import send_email
 from time import time
 import json
 import os
-import numpy as np
 
 import weka.core.jvm as jvm
-from weka.classifiers import Classifier
-from weka.core.classes import Random
-from weka.classifiers import Evaluation
-from weka.core.converters import Loader
-import weka.core.serialization as serialization
 from ubumlaas.util import get_dataframe_from_file
 from ubumlaas.experiments.execute_algorithm import Execute_weka
 
-import tempfile
 import shutil
 
 
@@ -47,16 +41,13 @@ def task_skeleton(experiment, current_user):
     # Task need app environment
     create_app('subprocess')  # No generate new workers
     # Diference sklearn executor and weka executor
-    
     # Get algorithm type
     type_app = experiment["alg"]["lib"]
     try:
         execution_lib = v.apps_functions[type_app](experiment)
-        
-        
-        X, y = execution_lib.open_dataset("ubumlaas/datasets/"+current_user["username"] +"/"
-                           ,experiment['data'])
-        
+
+        X, y = execution_lib.open_dataset("ubumlaas/datasets/"+current_user["username"] +"/",
+                                          experiment['data'])
 
         #Find uniques values in weka and is classification
         execution_lib.find_y_uniques(y)
@@ -67,7 +58,8 @@ def task_skeleton(experiment, current_user):
             os.makedirs(models_dir)
         model = execution_lib.create_model()
         execution_lib.train(model, X, y)
-        execution_lib.serialize(model, "{}{}.model".format(models_dir, experiment['id']))
+        execution_lib.serialize(model, "{}{}.model"
+                                       .format(models_dir, experiment['id']))
 
         exp_config = execution_lib.experiment_configuration
         y_pred = None
@@ -96,7 +88,7 @@ def task_skeleton(experiment, current_user):
 
         score = {}
         if exp_config["mode"] == "cross" or exp_config["train_partition"] < 100:
-            
+
             typ = execution_lib.algorithm_type
             if typ == "Regression" or typ == "MultiRegression":
                 score = regression_metrics(y_test, y_pred)
@@ -113,7 +105,7 @@ def task_skeleton(experiment, current_user):
         state = 2
     finally:
         execution_lib.close()
-    
+
     from ubumlaas.models import Experiment
     exp = Experiment.query.filter_by(id=experiment['id']).first()
     exp.result = result
@@ -123,92 +115,6 @@ def task_skeleton(experiment, current_user):
 
     send_email(current_user["username"], current_user["email"],
                experiment["id"], str(exp.result))
-               
-      
-def classification_metrics(y_test_param, y_pred_param, y_score_param):
-    """Compute classification metrics
-
-    Arguments:
-        y_test {1d array} -- test output
-        y_pred {1d array} -- model output
-        y_score {1d array} -- model score output
-
-    Returns:
-        dict -- metrics with computed value
-    """
-    score = {}
-    for y_test, y_pred, y_score in zip(y_test_param,y_pred_param, y_score_param):
-
-        # First confuse matrix
-        conf_matrix = sklearn.metrics.confusion_matrix(y_test, y_pred)
-        score.setdefault("confussion_matrix", []).append(conf_matrix.tolist())
-        y_b_score = y_score.max(axis=1)
-        if conf_matrix.shape[0] == 2:
-            # Boolean metrics
-            
-            if y_test.values.dtype != np.bool:
-                y_b_test, y_b_pred = value_to_bool(y_test.copy(), y_pred.copy())
-            else:
-                y_b_test = y_test
-                y_b_pred = y_pred
-            fpr, tpr, _ = sklearn.metrics.roc_curve(y_b_test, y_b_score)
-            score.setdefault("ROC", []).append([fpr.tolist(), tpr.tolist()])
-            score.setdefault("AUC", []).append(sklearn.metrics.auc(fpr, tpr))
-            score.setdefault("kappa", []).append(sklearn.metrics.cohen_kappa_score(y_test, y_pred))
-            score.setdefault("accuracy", []).append(sklearn.metrics.accuracy_score(y_test, y_pred))
-            score.setdefault("f1_score", []).append(sklearn.metrics.f1_score(y_test, y_pred))
-
-    return score
-
-
-def multiclassication_metrics(y_test_param, y_pred_param):
-    score = {}
-
-    for y_test, y_pred in zip(y_test_param, y_pred_param):
-        score.setdefault("accuracy", []).append(sklearn.metrics.accuracy_score(y_test, y_pred))
-        score.setdefault("hamming_loss", []).append(sklearn.metrics.hamming_loss(y_test, y_pred))
-        score.setdefault("f1_score_micro", []).append(sklearn.metrics.f1_score(y_test, y_pred, average="micro"))
-        score.setdefault("f1_score_macro", []).append(sklearn.metrics.f1_score(y_test, y_pred, average="macro"))
-        score.setdefault("zero_one_loss", []).append(sklearn.metrics.zero_one_loss(y_test, y_pred))
-        score.setdefault("label_ranking_loss", []).append(sklearn.metrics.label_ranking_loss(y_test, y_pred))
-
-    return score
-
-
-def value_to_bool(y_test, y_pred):
-    """Transform a pandas non boolean column in boolean column
-
-    Arguments:
-        y_test {pandas} -- test output
-        y_pred {pandas} -- model output
-
-    Returns:
-        [pandas,pandas] -- test output boolean, model output boolean
-    """
-    un = y_test.unique()
-    d = {un[0]: True, un[1]: False}
-    return y_test.map(d), pd.Series(y_pred).map(d)
-
-
-def regression_metrics(y_test_param, y_pred_param):
-    """Compute Regression metrics
-
-    Arguments:
-        y_test {pandas} -- test output
-        y_pred {pandas} -- model output
-
-    Returns:
-        dict -- metrics with computed value
-    """
-    score = {}
-    for y_test, y_pred in zip(y_test_param, y_pred_param):
-        score.setdefault("max_error",[]).append(sklearn.metrics.max_error(y_test, y_pred))
-        score.setdefault("mean_score_error", []).append(sklearn.metrics.mean_squared_error(y_test,
-                                                                    y_pred))
-        score.setdefault("mean_absolute_error", []).append(sklearn.metrics.mean_absolute_error(y_test,
-                                                                        y_pred))
-
-    return score
 
 
 def execute_weka_predict(username, experiment, tmp_filename, model_path, fil_name):
@@ -219,7 +125,6 @@ def execute_weka_predict(username, experiment, tmp_filename, model_path, fil_nam
 
         predict_df = get_dataframe_from_file(upload_folder, tmp_filename)
 
-   
         executor = Execute_weka(experiment)
         class_attribute_name = executor.experiment_configuration["target"]
 

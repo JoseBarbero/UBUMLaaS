@@ -185,19 +185,24 @@
          
         for(let i=0; i<dataset_columns.length; i++){
             var use = $("#col"+i+"_use");
+            var uselab = $("#col"+i+"_use_label");
             var target = $("#col"+i+"_target");
+            var targetlab = $("#col"+i+"_target_label");
             use.prop('checked', false);
             target.prop('checked', false);
+            var v = $("#"+i+"_opt");
+            v.removeClass("list-group-item-primary list-group-item-secondary list-group-item-success");
+            v.addClass("list-group-item-secondary");
             if (exp_config.columns.includes(dataset_columns[i])){
-                use.prop('checked', true);
+                uselab.click();
             }else { 
                 if(Array.isArray(exp_config.target)){
                     if (exp_config.target.includes(dataset_columns[i])){
-                        target.prop('checked', true);
+                        targetlab.click();
                     }
                 }else{
                     if (exp_config.target === dataset_columns[i]){
-                        target.prop('checked', true);
+                        targetlab.click();
                     }
                 }
             }

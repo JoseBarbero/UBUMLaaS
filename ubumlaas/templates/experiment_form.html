@@ -28,19 +28,48 @@
             </fieldset>
         </div>
     </div>
-    <fieldset>
-            <form class="col-12 table-responsive" id="form_dataset_configuration">
-                <div id="dataset_parameters" class="form-group">
-                    {% include 'blocks/show_columns.html' %}
+    <div class="row">
+        <div class="tabs-container col-12">
+            <ul class="nav nav-tabs">
+                <li>
+                    <a data-toggle="tab" href="#normal_tab" class="nav-link active" id="normal_tab-tab" aria-controls="normal_tab" aria-selected="true">Normal</a>
+                </li>
+                <li>
+                    <a data-toggle="tab" href="#reduced_tab" class="nav-link" id="reduced_tab-tab" aria-controls="reduced_tab">Reduced</a>
+                </li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane fade active show" id="normal_tab" role="tabpanel" aria-labelledby="normal_tab-tab">
+                    <div class="container-fluid">    
+                        <fieldset>
+                            <form class="col-12 table-responsive" id="form_dataset_configuration">
+                                <div id="dataset_parameters" class="form-group">
+                                    {% include 'blocks/show_columns.html' %}
+                                </div>
+                                <div id="show_dataset" class="form-group">
+                                    {% include 'blocks/show_dataset.html' %}
+                                </div>
+                            </form>
+                        </fieldset>
+                    </div>
                 </div>
-                <div id="show_dataset" class="form-group">
-                    {% include 'blocks/show_dataset.html' %}
+                <div class="tab-pane fade" id="reduced_tab" role="tabpanel" aria-labelledby="reduced_tab-tab">
+                    <div class="container-fluid">    
+                        <fieldset>
+                            <form class="col-12 table-responsive" id="form_dataset_configuration_reduced">
+                                <div id="reduced_parameters" class="form-group">
+                                    {% include 'blocks/show_columns_reduced.html' %}
+                                </div>
+                            <form>
+                        </fieldset>    
+                    </div>    
                 </div>
-            </form>
-        </fieldset>
+            </div>    
+        </div>
+    </div>
     <fieldset>
         <form class="col-md-6 offset-md-3" id="form_dataset_parameters">
-            <div class="form-group row">
+            <div class="form-group row mt-4 ">
                 <div class="center float-left">
                     <label class="pure-material-radio mr-2">
                         <input type="radio" checked="checked" value="split" name="experiment_mode">
@@ -52,14 +81,14 @@
                     </label>
                 </div>
             </div>       
-            <div class="form-group" id="train_test_div">
+            <div class="form-group col-md-6 offset-md-3" id="train_test_div">
                 {{ form_p.train_partition.label(class="form-control-label mt-4 h5") }}
                 {{ form_p.train_partition(id="train_slider", class="form-control custom-range", min=1, max=100) }}
                 <div id="train_partition_feedback" class="invalid-feedback" style="display: hidden">Train partition cannot be 0</div>
                 <label id="train_value" , class="align-left">Train value:</label>
                 <label id="test_value" , class="align-right">Test value:</label>
             </div>
-            <div class="form-group" id="cross_validation_div" style="display: none">
+            <div class="form-group col-md-6 offset-md-3" id="cross_validation_div" style="display: none">
                 {{ form_p.k_folds.label(class="form-control-label mt-4 h5") }}
                 {{ form_p.k_folds(id="k_folds", class="form-control", min=2) }}
             </div>

@@ -1,7 +1,7 @@
 import variables as v
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
-from sqlalchemy import and_,or_, text
+from sqlalchemy import and_, or_, text
 
 from flask_login import UserMixin
 
@@ -9,18 +9,19 @@ from flask_login import UserMixin
 @v.login_manager.user_loader
 def load_user(user_id):
     """Get user by id.
-    
+
     Arguments:
         user_id {int} -- user identificator.
-    
+
     Returns:
         User -- User with that id.
     """
     return User.query.get(user_id)
 
+
 def load_experiment(exp_id):
     """Get experiment by id.
-    
+
     Arguments:
         exp_id {int} -- experiment identificator.
 
@@ -29,20 +30,23 @@ def load_experiment(exp_id):
     """
     return Experiment.query.get(exp_id)
 
+
 def get_experiments(idu):
     """Get all experiments from an user.
-    
+
     Arguments:
         idu {int} -- user identificator.
-    
+
     Returns:
         experiments list -- all experiments from user with that id.
     """
     listexp = Experiment.query.filter(Experiment.idu == idu).all()
     for i in listexp:
-        i.starttime = datetime.fromtimestamp(i.starttime).strftime("%d/%m/%Y - %H:%M:%S")
+        i.starttime = datetime.fromtimestamp(i.starttime)\
+            .strftime("%d/%m/%Y - %H:%M:%S")
         if i.endtime is not None:
-            i.endtime = datetime.fromtimestamp(i.endtime).strftime("%d/%m/%Y - %H:%M:%S")
+            i.endtime = datetime.fromtimestamp(i.endtime)\
+                .strftime("%d/%m/%Y - %H:%M:%S")
     return listexp
 
 
@@ -60,13 +64,16 @@ def get_similar_algorithms(alg_name):
     else:
         cond = Algorithm.lib == "weka"
         if alg.alg_typ == "MultiClassification":
-            cond = and_(cond,or_(Algorithm.alg_typ == "Classification",Algorithm.alg_typ == "Mixed"))
+            cond = and_(cond, or_(Algorithm.alg_typ == "Classification",
+                                  Algorithm.alg_typ == "Mixed"))
         else:
-            cond = and_(cond,or_(Algorithm.alg_typ == "Regression",Algorithm.alg_typ == "Mixed"))
+            cond = and_(cond, or_(Algorithm.alg_typ == "Regression",
+                                  Algorithm.alg_typ == "Mixed"))
     if alg.alg_typ != "Mixed" and alg.lib != "meka":
         cond = and_(cond, Algorithm.alg_typ == alg.alg_typ)
     elif alg.lib != "meka":
-        cond = and_(cond,or_(Algorithm.alg_typ == "Classification",Algorithm.alg_typ == "Regression"))
+        cond = and_(cond, or_(Algorithm.alg_typ == "Classification",
+                              Algorithm.alg_typ == "Regression"))
     algorithms = Algorithm.query.filter(cond).all()
     return algorithms
 
@@ -85,14 +92,15 @@ def get_algorithms(alg_typ):
 
 def get_algorithm_by_name(name):
     """Get an algorithm by name.
-    
+
     Arguments:
         name {string} -- name of the algorithm.
 
     Returns:
         Algorithm -- Algorithm with that name.
     """
-    return Algorithm.query.filter(Algorithm.alg_name==name).first()
+    return Algorithm.query\
+        .filter(Algorithm.alg_name == name).first()
 
 
 class User(v.db.Model, UserMixin):
@@ -129,7 +137,7 @@ class User(v.db.Model, UserMixin):
 
     def __repr__(self):
         """Representation
-        
+
         Returns:
             str -- representation
         """
@@ -137,7 +145,7 @@ class User(v.db.Model, UserMixin):
 
     def __str__(self):
         """to string
-        
+
         Returns:
             str -- information string
         """
@@ -145,11 +153,14 @@ class User(v.db.Model, UserMixin):
 
     def to_dict(self):
         """Object to dict
-        
+
         Returns:
             dict -- dict with key and value from the object.
         """
-        return {"id": self.id, "email": self.email, "username": self.username, "password": self.password_hash}
+        return {"id": self.id,
+                "email": self.email,
+                "username": self.username,
+                "password": self.password_hash}
 
 
 class Algorithm(v.db.Model):
@@ -163,9 +174,9 @@ class Algorithm(v.db.Model):
     config = v.db.Column(v.db.Text)
     lib = v.db.Column(v.db.String(64))
 
-    def __init__(self, alg_name, web_name, alg_typ, config,lib):
+    def __init__(self, alg_name, web_name, alg_typ, config, lib):
         """Algorithm constructor.
-        
+
         Arguments:
             alg_name {str} -- algorithm name.
             web_name {str} -- algorithm web name.
@@ -182,7 +193,7 @@ class Algorithm(v.db.Model):
 
     def to_dict(self):
         """Algorithm to dict
-        
+
         Returns:
             dict -- dict with keys and values from Algorithm Object.
         """
@@ -242,13 +253,13 @@ class Experiment(v.db.Model):
 
     def to_dict(self):
         """Experiment to dict
-        
+
         Returns:
             dict -- dict with keys and values from Experiment Object.
         """
-        return {"id": self.id, "idu": self.idu, "alg": get_algorithm_by_name(self.alg_name).to_dict(),
+        return {"id": self.id, "idu": self.idu,
+                "alg": get_algorithm_by_name(self.alg_name).to_dict(),
                 "alg_config": self.alg_config, "exp_config": self.exp_config,
                 "data": self.data,
                 "result": self.result, "starttime": self.starttime,
                 "endtime": self.endtime}
-

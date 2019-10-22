@@ -2,13 +2,16 @@
 <html>
 
 <head>
-  <link rel="stylesheet" href="{{ url_for('static', filename="css/bootstrap.css") }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename="css/custom.css") }}"> 
-  <link rel="stylesheet" href="{{ url_for('static', filename="css/switch.css") }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename="css/radio.css") }}"> 
-  <link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css"> 
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.ico') }}">
+  <link rel="stylesheet" href="https://necolas.github.io/normalize.css/8.0.1/normalize.css" />
+  <link rel="stylesheet" href="{{ url_for('static', filename="css/bootstrap-reboot.css") }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename="css/bootstrap.css") }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename="css/bootstrap-grid.css") }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename="css/switch.css") }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename="css/radio.css") }}" /> 
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css" /> 
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename="css/custom.css") }}" /> 
+  <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.ico') }}" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0/dist/Chart.min.js"></script>
   <script src="https://code.jquery.com/jquery-3.4.1.min.js"
     integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
@@ -145,6 +148,7 @@
     </div>
   </footer>
   <script src="{{ url_for('static', filename="js/bootstrap.js") }}"></script>
+  <script src="{{ url_for('static', filename="js/bootstrap.bundle.js") }}"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
     integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
     crossorigin="anonymous"></script>
