@@ -31,11 +31,12 @@ before_script:
   - wget http://mirror.jkanetwork.com/Datasets/env_variables.sh -O env_variables.sh
   - source env_variables.sh
   - "export DISPLAY=:99.0"
-  - "sh -e /etc/init.d/xvfb start"
+  - 
   - sleep 3
   - python app.py &
   - sleep 20
 
 script:
   - python tests.py
+  - xvfb-run --server-args="-screen 0 1024x768x24" make test
   - selenium-side-runner ./test/UBUMLaaS.side
