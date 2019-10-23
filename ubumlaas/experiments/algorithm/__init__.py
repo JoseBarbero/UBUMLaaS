@@ -135,13 +135,12 @@ def execute_weka_predict(username, experiment, tmp_filename, model_path, fil_nam
 
         predict_columns = predict_df.columns
         X = predict_df[executor.experiment_configuration["columns"]]
-        if class_attribute_name in predict_columns:
+        if set(class_attribute_name) <= set(predict_columns):
             y = predict_df[class_attribute_name]
             predict_has_target = True
         else:
             y = ["?"]*len(predict_df.index)
             predict_has_target = False
-        jvm.start(packages=True)
 
         model = executor.deserialize(model_path)
 
@@ -153,7 +152,7 @@ def execute_weka_predict(username, experiment, tmp_filename, model_path, fil_nam
             dataframes_final.append(y)
 
         y_pred_df = pd.DataFrame(y_pred,
-                                 columns=["prediction_" + class_attribute_name])
+                                 columns=["prediction_" + name for name in class_attribute_name])
         dataframes_final.append(y_pred_df)
         dataframes = pd.concat(dataframes_final, axis=1)
         shutil.rmtree(upload_folder)
@@ -165,5 +164,5 @@ def execute_weka_predict(username, experiment, tmp_filename, model_path, fil_nam
         print(traceback.format_exc())
         return False
     finally:
-        jvm.stop()
+        executor.close()
     return True

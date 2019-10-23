@@ -8,7 +8,7 @@ from ubumlaas.models import \
 from ubumlaas.experiments.forms import \
     (DatasetForm)
 from flask_login import (current_user, login_required)
-from time import time
+from time import time,sleep
 import os
 import shutil
 import datetime
@@ -93,17 +93,20 @@ def start_predict():
                                 prediction_filename)
                           )
         while job.result is None:
-            time.sleep(2)
+            sleep(2)
         if job.result is False:
             return "", 400
         prediction_df = get_dataframe_from_file(upload_folder, prediction_filename)
+        pred_df=prediction_df.iloc[:, -1].to_frame()
 
     else:
         return "", 400
 
     df_html = generate_df_html(prediction_df, num=None)
+    pred_html=generate_df_html(pred_df,num=None)
     return render_template("blocks/predict_result.html",
                            data=df_html,
+                           datareduc=pred_html,
                            file=prediction_filename)
 
 
