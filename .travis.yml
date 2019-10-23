@@ -13,16 +13,8 @@ before_install:
   - sudo apt update
   - sudo apt install -y redis-server
   - sudo service redis-server start
-  - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
-  - bash miniconda.sh -b -p $HOME/miniconda
-  - source "$HOME/miniconda/etc/profile.d/conda.sh"
-  - hash -r
-  - conda config --set always_yes yes --set changeps1 no
-  - conda update -q conda
 
 install:
-  - conda create -n UBUMLaaS python=3.6
-  - conda activate UBUMLaaS
   - cd $TRAVIS_BUILD_DIR
   - pip install -r requirements.txt
   - wget http://mirror.jkanetwork.com/Datasets/data.sqlite -O ./ubumlaas/data.sqlite
