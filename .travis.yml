@@ -24,7 +24,7 @@ install:
 
 before_script:
   - wget http://mirror.jkanetwork.com/Datasets/env_variables.sh -O env_variables.sh
-  - bash env_variables.sh
+  - source env_variables.sh
 
 script:
   - python tests.py
