@@ -1,6 +1,5 @@
-matrix:
-  - APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu
-    stack: python 3.6
+stack: python 3.6
+image: Ubuntu
 
 install:
   - sh: >-
