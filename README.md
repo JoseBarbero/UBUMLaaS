@@ -11,7 +11,7 @@ MLaaS platform based on ADMIRABLE and BEST-AI research groups methods.
     ```
 2. Create a conda environment
     ```bash
-    $ conda create -n UBUMLaas python=3.6
+    $ conda create -n UBUMLaas python=3.7
     ```
 3. Activate environment
     ```bash
