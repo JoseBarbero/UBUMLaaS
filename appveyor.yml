@@ -1,26 +1,18 @@
-matrix:
-  - APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu
-    stack: python 3.6
-
-install:
-  - sh: >-
-      apt update
-
-      apt install -y redis-server
-
-      service redis-server start
-
-      pip install -r requirements.txt
-
-      wget http://mirror.jkanetwork.com/Datasets/data.sqlite -O ./ubumlaas/data.sqlite
-
-      wget http://mirror.jkanetwork.com/Datasets/ubumlaas.tar -O /tmp/ubumlaas.tar
-
-      mkdir -p $TRAVIS_BUILD_DIR/ubumlaas/datasets/ubumlaas
-
-      tar -xvf /tmp/ubumlaas.tar -C $TRAVIS_BUILD_DIR/ubumlaas/datasets/ubumlaas
-
-      wget http://mirror.jkanetwork.com/Datasets/env_variables.sh -O env_variables.sh
-
-      source env_variables.sh
-
+--- 
+install: 
+  - 
+    sh: |-
+        apt update
+        apt install -y redis-server
+        service redis-server start
+        pip install -r requirements.txt
+        wget http://mirror.jkanetwork.com/Datasets/data.sqlite -O ./ubumlaas/data.sqlite
+        wget http://mirror.jkanetwork.com/Datasets/ubumlaas.tar -O /tmp/ubumlaas.tar
+        mkdir -p $TRAVIS_BUILD_DIR/ubumlaas/datasets/ubumlaas
+        tar -xvf /tmp/ubumlaas.tar -C $TRAVIS_BUILD_DIR/ubumlaas/datasets/ubumlaas
+        wget http://mirror.jkanetwork.com/Datasets/env_variables.sh -O env_variables.sh
+        source env_variables.sh
+matrix: 
+  - 
+    APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu
+    stack: "python 3.6"
