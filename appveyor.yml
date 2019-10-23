@@ -1,8 +1,6 @@
-image: Ubuntu
-
-environment:
-  matrix:
-    - TOXENV: py36
+matrix:
+  - APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu
+    stack: python 3.6
 
 install:
   - sh: >-
@@ -23,6 +21,6 @@ install:
       tar -xvf /tmp/ubumlaas.tar -C $TRAVIS_BUILD_DIR/ubumlaas/datasets/ubumlaas
 
       wget http://mirror.jkanetwork.com/Datasets/env_variables.sh -O env_variables.sh
-      
+
       source env_variables.sh
 
