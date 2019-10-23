@@ -1,7 +1,42 @@
-<div class="col-12 center table-responsive">
-{% if data %}
-    {{ data | safe }}
-{% endif %}
+<div class="row">
+    <div class="tabs-container col-12">
+        <ul class="nav nav-tabs">
+            <li>
+                <a data-toggle="tab" href="#all_tab" class="nav-link active" id="all_tab-tab" aria-controls="all_tab" aria-selected="true">All</a>
+            </li>
+            <li>
+                <a data-toggle="tab" href="#reduced_tab" class="nav-link" id="reduced_tab-tab" aria-controls="reduced_tab">Reduced</a>
+            </li>
+        </ul>
+        <div class="tab-content container-fluid">
+            <div class="tab-pane fade active show" id="all_tab" role="tabpanel" aria-labelledby="all_tab-tab">
+                <div class="container-fluid">    
+                    <fieldset>
+                        <div id="form_dataset_configuration">
+                            <div class="table-responsive" id="show_predict_dataset" class="form-group">
+                                {% if data %}
+                                    {{ data | safe }}
+                                {% endif %}
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="reduced_tab" role="tabpanel" aria-labelledby="reduced_tab-tab">
+                <div class="container-fluid">    
+                    <fieldset>
+                        <div class="table-responsive" id="form_dataset_configuration_reduced">
+                            <div id="show_predict_dataset2" class="form-group">
+                                {% if datareduc %}
+                                    {{ datareduc | safe }}
+                                {% endif %}
+                            </div>
+                        <div>
+                    </fieldset>    
+                </div>    
+            </div>
+        </div>    
+    </div>
 </div>
 <div class="col-md-6 center">
     <a class="btn btn-primary btn-block btn-lg mt-4" role="button" href="{{url_for("experiments.download_result",name=file)}}">Download</a>
@@ -10,7 +45,8 @@
 {% block js %}
 <script>
 
-    $($($("#div_res").children()[0]).children()[0]).DataTable();
+    $($("#show_predict_dataset").children()[0]).DataTable();
+    $($("#show_predict_dataset2").children()[0]).DataTable();
 
 </script>
 

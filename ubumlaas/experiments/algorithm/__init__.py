@@ -126,7 +126,7 @@ def execute_weka_predict(username, experiment, tmp_filename, model_path, fil_nam
         predict_df = get_dataframe_from_file(upload_folder, tmp_filename)
 
         executor = Execute_weka(experiment)
-        class_attribute_name = executor.experiment_configuration["target"]
+        class_attribute_name = executor.experiment_configuration["target"][0]
 
         # Open experiment configuration
         model_df = get_dataframe_from_file("ubumlaas/datasets/"+username +
