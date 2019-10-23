@@ -5,7 +5,7 @@ environment:
     - TOXENV: py36
 
 install:
-  - sh:
+  - sh: >-
     apt update
     apt install -y redis-server
     service redis-server start
