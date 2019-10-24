@@ -269,7 +269,7 @@ class TestDefaultSuite():
     assert alert.text == "You can't select more than 1 target in no multilabel algorithms."
     alert.accept()
     self.logout()
-  """
+  
   def test_381DatasetMultiLabelTargetNormal(self):
     self.login()
     self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
