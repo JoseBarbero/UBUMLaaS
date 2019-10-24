@@ -1,4 +1,9 @@
 # UBUMLaaS ![admirable-logo](ubumlaas/static/img/onlyA-32x32.svg)
+![Travis (.org)](https://img.shields.io/travis/JoseBarbero/UBUMLaaS?label=Travis%20CI&logo=travis-ci&logoColor=white&style=for-the-badge)
+![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability/JoseBarbero/UBUMLaaS?logo=code-climate&style=for-the-badge)
+![GitHub repo size](https://img.shields.io/github/repo-size/JoseBarbero/UBUMLaaS?color=yellowgreen&logo=github&style=for-the-badge)
+![GitHub](https://img.shields.io/github/license/JoseBarbero/UBUMLaaS?logo=gnu&logoColor=white&style=for-the-badge)
+
 MLaaS platform based on ADMIRABLE and BEST-AI research groups methods.
 #### Platform from Spanish "Ministerio de Economía y Competetividad" Project "*Algoritmos de ensembles para problemas de salidas múltiples - nuevos desarrollos y aplicaciones*"
 
