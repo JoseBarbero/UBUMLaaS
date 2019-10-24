@@ -2,6 +2,16 @@ import sklearn.metrics as mtr
 import numpy as np
 from ubumlaas.util import value_to_bool
 
+def calculate_metrics(typ, y_test, y_pred, y_score):
+    score={}
+    if typ == "Regression" or typ == "MultiRegression":
+        score = regression_metrics(y_test, y_pred)
+    elif typ == "Classification":
+        score = classification_metrics(y_test, y_pred, y_score)
+    elif typ == "MultiClassification":
+        score = multiclassication_metrics(y_test, y_pred)
+    return score
+
 
 def classification_metrics(y_test_param, y_pred_param, y_score_param):
     """Compute classification metrics

@@ -1,0 +1,64 @@
+{
+    "id": 113,
+    "idu": 3,
+    "alg": {
+        "id": 11,
+        "alg_name": "weka.classifiers.meta.RandomBalance",
+        "web_name": "Random Balance",
+        "alg_typ": "Classification",
+        "config": {
+            "m_type": {
+                "type": "string",
+                "default": "1",
+                "help": "functioning mode",
+                "options": [
+                    "1",
+                    "0",
+                    "2",
+                    "3"
+                ],
+                "command": "-Y"
+            },
+            "base_estimator": {
+                "type": "ensemble",
+                "default": "weka.classifiers.trees.J48",
+                "help": "Full name of base classifier. (default: weka.classifiers.trees.J48)",
+                "command": "-W"
+            }
+        },
+        "lib": "weka"
+    },
+    "alg_config": {
+        "m_type": "1",
+        "base_estimator": {
+            "alg_name": "weka.classifiers.trees.REPTree",
+            "parameters": {
+                "min-num-instances-leaf": 2,
+                "num-folds": 3,
+                "no-prunnig": false
+            }
+        }
+    },
+    "exp_config": {
+        "mode": "split",
+        "train_partition": 70,
+        "target": [
+            "Class"
+        ],
+        "columns": [
+            "Cl.thickness",
+            "Cell.size",
+            "Cell.shape",
+            "Marg.adhesion",
+            "Epith.c.size",
+            "Bare.nuclei",
+            "Bl.cromatin",
+            "Normal.nucleoli",
+            "Mitoses"
+        ]
+    },
+    "data": "breastCancer.csv",
+    "result": null,
+    "starttime": 1571925412.5276558,
+    "endtime": null
+}
