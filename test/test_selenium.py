@@ -13,10 +13,23 @@ class TestDefaultSuite():
   def setup_method(self, method):
     self.driver = webdriver.Chrome()
     self.vars = {}
-    self.wait = 1
+    self.wait = 0.5
   
   def teardown_method(self, method):
     self.driver.quit()
+
+  def login(self):
+    self.driver.get("http://localhost:5000/")
+    self.driver.set_window_size(1536, 824)
+    self.driver.find_element(By.LINK_TEXT, "Login").click()
+    self.driver.find_element(By.ID, "email").click()
+    self.driver.find_element(By.ID, "email").send_keys("ubumlaas@gmail.com")
+    self.driver.find_element(By.ID, "password").send_keys("thisIsATest1!")
+    self.driver.find_element(By.ID, "password").send_keys(Keys.ENTER)
+
+  def logout(self):
+    self.driver.find_element(By.LINK_TEXT, "Logout").click()
+    assert self.driver.find_element(By.LINK_TEXT, "Login").text == "Login"
   
   def test_1Register(self):
     self.driver.get("http://localhost:5000/")
@@ -46,26 +59,12 @@ class TestDefaultSuite():
     assert self.driver.find_element(By.CSS_SELECTOR, ".alert").text == "Wrong username or password\n×"
   
   def test_22LoginAndLogoutCorrect(self):
-    self.driver.get("http://localhost:5000/")
-    self.driver.set_window_size(1536, 824)
-    self.driver.find_element(By.LINK_TEXT, "Login").click()
-    self.driver.find_element(By.ID, "email").click()
-    self.driver.find_element(By.ID, "email").send_keys("ubumlaas@gmail.com")
-    self.driver.find_element(By.ID, "password").click()
-    self.driver.find_element(By.ID, "password").send_keys("thisIsATest1!")
-    self.driver.find_element(By.ID, "submit").click()
+    self.login()
     assert self.driver.find_element(By.LINK_TEXT, "Logged in as ubumlaas").text == "Logged in as ubumlaas"
-    self.driver.find_element(By.LINK_TEXT, "Logout").click()
-    assert self.driver.find_element(By.LINK_TEXT, "Login").text == "Login"
+    self.logout()
     
   def test_31DatasetLoad(self):
-    self.driver.get("http://localhost:5000/")
-    self.driver.set_window_size(1536, 824)
-    self.driver.find_element(By.LINK_TEXT, "Login").click()
-    self.driver.find_element(By.ID, "email").click()
-    self.driver.find_element(By.ID, "email").send_keys("ubumlaas@gmail.com")
-    self.driver.find_element(By.ID, "password").send_keys("thisIsATest1!")
-    self.driver.find_element(By.ID, "password").send_keys(Keys.ENTER)
+    self.login()
     self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
     assert self.driver.find_element(By.CSS_SELECTOR, ".jumbotron > .text-center").text == "Configure experiment"
     self.driver.execute_script("$('#data').val('breastCancer.csv');")
@@ -84,18 +83,10 @@ class TestDefaultSuite():
     self.driver.execute_script("$('#data').change();")
     time.sleep(self.wait)
     assert self.driver.find_element(By.CSS_SELECTOR, "th:nth-child(2)").text == "Temperature (C)"
-    self.driver.find_element(By.LINK_TEXT, "Logout").click()
-    assert self.driver.find_element(By.LINK_TEXT, "Login").text == "Login"
-  
+    self.logout()  
 
   def test_321DatasetUseNormal(self):
-    self.driver.get("http://localhost:5000/")
-    self.driver.set_window_size(1536, 824)
-    self.driver.find_element(By.LINK_TEXT, "Login").click()
-    self.driver.find_element(By.ID, "email").click()
-    self.driver.find_element(By.ID, "email").send_keys("ubumlaas@gmail.com")
-    self.driver.find_element(By.ID, "password").send_keys("thisIsATest1!")
-    self.driver.find_element(By.ID, "password").send_keys(Keys.ENTER)
+    self.login()
     self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
     self.driver.execute_script("$('#data').val('breastCancer.csv');")
     self.driver.execute_script("$('#data').change();")
@@ -105,18 +96,10 @@ class TestDefaultSuite():
     WebDriverWait(self.driver, 30000).until(expected_conditions.visibility_of_element_located((By.ID, "0_opt")))
     element = self.driver.find_element(By.ID, "0_opt")
     assert "list-group-item-secondary" in element.get_attribute('class').split(" ")
-    self.driver.find_element(By.LINK_TEXT, "Logout").click()
-    assert self.driver.find_element(By.LINK_TEXT, "Login").text == "Login"
+    self.logout()
   
   def test_322DatasetUseReduced(self):
-    self.driver.get("http://localhost:5000/")
-    self.driver.set_window_size(1536, 824)
-    self.driver.find_element(By.LINK_TEXT, "Login").click()
-    self.driver.find_element(By.ID, "email").click()
-    self.driver.find_element(By.ID, "email").send_keys("ubumlaas@gmail.com")
-    self.driver.find_element(By.ID, "password").click()
-    self.driver.find_element(By.ID, "password").send_keys("thisIsATest1!")
-    self.driver.find_element(By.ID, "password").send_keys(Keys.ENTER)
+    self.login()
     self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
     self.driver.find_element(By.ID, "data_feedback").click()
     self.driver.execute_script("$('#data').val('breastCancer.csv');")
@@ -128,18 +111,10 @@ class TestDefaultSuite():
     self.driver.find_element(By.ID, "normal_tab-tab").click()
     elements = self.driver.find_elements(By.CSS_SELECTOR, "#col0_use:checked")
     assert len(elements) == 0
-    self.driver.find_element(By.LINK_TEXT, "Logout").click()
-    assert self.driver.find_element(By.LINK_TEXT, "Login").text == "Login"
-  
+    self.logout()  
   
   def test_331DatasetNotUseNormal(self):
-    self.driver.get("http://localhost:5000/")
-    self.driver.set_window_size(1536, 824)
-    self.driver.find_element(By.LINK_TEXT, "Login").click()
-    self.driver.find_element(By.ID, "email").click()
-    self.driver.find_element(By.ID, "email").send_keys("ubumlaas@gmail.com")
-    self.driver.find_element(By.ID, "password").send_keys("thisIsATest1!")
-    self.driver.find_element(By.ID, "password").send_keys(Keys.ENTER)
+    self.login()
     self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
     self.driver.execute_script("$('#data').val('breastCancer.csv');")
     self.driver.execute_script("$('#data').change();")
@@ -147,144 +122,97 @@ class TestDefaultSuite():
     self.driver.find_element(By.ID, "reduced_tab-tab").click()
     element = self.driver.find_element(By.ID, "0_opt")
     assert "list-group-item-primary" in element.get_attribute('class').split(" ")
-    self.driver.find_element(By.LINK_TEXT, "Logout").click()
-    assert self.driver.find_element(By.LINK_TEXT, "Login").text == "Login"
-  
-  """
+    self.logout()
+    
   def test_332DatasetNotUseReduced(self):
-    self.driver.get("http://localhost:5000/")
-    self.driver.set_window_size(1536, 824)
-    self.driver.find_element(By.LINK_TEXT, "Login").click()
-    self.driver.find_element(By.ID, "email").click()
-    self.driver.find_element(By.ID, "email").send_keys("ubumlaas@gmail.com")
-    self.driver.find_element(By.ID, "password").send_keys("thisIsATest1!")
-    self.driver.find_element(By.ID, "password").send_keys(Keys.ENTER)
+    self.login()
     self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
     self.driver.execute_script("$('#data').val('breastCancer.csv');")
     self.driver.execute_script("$('#data').change();")
     time.sleep(self.wait)
     self.driver.find_element(By.ID, "reduced_tab-tab").click()
-    dropdown = self.driver.find_element(By.ID, "sel")
-    dropdown.find_element(By.XPATH, "//option[value = 'Id']").click()
-    self.driver.find_element(By.ID, "nuse").click()
-    dropdown = self.driver.find_element(By.ID, "sel")
-    dropdown.find_element(By.XPATH, "//option[value = 'Id']").click()
-    self.driver.find_element(By.ID, "use").click()
+    self.driver.execute_script('$("#sel option[value=\'Id\']").prop("selected",true)')
+    self.driver.execute_script('$("#nuse").click()')
+    self.driver.execute_script('$("#sel option[value=\'Id\']").prop("selected",true)')
+    self.driver.execute_script('$("#use").click()')
     self.driver.find_element(By.ID, "normal_tab-tab").click()
     elements = self.driver.find_elements(By.CSS_SELECTOR, "#col0_use:checked")
     assert len(elements) > 0
-    self.driver.find_element(By.LINK_TEXT, "Logout").click()
-    assert self.driver.find_element(By.LINK_TEXT, "Login").text == "Login"
+    self.logout()
   
   def test_341DatasetNoTargetNormal(self):
-    self.driver.get("http://localhost:5000/")
-    self.driver.set_window_size(1536, 824)
-    self.driver.find_element(By.LINK_TEXT, "Login").click()
-    self.driver.find_element(By.ID, "email").click()
-    self.driver.find_element(By.ID, "email").send_keys("ubumlaas@gmail.com")
-    self.driver.find_element(By.ID, "password").send_keys("thisIsATest1!")
-    self.driver.find_element(By.ID, "password").send_keys(Keys.ENTER)
+    self.login()
     self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
     self.driver.execute_script("$('#data').val('breastCancer.csv');")
     self.driver.execute_script("$('#data').change();")
     time.sleep(self.wait)
-    WebDriverWait(self.driver, 30000).until(expected_conditions.visibility_of_element_located((By.ID, "col0_use_label")))
+    self.driver.execute_script("$('#col10_target_label').click();")
     elements = self.driver.find_elements(By.CSS_SELECTOR, "#col10_use:checked")
     assert len(elements) == 0
+    elements = self.driver.find_elements(By.CSS_SELECTOR, "#col10_target:checked")
+    assert len(elements) == 0
     self.driver.find_element(By.ID, "reduced_tab-tab").click()
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#\\31 0_opt.list-group-item-secondary")
-    assert len(elements) > 0
-    self.driver.find_element(By.LINK_TEXT, "Logout").click()
-    assert self.driver.find_element(By.LINK_TEXT, "Login").text == "Login"
-  
+    element = self.driver.find_element(By.ID, "10_opt")
+    assert "list-group-item-secondary" in element.get_attribute('class').split(" ")
+    self.logout()
+    
   def test_342DatasetNoTargetReduced(self):
-    self.driver.get("http://localhost:5000/")
-    self.driver.set_window_size(1552, 840)
-    self.driver.find_element(By.LINK_TEXT, "Login").click()
-    self.driver.find_element(By.ID, "email").click()
-    self.driver.find_element(By.ID, "email").send_keys("ubumlaas@gmail.com")
-    self.driver.find_element(By.ID, "password").send_keys("thisIsATest1!")
-    self.driver.find_element(By.ID, "password").send_keys(Keys.ENTER)
+    self.login()
     self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
     self.driver.execute_script("$('#data').val('breastCancer.csv');")
     self.driver.execute_script("$('#data').change();")
     time.sleep(self.wait)
     self.driver.find_element(By.ID, "reduced_tab-tab").click()
-    dropdown = self.driver.find_element(By.ID, "sel")
-    dropdown.find_element(By.XPATH, "//option[value = 'Class']").click()
-    self.driver.find_element(By.ID, "nuse").click()
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#\\31 0_opt.list-group-item-secondary")
-    assert len(elements) > 0
+    self.driver.execute_script('$("#sel option[value=\'Class\']").prop("selected",true)')
+    self.driver.execute_script('$("#nuse").click()')
+    element = self.driver.find_element(By.ID, "10_opt")
+    assert "list-group-item-secondary" in element.get_attribute('class').split(" ")
     self.driver.find_element(By.ID, "normal_tab-tab").click()
     elements = self.driver.find_elements(By.CSS_SELECTOR, "#col10_use:checked")
     assert len(elements) == 0
-    self.driver.find_element(By.LINK_TEXT, "Logout").click()
-    assert self.driver.find_element(By.LINK_TEXT, "Login").text == "Login"
-  
+    self.logout()
+    
   def test_351DatasetNoTargetUseNormal(self):
-    self.driver.get("http://localhost:5000/")
-    self.driver.set_window_size(1536, 824)
-    self.driver.find_element(By.LINK_TEXT, "Login").click()
-    self.driver.find_element(By.ID, "email").click()
-    self.driver.find_element(By.ID, "email").send_keys("ubumlaas@gmail.com")
-    self.driver.find_element(By.ID, "password").click()
-    self.driver.find_element(By.ID, "password").send_keys("thisIsATest1!")
-    self.driver.find_element(By.ID, "password").send_keys(Keys.ENTER)
+    self.login()
     self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
     self.driver.execute_script("$('#data').val('breastCancer.csv');")
     self.driver.execute_script("$('#data').change();")
     time.sleep(self.wait)
-    WebDriverWait(self.driver, 30000).until(expected_conditions.visibility_of_element_located((By.ID, "form_dataset_configuration")))
+    self.driver.execute_script("$('#col10_use_label').click();")
     elements = self.driver.find_elements(By.CSS_SELECTOR, "#col10_use:checked")
     assert len(elements) > 0
     elements = self.driver.find_elements(By.CSS_SELECTOR, "#col10_target:checked")
     assert len(elements) == 0
     self.driver.find_element(By.ID, "reduced_tab-tab").click()
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#\\31 0_opt.list-group-item-primary")
-    assert len(elements) > 0
-    self.driver.find_element(By.LINK_TEXT, "Logout").click()
-    assert self.driver.find_element(By.LINK_TEXT, "Login").text == "Login"
+    element = self.driver.find_element(By.ID, "10_opt")
+    assert "list-group-item-primary" in element.get_attribute('class').split(" ")
+    self.logout()
   
   def test_352DatasetNoTargetUseReduced(self):
-    self.driver.get("http://localhost:5000/")
-    self.driver.set_window_size(1536, 824)
-    self.driver.find_element(By.LINK_TEXT, "Login").click()
-    self.driver.find_element(By.ID, "email").click()
-    self.driver.find_element(By.ID, "email").send_keys("ubumlaas@gmail.com")
-    self.driver.find_element(By.ID, "password").click()
-    self.driver.find_element(By.ID, "password").send_keys("thisIsATest1!")
-    self.driver.find_element(By.ID, "password").send_keys(Keys.ENTER)
+    self.login()
     self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
     self.driver.execute_script("$('#data').val('breastCancer.csv');")
     self.driver.execute_script("$('#data').change();")
     time.sleep(self.wait)
     self.driver.find_element(By.ID, "reduced_tab-tab").click()
-    dropdown = self.driver.find_element(By.ID, "sel")
-    dropdown.find_element(By.XPATH, "//option[value = 'Class']").click()
-    self.driver.find_element(By.ID, "use").click()
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#\\31 0_opt.list-group-item-primary")
-    assert len(elements) > 0
+    self.driver.execute_script('$("#sel option[value=\'Class\']").prop("selected",true)')
+    self.driver.execute_script('$("#use").click()')
+    element = self.driver.find_element(By.ID, "10_opt")
+    assert "list-group-item-primary" in element.get_attribute('class').split(" ")
     self.driver.find_element(By.ID, "normal_tab-tab").click()
     elements = self.driver.find_elements(By.CSS_SELECTOR, "#col10_use:checked")
     assert len(elements) > 0
     elements = self.driver.find_elements(By.CSS_SELECTOR, "#col10_target:checked")
     assert len(elements) == 0
-    self.driver.find_element(By.LINK_TEXT, "Logout").click()
-    assert self.driver.find_element(By.LINK_TEXT, "Login").text == "Login"
-  
+    self.logout()
+    
   def test_361DatasetChangeTargetNormal(self):
-    self.driver.get("http://localhost:5000/")
-    self.driver.set_window_size(1552, 840)
-    self.driver.find_element(By.LINK_TEXT, "Login").click()
-    self.driver.find_element(By.ID, "email").click()
-    self.driver.find_element(By.ID, "email").send_keys("ubumlaas@gmail.com")
-    self.driver.find_element(By.ID, "password").click()
-    self.driver.find_element(By.ID, "password").send_keys("thisIsATest1!")
-    self.driver.find_element(By.ID, "password").send_keys(Keys.ENTER)
+    self.login()
     self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
     self.driver.execute_script("$('#data').val('breastCancer.csv');")
     self.driver.execute_script("$('#data').change();")
     time.sleep(self.wait)
+    self.driver.execute_script("$('#col9_target_label').click();")
     elements = self.driver.find_elements(By.CSS_SELECTOR, "#col10_use:checked")
     assert len(elements) == 0
     elements = self.driver.find_elements(By.CSS_SELECTOR, "#col10_target:checked")
@@ -294,41 +222,26 @@ class TestDefaultSuite():
     elements = self.driver.find_elements(By.CSS_SELECTOR, "#col9_target:checked")
     assert len(elements) > 0
     self.driver.find_element(By.ID, "reduced_tab-tab").click()
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#\\31 0_opt.list-group-item-secondary")
-    assert len(elements) > 0
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#\\39_opt.list-group-item-success")
-    assert len(elements) > 0
-    self.driver.find_element(By.LINK_TEXT, "Logout").click()
-    assert self.driver.find_element(By.LINK_TEXT, "Login").text == "Login"
-  
+    element = self.driver.find_element(By.ID, "10_opt")
+    assert "list-group-item-secondary" in element.get_attribute('class').split(" ")
+    element = self.driver.find_element(By.ID, "9_opt")
+    assert "list-group-item-success" in element.get_attribute('class').split(" ")
+    self.logout()
+    
   def test_362DatasetChangeTargetReduced(self):
-    self.driver.get("http://localhost:5000/")
-    self.driver.set_window_size(1552, 840)
-    self.driver.find_element(By.LINK_TEXT, "Login").click()
-    self.driver.find_element(By.ID, "email").click()
-    self.driver.find_element(By.ID, "email").send_keys("ubumlaas@gmail.com")
-    self.driver.find_element(By.ID, "password").click()
-    self.driver.find_element(By.ID, "password").send_keys("thisIsATest1!")
-    self.driver.find_element(By.ID, "password").send_keys(Keys.ENTER)
+    self.login()
     self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
     self.driver.find_element(By.ID, "data").click()
     self.driver.execute_script("$('#data').val('breastCancer.csv');")
     self.driver.execute_script("$('#data').change();")
     time.sleep(self.wait)
-    element = self.driver.find_element(By.ID, "reduced_tab-tab")
-    actions = ActionChains(driver)
-    actions.move_to_element(element).perform()
     self.driver.find_element(By.ID, "reduced_tab-tab").click()
-    element = self.driver.find_element(By.CSS_SELECTOR, "body")
-    actions = ActionChains(driver)
-    actions.move_to_element(element, 0, 0).perform()
-    dropdown = self.driver.find_element(By.ID, "sel")
-    dropdown.find_element(By.XPATH, "//option[value = 'Mitoses']").click()
-    self.driver.find_element(By.ID, "target").click()
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#\\31 0_opt.list-group-item-secondary")
-    assert len(elements) > 0
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#\\39_opt.list-group-item-success")
-    assert len(elements) > 0
+    self.driver.execute_script("$('#sel option[value=\"Mitoses\"]').prop('selected',true);")
+    self.driver.execute_script("$('#target').click();")
+    element = self.driver.find_element(By.ID, "10_opt")
+    assert "list-group-item-secondary" in element.get_attribute('class').split(" ")
+    element = self.driver.find_element(By.ID, "9_opt")
+    assert "list-group-item-success" in element.get_attribute('class').split(" ")
     self.driver.find_element(By.ID, "normal_tab-tab").click()
     elements = self.driver.find_elements(By.CSS_SELECTOR, "#col10_use:checked")
     assert len(elements) == 0
@@ -338,371 +251,172 @@ class TestDefaultSuite():
     assert len(elements) == 0
     elements = self.driver.find_elements(By.CSS_SELECTOR, "#col9_target:checked")
     assert len(elements) > 0
-    self.driver.find_element(By.LINK_TEXT, "Logout").click()
-    assert self.driver.find_element(By.LINK_TEXT, "Login").text == "Login"
-  
+    self.logout()
+    
   def test_37DatasetNoMultiLabelTarget(self):
-    self.driver.get("http://localhost:5000/")
-    self.driver.set_window_size(1536, 824)
-    self.driver.find_element(By.LINK_TEXT, "Login").click()
-    self.driver.find_element(By.ID, "email").click()
-    self.driver.find_element(By.ID, "email").send_keys("ubumlaas@gmail.com")
-    self.driver.find_element(By.ID, "password").click()
-    self.driver.find_element(By.ID, "password").send_keys("thisIsATest1!")
-    self.driver.find_element(By.ID, "password").send_keys(Keys.ENTER)
+    self.login()
     self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
     self.driver.execute_script("$('#data').val('breastCancer.csv');")
     self.driver.execute_script("$('#data').change();")
     time.sleep(self.wait)
     self.driver.find_element(By.ID, "reduced_tab-tab").click()
-    element = self.driver.find_element(By.ID, "6_opt")
-    actions = ActionChains(driver)
-    actions.move_to_element(element).click_and_hold().perform()
-    element = self.driver.find_element(By.ID, "6_opt")
-    actions = ActionChains(driver)
-    actions.move_to_element(element).perform()
-    element = self.driver.find_element(By.ID, "6_opt")
-    actions = ActionChains(driver)
-    actions.move_to_element(element).release().perform()
-    dropdown = self.driver.find_element(By.ID, "sel")
-    dropdown.find_element(By.XPATH, "//option[value = 'Cell.shape']").click()
-    dropdown = self.driver.find_element(By.ID, "sel")
-    dropdown.find_element(By.XPATH, "//option[value = 'Marg.adhesion']").click()
-    dropdown = self.driver.find_element(By.ID, "sel")
-    dropdown.find_element(By.XPATH, "//option[value = 'Epith.c.size']").click()
-    dropdown = self.driver.find_element(By.ID, "sel")
-    dropdown.find_element(By.XPATH, "//option[value = 'Bare.nuclei']").click()
-    self.driver.find_element(By.ID, "target").click()
-    assert self.driver.switch_to.alert.text == "You can\'t select more than 1 target in no multilabel algorithms."
-    self.driver.find_element(By.LINK_TEXT, "Logout").click()
-    assert self.driver.find_element(By.LINK_TEXT, "Login").text == "Login"
-  
+    self.driver.execute_script("$('#sel option[value=\"Cell.shape\"]').prop('selected',true);")
+    self.driver.execute_script("$('#sel option[value=\"Marg.adhesion\"]').prop('selected',true);")
+    self.driver.execute_script("$('#sel option[value=\"Epith.c.size\"]').prop('selected',true);")
+    self.driver.execute_script("$('#sel option[value=\"Bare.nuclei\"]').prop('selected',true);")
+    self.driver.execute_script('$("#target").click()')
+    alert = self.driver.switch_to.alert
+    assert alert.text == "You can't select more than 1 target in no multilabel algorithms."
+    alert.accept()
+    self.logout()
+  """
   def test_381DatasetMultiLabelTargetNormal(self):
-    self.driver.get("http://localhost:5000/")
-    self.driver.set_window_size(1552, 840)
-    self.driver.find_element(By.LINK_TEXT, "Login").click()
-    self.driver.find_element(By.ID, "email").click()
-    self.driver.find_element(By.ID, "email").send_keys("ubumlaas@gmail.com")
-    self.driver.find_element(By.ID, "password").click()
-    self.driver.find_element(By.ID, "password").send_keys("thisIsATest1!")
-    self.driver.find_element(By.ID, "password").send_keys(Keys.ENTER)
+    self.login()
     self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
-    self.driver.find_element(By.ID, "alg_typ").click()
-    dropdown = self.driver.find_element(By.ID, "alg_typ")
-    dropdown.find_element(By.XPATH, "//option[value = 'MultiClassification']").click()
-    self.driver.find_element(By.ID, "alg_typ").click()
-    self.driver.find_element(By.ID, "data").click()
-    dropdown = self.driver.find_element(By.ID, "data")
-    dropdown.find_element(By.XPATH, "//option[value = 'music.csv']").click()
-    self.driver.find_element(By.ID, "data").click()
-    self.driver.find_element(By.ID, "data").click()
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#col0_use:checked")
-    assert len(elements) == 0
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#col0_target:checked")
-    assert len(elements) > 0
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#col1_use:checked")
-    assert len(elements) == 0
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#col1_target:checked")
-    assert len(elements) > 0
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#col2_use:checked")
-    assert len(elements) == 0
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#col2_target:checked")
-    assert len(elements) > 0
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#col3_use:checked")
-    assert len(elements) == 0
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#col3_target:checked")
-    assert len(elements) > 0
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#col4_use:checked")
-    assert len(elements) == 0
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#col4_target:checked")
-    assert len(elements) > 0
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#col5_use:checked")
-    assert len(elements) == 0
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#col5_target:checked")
-    assert len(elements) > 0
+    self.driver.execute_script("$('#alg_typ').val(\"MultiClassification\")")
+    self.driver.execute_script("$('#alg_typ').change();")
+    self.driver.execute_script("$('#data').val('music.csv');")
+    self.driver.execute_script("$('#data').change();")
+    time.sleep(self.wait)
+    elm = list(range(6))
+    for e in elm:
+      self.driver.execute_script("$('#col"+str(e)+"_target_label').click();")
+      elements = self.driver.find_elements(By.CSS_SELECTOR, "#col"+str(e)+"_use:checked")
+      assert len(elements) == 0
+      elements = self.driver.find_elements(By.CSS_SELECTOR, "#col"+str(e)+"_target:checked")
+      assert len(elements) > 0
+    self.driver.execute_script("$('#col76_use_label').click();")
+
     self.driver.find_element(By.ID, "reduced_tab-tab").click()
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#\\37 6_opt.list-group-item-primary")
-    assert len(elements) > 0
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#\\30_opt.list-group-item-success")
-    assert len(elements) > 0
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#\\31_opt.list-group-item-success")
-    assert len(elements) > 0
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#\\32_opt.list-group-item-success")
-    assert len(elements) > 0
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#\\33_opt.list-group-item-success")
-    assert len(elements) > 0
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#\\34_opt.list-group-item-success")
-    assert len(elements) > 0
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#\\35_opt.list-group-item-success")
-    assert len(elements) > 0
-    self.driver.find_element(By.LINK_TEXT, "Logout").click()
-    assert self.driver.find_element(By.LINK_TEXT, "Login").text == "Login"
-  
+
+    element = self.driver.find_element(By.ID, "76_opt")
+    assert "list-group-item-primary" in element.get_attribute("class").split(" ")
+
+    for e in elm:
+      element = self.driver.find_element(By.ID, str(e)+"_opt")
+      assert "list-group-item-success" in element.get_attribute("class").split(" ")
+    self.logout()
+    
   def test_382DatasetMultiLabelTargetReduced(self):
-    self.driver.get("http://localhost:5000/")
-    self.driver.set_window_size(1552, 840)
-    self.driver.find_element(By.LINK_TEXT, "Login").click()
-    self.driver.find_element(By.ID, "email").click()
-    self.driver.find_element(By.ID, "email").send_keys("ubumlaas@gmail.com")
-    self.driver.find_element(By.ID, "password").click()
-    self.driver.find_element(By.ID, "password").send_keys("thisIsATest1!")
-    self.driver.find_element(By.ID, "password").send_keys(Keys.ENTER)
+    self.login()
     self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
-    self.driver.find_element(By.ID, "alg_typ").click()
-    dropdown = self.driver.find_element(By.ID, "alg_typ")
-    dropdown.find_element(By.XPATH, "//option[value = 'MultiClassification']").click()
-    self.driver.find_element(By.ID, "alg_typ").click()
-    self.driver.find_element(By.ID, "data").click()
-    dropdown = self.driver.find_element(By.ID, "data")
-    dropdown.find_element(By.XPATH, "//option[value = 'music.csv']").click()
-    self.driver.find_element(By.ID, "data").click()
+
+    self.driver.execute_script("$('#alg_typ').val(\"MultiClassification\")")
+    self.driver.execute_script("$('#alg_typ').change();")
+    self.driver.execute_script("$('#data').val('music.csv');")
+    self.driver.execute_script("$('#data').change();")
+    time.sleep(self.wait)
     self.driver.find_element(By.ID, "reduced_tab-tab").click()
-    dropdown = self.driver.find_element(By.ID, "sel")
-    dropdown.find_element(By.XPATH, "//option[value = 'BHSUM3']").click()
-    self.driver.find_element(By.ID, "use").click()
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#\\37 6_opt.list-group-item-primary")
-    assert len(elements) > 0
-    element = self.driver.find_element(By.ID, "5_opt")
-    actions = ActionChains(driver)
-    actions.move_to_element(element).click_and_hold().perform()
-    element = self.driver.find_element(By.ID, "5_opt")
-    actions = ActionChains(driver)
-    actions.move_to_element(element).perform()
-    element = self.driver.find_element(By.ID, "5_opt")
-    actions = ActionChains(driver)
-    actions.move_to_element(element).release().perform()
-    dropdown = self.driver.find_element(By.ID, "sel")
-    dropdown.find_element(By.XPATH, "//option[value = 'amazed-suprised']").click()
-    dropdown = self.driver.find_element(By.ID, "sel")
-    dropdown.find_element(By.XPATH, "//option[value = 'happy-pleased']").click()
-    dropdown = self.driver.find_element(By.ID, "sel")
-    dropdown.find_element(By.XPATH, "//option[value = 'relaxing-clam']").click()
-    dropdown = self.driver.find_element(By.ID, "sel")
-    dropdown.find_element(By.XPATH, "//option[value = 'quiet-still']").click()
-    dropdown = self.driver.find_element(By.ID, "sel")
-    dropdown.find_element(By.XPATH, "//option[value = 'sad-lonely']").click()
-    dropdown = self.driver.find_element(By.ID, "sel")
-    dropdown.find_element(By.XPATH, "//option[value = 'angry-aggresive']").click()
-    self.driver.find_element(By.ID, "target").click()
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#\\30_opt.list-group-item-success")
-    assert len(elements) > 0
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#\\31_opt.list-group-item-success")
-    assert len(elements) > 0
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#\\32_opt.list-group-item-success")
-    assert len(elements) > 0
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#\\33_opt.list-group-item-success")
-    assert len(elements) > 0
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#\\34_opt.list-group-item-success")
-    assert len(elements) > 0
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#\\35_opt.list-group-item-success")
-    assert len(elements) > 0
-    element = self.driver.find_element(By.ID, "normal_tab-tab")
-    actions = ActionChains(driver)
-    actions.move_to_element(element).click_and_hold().perform()
-    element = self.driver.find_element(By.ID, "normal_tab-tab")
-    actions = ActionChains(driver)
-    actions.move_to_element(element).perform()
-    element = self.driver.find_element(By.ID, "normal_tab-tab")
-    actions = ActionChains(driver)
-    actions.move_to_element(element).release().perform()
+    self.driver.execute_script("$('#sel option[value=\"BHSUM3\"]').prop('selected', true);")
+    self.driver.execute_script("$('#use').click();")
+
+    assert "list-group-item-primary" in self.driver.find_element(By.ID, "76_opt").get_attribute("class").split(" ")
+
+    elm = ['amazed-suprised', 'happy-pleased', 'relaxing-clam', 'quiet-still', 'sad-lonely', 'angry-aggresive']
+    for e in elm:
+      self.driver.execute_script("$('#sel option[value=\""+e+"\"]').prop('selected', true);")
+    self.driver.execute_script("$('#target').click();")
+    for e in range(6):
+      assert "list-group-item-success" in self.driver.find_element(By.ID, str(e)+"_opt").get_attribute("class").split(" ")
+    
     self.driver.find_element(By.ID, "normal_tab-tab").click()
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#col0_use:checked")
-    assert len(elements) == 0
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#col0_target:checked")
-    assert len(elements) > 0
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#col1_use:checked")
-    assert len(elements) == 0
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#col1_target:checked")
-    assert len(elements) > 0
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#col2_use:checked")
-    assert len(elements) == 0
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#col2_target:checked")
-    assert len(elements) > 0
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#col3_use:checked")
-    assert len(elements) == 0
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#col3_target:checked")
-    assert len(elements) > 0
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#col4_use:checked")
-    assert len(elements) == 0
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#col4_target:checked")
-    assert len(elements) > 0
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#col5_use:checked")
-    assert len(elements) == 0
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#col5_target:checked")
-    assert len(elements) > 0
-    self.driver.find_element(By.LINK_TEXT, "Logout").click()
-    assert self.driver.find_element(By.LINK_TEXT, "Login").text == "Login"
-  
+    for e in range(6):
+      elements = self.driver.find_elements(By.CSS_SELECTOR, "#col"+str(e)+"_use:checked")
+      assert len(elements) == 0
+      elements = self.driver.find_elements(By.CSS_SELECTOR, "#col"+str(e)+"_target:checked")
+      assert len(elements) > 0
+    self.logout()
+    
   def test_39DatasetFromMultiLabelToMonoLabel(self):
-    self.driver.get("http://localhost:5000/")
-    self.driver.set_window_size(1552, 840)
-    self.driver.find_element(By.LINK_TEXT, "Login").click()
-    self.driver.find_element(By.ID, "email").click()
-    self.driver.find_element(By.ID, "email").send_keys("ubumlaas@gmail.com")
-    self.driver.find_element(By.ID, "password").click()
-    self.driver.find_element(By.ID, "password").send_keys("thisIsATest1!")
-    self.driver.find_element(By.ID, "password").send_keys(Keys.ENTER)
+    self.login()
     self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
-    self.driver.find_element(By.ID, "data").click()
-    dropdown = self.driver.find_element(By.ID, "data")
-    dropdown.find_element(By.XPATH, "//option[value = 'music.csv']").click()
-    self.driver.find_element(By.ID, "data").click()
-    self.driver.find_element(By.ID, "alg_typ").click()
-    dropdown = self.driver.find_element(By.ID, "alg_typ")
-    dropdown.find_element(By.XPATH, "//option[value = 'MultiClassification']").click()
-    self.driver.find_element(By.ID, "alg_typ").click()
+
+    self.driver.execute_script("$('#alg_typ').val(\"MultiClassification\")")
+    self.driver.execute_script("$('#alg_typ').change();")
+    self.driver.execute_script("$('#data').val('music.csv');")
+    self.driver.execute_script("$('#data').change();")
+    time.sleep(self.wait)
     self.driver.find_element(By.ID, "reduced_tab-tab").click()
-    dropdown = self.driver.find_element(By.ID, "sel")
-    dropdown.find_element(By.XPATH, "//option[value = 'BHSUM3']").click()
-    self.driver.find_element(By.ID, "use").click()
-    dropdown = self.driver.find_element(By.ID, "sel")
-    dropdown.find_element(By.XPATH, "//option[value = 'amazed-suprised']").click()
-    dropdown = self.driver.find_element(By.ID, "sel")
-    dropdown.find_element(By.XPATH, "//option[value = 'happy-pleased']").click()
-    dropdown = self.driver.find_element(By.ID, "sel")
-    dropdown.find_element(By.XPATH, "//option[value = 'relaxing-clam']").click()
-    dropdown = self.driver.find_element(By.ID, "sel")
-    dropdown.find_element(By.XPATH, "//option[value = 'quiet-still']").click()
-    dropdown = self.driver.find_element(By.ID, "sel")
-    dropdown.find_element(By.XPATH, "//option[value = 'sad-lonely']").click()
-    dropdown = self.driver.find_element(By.ID, "sel")
-    dropdown.find_element(By.XPATH, "//option[value = 'angry-aggresive']").click()
-    self.driver.find_element(By.ID, "target").click()
-    self.driver.find_element(By.ID, "alg_typ").click()
-    dropdown = self.driver.find_element(By.ID, "alg_typ")
-    dropdown.find_element(By.XPATH, "//option[value = 'Classification']").click()
-    self.driver.find_element(By.ID, "alg_typ").click()
-    WebDriverWait(self.driver, 30000).until(expected_conditions.visibility_of_element_located((By.ID, "sel")))
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#\\30_opt.list-group-item-primary")
-    assert len(elements) > 0
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#\\31_opt.list-group-item-primary")
-    assert len(elements) > 0
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#\\32_opt.list-group-item-primary")
-    assert len(elements) > 0
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#\\33_opt.list-group-item-primary")
-    assert len(elements) > 0
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#\\34_opt.list-group-item-primary")
-    assert len(elements) > 0
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#\\35_opt.list-group-item-primary")
-    assert len(elements) > 0
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#\\37 6_opt.list-group-item-success")
-    assert len(elements) > 0
+    self.driver.execute_script("$('#sel option[value=\"BHSUM3\"]').prop('selected', true);")
+    self.driver.execute_script("$('#use').click();")
+
+    elm = ['amazed-suprised', 'happy-pleased', 'relaxing-clam', 'quiet-still', 'sad-lonely', 'angry-aggresive']
+    for e in elm:
+      self.driver.execute_script("$('#sel option[value=\""+e+"\"]').prop('selected', true);")
+    self.driver.execute_script("$('#target').click();")
+    
+    self.driver.execute_script("$('#alg_typ').val(\"Classification\")")
+    self.driver.execute_script("$('#alg_typ').change();")
+
+    time.sleep(self.wait)
+    assert "list-group-item-success" in self.driver.find_element(By.ID, "76_opt").get_attribute("class").split(" ")
+    for e in range(6):
+      assert "list-group-item-primary" in self.driver.find_element(By.ID, str(e)+"_opt").get_attribute("class").split(" ")
+
     self.driver.find_element(By.ID, "normal_tab-tab").click()
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#col0_use:checked")
-    assert len(elements) > 0
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#col0_target:checked")
-    assert len(elements) == 0
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#col1_use:checked")
-    assert len(elements) > 0
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#col1_target:checked")
-    assert len(elements) == 0
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#col2_use:checked")
-    assert len(elements) > 0
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#col2_target:checked")
-    assert len(elements) == 0
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#col3_use:checked")
-    assert len(elements) > 0
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#col3_target:checked")
-    assert len(elements) == 0
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#col4_use:checked")
-    assert len(elements) > 0
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#col4_target:checked")
-    assert len(elements) == 0
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#col5_use:checked")
-    assert len(elements) > 0
-    elements = self.driver.find_elements(By.CSS_SELECTOR, "#col5_target:checked")
-    assert len(elements) == 0
+    for e in range(6):
+      elements = self.driver.find_elements(By.CSS_SELECTOR, "#col"+str(e)+"_use:checked")
+      assert len(elements) > 0
+      elements = self.driver.find_elements(By.CSS_SELECTOR, "#col"+str(e)+"_target:checked")
+      assert len(elements) == 0
     elements = self.driver.find_elements(By.CSS_SELECTOR, "#col76_use:checked")
     assert len(elements) == 0
     elements = self.driver.find_elements(By.CSS_SELECTOR, "#col76_target:checked")
     assert len(elements) > 0
-    self.driver.find_element(By.LINK_TEXT, "Logout").click()
-    assert self.driver.find_element(By.LINK_TEXT, "Login").text == "Login"
+    self.logout()
   
   def test_4TrainTextCrossvalidation(self):
-    self.driver.get("http://localhost:5000/")
-    self.driver.set_window_size(1552, 840)
-    self.driver.find_element(By.LINK_TEXT, "Login").click()
-    self.driver.find_element(By.ID, "email").click()
-    self.driver.find_element(By.ID, "email").send_keys("ubumlaas@gmail.com")
-    self.driver.find_element(By.ID, "password").send_keys("thisIsATest1!")
-    self.driver.find_element(By.ID, "password").send_keys(Keys.ENTER)
+    self.login()
     self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
     assert self.driver.find_element(By.CSS_SELECTOR, "#train_test_div > .form-control-label").text == "Train/Test partition"
     self.driver.find_element(By.CSS_SELECTOR, ".ml-2 > span").click()
     assert self.driver.find_element(By.CSS_SELECTOR, "#cross_validation_div > .form-control-label").text == "Number of folds"
-    self.driver.find_element(By.LINK_TEXT, "Logout").click()
-    assert self.driver.find_element(By.LINK_TEXT, "Login").text == "Login"
-  
+    self.logout()
+
   def test_51Algorithm(self):
-    self.driver.get("http://localhost:5000/")
-    self.driver.set_window_size(1552, 840)
-    self.driver.find_element(By.LINK_TEXT, "Login").click()
-    self.driver.find_element(By.ID, "email").click()
-    self.driver.find_element(By.ID, "email").send_keys("ubumlaas@gmail.com")
-    self.driver.find_element(By.ID, "password").click()
-    self.driver.find_element(By.ID, "password").send_keys("thisIsATest1!")
-    self.driver.find_element(By.ID, "password").send_keys(Keys.ENTER)
+    self.login()
     self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
-    self.driver.find_element(By.ID, "alg_typ").click()
-    dropdown = self.driver.find_element(By.ID, "alg_typ")
-    dropdown.find_element(By.XPATH, "//option[value = 'Classification']").click()
-    self.driver.find_element(By.ID, "alg_typ").click()
-    self.driver.find_element(By.ID, "alg_name").click()
-    dropdown = self.driver.find_element(By.ID, "alg_name")
-    dropdown.find_element(By.XPATH, "//option[value = 'Bagging']").click()
-    self.driver.find_element(By.ID, "alg_name").click()
-    assert self.driver.find_element(By.CSS_SELECTOR, ".font-weight-bold").text == "Decision Tree"
+    self.driver.execute_script("$('#alg_typ').val(\"Classification\");")
+    self.driver.execute_script("$('#alg_typ').change();")
+    time.sleep(self.wait)
+    self.driver.execute_script("$('#alg_name').val(\"sklearn.ensemble.BaggingClassifier\");")
+    self.driver.execute_script("$('#alg_name').change();")
+    time.sleep(self.wait)
+    assert self.driver.find_element(By.CSS_SELECTOR, "p.font-weight-bold").text == "Decision Tree"
     self.driver.find_element(By.CSS_SELECTOR, "#base_estimator_open > .material-icons").click()
-    self.driver.find_element(By.ID, "base_estimator_value").click()
-    dropdown = self.driver.find_element(By.ID, "base_estimator_value")
-    dropdown.find_element(By.XPATH, "//option[value = 'Bagging']").click()
-    WebDriverWait(self.driver, 30000).until(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, "#level1_base_estimator > label")))
+    self.driver.execute_script("$('#base_estimator_value').val(\"sklearn.ensemble.BaggingClassifier\");")
+    self.driver.execute_script("$('#base_estimator_value').change();")
+    time.sleep(self.wait)
     assert self.driver.find_element(By.CSS_SELECTOR, "#base_estimator_title > .font-weight-bold").text == "Bagging"
-    self.driver.find_element(By.LINK_TEXT, "Logout").click()
-    assert self.driver.find_element(By.LINK_TEXT, "Login").text == "Login"
+    self.logout()
   
   def test_52Algorithm2(self):
-    self.driver.get("http://localhost:5000/")
-    self.driver.set_window_size(1552, 840)
-    self.driver.find_element(By.LINK_TEXT, "Login").click()
-    self.driver.find_element(By.ID, "email").click()
-    self.driver.find_element(By.ID, "email").send_keys("ubumlaas@gmail.com")
-    self.driver.find_element(By.ID, "password").click()
-    self.driver.find_element(By.ID, "password").send_keys("thisIsATest1!")
-    self.driver.find_element(By.ID, "password").send_keys(Keys.ENTER)
+    self.login()
     self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
-    self.driver.find_element(By.ID, "alg_typ").click()
-    dropdown = self.driver.find_element(By.ID, "alg_typ")
-    dropdown.find_element(By.XPATH, "//option[value = 'Classification']").click()
-    self.driver.find_element(By.ID, "alg_typ").click()
-    self.driver.find_element(By.ID, "alg_name").click()
-    dropdown = self.driver.find_element(By.ID, "alg_name")
-    dropdown.find_element(By.XPATH, "//option[value = 'Bagging']").click()
-    self.driver.find_element(By.ID, "alg_name").click()
-    assert self.driver.find_element(By.CSS_SELECTOR, ".font-weight-bold").text == "Decision Tree"
+    self.driver.execute_script("$('#alg_typ').val(\"Classification\");")
+    self.driver.execute_script("$('#alg_typ').change();")
+    time.sleep(self.wait)
+    self.driver.execute_script("$('#alg_name').val(\"sklearn.ensemble.BaggingClassifier\");")
+    self.driver.execute_script("$('#alg_name').change();")
+    time.sleep(self.wait)
+    assert self.driver.find_element(By.CSS_SELECTOR, "p.font-weight-bold").text == "Decision Tree"
     self.driver.find_element(By.CSS_SELECTOR, "#base_estimator_open > .material-icons").click()
-    self.driver.find_element(By.ID, "base_estimator_value").click()
-    dropdown = self.driver.find_element(By.ID, "base_estimator_value")
-    dropdown.find_element(By.XPATH, "//option[value = 'Bagging']").click()
-    WebDriverWait(self.driver, 30000).until(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, "#level1_base_estimator > label")))
+    self.driver.execute_script("$('#base_estimator_value').val(\"sklearn.ensemble.BaggingClassifier\");")
+    self.driver.execute_script("$('#base_estimator_value').change();")
+    time.sleep(self.wait)
     assert self.driver.find_element(By.CSS_SELECTOR, "#base_estimator_title > .font-weight-bold").text == "Bagging"
-    self.driver.find_element(By.CSS_SELECTOR, "#level1_base_estimator_open > .material-icons").click()
-    self.driver.find_element(By.ID, "level1_base_estimator_value").click()
-    dropdown = self.driver.find_element(By.ID, "level1_base_estimator_value")
-    dropdown.find_element(By.XPATH, "//option[value = 'Bagging']").click()
-    assert self.driver.find_element(By.CSS_SELECTOR, "#level2_base_estimator_title > .font-weight-bold").text == "Decision Tree"
-    self.driver.find_element(By.CSS_SELECTOR, "#level2_base_estimator_open > .material-icons").click()
-    self.driver.find_element(By.ID, "level2_base_estimator_value").click()
-    dropdown = self.driver.find_element(By.ID, "level2_base_estimator_value")
-    dropdown.find_element(By.XPATH, "//option[value = 'Bagging']").click()
-    assert self.driver.find_element(By.CSS_SELECTOR, "#level3_base_estimator_title > .font-weight-bold").text == "Decision Tree"
-    self.driver.find_element(By.CSS_SELECTOR, ".row-fluid").click()
-    self.driver.find_element(By.ID, "base_estimator_value").click()
-    dropdown = self.driver.find_element(By.ID, "base_estimator_value")
-    dropdown.find_element(By.XPATH, "//option[value = 'KNN']").click()
-    self.driver.find_element(By.ID, "base_estimator_value").click()
+    for i in range(1,3):
+      self.driver.find_element(By.CSS_SELECTOR, "#level"+str(i)+"_base_estimator_open > .material-icons").click()
+      self.driver.find_element(By.ID, "level"+str(i)+"_base_estimator_value").click()
+      self.driver.execute_script("$('#level"+str(i)+"_base_estimator_value').val(\"sklearn.ensemble.BaggingClassifier\");")
+      self.driver.execute_script("$('#level"+str(i)+"_base_estimator_value').change();")
+      time.sleep(self.wait)
+      assert self.driver.find_element(By.CSS_SELECTOR, "#level"+str(i+1)+"_base_estimator_title > .font-weight-bold").text == "Decision Tree"
+    self.driver.execute_script("$('#base_estimator_value').val(\"sklearn.neighbors.KNeighborsClassifier\");")
+    self.driver.execute_script("$('#base_estimator_value').change();")
+    time.sleep(self.wait)
     assert self.driver.find_element(By.CSS_SELECTOR, ".font-weight-bold").text == "KNN"
-    self.driver.find_element(By.LINK_TEXT, "Logout").click()
-    assert self.driver.find_element(By.LINK_TEXT, "Login").text == "Login"
-  """
+    elements = self.driver.find_elements(By.CSS_SELECTOR, "#level2_base_estimator_title")
+    assert len(elements) == 0
+    self.logout()
+  
