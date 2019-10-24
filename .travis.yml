@@ -24,7 +24,6 @@ install:
   - wget http://mirror.jkanetwork.com/Datasets/ubumlaas.tar -O /tmp/ubumlaas.tar
   - mkdir -p $TRAVIS_BUILD_DIR/ubumlaas/datasets/ubumlaas
   - tar -xvf /tmp/ubumlaas.tar -C $TRAVIS_BUILD_DIR/ubumlaas/datasets/ubumlaas
-  - npm install -g selenium-side-runner
   - npm install -g chromedriver
 
 before_script:
@@ -32,9 +31,9 @@ before_script:
   - source env_variables.sh
   - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x16"
   - sleep 3
-  - python app.py &
+  - python app.py > /dev/null &
   - sleep 20
 
 script:
   - python tests.py
-  - selenium-side-runner -c "browserName=chrome" ./test/UBUMLaaS.side
+  - python -m pytest -p no:warning test/test_selenium.py
