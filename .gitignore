@@ -130,3 +130,6 @@ datasets
 models
 
 env_variables.sh
+#Lib html and css
+lib/**/*.html
+lib/**/*.css

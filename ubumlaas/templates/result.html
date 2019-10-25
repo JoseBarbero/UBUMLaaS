@@ -83,6 +83,7 @@
 
 {% endblock %}
 {% block js %}
+<script src="{{ url_for('static', filename="js/include/generate_form_utils.js") }}"></script>
 <script src="{{ url_for('static', filename="js/config_alg.js") }}"></script>
 <script>
     {% if experiment.state == 1 %}

@@ -13,7 +13,6 @@ urllib3 >= 1.25.6
 liac-arff == 2.2.1
 requests >= 2.22.0
 future >= 0.16.0
-keras
-tensorflow
 whichcraft == 0.4.1
 pytest == 5.2.1
+selenium == 3.141.0
