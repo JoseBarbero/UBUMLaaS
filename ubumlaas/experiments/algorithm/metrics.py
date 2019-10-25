@@ -1,6 +1,8 @@
 import sklearn.metrics as mtr
 import numpy as np
 from ubumlaas.util import value_to_bool
+from sklearn.preprocessing import LabelBinarizer
+import pandas as pd
 
 
 def classification_metrics(y_test_param, y_pred_param, y_score_param):
@@ -23,23 +25,28 @@ def classification_metrics(y_test_param, y_pred_param, y_score_param):
         conf_matrix = mtr.confusion_matrix(y_test, y_pred)
         score.setdefault("confussion_matrix", []).append(conf_matrix.tolist())
         y_b_score = y_score.max(axis=1)
-        if conf_matrix.shape[0] == 2:
-            # Boolean metrics
+        if conf_matrix.shape[0] == 2 and y_test.iloc[:, 0].dtype != np.bool:
+            y_b_test, _ = \
+                value_to_bool(y_test.iloc[:, 0].copy(), y_pred.copy())
+        else:
+            y_b_test = y_test
 
-            if y_test.iloc[:, 0].dtype != np.bool:
-                y_b_test, y_b_pred = \
-                    value_to_bool(y_test.iloc[:, 0].copy(), y_pred.copy())
-            else:
-                y_b_test = y_test
+        if conf_matrix.shape[0] == 2:
             fpr, tpr, _ = mtr.roc_curve(y_b_test, y_b_score)
             score.setdefault("ROC", []).append([fpr.tolist(), tpr.tolist()])
             score.setdefault("AUC", []).append(mtr.auc(fpr, tpr))
-            score.setdefault("kappa", []).append(mtr.cohen_kappa_score(y_test,
-                                                                       y_pred))
-            score.setdefault("accuracy", []).append(mtr.accuracy_score(y_test,
-                                                                       y_pred))
             score.setdefault("f1_score", []).append(mtr.f1_score(y_test,
                                                                  y_pred))
+        else:
+            score.setdefault("AUC", [])\
+                .append(multiclass_roc_auc_score(y_test, y_pred))
+            score.setdefault("f1_score", [])\
+                .append(mtr.f1_score(y_test, y_pred, average="macro"))
+
+        score.setdefault("kappa", []).append(mtr.cohen_kappa_score(y_test,
+                                                                   y_pred))
+        score.setdefault("accuracy", []).append(mtr.accuracy_score(y_test,
+                                                                   y_pred))
 
     return score
 
@@ -84,3 +91,12 @@ def regression_metrics(y_test_param, y_pred_param):
             append(mtr.mean_absolute_error(y_test, y_pred))
 
     return score
+
+
+def multiclass_roc_auc_score(y_test, y_pred, average="macro"):
+    lb = LabelBinarizer()
+    lb.fit(y_test)
+    y_test = lb.transform(y_test)
+    y_pred = lb.transform(y_pred)
+
+    return mtr.roc_auc_score(y_test, y_pred, average=average)
