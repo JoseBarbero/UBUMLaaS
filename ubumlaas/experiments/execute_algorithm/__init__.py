@@ -20,14 +20,6 @@ class Abstract_execute(ABC):
         self.configuration = Abstract_execute.__convert_to_dict(experiment["alg"]["config"])
         self.experiment_configuration = Abstract_execute.__convert_to_dict(experiment["exp_config"])
 
-        #debug
-        import copy
-        exp = copy.deepcopy(experiment)
-        exp["alg_config"]=self.algorithm_configuration
-        exp["alg"]["config"] = self.configuration
-        exp["exp_config"] = self.experiment_configuration
-        print(json.dumps(exp, indent = 4))
-
     @staticmethod
     def __convert_to_dict(possible_json_str):
         """Convert to dictionary
