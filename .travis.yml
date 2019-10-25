@@ -7,6 +7,9 @@ matrix:
         python: 3.7
         node_js: 10
 
+git:
+  depth: 3
+
 addons:
   chrome: stable
 
@@ -14,16 +17,15 @@ services:
   - redis-server
   - xvfb
 
-git:
-  depth: 3
-
 install:
   - cd $TRAVIS_BUILD_DIR
   - pip install -r requirements.txt
   - wget http://mirror.jkanetwork.com/Datasets/data.sqlite -O ./ubumlaas/data.sqlite
   - wget http://mirror.jkanetwork.com/Datasets/ubumlaas.tar -O /tmp/ubumlaas.tar
   - mkdir -p $TRAVIS_BUILD_DIR/ubumlaas/datasets/ubumlaas
+  - mkdir -p $TRAVIS_BUILD_DIR/test/datasets
   - tar -xvf /tmp/ubumlaas.tar -C $TRAVIS_BUILD_DIR/ubumlaas/datasets/ubumlaas
+  - cp $TRAVIS_BUILD_DIR/ubumlaas/datasets/ubumlaas/* $TRAVIS_BUILD_DIR/test/datasets
   - npm install -g chromedriver
 
 before_script:
@@ -37,3 +39,4 @@ before_script:
 script:
   - python tests.py
   - python -m pytest -p no:warning test/test_selenium.py
+  - python -m unittest discover test/ 

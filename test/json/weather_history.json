@@ -1,0 +1,99 @@
+{
+    "id": 117,
+    "idu": 3,
+    "alg": {
+        "id": 7,
+        "alg_name": "weka.classifiers.meta.RotationForest",
+        "web_name": "Rotation Forest",
+        "alg_typ": "Mixed",
+        "config": {
+            "number_or_size": {
+                "type": "boolean",
+                "default": false,
+                "help": "Whether min_size_group and max_size_group refer to the number of groups or their size.",
+                "command": "-N"
+            },
+            "min_size_group": {
+                "type": "integer",
+                "default": 3,
+                "help": "Minimum size of a group of attributes: if numberOfGroups is true, the minimum number of groups.",
+                "min": 1,
+                "max": 10000000000000000,
+                "command": "-G"
+            },
+            "max_size_group": {
+                "type": "integer",
+                "default": 3,
+                "help": "Maximum size of a group of attributes: if numberOfGroups is true, the maximum number of groups.",
+                "min": 1,
+                "max": 10000000000000000,
+                "command": "-H"
+            },
+            "perc_remove": {
+                "type": "integer",
+                "default": 50,
+                "help": "Percentage of instances to be removed.",
+                "min": 1,
+                "max": 100,
+                "command": "-P"
+            },
+            "num_iter": {
+                "type": "integer",
+                "default": 10,
+                "help": " Number of iterations.",
+                "min": 1,
+                "max": 10000000000000000,
+                "command": "-I"
+            },
+            "debug_mode": {
+                "type": "boolean",
+                "default": false,
+                "help": "If set, classifier is run in debug mode and may output additional info to the console.",
+                "command": "-D"
+            },
+            "base_estimator": {
+                "type": "ensemble",
+                "default": "weka.classifiers.trees.J48",
+                "help": "Full name of base classifier. (default: weka.classifiers.trees.J48)",
+                "command": "-W"
+            }
+        },
+        "lib": "weka"
+    },
+    "alg_config": {
+        "number_or_size": false,
+        "min_size_group": 3,
+        "max_size_group": 3,
+        "perc_remove": 50,
+        "num_iter": 10,
+        "debug_mode": false,
+        "base_estimator": {
+            "alg_name": "weka.classifiers.functions.LinearRegression",
+            "parameters": {
+                "n_selection_method": "0",
+                "no_try_elim_colinear_attr": false,
+                "ridge": 1e-08
+            }
+        }
+    },
+    "exp_config": {
+        "mode": "split",
+        "train_partition": 70,
+        "target": [
+            "Pressure (millibars)"
+        ],
+        "columns": [
+            "Temperature (C)",
+            "Apparent Temperature (C)",
+            "Humidity",
+            "Wind Speed (km/h)",
+            "Wind Bearing (degrees)",
+            "Visibility (km)",
+            "Loud Cover"
+        ]
+    },
+    "data": "weatherHistory.csv",
+    "result": null,
+    "starttime": 1571928433.7750382,
+    "endtime": null
+}

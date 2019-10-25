@@ -9,9 +9,7 @@ import sklearn.neighbors
 import sklearn.model_selection
 import sklearn.preprocessing
 import sklearn.multiclass
-from ubumlaas.experiments.algorithm.metrics import \
-    (classification_metrics, multiclassication_metrics,
-     regression_metrics)
+from ubumlaas.experiments.algorithm.metrics import calculate_metrics
 
 from ubumlaas import create_app
 import pandas as pd
@@ -90,12 +88,7 @@ def task_skeleton(experiment, current_user):
         if exp_config["mode"] == "cross" or exp_config["train_partition"] < 100:
 
             typ = execution_lib.algorithm_type
-            if typ == "Regression" or typ == "MultiRegression":
-                score = regression_metrics(y_test, y_pred)
-            elif typ == "Classification":
-                score = classification_metrics(y_test, y_pred, y_score)
-            elif typ == "MultiClassification":
-                score = multiclassication_metrics(y_test, y_pred)
+            score = calculate_metrics(typ, y_test, y_pred, y_score)
         result = json.dumps(score)
         state = 1
     except Exception as ex:

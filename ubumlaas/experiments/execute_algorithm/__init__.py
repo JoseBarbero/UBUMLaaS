@@ -16,10 +16,25 @@ class Abstract_execute(ABC):
         """
         self.algorithm_name = experiment["alg"]["alg_name"]  # for example: weka.classification.trees.J48
         self.algorithm_type = Abstract_execute._know_type(experiment)  # classification, reggression or mixed
-        self.algorithm_configuration = json.loads(experiment["alg_config"])  # configuration algorithm
-        self.configuration = json.loads(experiment["alg"]["config"])
-        self.experiment_configuration = json.loads(experiment["exp_config"])
+        self.algorithm_configuration = Abstract_execute.__convert_to_dict(experiment["alg_config"])  # configuration algorithm
+        self.configuration = Abstract_execute.__convert_to_dict(experiment["alg"]["config"])
+        self.experiment_configuration = Abstract_execute.__convert_to_dict(experiment["exp_config"])
 
+        #debug
+        import copy
+        exp = copy.deepcopy(experiment)
+        exp["alg_config"]=self.algorithm_configuration
+        exp["alg"]["config"] = self.configuration
+        exp["exp_config"] = self.experiment_configuration
+        print(json.dumps(exp, indent = 4))
+
+    @staticmethod
+    def __convert_to_dict(possible_json_str):
+        """Convert to dictionary
+        """
+        if type(possible_json_str) != dict:
+            possible_json_str = json.loads(possible_json_str)
+        return possible_json_str
 
     @abstractmethod
     def create_model(self):
