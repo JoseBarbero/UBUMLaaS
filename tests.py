@@ -11,12 +11,15 @@ if __name__ == "__main__":
                 create_app("subprocess")
                 jvm.start(packages=True)
                 filenames = glob.glob("test/json/*.json")
-                
+                results = []
                 for filename in filenames:
                         print("\n\n\nTesting:", filename)
                         suite = unittest.TestSuite()
                         suite.addTest(ParametrizedTestCase.parametrize(ExecuteLibsTest, param = filename))
-                        unittest.TextTestRunner(verbosity=2, failfast=True).run(suite)
+                        result = unittest.TextTestRunner(verbosity=2, failfast=True).run(suite)
+                        results.append(result.wasSuccessful())
         finally:
         
                 jvm.stop()
+        if False in results:
+                exit(1)
