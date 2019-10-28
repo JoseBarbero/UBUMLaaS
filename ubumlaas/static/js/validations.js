@@ -16,6 +16,10 @@ $("document").ready(function(){
      verify_all();
 });
 
+/**
+ * Verify if experiments is configured correctly.
+ * If any verification failed submit button will be disables.
+ */
 function verify_all(){
     submit_experiment.attr("disabled",true);
     let invalidate = [];
@@ -40,21 +44,48 @@ function verify_all(){
     }
 }
 
+/**
+ * Add input widget to a list.
+ * 
+ * @param {list} elements_list list of input widgets 
+ * @param {list} feedback_list list of feedbacks of input widgets
+ * @param {html node} element input widget
+ * @param {hmlt node} feedback feedback of input widget
+ */
 function _add(elements_list, feedback_list, element, feedback){
     elements_list.push(element);
     feedback_list.push(feedback);
 }
 
+/**
+ * Show feedback of invalid inputs.
+ * 
+ * @param {list} input list of inputs to feedback as invalid.
+ * @param {list} label list of labels to feedback as invalid.
+ */
 function _appear(input, label){
     input.addClass('is-invalid')
     label.css("display","")
 }
 
+/**
+ * Set inputs as valid.
+ * 
+ * @param {list} input list of inputs to feedback as valid.
+ * @param {list} label list of labels to feedback as valid.
+ */
 function _disappear(input, label){
     input.removeClass('is-invalid')
     label.css("display","none")
 }
 
+/**
+ * Discriminator of funtions between show or unshow validation feedbacks.
+ * 
+ * @param {list} input_list list of input widgets
+ * @param {list} label_list list of input feedbacks
+ * @param {boolean} opt true if valid, false if not. 
+ */
 function _validate_or_invalidate(input_list, label_list, opt){
     for(let i = 0; i < input_list.length; i++){
         if(opt)

@@ -1,8 +1,17 @@
+/**
+ * Toggle visibility of input and span field
+ * 
+ * @param {string} value 
+ * @param {string} span 
+ */
 function toggle_click(value,span){
     $("#"+span).toggle("slow");
     $("#"+value).toggle("slow");
 }
 
+/**
+ * Boostrap grid adaptation for multiples ensembles levels
+ */
 function beautify_alg_config(){
     let children = $(config_fieldset.children()[0]).children();
     let offset = 0;
@@ -29,6 +38,12 @@ function beautify_alg_config(){
     });
 }
 
+/**
+ * Generate a name of classifier 
+ * 
+ * @param {int} level 
+ * @return {jquery node} 
+ */
 function name_of_base_clasifier(level){
     let basename = get_basename("base_estimator", level-1)
     if($("#"+basename+"_title").length == 0){
@@ -91,11 +106,17 @@ function clean_levels(base_level){
     }
 }
 
-function give_me_activator(content, i){
-    let div = $("<div></div>",{class: "row", id: i+"_div"});
-    let beauty_switch = $("<div></div>",{class: "material-switch pull-right col-2", id: i+"_beauty"});
-    let lbl = $("<label id=\""+i+"_activator_label\" for=\""+i+"_activator"+"\" onClick=\"change_validate('"+i+"')\" class=\"badge-danger\"></label>");
-    let activator = $("<input/>", {type: "checkbox", id: i+"_activator", checked: "checked"});
+/**
+ * Generate the activator for numeric inputs.
+ * 
+ * @param {jquery node} content numeric field
+ * @param {string} identifier argument id
+ */
+function give_me_activator(content, identifier){
+    let div = $("<div></div>",{class: "row", id: identifier+"_div"});
+    let beauty_switch = $("<div></div>",{class: "material-switch pull-right col-2", id: identifier+"_beauty"});
+    let lbl = $("<label id=\""+identifier+"_activator_label\" for=\""+identifier+"_activator"+"\" onClick=\"change_validate('"+identifier+"')\" class=\"badge-danger\"></label>");
+    let activator = $("<input/>", {type: "checkbox", id: identifier+"_activator", checked: "checked"});
     beauty_switch.append(activator);
     beauty_switch.append(lbl);
     div.append(content);
@@ -104,6 +125,12 @@ function give_me_activator(content, i){
     return content;
 }
 
+/**
+ * Get the base configuration of algorithm
+ * 
+ * @param {string} alg_name complete algorithm name
+ * @param {int} level level of ensemble
+ */
 function get_config_form(alg_name=null, level=0){
     let name_prefix = "";
     if (level > 0){
@@ -147,6 +174,12 @@ function convertExponentialToDecimal(exponentialNumber){
     }
 }
 
+/**
+ * Load the next algorithm in ensemble chain
+ * 
+ * @param {string} name identifier of field where is the algorithm name
+ * @param {int} level level of the ensemble
+ */
 function load_next_ensemble(name, level){
     let alg_name = $("#"+name+"_value").val();
     load_new_ensemble(alg_name, level);

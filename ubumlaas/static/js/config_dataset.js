@@ -1,5 +1,13 @@
+/**
+ * Possible values of multitarget algorithms
+ */
 const MULTITARGET = ["MultiClassification", "MultiRegression"];
 
+/**
+ * It guarantees only one target if algorithms is not MULTITARGET 
+ * 
+ * @param {string} target identifier of target selected 
+ */
 function only_one_target(target){
     let typ = $("#alg_typ").val();
     if (!MULTITARGET.includes(typ)){
@@ -17,6 +25,12 @@ function only_one_target(target){
     }
 }
 
+/**
+ * It guarantee than column selected as target cannot be use, and vice versa.
+ * 
+ * @param {string} identifier of column 
+ * @param {string} mode value between target or use
+ */
 function target_or_use(identifier, mode){
     let id = identifier.split("col")[1];
     let use = $("#"+identifier+"_use");
@@ -44,9 +58,13 @@ function target_or_use(identifier, mode){
     }
 }
 
+/**
+ * Get the final configuration of the dataset.
+ * 
+ * @return {object} {mode:"cross|split", target:["column names"], columns:["column names"]}
+ */
 function get_dataset_config(){
-    let typ = $("#alg_typ").val();
-    dataset_config = {}
+    let dataset_config = {}
     let mode = $("input[type=radio][name=experiment_mode]:checked").val();
     dataset_config.mode = mode;
     switch(mode){

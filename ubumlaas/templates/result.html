@@ -228,7 +228,10 @@
             });
         });
     {% endif %}
-
+    
+    /**
+     *  Get simetric function swapping x and y axis.
+     */
     function x_y_convert(xy){
         let data = [];
         for(let i=0; i<xy[0].length; i++){
@@ -236,6 +239,9 @@
         }
         return data;
     }
+    /**
+     * Convert to rgba from hexadecimal color.
+     */
     function convertHex(hex,opacity){
         hex = hex.replace('#','');
         r = parseInt(hex.substring(0,2), 16);
@@ -246,6 +252,9 @@
         return result;
     }
 
+    /**
+     * Get series to heatmap
+     */
     function get_series(matrix){
         let data = [];
         for(let i=matrix.length-1; i>=0; i--){
@@ -254,6 +263,9 @@
         return data;
     }
     
+    /**
+     * Toggle display of identifier.
+     */ 
     function toggle_estimator(id_){
         $("#"+id_).toggle("slow");
     }
