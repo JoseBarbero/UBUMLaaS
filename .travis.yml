@@ -20,14 +20,14 @@ services:
 install:
   - cd $TRAVIS_BUILD_DIR
   - pip install -r requirements.txt
-  - wget http://mirror.jkanetwork.com/Datasets/data.sqlite -O ./ubumlaas/data.sqlite
+  - wget http://mirror.jkanetwork.com/Datasets/data.sqlite -O ./ubumlaas/data.sqlite.tgz
+  - tar -xvf ./ubumlaas/data.sqlite.tgz
   - wget http://mirror.jkanetwork.com/Datasets/ubumlaas.tar -O /tmp/ubumlaas.tar
   - mkdir -p $TRAVIS_BUILD_DIR/ubumlaas/datasets/{ubumlaas,ubumlaas2}
   - mkdir -p $TRAVIS_BUILD_DIR/test/datasets
   - tar -xvf /tmp/ubumlaas.tar -C $TRAVIS_BUILD_DIR/ubumlaas/datasets/ubumlaas
   - cp $TRAVIS_BUILD_DIR/ubumlaas/datasets/ubumlaas/* $TRAVIS_BUILD_DIR/test/datasets
   - cp $TRAVIS_BUILD_DIR/ubumlaas/datasets/ubumlaas/* $TRAVIS_BUILD_DIR/ubumlaas/datasets/ubumlaas2
-  - ls $TRAVIS_BUILD_DIR/ubumlaas/datasets/ubumlaas2 # Check
   - npm install -g chromedriver
 
 before_script:
