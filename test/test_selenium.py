@@ -21,7 +21,7 @@ class TestDefaultSuite():
         self.driver.set_window_size(1536, 824)
         self.driver.find_element(By.LINK_TEXT, "Login").click()
         self.driver.find_element(By.ID, "email").click()
-        self.driver.find_element(By.ID, "email").send_keys("ubumlaas@gmail.com")
+        self.driver.find_element(By.ID, "email").send_keys(usermail)
         self.driver.find_element(By.ID, "password").send_keys("thisIsATest1!")
         self.driver.find_element(By.ID, "password").send_keys(Keys.ENTER)
 
@@ -57,12 +57,12 @@ class TestDefaultSuite():
         assert self.driver.find_element(By.CSS_SELECTOR, ".alert").text == "Wrong username or password\n×"
 
     def test_22LoginAndLogoutCorrect(self):
-        self.login()
+        self.login("ubumlaas@gmail.com")
         assert self.driver.find_element(By.LINK_TEXT, "Logged in as ubumlaas").text == "Logged in as ubumlaas"
         self.logout()
 
     def test_31DatasetLoad(self):
-        self.login()
+        self.login("ubumlaas@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
         assert self.driver.find_element(By.CSS_SELECTOR, ".jumbotron > .text-center").text == "Configure experiment"
         self.driver.execute_script("$('#data').val('breastCancer.csv');")
@@ -84,7 +84,7 @@ class TestDefaultSuite():
         self.logout()  
 
     def test_321DatasetUseNormal(self):
-        self.login()
+        self.login("ubumlaas@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
         self.driver.execute_script("$('#data').val('breastCancer.csv');")
         self.driver.execute_script("$('#data').change();")
@@ -97,7 +97,7 @@ class TestDefaultSuite():
         self.logout()
 
     def test_322DatasetUseReduced(self):
-        self.login()
+        self.login("ubumlaas@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
         self.driver.find_element(By.ID, "data_feedback").click()
         self.driver.execute_script("$('#data').val('breastCancer.csv');")
@@ -112,7 +112,7 @@ class TestDefaultSuite():
         self.logout()
 
     def test_331DatasetNotUseNormal(self):
-        self.login()
+        self.login("ubumlaas@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
         self.driver.execute_script("$('#data').val('breastCancer.csv');")
         self.driver.execute_script("$('#data').change();")
@@ -123,7 +123,7 @@ class TestDefaultSuite():
         self.logout()
 
     def test_332DatasetNotUseReduced(self):
-        self.login()
+        self.login("ubumlaas@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
         self.driver.execute_script("$('#data').val('breastCancer.csv');")
         self.driver.execute_script("$('#data').change();")
@@ -139,7 +139,7 @@ class TestDefaultSuite():
         self.logout()
 
     def test_341DatasetNoTargetNormal(self):
-        self.login()
+        self.login("ubumlaas@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
         self.driver.execute_script("$('#data').val('breastCancer.csv');")
         self.driver.execute_script("$('#data').change();")
@@ -155,7 +155,7 @@ class TestDefaultSuite():
         self.logout()
 
     def test_342DatasetNoTargetReduced(self):
-        self.login()
+        self.login("ubumlaas@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
         self.driver.execute_script("$('#data').val('breastCancer.csv');")
         self.driver.execute_script("$('#data').change();")
@@ -171,7 +171,7 @@ class TestDefaultSuite():
         self.logout()
 
     def test_351DatasetNoTargetUseNormal(self):
-        self.login()
+        self.login("ubumlaas@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
         self.driver.execute_script("$('#data').val('breastCancer.csv');")
         self.driver.execute_script("$('#data').change();")
@@ -187,7 +187,7 @@ class TestDefaultSuite():
         self.logout()
 
     def test_352DatasetNoTargetUseReduced(self):
-        self.login()
+        self.login("ubumlaas@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
         self.driver.execute_script("$('#data').val('breastCancer.csv');")
         self.driver.execute_script("$('#data').change();")
@@ -205,7 +205,7 @@ class TestDefaultSuite():
         self.logout()
 
     def test_361DatasetChangeTargetNormal(self):
-        self.login()
+        self.login("ubumlaas@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
         self.driver.execute_script("$('#data').val('breastCancer.csv');")
         self.driver.execute_script("$('#data').change();")
@@ -227,7 +227,7 @@ class TestDefaultSuite():
         self.logout()
 
     def test_362DatasetChangeTargetReduced(self):
-        self.login()
+        self.login("ubumlaas@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
         self.driver.find_element(By.ID, "data").click()
         self.driver.execute_script("$('#data').val('breastCancer.csv');")
@@ -252,7 +252,7 @@ class TestDefaultSuite():
         self.logout()
 
     def test_37DatasetNoMultiLabelTarget(self):
-        self.login()
+        self.login("ubumlaas@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
         self.driver.execute_script("$('#data').val('breastCancer.csv');")
         self.driver.execute_script("$('#data').change();")
@@ -269,7 +269,7 @@ class TestDefaultSuite():
         self.logout()
 
     def test_381DatasetMultiLabelTargetNormal(self):
-        self.login()
+        self.login("ubumlaas@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
         self.driver.execute_script("$('#alg_typ').val(\"MultiClassification\")")
         self.driver.execute_script("$('#alg_typ').change();")
@@ -296,7 +296,7 @@ class TestDefaultSuite():
         self.logout()
 
     def test_382DatasetMultiLabelTargetReduced(self):
-        self.login()
+        self.login("ubumlaas@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
 
         self.driver.execute_script("$('#alg_typ').val(\"MultiClassification\")")
@@ -326,7 +326,7 @@ class TestDefaultSuite():
         self.logout()
 
     def test_39DatasetFromMultiLabelToMonoLabel(self):
-        self.login()
+        self.login("ubumlaas@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
 
         self.driver.execute_script("$('#alg_typ').val(\"MultiClassification\")")
@@ -364,7 +364,7 @@ class TestDefaultSuite():
         self.logout()
 
     def test_4TrainTextCrossvalidation(self):
-        self.login()
+        self.login("ubumlaas@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
         assert self.driver.find_element(By.CSS_SELECTOR, "#train_test_div > .form-control-label").text == "Train/Test partition"
         self.driver.find_element(By.CSS_SELECTOR, ".ml-2 > span").click()
@@ -372,7 +372,7 @@ class TestDefaultSuite():
         self.logout()
 
     def test_51Algorithm(self):
-        self.login()
+        self.login("ubumlaas@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
         self.driver.execute_script("$('#alg_typ').val(\"Classification\");")
         self.driver.execute_script("$('#alg_typ').change();")
@@ -389,7 +389,7 @@ class TestDefaultSuite():
         self.logout()
 
     def test_52Algorithm2(self):
-        self.login()
+        self.login("ubumlaas@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
         self.driver.execute_script("$('#alg_typ').val(\"Classification\");")
         self.driver.execute_script("$('#alg_typ').change();")
@@ -418,8 +418,28 @@ class TestDefaultSuite():
         assert len(elements) == 0
         self.logout()
 
-    def test_6NoExperiments(self):
-        self.login()
+    def test_61NoExperiments(self):
+        self.login("ubumlaas@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "Logged in as ubumlaas").click()
         assert "No data available in table" in self.driver.find_element(By.CSS_SELECTOR, "#exper > tbody > tr > td").text
         self.logout()
+
+    def test_62Experiments(self):
+        self.login("ubumlaas2@gmail.com")
+        self.driver.find_element(By.LINK_TEXT, "Logged in as ubumlaas2").click()
+        assert "sklearn.neighbors.KNeighborsClassifier" in self.driver.find_element(By.CSS_SELECTOR, "#exper > tbody > tr > td:nth-child(3)").text
+        self.logout()
+
+    def test_63ExperimentInfo(self):
+        self.login("ubumlaas2@gmail.com")
+        self.driver.find_element(By.LINK_TEXT, "Logged in as ubumlaas2").click()
+        self.driver.find_element(By.LINK_TEXT, "See").click()
+        assert "sklearn.neighbors.KNeighborsClassifier" in self.driver.find_element(By.CSS_SELECTOR, "body > div > div > div > div:nth-child(1) > div > div:nth-child(3) > p.col-md-7").text
+        self.logout()
+
+    def test_7DatasetsProfile(self):
+        self.login("ubumlaas2@gmail.com")
+        self.driver.find_element(By.LINK_TEXT, "Logged in as ubumlaas2").click()
+        assert "breastCancer.csv" in self.driver.find_element(By.CSS_SELECTOR, "#dataset_list > tbody > tr:nth-child(1) > td:nth-child(2)").text
+        self.logout()
+        #dataset_list > tbody > tr:nth-child(1) > td:nth-child(2)
