@@ -38,10 +38,12 @@ class ExecuteLibsTest(ParametrizedTestCase):
                 X, y = self.execute.open_dataset("test/datasets/",self.experiment["data"])
                 self.assertEqual(X.shape[1], len(self.execute.experiment_configuration["columns"]))
                 self.assertEqual(y.shape[1], len(self.execute.experiment_configuration["target"]))
+                self.execute.find_y_uniques(y)
                 return X, y
 
         def test_create_model(self):
                 model = self.execute.create_model()
+                
                 return model
 
         def test_train_test_split(self, train_size = 70):
@@ -64,11 +66,12 @@ class ExecuteLibsTest(ParametrizedTestCase):
                 return kfold
 
         def test_fit_and_predict(self):
-                model = self.test_create_model()
+                model = self.execute.create_model()
                 if self.execute.experiment_configuration["mode"] == "split":
                         X_train, X_test, y_train, y_test = self.test_train_test_split(self.execute.experiment_configuration["train_partition"])
                 else:
                         X_train, X_test, y_train, y_test = self.test_train_test_split()
+                
                 self.execute.train(model, X_train, y_train)
                 y_pred, y_score = self.execute.predict(model, X_test)
                 list_y_pred = [y_pred]
