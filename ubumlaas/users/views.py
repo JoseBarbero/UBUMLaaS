@@ -27,6 +27,8 @@ def login():
             if user is not None and user.check_password(form.password.data):
                 login_user(user)
                 go_to = url_for("core.index")
+            else:
+                flash("Wrong username or password") 
         else:
             flash("Wrong username or password")
         return redirect(go_to)
