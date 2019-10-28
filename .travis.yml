@@ -20,7 +20,7 @@ services:
 install:
   - cd $TRAVIS_BUILD_DIR
   - pip install -r requirements.txt
-  - wget http://mirror.jkanetwork.com/Datasets/data.sqlite -O ./ubumlaas/data.sqlite.tgz
+  - wget http://mirror.jkanetwork.com/Datasets/data.sqlite.tgz -O ./ubumlaas/data.sqlite.tgz
   - tar -xvfz ./ubumlaas/data.sqlite.tgz
   - wget http://mirror.jkanetwork.com/Datasets/ubumlaas.tar -O /tmp/ubumlaas.tar
   - mkdir -p $TRAVIS_BUILD_DIR/ubumlaas/datasets/{ubumlaas,ubumlaas2}
