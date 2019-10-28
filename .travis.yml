@@ -23,7 +23,7 @@ install:
   - cd $TRAVIS_BUILD_DIR
   - pip install -r requirements.txt
   - wget http://mirror.jkanetwork.com/Datasets/data.sqlite.tgz -O $TRAVIS_BUILD_DIR/ubumlaas/data.sqlite.tgz
-  - tar -xvzf $TRAVIS_BUILD_DIR/ubumlaas/data.sqlite.tgz -O $TRAVIS_BUILD_DIR/ubumlaas
+  - tar -xvzf $TRAVIS_BUILD_DIR/ubumlaas/data.sqlite.tgz -C $TRAVIS_BUILD_DIR/ubumlaas
   - wget http://mirror.jkanetwork.com/Datasets/ubumlaas.tar -O /tmp/ubumlaas.tar
   - mkdir -p $TRAVIS_BUILD_DIR/ubumlaas/datasets/{ubumlaas,ubumlaas2}
   - mkdir -p $TRAVIS_BUILD_DIR/test/datasets
