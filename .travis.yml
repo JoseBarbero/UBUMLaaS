@@ -27,6 +27,7 @@ install:
   - tar -xvf /tmp/ubumlaas.tar -C $TRAVIS_BUILD_DIR/ubumlaas/datasets/ubumlaas
   - cp $TRAVIS_BUILD_DIR/ubumlaas/datasets/ubumlaas/* $TRAVIS_BUILD_DIR/test/datasets
   - cp $TRAVIS_BUILD_DIR/ubumlaas/datasets/ubumlaas/* $TRAVIS_BUILD_DIR/ubumlaas/datasets/ubumlaas2
+  - ls $TRAVIS_BUILD_DIR/ubumlaas/datasets/ubumlaas2 # Check
   - npm install -g chromedriver
 
 before_script:
