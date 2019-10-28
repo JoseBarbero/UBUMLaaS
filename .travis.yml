@@ -6,6 +6,8 @@ matrix:
         language: python
         python: 3.7
         node_js: 10
+        jdk:
+          - openjkd8
 
 git:
   depth: 3
@@ -41,4 +43,4 @@ before_script:
 script:
   - python tests.py
   - python -m pytest -p no:warning test/test_selenium.py
-  - python -m unittest discover test/ 
+  - python -m unittest discover test/
