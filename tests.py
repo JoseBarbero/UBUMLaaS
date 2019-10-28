@@ -1,1 +1,22 @@
-import test.test_meka
+from test.test_case.test_execute_algorithm import ExecuteLibsTest, ParametrizedTestCase
+import unittest
+from ubumlaas import create_app
+import glob
+import weka.core.jvm as jvm
+
+
+if __name__ == "__main__":
+        try:
+
+                create_app("subprocess")
+                jvm.start(packages=True)
+                filenames = glob.glob("test/json/*.json")
+                
+                for filename in filenames:
+                        print("\n\n\nTesting:", filename)
+                        suite = unittest.TestSuite()
+                        suite.addTest(ParametrizedTestCase.parametrize(ExecuteLibsTest, param = filename))
+                        unittest.TextTestRunner(verbosity=2, failfast=True).run(suite)
+        finally:
+        
+                jvm.stop()

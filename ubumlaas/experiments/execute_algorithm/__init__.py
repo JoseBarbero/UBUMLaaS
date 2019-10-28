@@ -20,14 +20,6 @@ class Abstract_execute(ABC):
         self.configuration = Abstract_execute.__convert_to_dict(experiment["alg"]["config"])
         self.experiment_configuration = Abstract_execute.__convert_to_dict(experiment["exp_config"])
 
-        #debug
-        import copy
-        exp = copy.deepcopy(experiment)
-        exp["alg_config"]=self.algorithm_configuration
-        exp["alg"]["config"] = self.configuration
-        exp["exp_config"] = self.experiment_configuration
-        print(json.dumps(exp, indent = 4))
-
     @staticmethod
     def __convert_to_dict(possible_json_str):
         """Convert to dictionary
@@ -190,7 +182,7 @@ class Abstract_execute(ABC):
         """
         if exp["alg"]["alg_typ"] == "Mixed":
             from ubumlaas.models import get_algorithm_by_name
-            config = json.loads(exp["alg_config"])
+            config = Abstract_execute.__convert_to_dict(exp["alg_config"])
             for c in config:
                 if type(config[c]) == dict:
                     new_exp = {"alg": get_algorithm_by_name(

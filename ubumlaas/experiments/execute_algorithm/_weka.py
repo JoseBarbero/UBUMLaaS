@@ -61,6 +61,8 @@ class Execute_weka(Abstract_execute):
             if self.y_uniques is not None:
                 options = ["-L", "{}:{}".format(dataframe.shape[1],
                            ",".join(map(str, self.y_uniques)))]
+            if not self.is_classification():
+                options = ["-R", "last"]
             loader = Loader(classname="weka.core.converters.CSVLoader",
                             options=options)
             data = loader.load_file(temp.name)
@@ -167,6 +169,7 @@ class Execute_weka(Abstract_execute):
                             int(model.classify_instance(instance))
                         )for instance in data_test
                       ]
+            
             y_score = model.distributions_for_instances(data_test)
             try:  # Trying to convert to int
                 y_pred = [float(pred) for pred in y_pred]
@@ -176,6 +179,7 @@ class Execute_weka(Abstract_execute):
             y_pred = [model.classify_instance(instance)
                       for instance in data_test
                       ]
+            
         return y_pred, y_score
 
     def close(self):
