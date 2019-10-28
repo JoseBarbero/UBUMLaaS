@@ -114,6 +114,3 @@ class ExecuteLibsTest(ParametrizedTestCase):
                 
                 if os.path.exists(temp_name):
                         os.remove(temp_name)
-                        
-        def test_false(self):
-                self.assertTrue(False)
