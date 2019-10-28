@@ -43,4 +43,3 @@ before_script:
 script:
   - python tests.py
   - python -m pytest -p no:warning test/test_selenium.py
-  - python -m unittest discover test/
