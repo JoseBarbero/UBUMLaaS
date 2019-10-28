@@ -182,7 +182,7 @@ class Abstract_execute(ABC):
         """
         if exp["alg"]["alg_typ"] == "Mixed":
             from ubumlaas.models import get_algorithm_by_name
-            config = json.loads(exp["alg_config"])
+            config = Abstract_execute.__convert_to_dict(exp["alg_config"])
             for c in config:
                 if type(config[c]) == dict:
                     new_exp = {"alg": get_algorithm_by_name(
