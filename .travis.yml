@@ -41,5 +41,5 @@ before_script:
   - sleep 20
 
 script:
-  - python tests.py
+  - python -m test.tests
   - python -m pytest -p no:warning test/test_selenium.py

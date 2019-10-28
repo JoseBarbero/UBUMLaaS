@@ -30,11 +30,18 @@ class ParametrizedTestCase(unittest.TestCase):
 class ExecuteLibsTest(ParametrizedTestCase):
 
         def test_enviroment_variable(self):
+                """Test if exists enviroment variables
+                """
                 self.assertTrue("MEKA_CLASSPATH" in environ, "MEKA_CLASSPATH enviroment variable not found")
                 self.assertTrue("JAVA_HOME" in environ, "JAVA_HOME enviroment variable not found")
                 self.assertTrue("WEKA_HOME" in environ, "WEKA_HOME enviroment variable not found")
 
         def test_open_dataset(self):
+                """Test open dataset for columns and target 
+                
+                Returns:
+                    dataframe, dataframe -- dataframes for columns and target(s)
+                """
                 X, y = self.execute.open_dataset("test/datasets/",self.experiment["data"])
                 self.assertEqual(X.shape[1], len(self.execute.experiment_configuration["columns"]))
                 self.assertEqual(y.shape[1], len(self.execute.experiment_configuration["target"]))
@@ -42,12 +49,24 @@ class ExecuteLibsTest(ParametrizedTestCase):
                 return X, y
 
         def test_create_model(self):
+                """Test create model with the configuration paramaeter
+                
+                Returns:
+                    [object] -- model
+                """
                 model = self.execute.create_model()
                 
                 return model
 
         def test_train_test_split(self, train_size = 70):
-
+                """Create train test split with the dataset
+                
+                Keyword Arguments:
+                    train_size {int} -- train size (default: {70})
+                
+                Returns:
+                    [dataframe] -- X_train, X_test, y_train, y_test
+                """
                 
                 X, y = self.test_open_dataset()
 
@@ -59,13 +78,23 @@ class ExecuteLibsTest(ParametrizedTestCase):
                 return X_train, X_test, y_train, y_test
 
         def test_kfold(self, n_splits = 3):
+                """Create kfolds 
                 
+                Keyword Arguments:
+                    n_splits {int} --number of splits (default: {3})
+                
+                Returns:
+                    [list of tuples] -- list of tuples with X_train, X_test, y_train, y_test in every tuple
+                """
+
                 X, y = self.test_open_dataset()
                 kfold = self.execute.generate_KFolds(X, y, n_splits=n_splits)
                 self.assertEqual(len(kfold), n_splits)
                 return kfold
 
-        def test_fit_and_predict(self):
+        def test_fit_and_predict_split(self):
+                """Train model and prediction with train_test_split
+                """
                 model = self.execute.create_model()
                 if self.execute.experiment_configuration["mode"] == "split":
                         X_train, X_test, y_train, y_test = self.test_train_test_split(self.execute.experiment_configuration["train_partition"])
@@ -83,6 +112,8 @@ class ExecuteLibsTest(ParametrizedTestCase):
                 self.assertEqual(len(y_pred), y_test.shape[0])
 
         def test_fit_and_predict_kfold(self):
+                """Train model and prediction with k_folds
+                """
                 list_y_pred = []
                 list_y_score = []
                 list_y_test = []
@@ -102,6 +133,9 @@ class ExecuteLibsTest(ParametrizedTestCase):
                 calculate_metrics(self.execute.algorithm_type, list_y_test,list_y_pred, list_y_score)
 
         def test_serialize_deserialize(self):
+                """Test to serialize and deserialize the model with the same dataset in train and predict
+                """
+
                 X, y = self.test_open_dataset()
                 model = self.test_create_model()
                 with tempfile.NamedTemporaryFile(delete=False) as temp:
