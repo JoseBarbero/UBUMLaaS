@@ -16,7 +16,7 @@ class TestDefaultSuite():
     def teardown_method(self, method):
         self.driver.quit()
 
-    def login(self):
+    def login(self, usermail):
         self.driver.get("http://localhost:5000/")
         self.driver.set_window_size(1536, 824)
         self.driver.find_element(By.LINK_TEXT, "Login").click()
