@@ -30,7 +30,7 @@
         let cod;
         let typ = $("#alg_typ").val();
         if(lis.length > 1 && idb=="target" && !MULTITARGET.includes(typ)){
-            alert("You can't select more than 1 target in no multilabel algorithms.");
+            launch_warning_modal("Only one target", "You can't select more than 1 target in no multilabel algorithms.")
         }else{
             lis.each(function(e){
                 let v = $(lis[e]);

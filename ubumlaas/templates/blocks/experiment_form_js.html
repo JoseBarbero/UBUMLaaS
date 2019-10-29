@@ -91,7 +91,7 @@
                 window.location.replace("{{ url_for('users.profile') }}")
             },
             error: function (result) {
-                alert("Experiment launch error");
+                launch_danger_modal("Experiment launch error", "Check your configuration, something is wrong.")
             }
         });
     });
@@ -110,7 +110,7 @@
                 update_datasets();
             },
             error: function (result) {
-                alert("Upload failed")
+                launch_warning_modal("Upload failed", "The dataset upload failed, try again later or contact with the administratior.")
             },
             cache: false,
             contentType: false,

@@ -71,7 +71,7 @@
                         update_datasets();
                 },
                 error: function (result) {
-                        alert("Upload failed");
+                        launch_warning_modal("Upload failed", "The dataset upload failed, try again later or contact with the administratior.")
                 },
                 cache: false,
                 contentType: false,
@@ -100,7 +100,7 @@
 
         $("form#submit_completed_experiment").submit(function (e) {
                 if(!flag){
-                        alert("You must upload a dataset.");
+                        launch_danger_modal("None dataset uploaded", "You must upload a dataset.")
                         return false;
                 }else{
                         e.preventDefault();
@@ -119,7 +119,7 @@
                                 $("#div_res").html(result);
                         },
                         error: function (result) {
-                                alert("Prediction error");
+                                launch_danger_modal("Prediction error", "Check if your dataset has the same columns which you used in the training.", window.location.reload.bind(window.location))
                                 delete_file();
                         }
                         });
@@ -130,10 +130,7 @@
         function delete_file(){
                 $.ajax({
                         url:"{{ url_for("experiments.delete_file")}}",
-                        type: 'DELETE',
-                        success: function (result){
-                                location.reload();
-                        }
+                        type: 'DELETE'
                 });
         }
 </script>
