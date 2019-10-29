@@ -9,14 +9,23 @@ from selenium.webdriver.common.keys import Keys
 
 class TestDefaultSuite():
     def setup_method(self, method):
+        """Setup test suite.
+        """
         self.driver = webdriver.Chrome()
         self.vars = {}
         self.wait = 0.5
 
     def teardown_method(self, method):
+        """Shut down current test.
+        """
         self.driver.quit()
 
     def login(self, usermail):
+        """Login on with usermail test account.
+        
+        Arguments:
+            usermail {string} -- mail from test account.
+        """
         self.driver.get("http://localhost:5000/")
         self.driver.set_window_size(1536, 824)
         self.driver.find_element(By.LINK_TEXT, "Login").click()
@@ -26,10 +35,20 @@ class TestDefaultSuite():
         self.driver.find_element(By.ID, "password").send_keys(Keys.ENTER)
 
     def logout(self):
+        """Logout and check we have loged out.
+        """
         self.driver.find_element(By.LINK_TEXT, "Logout").click()
         assert self.driver.find_element(By.LINK_TEXT, "Login").text == "Login"
 
     def test_1Register(self):
+        """Test to correct register in the page.
+
+            Steps:
+                1. Click register.
+                2. Complete form.
+                3. Submit form.
+                4. Check for alert with "User registered"
+        """
         self.driver.get("http://localhost:5000/")
         self.driver.set_window_size(1536, 824)
         self.driver.find_element(By.LINK_TEXT, "Register").click()
@@ -46,6 +65,14 @@ class TestDefaultSuite():
         assert self.driver.find_element(By.CSS_SELECTOR, ".alert").text == "User registered.\n×"
 
     def test_21LoginIncorrect(self):
+        """Incorrect login.
+
+            Steps:
+                1. Click on login.
+                2. Complete form with false information.
+                3. Submit form.
+                4. Check alert "Wrong username or password".
+        """
         self.driver.get("http://localhost:5000/")
         self.driver.set_window_size(1536, 824)
         self.driver.find_element(By.LINK_TEXT, "Login").click()
@@ -57,11 +84,26 @@ class TestDefaultSuite():
         assert self.driver.find_element(By.CSS_SELECTOR, ".alert").text == "Wrong username or password\n×"
 
     def test_22LoginAndLogoutCorrect(self):
+        """Correct login and logout.
+
+            Steps:
+                1. Login correctly.
+                2. Check if login ok.
+                3. Logout (and check logout).
+        """
         self.login("ubumlaas@gmail.com")
         assert self.driver.find_element(By.LINK_TEXT, "Logged in as ubumlaas").text == "Logged in as ubumlaas"
         self.logout()
 
     def test_31DatasetLoad(self):
+        """Dataset load correct, for 4 datasets already uploaded.
+
+            Steps:
+                1. Login.
+                2. Click on New Experiment.
+                3. Select and check all datasets uploaded for the user.
+                4. Logout.
+        """
         self.login("ubumlaas@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
         assert self.driver.find_element(By.CSS_SELECTOR, ".jumbotron > .text-center").text == "Configure experiment"
@@ -84,6 +126,16 @@ class TestDefaultSuite():
         self.logout()  
 
     def test_321DatasetUseNormal(self):
+        """Click on use in dataset variable.
+
+            Steps:
+                1. Login.
+                2. Click on New Experiment.
+                3. Select dataset.
+                4. Click on use switch.
+                5. Check if this variable has changed on reduced mode.
+                6. Logout.
+        """
         self.login("ubumlaas@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
         self.driver.execute_script("$('#data').val('breastCancer.csv');")
@@ -97,6 +149,18 @@ class TestDefaultSuite():
         self.logout()
 
     def test_322DatasetUseReduced(self):
+        """Click on use in dataset variable.
+
+            Steps:
+                1. Login.
+                2. Click on New Experiment.
+                3. Select dataset.
+                4. Click on Reduce.
+                5. Change one use variable state to no use. 
+                6. Click on Normal.
+                7. Check if switch of selected variable has changed.
+                8. Logout.
+        """
         self.login("ubumlaas@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
         self.driver.find_element(By.ID, "data_feedback").click()
@@ -112,17 +176,42 @@ class TestDefaultSuite():
         self.logout()
 
     def test_331DatasetNotUseNormal(self):
+        """Click on no use in dataset variable.
+
+            Steps:
+                1. Login.
+                2. Click on New Experiment.
+                3. Select dataset.
+                4. Click on use switch.
+                5. Click on use switch on the same varible, to change from no use to use.
+                6. Check if this variable has not changed on reduced mode.
+                7. Logout.
+        """
         self.login("ubumlaas@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
         self.driver.execute_script("$('#data').val('breastCancer.csv');")
         self.driver.execute_script("$('#data').change();")
         time.sleep(self.wait)
+        self.driver.execute_script("$('#col0_use_label').click();")
+        self.driver.execute_script("$('#col0_use_label').click();")
         self.driver.find_element(By.ID, "reduced_tab-tab").click()
         element = self.driver.find_element(By.ID, "0_opt")
         assert "list-group-item-primary" in element.get_attribute('class').split(" ")
         self.logout()
 
     def test_332DatasetNotUseReduced(self):
+        """Click on no usem, then on use in dataset variable on reduced mode.
+
+            Steps:
+                1. Login.
+                2. Click on New Experiment.
+                3. Select dataset.
+                4. Click on Reduced.
+                5. Change variable to no use then to use again.
+                6. Click on Normal.
+                7. Check if variable switch use is checked.
+                8. Logout.
+        """
         self.login("ubumlaas@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
         self.driver.execute_script("$('#data').val('breastCancer.csv');")
@@ -139,6 +228,18 @@ class TestDefaultSuite():
         self.logout()
 
     def test_341DatasetNoTargetNormal(self):
+        """Click on target in dataset variable.
+
+            Steps:
+                1. Login.
+                2. Click on New Experiment.
+                3. Select dataset.
+                4. Click on target variable, to change to not target.
+                5. Check target is un checked and use is unchecked.
+                6. Click on Reduced.
+                7. Check if variable is on no use mode.
+                8. Logout.
+        """
         self.login("ubumlaas@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
         self.driver.execute_script("$('#data').val('breastCancer.csv');")
@@ -155,6 +256,19 @@ class TestDefaultSuite():
         self.logout()
 
     def test_342DatasetNoTargetReduced(self):
+        """Click on no use on dataset variable on reduced mode.
+
+            Steps:
+                1. Login.
+                2. Click on New Experiment.
+                3. Select dataset.
+                4. Click on Reduced.
+                5. Change target variable to no use.
+                6. Check no use variable.
+                6. Click on Normal.
+                7. Check if variable switch use is not checked.
+                8. Logout.
+        """
         self.login("ubumlaas@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
         self.driver.execute_script("$('#data').val('breastCancer.csv');")
@@ -171,6 +285,18 @@ class TestDefaultSuite():
         self.logout()
 
     def test_351DatasetNoTargetUseNormal(self):
+        """Click on use in dataset target variable.
+
+            Steps:
+                1. Login.
+                2. Click on New Experiment.
+                3. Select dataset.
+                4. Click use switch of target variable.
+                5. Check target is unchecked and use checked.
+                6. Click on Reduced.
+                7. Check if variable is on use mode.
+                8. Logout.
+        """
         self.login("ubumlaas@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
         self.driver.execute_script("$('#data').val('breastCancer.csv');")
@@ -187,6 +313,18 @@ class TestDefaultSuite():
         self.logout()
 
     def test_352DatasetNoTargetUseReduced(self):
+        """Click on use in dataset target variable on reduced mode.
+
+            Steps:
+                1. Login.
+                2. Click on New Experiment.
+                3. Select dataset.
+                4. Click on Reduced.
+                5. Change target variable to use.
+                6. Click on Normal.
+                7. Check if variable switch use is checked and target unchecked.
+                8. Logout.
+        """
         self.login("ubumlaas@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
         self.driver.execute_script("$('#data').val('breastCancer.csv');")
@@ -205,6 +343,18 @@ class TestDefaultSuite():
         self.logout()
 
     def test_361DatasetChangeTargetNormal(self):
+        """Change target variable.
+
+            Steps:
+                1. Login.
+                2. Click on New Experiment.
+                3. Select dataset.
+                4. Click target switch on use variable.
+                5. Check old target variable is now in no use mode and new target on target mode.
+                6. Click on Reduced.
+                7. Check if variable old target is on no use mode and new target on target mode.
+                8. Logout.
+        """
         self.login("ubumlaas@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
         self.driver.execute_script("$('#data').val('breastCancer.csv');")
@@ -227,6 +377,19 @@ class TestDefaultSuite():
         self.logout()
 
     def test_362DatasetChangeTargetReduced(self):
+        """Change target variable on reduced mode.
+
+            Steps:
+                1. Login.
+                2. Click on New Experiment.
+                3. Select dataset.
+                4. Click on Reduced.
+                5. Change variable to target mode.
+                6. Check if variable is on target mode and old target on no use mode.
+                6. Click on Normal.
+                7. Check old target variable is now in no use mode and new target on target mode.
+                8. Logout.
+        """
         self.login("ubumlaas@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
         self.driver.find_element(By.ID, "data").click()
@@ -252,6 +415,17 @@ class TestDefaultSuite():
         self.logout()
 
     def test_37DatasetNoMultiLabelTarget(self):
+        """Change target variable on reduced mode.
+
+            Steps:
+                1. Login.
+                2. Click on New Experiment.
+                3. Select dataset.
+                4. Click on Reduced.
+                5. Select multiple variables and try to set them to target mode.
+                6. Check alert You can't select more than 1 target in no multilabel algorithms.
+                7. Logout.
+        """
         self.login("ubumlaas@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
         self.driver.execute_script("$('#data').val('breastCancer.csv');")
@@ -269,6 +443,19 @@ class TestDefaultSuite():
         self.logout()
 
     def test_381DatasetMultiLabelTargetNormal(self):
+        """Multilabel target variables.
+
+            Steps:
+                1. Login.
+                2. Click on New Experiment.
+                3. Select dataset and cange algorithm type to MultiClassfication.
+                4. Click 6 first variables target switch
+                5. Check target switch checked and use switch unchecked.
+                6. Click on use switch on target variable.
+                7. Click on Reduced.
+                8. Check 6 first variables are on target mode and old target on use mode.
+                9. Logout.
+        """
         self.login("ubumlaas@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
         self.driver.execute_script("$('#alg_typ').val(\"MultiClassification\")")
@@ -296,6 +483,20 @@ class TestDefaultSuite():
         self.logout()
 
     def test_382DatasetMultiLabelTargetReduced(self):
+        """Multilabel target variables reduced mode.
+
+            Steps:
+                1. Login.
+                2. Click on New Experiment.
+                3. Select dataset and cange algorithm type to MultiClassfication.
+                4. Click on Reduced.
+                5. Change target variable to use mode.
+                6. Select first 6 variables and click target mode.
+                7. Check if fist 6 variable mode is target.
+                8. Click Normal.
+                9. Check all first 6 target variables use switch unchecked and target switch checked.
+                10. Logout.
+        """
         self.login("ubumlaas@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
 
@@ -326,6 +527,22 @@ class TestDefaultSuite():
         self.logout()
 
     def test_39DatasetFromMultiLabelToMonoLabel(self):
+        """Change form multilabel to monolabel algorithm type.
+
+            Steps:
+                1. Login.
+                2. Click on New Experiment.
+                3. Select dataset and cange algorithm type to MultiClassfication.
+                4. Click on Reduced.
+                5. Change target variable to use mode.
+                6. Select first 6 variables and click target mode.
+                7. Change to Classification on algorithm type.
+                8. Check 6 first variables are on use mode and last variable is on target mode.
+                9. Click Normal.
+                10. Check all first 6 target variables use switch checked and target switch unchecked.
+                11. Check last variables target switch is checked and use switch unchecked.
+                12. Logout.
+        """
         self.login("ubumlaas@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
 
@@ -364,6 +581,16 @@ class TestDefaultSuite():
         self.logout()
 
     def test_4TrainTextCrossvalidation(self):
+        """Check train-test/cross-validation selector.
+
+            Steps:
+                1. Login.
+                2. Click on New Experiment.
+                3. Check train test is loaded default.
+                4. Change to cross validation.
+                5. Check cross validation is loaded.
+                6. Logout.
+        """
         self.login("ubumlaas@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
         assert self.driver.find_element(By.CSS_SELECTOR, "#train_test_div > .form-control-label").text == "Train/Test partition"
@@ -372,6 +599,17 @@ class TestDefaultSuite():
         self.logout()
 
     def test_51Algorithm(self):
+        """Check algorithm base estimator generator.
+
+            Steps:
+                1. Login.
+                2. Click on New Experiment.
+                3. Select Classification on algorithm type.
+                4. Select Bagging algorithm.
+                5. Select Bagging on base estimator.
+                6. Check title is Bagging.
+                6. Logout.
+        """
         self.login("ubumlaas@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
         self.driver.execute_script("$('#alg_typ').val(\"Classification\");")
@@ -389,6 +627,19 @@ class TestDefaultSuite():
         self.logout()
 
     def test_52Algorithm2(self):
+        """Check algorithm config generation and destruction.
+
+            Steps:
+                1. Login.
+                2. Click on New Experiment.
+                3. Select Classification on algorithm type.
+                4. Select Bagging algorithm.
+                5. Check title is Decision Tree.
+                6. Select Bagging on base estimator on next 3 base estimators and check the title is Decision Tree when Bagging config is loaded.
+                7. On first base estimator change Bagging to KNN.
+                8. Check destruction checking title KNN.
+                9. Logout.
+        """
         self.login("ubumlaas@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
         self.driver.execute_script("$('#alg_typ').val(\"Classification\");")
@@ -419,18 +670,43 @@ class TestDefaultSuite():
         self.logout()
 
     def test_61NoExperiments(self):
+        """Check no experiment on user.
+
+            Steps:
+                1. Login.
+                2. Click on Logged in as ubumlaas.
+                3. Check text "No data available in table on experiment" table.
+                4. Logout.
+        """
         self.login("ubumlaas@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "Logged in as ubumlaas").click()
         assert "No data available in table" in self.driver.find_element(By.CSS_SELECTOR, "#exper > tbody > tr > td").text
         self.logout()
 
     def test_62Experiments(self):
+        """Check experiment on user2.
+
+            Steps:
+                1. Login as ubumlaas2.
+                2. Click on Logged in as ubumlaas2
+                3. Check KNN experiment.
+                4. Logout.
+        """
         self.login("ubumlaas2@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "Logged in as ubumlaas2").click()
         assert "sklearn.neighbors.KNeighborsClassifier" in self.driver.find_element(By.CSS_SELECTOR, "#exper > tbody > tr > td:nth-child(3)").text
         self.logout()
 
     def test_63ExperimentInfo(self):
+        """Check experiment on user2.
+
+            Steps:
+                1. Login as ubumlaas2.
+                2. Click on Logged in as ubumlaas2.
+                3. Click on See.
+                3. Check KNN experiment on algorithm information.
+                4. Logout.
+        """
         self.login("ubumlaas2@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "Logged in as ubumlaas2").click()
         self.driver.find_element(By.LINK_TEXT, "See").click()
@@ -438,6 +714,14 @@ class TestDefaultSuite():
         self.logout()
 
     def test_7DatasetsProfile(self):
+        """Check experiment on user2.
+
+            Steps:
+                1. Login as ubumlaas2.
+                2. Click on Logged in as ubumlaas2.
+                3. Check breastCancer.csv in on Dataset table.
+                4. Logout.
+        """
         self.login("ubumlaas2@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "Logged in as ubumlaas2").click()
         assert "breastCancer.csv" in self.driver.find_element(By.CSS_SELECTOR, "#dataset_list > tbody > tr:nth-child(1) > td:nth-child(2)").text
