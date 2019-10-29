@@ -231,6 +231,9 @@
     
     /**
      *  Get simetric function swapping x and y axis.
+     *
+     * @param {list[][]} xy two dimension list with values for x and y
+     * @return {list[]} xy swaping values 
      */
     function x_y_convert(xy){
         let data = [];
@@ -241,6 +244,9 @@
     }
     /**
      * Convert to rgba from hexadecimal color.
+     *
+     * @param {string} hex hexadecimal form of number
+     * @param {int} opacity value between 0 and 1 which define alpha of color
      */
     function convertHex(hex,opacity){
         hex = hex.replace('#','');
@@ -253,7 +259,10 @@
     }
 
     /**
-     * Get series to heatmap
+     * Get series to heatmap from a matrix
+     *
+     * @param {list[][]} matrix
+     * @return {list[]} list of series object
      */
     function get_series(matrix){
         let data = [];
@@ -265,6 +274,8 @@
     
     /**
      * Toggle display of identifier.
+     * 
+     * @param {string} id_ the identifier of element which is going to toggle display
      */ 
     function toggle_estimator(id_){
         $("#"+id_).toggle("slow");
