@@ -437,9 +437,10 @@ class TestDefaultSuite():
         self.driver.execute_script("$('#sel option[value=\"Epith.c.size\"]').prop('selected',true);")
         self.driver.execute_script("$('#sel option[value=\"Bare.nuclei\"]').prop('selected',true);")
         self.driver.execute_script('$("#target").click()')
-        alert = self.driver.switch_to.alert
-        assert alert.text == "You can't select more than 1 target in no multilabel algorithms."
-        alert.accept()
+        time.sleep(self.wait)
+        assert self.driver.find_element(By.CSS_SELECTOR, "#alert_modal_body > p:nth-child(1)").text == "You can't select more than 1 target in no multilabel algorithms."
+        self.driver.find_element(By.ID, "alert_modal_close").click()
+        time.sleep(self.wait)
         self.logout()
 
     def test_381DatasetMultiLabelTargetNormal(self):
@@ -719,11 +720,11 @@ class TestDefaultSuite():
             Steps:
                 1. Login as ubumlaas2.
                 2. Click on Logged in as ubumlaas2.
-                3. Check breastCancer.csv in on Dataset table.
+                3. Check weatherHistory.csv in on Dataset table.
                 4. Logout.
         """
         self.login("ubumlaas2@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "Logged in as ubumlaas2").click()
-        assert "breastCancer.csv" in self.driver.find_element(By.CSS_SELECTOR, "#dataset_list > tbody > tr:nth-child(1) > td:nth-child(2)").text
+        assert "weatherHistory.csv" in self.driver.find_element(By.CSS_SELECTOR, "#dataset_list > tbody > tr:nth-child(1) > td:nth-child(2)").text
         self.logout()
         #dataset_list > tbody > tr:nth-child(1) > td:nth-child(2)
