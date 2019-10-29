@@ -190,7 +190,7 @@ tertius:1.0.1
 thresholdSelector:1.0.3
 tigerjython:1.0.3
 timeSeriesFilters:1.0.1
-timeseriesForecasting:1.1.26
+timeseriesForecasting:1.1.27
 userClassifier:1.0.3
 vfdr:1.0.0
 vines:1.0.0
