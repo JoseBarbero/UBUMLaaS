@@ -253,16 +253,24 @@
         parameters.forEach(function(i){
             var p = $("#"+prefix+i+"_value");
             if(base_alg_config[i].type != "boolean"){
+                let vlv = $("#"+prefix+i+"_activator");
+                let lbl = $("#"+prefix+i+"_activator_label");
                 if(sel_parameters.includes(i)){
                     if(typeof(alg_config[i]) == "object"){
                         p.val(alg_config[i].alg_name);
                         p.change();
-                        console.log(load_config(false, p.val(), false));
                         add_algorithm_parameters(load_config(false, p.val(), false), alg_config[i].parameters, level+1);
                     }else{
                         p.val(alg_config[i]);
                         p.change();
+                        if(!vlv.prop("checked")){
+                            lbl.click();
+                        }
                     }                    
+                }else{                    
+                    if(vlv.attr("checked")){
+                        lbl.click();
+                    }
                 }
             }else{
                 //p.prop("checked",alg_config[i]);
@@ -291,6 +299,10 @@
             let cross = $($("input[type=radio][name=experiment_mode]")[1]);
             cross.click();
             $("#k_folds").val(exp_config.k_folds);
+        }
+        if(exp_config.random_seed != null){
+            $("#experiment_seed_value").val(exp_config.random_seed);
+            $("#experiment_seed_activator_label").click();
         }
         //Algorithm
         algorithm_selected = experiment.alg;

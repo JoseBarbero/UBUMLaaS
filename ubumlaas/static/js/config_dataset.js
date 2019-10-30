@@ -61,7 +61,7 @@ function target_or_use(identifier, mode){
 /**
  * Get the final configuration of the dataset.
  * 
- * @return {object} {mode:"cross|split", target:["column names"], columns:["column names"]}
+ * @return {object} {mode:"cross|split", target:["column names"], columns:["column names"], random_seed: null|number}
  */
 function get_dataset_config(){
     let dataset_config = {}
@@ -93,5 +93,8 @@ function get_dataset_config(){
         }
     }
     dataset_config.columns = selected_columns;
+
+    random_seed = $("#experiment_seed_value");
+    dataset_config.random_seed = random_seed.attr("disabled") ? null : parseInt(random_seed.val());
     return dataset_config;
 }

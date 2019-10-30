@@ -124,7 +124,7 @@ class Abstract_execute(ABC):
         """
         pass
 
-    def generate_train_test_split(self, X, y, train_size):
+    def generate_train_test_split(self, X, y, train_size, random_state=None):
         """Generate train test split
 
         Arguments:
@@ -139,10 +139,10 @@ class Abstract_execute(ABC):
             return X, [], y, []
 
         return sklearn.model_selection. \
-            train_test_split(X, y, train_size=train_size/100)
+            train_test_split(X, y, train_size=train_size/100,
+                             random_state=self.experiment_configuration.get("random_seed", random_state))
 
-    def generate_KFolds(self, X, y, n_splits=3, shuffle=False,
-                        random_state=None):
+    def generate_KFolds(self, X, y, n_splits=3, shuffle=False, random_state=None):
         """Generate KFolds
 
         Arguments:
@@ -152,14 +152,14 @@ class Abstract_execute(ABC):
         Keyword Arguments:
             n_splits {int} -- Number of folds. Must be at least 2. (default: {3})
             shuffle {bool} -- Whether to shuffle the data before splitting into batches. (default: {False})
-            random_state {int, RandomState instance or None} -- If int, random_state is the seed used by the random number generator; If RandomState instance, random_state is the random number generator; If None, the random number generator is the RandomState instance used by np.random. Used when shuffle == True. (default: {None})
 
         Returns:
             [list] -- list of tuples with X_train, X_test, y_train, y_test in each tuple
         """
         folds = []
 
-        kf = self.kfold_algorithm()(n_splits=n_splits, shuffle=shuffle, random_state=random_state)
+        kf = self.kfold_algorithm()(n_splits=n_splits, shuffle=shuffle,
+                                    random_state=self.experiment_configuration.get("random_seed", random_state))
 
         for train_index, test_index in kf.split(X, y):
 
