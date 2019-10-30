@@ -28,9 +28,9 @@ MLaaS platform based on ADMIRABLE and BEST-AI research groups methods.
     ```bash
     $ cd UBUMLaaS
     ```
-5. Install requeriments
+5. Install requirements
     ```bash
-    $ pip install -r requeriments.txt
+    $ pip install -r requirements.txt
     ```
 6. Create database
     ```bash
