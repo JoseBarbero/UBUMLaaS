@@ -113,7 +113,7 @@ function clean_levels(base_level){
  * @param {string} identifier argument id
  */
 function give_me_activator(content, identifier){
-    let div = $("<div></div>",{class: "row", id: identifier+"_div"});
+    let div = $("<div></div>",{class: "row pl-2 pr-2", id: identifier+"_div"});
     let beauty_switch = $("<div></div>",{class: "material-switch pull-right col-2", id: identifier+"_beauty"});
     let lbl = $("<label id=\""+identifier+"_activator_label\" for=\""+identifier+"_activator"+"\" onClick=\"change_validate('"+identifier+"')\" class=\"badge-danger\"></label>");
     let activator = $("<input/>", {type: "checkbox", id: identifier+"_activator", checked: "checked"});
