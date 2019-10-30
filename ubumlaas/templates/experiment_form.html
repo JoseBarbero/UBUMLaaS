@@ -69,6 +69,19 @@
     </div>
     <fieldset>
         <form class="col-md-6 offset-md-3" id="form_dataset_parameters">
+            <div class="form-group row mt-4">
+                <div class="center float-left">
+                        <label data-toggle="tooltip" title="The random seed for dataset distribution" for="experiment_seed_value">Experiment random seed</label>
+                        <div class="row config_alg" id="experiment_seed_activator_div" style="">
+                            <input type="number" step="1" id="experiment_seed_value" value="0" class="col-10 form-control" disabled="disabled">
+                            <div class="material-switch pull-right col-2" id="experiment_seed_activator_beauty">
+                                <input type="checkbox" id="experiment_seed_activator">
+                                <label id="experiment_seed_activator_label" for="experiment_seed_activator" 
+                                       onclick="change_validate('experiment_seed')" class="badge-danger"></label>
+                            </div>
+                        </div>
+                </div>
+            </div>
             <div class="form-group row mt-4 ">
                 <div class="center float-left">
                     <label class="pure-material-radio mr-2">
