@@ -50,7 +50,7 @@ def task_skeleton(experiment, current_user):
         #Find uniques values in weka and is classification
         execution_lib.find_y_uniques(y)
 
-        #Training with and serialize all dataset
+        #Training and serialize with all dataset
         models_dir = "ubumlaas/models/{}/".format(current_user["username"])
         if not os.path.exists(models_dir):
             os.makedirs(models_dir)
@@ -60,18 +60,18 @@ def task_skeleton(experiment, current_user):
                                        .format(models_dir, experiment['id']))
 
         exp_config = execution_lib.experiment_configuration
+        y_test = None
         y_pred = None
         y_score = None
-        if exp_config["mode"] == "split" and exp_config["train_partition"] < 100:
+        if execution_lib.algorithm_type == "Clustering":
+            y_pred, y_score = execution_lib.predict(model, X)
+        elif exp_config.get("mode") == "split" and exp_config["train_partition"] < 100:
             X_train, X_test, y_train, y_test = execution_lib.generate_train_test_split(X, y, exp_config["train_partition"])
             model = execution_lib.create_model()
             execution_lib.train(model, X_train, y_train)
             y_pred, y_score = execution_lib.predict(model, X_test)
-            y_pred = [y_pred]
-            y_score = [y_score]
-            y_test = [y_test]
 
-        elif exp_config["mode"] == "cross":
+        elif exp_config.get("mode") == "cross":
             y_pred = []
             y_score = []
             y_test = []
@@ -83,14 +83,17 @@ def task_skeleton(experiment, current_user):
                 y_pred.append(y_predk)
                 y_score.append(y_scorek)
                 y_test.append(y_test_kfold)
+        
+            
 
         score = {}
-        if exp_config["mode"] == "cross" or exp_config["train_partition"] < 100:
+        if exp_config["mode"] == "cross" or exp_config["train_partition"] < 100 or execution_lib.algorithm_type == "Clustering":
 
             typ = execution_lib.algorithm_type
-            score = calculate_metrics(typ, y_test, y_pred, y_score)
+            score = calculate_metrics(typ, X, y_test, y_pred, y_score)
         result = json.dumps(score)
         state = 1
+        print(result)
     except Exception as ex:
         # If algoritm failed it save traceback as result
         result = str(ex)

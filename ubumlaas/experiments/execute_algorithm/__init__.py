@@ -107,7 +107,8 @@ class Abstract_execute(ABC):
         data = get_dataframe_from_file(path, filename)
         X = data.loc[:, self.experiment_configuration["columns"]]
         y = None
-        if set(self.experiment_configuration["target"]) <= set(data.columns):
+        #check if targets is not empty and some column from targets are in data column
+        if len(self.experiment_configuration["target"]) !=0 and set(self.experiment_configuration["target"]) <= set(data.columns):
             y = data.loc[:, self.experiment_configuration["target"]]
         return X, y
 

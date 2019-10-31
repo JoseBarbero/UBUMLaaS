@@ -5,16 +5,33 @@ from sklearn.preprocessing import LabelBinarizer
 import pandas as pd
 
 
-def calculate_metrics(typ, y_test, y_pred, y_score):
+def calculate_metrics(typ, X, y_test, y_pred, y_score):
     score={}
+    
+    if not is_list(X):
+        X =[X]
+
+    if not is_list(y_test):
+        y_test = [y_test]
+    
+    if not is_list(y_pred):
+        y_pred = [y_pred]
+
+    if not is_list(y_score):
+        y_score = [y_score]
+
     if typ == "Regression" or typ == "MultiRegression":
         score = regression_metrics(y_test, y_pred)
     elif typ == "Classification":
         score = classification_metrics(y_test, y_pred, y_score)
     elif typ == "MultiClassification":
         score = multiclassication_metrics(y_test, y_pred)
+    elif typ == "Clustering":
+        score = clustering_metrics(X, y_pred)
     return score
 
+def is_list(param):
+    return type(param) == list
 
 def classification_metrics(y_test_param, y_pred_param, y_score_param):
     """Compute classification metrics
@@ -111,3 +128,11 @@ def multiclass_roc_auc_score(y_test, y_pred, average="macro"):
     y_pred = lb.transform(y_pred)
 
     return mtr.roc_auc_score(y_test, y_pred, average=average)
+
+def clustering_metrics(list_X, list_y_pred):
+    score = {}
+    for X, y_pred in zip(list_X, list_y_pred):
+        score.setdefault("calinski_harabasz_score", []).append(mtr.calinski_harabasz_score(X, y_pred))
+        score.setdefault("davies_bouldin_score", []).append(mtr.davies_bouldin_score(X, y_pred))
+        score.setdefault("silhouette_score", []).append(mtr.silhouette_score(X, y_pred))
+    return score
