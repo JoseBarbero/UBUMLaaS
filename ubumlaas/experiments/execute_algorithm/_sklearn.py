@@ -79,7 +79,10 @@ class Execute_sklearn(Abstract_execute):
             X {DataFrame} -- attributes columns
             y {FataFrame} -- targets columns
         """
-        model.fit(X, y.values.ravel())
+        if y is None:
+            model.fit(X)
+        else:
+            model.fit(X, y.values.ravel())
 
     def predict(self, model, X):
         """Predict with X columns values using the model

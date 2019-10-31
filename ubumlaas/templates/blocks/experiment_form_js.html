@@ -141,9 +141,17 @@
             let current = $(this).val();
             let before = before_typ;
             before_typ = current;
-            if(MULTITARGET.includes(before) && !MULTITARGET.includes(current)){
+            if(UNSUPERVISED.includes(current) && !UNSUPERVISED.includes(before)){
+                $("#split_or_kfold").toggle("slow");
+                no_target();
+            }else if(MULTITARGET.includes(before) && !MULTITARGET.includes(current)){
                 $("#data").change();
             }
+
+            if(!UNSUPERVISED.includes(current) && UNSUPERVISED.includes(before)){
+                $("#split_or_kfold").toggle("slow");
+            }
+            
         });
 
         $("input[type=radio][name=experiment_mode]").on("change", function(){
