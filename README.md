@@ -7,7 +7,7 @@
 [![GitHub](https://img.shields.io/github/license/JoseBarbero/UBUMLaaS?logo=gnu&logoColor=white&style=for-the-badge)](https://github.com/JoseBarbero/UBUMLaaS/blob/master/LICENSE)
 
 MLaaS platform based on ADMIRABLE and BEST-AI research groups methods.
-#### Platform from Spanish "Ministerio de Economía y Competetividad" Project "*Algoritmos de ensembles para problemas de salidas múltiples - nuevos desarrollos y aplicaciones*"
+#### Platform from Spanish "Ministerio de Economía y Competitividad" Project "*Algoritmos de ensembles para problemas de salidas múltiples - nuevos desarrollos y aplicaciones*"
 
 ---
 ## Installation
