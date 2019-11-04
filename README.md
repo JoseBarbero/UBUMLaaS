@@ -16,23 +16,19 @@ MLaaS platform based on ADMIRABLE and BEST-AI research groups methods.
     ```bash
     $ git clone https://github.com/JoseBarbero/UBUMLaaS.git
     ```
-2. Create a conda environment
-    ```bash
-    $ conda create -n UBUMLaas python=3.7
-    ```
-3. Activate environment
-    ```bash
-    $ conda activate UBUMLaaS
-    ```
-4. Go to UBUMLaaS repository's folder
+1. Go to UBUMLaaS repository's folder
     ```bash
     $ cd UBUMLaaS
     ```
-5. Install requirements
+1. Create a conda environment
     ```bash
-    $ pip install -r requirements.txt
+    $ conda env create -f UBUMLaaS_env.yml
     ```
-6. Create database
+1. Activate environment
+    ```bash
+    $ conda activate UBUMLaaS
+    ```
+1. Create database
     ```bash
     $ flask db init
     $ flask db migrate
@@ -40,14 +36,14 @@ MLaaS platform based on ADMIRABLE and BEST-AI research groups methods.
     ```
     *Opt:* 
     Download a database and put it in ./ubumlaas/
-7. Create environments variables
+1. Create environments variables
     ```bash
     #!/bin/bash
 
     export SECRET_KEY=<app secret key>
     export EMAIL_AC=<email>
     export EMAIL_PASS=<email-password>
-    LIBFOLDER=.
+    LIBFOLDER=<absolute path to UBUMLaaS folder>
     export WEKA_HOME=$LIBFOLDER/lib/wekafiles/packages/
 
     ruta="$WEKA_HOME/packages/"
@@ -72,14 +68,14 @@ MLaaS platform based on ADMIRABLE and BEST-AI research groups methods.
 
     export MEKA_CLASSPATH="$_res$LIBFOLDER/lib/scikit_ml_learn_data/meka/meka-release-1.9.2/lib/"
     ```
-8. Install Redis-Server
+1. Install Redis-Server
     ```bash
     $ sudo apt install redis-server
     $ sudo service redis-server start
     $ sudo systemctl enable redis-server #If you want to initialize the service in startup
     ```
     *Caution*: Close all workers of RQ before stop redis-server
-9.  Execute
+1.  Execute
     ```bash
     python app.py
     ```
