@@ -1,4 +1,4 @@
-name: ubumlaas
+name: UBUMLaaS
 channels:
   - anaconda
   - conda-forge
