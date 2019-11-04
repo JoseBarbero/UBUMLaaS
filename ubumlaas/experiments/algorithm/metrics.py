@@ -4,7 +4,7 @@ from ubumlaas.util import value_to_bool
 from sklearn.preprocessing import LabelBinarizer
 
 
-def calculate_metrics(typ, X, y_test, y_pred, y_score):
+def calculate_metrics(typ, y_test, y_pred, y_score, X = None):
     score = {}
 
     if not is_list(X):

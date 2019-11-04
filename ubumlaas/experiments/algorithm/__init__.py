@@ -93,7 +93,7 @@ def task_skeleton(experiment, current_user):
         if exp_config["mode"] == "cross" or exp_config["train_partition"] < 100 or execution_lib.algorithm_type == "Clustering":
 
             typ = execution_lib.algorithm_type
-            score = calculate_metrics(typ, X_test, y_test, y_pred, y_score)
+            score = calculate_metrics(typ, y_test, y_pred, y_score, X_test)
         result = json.dumps(score)
         state = 1
 
