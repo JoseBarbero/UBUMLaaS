@@ -10,7 +10,7 @@ MLaaS platform based on ADMIRABLE and BEST-AI research groups methods.
 #### Platform from Spanish "Ministerio de Economía y Competitividad" Project "*Algoritmos de ensembles para problemas de salidas múltiples - nuevos desarrollos y aplicaciones*"
 
 ---
-## Installation
+## Installation (Linux)
 
 1. Clone this repository
     ```bash
@@ -28,6 +28,22 @@ MLaaS platform based on ADMIRABLE and BEST-AI research groups methods.
     ```bash
     $ conda activate UBUMLaaS
     ```
+1. Modify **env_variables.sh** with properly values
+    ```bash 
+    export SECRET_KEY=<app secret key>
+    export EMAIL_AC=<email>
+    export EMAIL_PASS=<email-password>
+    LIBFOLDER=/absolute/path/to/UBUMLaaS
+    ```
+1. With the conda environment UBUMLaaS, execute the script to export environment variables when activate conda env.
+    ```bash
+    $ bash env_vars_to_conda.sh
+    ```
+1. Deactivate and activate conda environment to take effect.
+    ```bash
+    $ conda deactivate
+    $ conda activate UBUMLaaS
+    ```
 1. Create database
     ```bash
     $ flask db init
@@ -36,37 +52,6 @@ MLaaS platform based on ADMIRABLE and BEST-AI research groups methods.
     ```
     *Opt:* 
     Download a database and put it in ./ubumlaas/
-1. Create environments variables
-    ```bash
-    #!/bin/bash
-
-    export SECRET_KEY=<app secret key>
-    export EMAIL_AC=<email>
-    export EMAIL_PASS=<email-password>
-    LIBFOLDER=<absolute path to UBUMLaaS folder>
-    export WEKA_HOME=$LIBFOLDER/lib/wekafiles/packages/
-
-    ruta="$WEKA_HOME/packages/"
-    packages=$(ls -l $ruta)
-
-    pack=()
-    IFS=$'\n'
-    #rev |cut -d" " -f1 | rev
-    for p in $packages; do
-        
-        first=$(echo $p | cut -f1 -d" " | head -c 1)
-        if [ $first == "d" ]; then
-            pack=("${pack[@]}" $(echo $p | rev |cut -d" " -f1 | rev))
-        fi
-    done
-
-    _res=""
-    for (( i=0; i<${#pack[@]}; i++ ))
-    do
-        _res="$ruta${pack[$i]}/${pack[$i]}.jar:$_res"
-    done
-
-    export MEKA_CLASSPATH="$_res$LIBFOLDER/lib/scikit_ml_learn_data/meka/meka-release-1.9.2/lib/"
     ```
 1. Install Redis-Server
     ```bash
