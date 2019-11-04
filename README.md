@@ -60,7 +60,13 @@ MLaaS platform based on ADMIRABLE and BEST-AI research groups methods.
     $ sudo systemctl enable redis-server #If you want to initialize the service in startup
     ```
     *Caution*: Close all workers of RQ before stop redis-server
-1.  Execute
+
+## Execution
+1. Activate conda environment if not activated.
+    ```bash
+    $ conda activate UBUMLaaS
+    ```
+1.  Execute to run the server
     ```bash
     python app.py
     ```
