@@ -17,9 +17,14 @@
                     if(UNSUPERVISED.includes($("#alg_typ").val())){
                         no_target();
                     }
+                    already_correct.add("data");
                 },
                 error: function (result) {
+                    already_correct.delete("data");
                     console.log(result);
+                },
+                complete: function(result){
+                    update_progress();
                 }
             });
             verify_all();

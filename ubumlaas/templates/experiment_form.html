@@ -1,9 +1,21 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div class="progress fixed-bottom rounded-0">
+    <div id="form_progress" class="progress-bar bg-info" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+</div>
 <div class="jumbotron">
     <h3 class="text-center">Configure experiment</h3>
-    <div class="row">
+    <fieldset id="select_algorithm_type_block">
+        <div class="form-group col-md-6 offset-md-3 mb-4">
+            <div class="form-group control-group">
+                {{ form_e.alg_typ.label(class="form-control-label mt-4 h5") }}
+                {{ form_e.alg_typ(class="form-control") }}
+                <div id="alg_typ_feedback" class="invalid-feedback" style="display: hidden">You must select an algorithm type</div>
+            </div>
+        </div>
+    </fieldset>
+    <div class="row mt-4" id="upload_dataset_block">
         <div class="col-md-6">
             <fieldset>
                 <form class="col-md-6 offset-md-3" id="form_dataset">
@@ -28,7 +40,7 @@
             </fieldset>
         </div>
     </div>
-    <div class="row">
+    <div class="row" id="config_dataset_block">
         <div class="tabs-container col-12">
             <ul class="nav nav-tabs">
                 <li>
@@ -67,7 +79,7 @@
             </div>    
         </div>
     </div>
-    <fieldset id="split_or_kfold">
+    <fieldset id="config_experiment_block">
         <form class="col-md-6 offset-md-3" id="form_dataset_parameters">
             <div class="form-group row mt-4">
                 <div class="center float-left">
@@ -107,19 +119,14 @@
             </div>
         </form>
     </fieldset>
-    <fieldset>
-            <form class="form-group col-md-6 offset-md-3" id="form_algorithm">
-                {{ form_d.hidden_tag() }}
-                <div class="form-group control-group">
-                    {{ form_e.alg_typ.label(class="form-control-label mt-4 h5") }}
-                    {{ form_e.alg_typ(class="form-control") }}
-                    <div id="alg_typ_feedback" class="invalid-feedback" style="display: hidden">You must select an algorithm type</div>
-                </div>
-                <div id="show_algorithms" class="form-group" style="text-align: center;">
-                    {% include 'blocks/show_algorithms.html' %}
-                </div>
-            </form>
-        </fieldset>
+    <fieldset id="select_algorithm_block">
+        <form class="form-group col-md-6 offset-md-3" id="form_algorithm">
+            {{ form_d.hidden_tag() }}
+            <div id="show_algorithms" class="form-group" style="text-align: center;">
+                {% include 'blocks/show_algorithms.html' %}
+            </div>
+        </form>
+    </fieldset>
     <fieldset class="container" id="config_algorithm_fieldset" style="overflow: auto">
         <div class="row-fluid">
             <div>
@@ -129,7 +136,7 @@
             </div>
         </div>
     </fieldset>
-    <fieldset>
+    <fieldset id="submit_completed_experiment_block">
         <form class="col-md-6 offset-3" id="submit_completed_experiment">
             {{ form_e.hidden_tag() }}
             {{ form_p.hidden_tag() }}
