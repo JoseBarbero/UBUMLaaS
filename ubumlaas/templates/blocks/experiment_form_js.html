@@ -133,7 +133,10 @@
                 contentType: 'application/x-www-form-urlencoded',
                 data: "alg_typ=" + $("#alg_typ").val(),
                 success: function (result) {
-                    $("#show_algorithms").html(result);        
+                    $("#show_algorithms").html(result);
+                    setTimeout(function(){
+                        $("#alg_name").change();
+                    }, 100);                    
                 },
                 error: function (result) {
                     console.log("Fatal error");
@@ -159,7 +162,6 @@
             }else if(MULTITARGET.includes(before) && !MULTITARGET.includes(current)){
                 $("#data").change();
             }
-            
         });
 
         $("input[type=radio][name=experiment_mode]").on("change", function(){
@@ -172,7 +174,7 @@
         $("#dataset").change(function(){
             var filename =  $("#dataset").val().replace(/C:\\fakepath\\/i, '')
             $("#datasetLabel").text(filename);
-        })
+        });
         
     });
     
