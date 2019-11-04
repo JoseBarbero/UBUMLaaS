@@ -62,7 +62,7 @@ MLaaS platform based on ADMIRABLE and BEST-AI research groups methods.
     *Caution*: Close all workers of RQ before stop redis-server
 
 ## Execution
-1. Activate conda environment if not activated.
+1. Inside the UBUMLaaS repository's folder, activate conda environment if not activated.
     ```bash
     $ conda activate UBUMLaaS
     ```
