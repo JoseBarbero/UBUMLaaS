@@ -4,13 +4,24 @@
 const MULTITARGET = ["MultiClassification", "MultiRegression"];
 
 /**
+ * Possible values of Non-Supervised algorithmsç 
+ */
+const UNSUPERVISED = ["Clustering"]
+
+/**
  * It guarantees only one target if algorithms is not MULTITARGET 
+ * And not target allowed in UNSUPERVISED
  * 
  * @param {string} target identifier of target selected 
  */
 function only_one_target(target){
     let typ = $("#alg_typ").val();
-    if (!MULTITARGET.includes(typ)){
+    if(UNSUPERVISED.includes(typ)){
+        $("#"+target).prop("checked", true);
+        launch_danger_modal("Target not allowed",
+                            "Algorithms of the type "+typ+" are unsupervised, therefore, they not allow targets");
+    }
+    else if (!MULTITARGET.includes(typ)){
         let target_candidates = $(".col_target");
         target_candidates.each(function(){
             if($(this).attr("id")!=target){
@@ -32,28 +43,31 @@ function only_one_target(target){
  * @param {string} mode value between target or use
  */
 function target_or_use(identifier, mode){
-    let id = identifier.split("col")[1];
-    let use = $("#"+identifier+"_use");
-    let target = $("#"+identifier+"_target");
-    let v = $("#"+id+"_opt");
-    v.removeClass("list-group-item-primary list-group-item-secondary list-group-item-success");
-    if (mode == "target"){
-        if(use.is(":checked")){
-            use.prop("checked", false);
-        }
-        if(!target.is(":checked")){
-            v.addClass("list-group-item-success");
-        }else{
-            v.addClass("list-group-item-secondary");
-        }
-    }else if(mode == "use"){
-        if(target.is(":checked")){
-            target.prop("checked", false);
-        }
-        if(!use.is(":checked")){
-            v.addClass("list-group-item-primary");
-        }else{
-            v.addClass("list-group-item-secondary");
+    let typ = $("#alg_typ").val();
+    if(!UNSUPERVISED.includes(typ) || mode == "use"){
+        let id = identifier.split("col")[1];
+        let use = $("#"+identifier+"_use");
+        let target = $("#"+identifier+"_target");
+        let v = $("#"+id+"_opt");
+        v.removeClass("list-group-item-primary list-group-item-secondary list-group-item-success");
+        if (mode == "target"){
+            if(use.is(":checked")){
+                use.prop("checked", false);
+            }
+            if(!target.is(":checked")){
+                v.addClass("list-group-item-success");
+            }else{
+                v.addClass("list-group-item-secondary");
+            }
+        }else if(mode == "use"){
+            if(target.is(":checked")){
+                target.prop("checked", false);
+            }
+            if(!use.is(":checked")){
+                v.addClass("list-group-item-primary");
+            }else{
+                v.addClass("list-group-item-secondary");
+            }
         }
     }
 }
@@ -77,7 +91,7 @@ function get_dataset_config(){
     }
     let selected_columns = [];
     let columns = $(".column-dataset");
-   
+    
     dataset_config.target = [];
     
     for(var i=0; i<columns.length; i++){
@@ -85,16 +99,23 @@ function get_dataset_config(){
         var use = $("#col"+i+"_use");
         var target = $("#col"+i+"_target");
         if (target.is(":checked")){
-
             dataset_config.target.push(current_column);
-
         }else if(use.is(":checked")){
             selected_columns.push(current_column);
         }
     }
+
     dataset_config.columns = selected_columns;
 
     random_seed = $("#experiment_seed_value");
     dataset_config.random_seed = random_seed.attr("disabled") ? null : parseInt(random_seed.val());
     return dataset_config;
+}
+
+function no_target(){
+    for (let i = 0; i<dataset_columns.length; i++){
+        if($("#col"+i+"_target").prop("checked")){
+            $("#col"+i+"_use_label").click();
+        }
+    }
 }

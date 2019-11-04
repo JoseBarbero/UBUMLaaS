@@ -2,7 +2,7 @@
 <script src="{{ url_for('static', filename="js/config_alg.js") }}"></script>
 <script src="{{ url_for('static', filename="js/config_dataset.js") }}"></script>
 <script src="{{ url_for('static', filename="js/validations.js") }}"></script>
-
+<script src="{{ url_for('static', filename="js/progress-bar.js") }}"></script>
 <script>
     before_typ = undefined;
     function load_config(async=true, algorithm=null, reset=true){
@@ -33,9 +33,14 @@
                 }else{
                     generateForm(JSON.parse(result.alg_config));
                 }
+                already_correct.add("alg_name");
             },
             error: function(result){
                 generateForm({})
+                already_correct.delete("alg_name");
+            },
+            complete: function(){
+                update_progress();
             },
             async: async
         });
@@ -128,11 +133,22 @@
                 contentType: 'application/x-www-form-urlencoded',
                 data: "alg_typ=" + $("#alg_typ").val(),
                 success: function (result) {
-                    $("#show_algorithms").html(result);        
+                    $("#show_algorithms").html(result);
+                    setTimeout(function(){
+                        $("#alg_name").change();
+                    }, 100);                    
                 },
                 error: function (result) {
                     console.log("Fatal error");
                     console.log(result);
+                },
+                complete: function (result) {
+                    if($("#alg_typ").val() == ""){
+                        already_correct.delete("config_algorithm_fieldset");
+                    }else{
+                        already_correct.add("config_algorithm_fieldset");
+                    }
+                    update_progress();
                 },
                 cache: false,
                 processData: false
@@ -141,7 +157,9 @@
             let current = $(this).val();
             let before = before_typ;
             before_typ = current;
-            if(MULTITARGET.includes(before) && !MULTITARGET.includes(current)){
+            if(UNSUPERVISED.includes(current) && !UNSUPERVISED.includes(before)){
+                no_target();
+            }else if(MULTITARGET.includes(before) && !MULTITARGET.includes(current)){
                 $("#data").change();
             }
         });
@@ -156,7 +174,7 @@
         $("#dataset").change(function(){
             var filename =  $("#dataset").val().replace(/C:\\fakepath\\/i, '')
             $("#datasetLabel").text(filename);
-        })
+        });
         
     });
     

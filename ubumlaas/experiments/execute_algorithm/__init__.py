@@ -107,7 +107,8 @@ class Abstract_execute(ABC):
         data = get_dataframe_from_file(path, filename)
         X = data.loc[:, self.experiment_configuration["columns"]]
         y = None
-        if set(self.experiment_configuration["target"]) <= set(data.columns):
+        #check if targets is not empty and some column from targets are in data column
+        if len(self.experiment_configuration["target"]) !=0 and set(self.experiment_configuration["target"]) <= set(data.columns):
             y = data.loc[:, self.experiment_configuration["target"]]
         return X, y
 
@@ -135,8 +136,12 @@ class Abstract_execute(ABC):
         Returns:
             [DataFrames] -- X_train, X_test, y_train, y_test
         """
-        if train_size == 100:
-            return X, [], y, []
+
+        if y is None:
+            X_train, X_test = sklearn.model_selection. \
+            train_test_split(X, train_size=train_size/100,
+                             random_state=self.experiment_configuration.get("random_seed", random_state))
+            return X_train, X_test, None, None
 
         return sklearn.model_selection. \
             train_test_split(X, y, train_size=train_size/100,
@@ -161,6 +166,15 @@ class Abstract_execute(ABC):
         kf = self.kfold_algorithm()(n_splits=n_splits, shuffle=shuffle,
                                     random_state=self.experiment_configuration.get("random_seed", random_state))
 
+        if y is None:
+            for train_index, test_index in kf.split(X):
+
+                X_train, X_test = X.iloc[train_index, :], \
+                                X.iloc[test_index, :]
+
+                folds.append((X_train, X_test, None, None))
+            return folds
+        
         for train_index, test_index in kf.split(X, y):
 
             X_train, X_test = X.iloc[train_index, :], \
