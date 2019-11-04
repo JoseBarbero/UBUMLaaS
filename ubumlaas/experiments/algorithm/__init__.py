@@ -83,8 +83,6 @@ def task_skeleton(experiment, current_user):
                 y_pred.append(y_predk)
                 y_score.append(y_scorek)
                 y_test.append(y_test_kfold)
-        
-            
 
         score = {}
         if exp_config["mode"] == "cross" or exp_config["train_partition"] < 100 or execution_lib.algorithm_type == "Clustering":

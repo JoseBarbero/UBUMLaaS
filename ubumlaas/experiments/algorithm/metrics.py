@@ -2,18 +2,17 @@ import sklearn.metrics as mtr
 import numpy as np
 from ubumlaas.util import value_to_bool
 from sklearn.preprocessing import LabelBinarizer
-import pandas as pd
 
 
 def calculate_metrics(typ, X, y_test, y_pred, y_score):
-    score={}
-    
+    score = {}
+
     if not is_list(X):
-        X =[X]
+        X = [X]
 
     if not is_list(y_test):
         y_test = [y_test]
-    
+
     if not is_list(y_pred):
         y_pred = [y_pred]
 
@@ -30,8 +29,10 @@ def calculate_metrics(typ, X, y_test, y_pred, y_score):
         score = clustering_metrics(X, y_pred)
     return score
 
+
 def is_list(param):
     return type(param) == list
+
 
 def classification_metrics(y_test_param, y_pred_param, y_score_param):
     """Compute classification metrics
@@ -128,6 +129,7 @@ def multiclass_roc_auc_score(y_test, y_pred, average="macro"):
     y_pred = lb.transform(y_pred)
 
     return mtr.roc_auc_score(y_test, y_pred, average=average)
+
 
 def clustering_metrics(list_X, list_y_pred):
     score = {}
