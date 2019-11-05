@@ -17,6 +17,7 @@ def calculate_metrics(typ, y_test, y_pred, y_score, X = None):
         score = clustering_metrics(X, y_pred)
     return score
 
+
 def classification_metrics(y_test_param, y_pred_param, y_score_param):
     """Compute classification metrics
 
@@ -95,12 +96,10 @@ def regression_metrics(y_test_param, y_pred_param):
     """
     score = {}
     for y_test, y_pred in zip(y_test_param, y_pred_param):
-        score.setdefault("max_error", []).\
-            append(mtr.max_error(y_test, y_pred))
-        score.setdefault("mean_score_error", []).\
-            append(mtr.mean_squared_error(y_test, y_pred))
-        score.setdefault("mean_absolute_error", []).\
-            append(mtr.mean_absolute_error(y_test, y_pred))
+        set_score(score, "max_error", mtr.max_error(y_test, y_pred))
+        set_score(score, "mean_score_error", mtr.mean_squared_error(y_test, y_pred))
+        set_score(score, "mean_absolute_error", mtr.mean_absolute_error(y_test, y_pred))
+
 
     return score
 
@@ -117,7 +116,12 @@ def multiclass_roc_auc_score(y_test, y_pred, average="macro"):
 def clustering_metrics(list_X, list_y_pred):
     score = {}
     for X, y_pred in zip(list_X, list_y_pred):
-        score.setdefault("calinski_harabasz_score", []).append(mtr.calinski_harabasz_score(X, y_pred))
-        score.setdefault("davies_bouldin_score", []).append(mtr.davies_bouldin_score(X, y_pred))
-        score.setdefault("silhouette_score", []).append(mtr.silhouette_score(X, y_pred))
+        set_score(score, "calinski_harabasz_score", mtr.calinski_harabasz_score(X, y_pred))
+        set_score(score, "davies_bouldin_score", mtr.davies_bouldin_score(X, y_pred))
+        set_score(score, "silhouette_score", mtr.silhouette_score(X, y_pred))
     return score
+
+
+def set_score(score, key, value):
+    score.setdefault(key, []).append(value)
+

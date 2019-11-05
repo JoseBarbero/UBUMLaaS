@@ -1,27 +1,31 @@
-$("document").ready(function(){
-     //Blocks
-     select_dataset = $("#data");
-     train_slider = $("#train_slider");
-     alg_typ = $("#alg_typ");
-     alg_name = $("#alg_name");
-     form_dataset_configuration = $("#form_dataset_configuration");
-     submit_experiment = $("#submit");
-     //Mesages
-     select_dataset_feedback = $("#data_feedback");
-     train_slider_feedback = $("#train_slider_feedback");
-     alg_typ_feedback = $("#alg_typ_feedback");
-     alg_name_feedback = $("#alg_name_feedback");
-     //Conditions
-     verify_conditions = ["",0,"",""];
-     verify_all();
-});
+/*$("document").ready(function(){
+    verify_all();
+});*/
+
+function load_verify_elements(){
+    //Blocks
+    select_dataset = $("#data");
+    train_slider = $("#train_slider");
+    alg_typ = $("#alg_typ");
+    alg_name = $("#alg_name");
+    form_dataset_configuration = $("#form_dataset_configuration");
+    submit_experiment = $("#submit");
+    //Mesages
+    select_dataset_feedback = $("#data_feedback");
+    train_slider_feedback = $("#train_slider_feedback");
+    alg_typ_feedback = $("#alg_typ_feedback");
+    alg_name_feedback = $("#alg_name_feedback");
+    //Conditions
+    verify_conditions = ["",0,"",""];
+}
 
 /**
  * Verify if experiments is configured correctly.
  * If any verification failed submit button will be disables.
  */
-function verify_all(){
-    submit_experiment.attr("disabled",true);
+function verify_all(element=null){
+    load_verify_elements();
+    submit_button_change(true, "secondary");
     let invalidate = [];
     let validate = [];
     let show = [];
@@ -30,18 +34,25 @@ function verify_all(){
     let elements = [select_dataset, train_slider, alg_typ, alg_name];
     let elements_feedback = [select_dataset_feedback, train_slider_feedback, alg_typ_feedback, alg_name_feedback];
     for(let i=0; i<elements.length; i++){
-        if(elements[i].val() === verify_conditions[i]){
+        if(elements[i].val() == null || elements[i].val() === verify_conditions[i]){
             _add(invalidate, show, elements[i], elements_feedback[i]);
-        }else{
+        }else{            
             _add(validate, hide, elements[i], elements_feedback[i]);
         }
     }
   
-    _validate_or_invalidate(validate, hide, true);
-    _validate_or_invalidate(invalidate, show, false);
+    _validate_or_invalidate(validate, hide, true, element);
+    _validate_or_invalidate(invalidate, show, false, element);
     if (invalidate.length == 0){
-        submit_experiment.attr("disabled", false);
+        submit_button_change(false, "primary");
     }
+}
+
+function submit_button_change(disabled, btn){
+    let css = "btn btn-"+btn+" btn-block btn-lg mt-4";
+    submit_experiment.attr("disabled", disabled);
+    submit_experiment.removeClass();
+    submit_experiment.addClass(css);
 }
 
 /**
@@ -64,8 +75,8 @@ function _add(elements_list, feedback_list, element, feedback){
  * @param {list} label list of labels to feedback as invalid.
  */
 function _appear(input, label){
-    input.addClass('is-invalid')
-    label.css("display","")
+    input.addClass('is-invalid');
+    label.css("display","");
 }
 
 /**
@@ -75,8 +86,8 @@ function _appear(input, label){
  * @param {list} label list of labels to feedback as valid.
  */
 function _disappear(input, label){
-    input.removeClass('is-invalid')
-    label.css("display","none")
+    input.removeClass('is-invalid');
+    label.css("display","none");
 }
 
 /**
@@ -85,13 +96,16 @@ function _disappear(input, label){
  * @param {list} input_list list of input widgets
  * @param {list} label_list list of input feedbacks
  * @param {boolean} opt true if valid, false if not. 
+ * @param {input_name} element if not null then modify only element
  */
-function _validate_or_invalidate(input_list, label_list, opt){
+function _validate_or_invalidate(input_list, label_list, opt, element){
     for(let i = 0; i < input_list.length; i++){
-        if(opt)
-            _disappear(input_list[i], label_list[i]);
-        else
-            _appear(input_list[i], label_list[i]);
+        if(element == null || input_list[i].attr("id") == element){
+            if(opt)
+                _disappear(input_list[i], label_list[i]);
+            else
+                _appear(input_list[i], label_list[i]);
+        }
     }
 }
 

@@ -102,7 +102,7 @@
     });
 
     $("form#form_dataset").submit(function (e) {
-        verify_all();
+        //verify_all();
         e.preventDefault();
         var formData = new FormData(this)
         $.ajax({
@@ -153,7 +153,7 @@
                 cache: false,
                 processData: false
             });
-            verify_all();
+            verify_all("alg_typ");
             let current = $(this).val();
             let before = before_typ;
             before_typ = current;

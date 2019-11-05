@@ -3,3 +3,17 @@ exclude_patterns:
 - "test/"
 - "ubumlaas/static/css/bootstrap*"
 - "ubumlaas/static/js/bootstrap*"
+
+checks:
+  argument-count:
+    config:
+      threshold: 10
+    method-complexity:
+      config:
+        threshold: 10
+    method-lines:
+      config:
+        threshold: 35
+    similar-code:
+      enabled: false
+    

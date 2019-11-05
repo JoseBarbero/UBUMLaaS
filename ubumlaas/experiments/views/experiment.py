@@ -162,4 +162,8 @@ def form_generator():
     """
     alg_name = request.form.get('alg_name')
     alg = get_algorithm_by_name(alg_name)
-    return jsonify({"alg_config": alg.config})
+    if alg is not None:
+        to_ret = {"alg_config": alg.config}
+    else:
+        to_ret = {"alg_config": {}}
+    return jsonify(to_ret)
