@@ -1,0 +1,50 @@
+# Template Description file for a Weka package
+#
+# 
+
+# Package name (required)
+PackageName=kerasZoo10MonkeysExample
+
+# Version (required)
+Version=1.0.0
+
+#Date
+Date=2019-11-04
+
+# Title (required)
+Title=Provides a Knowledge Flow template example for training a DL model on the Kaggle 10 monkeys data
+
+Category=Python integration
+
+# Author (required)
+Author=Mark Hall
+
+# Maintainer (required)
+Maintainer=Weka team <wekalist@list.scms.waikato.ac.nz>
+
+# License (required)
+License=GPL 3.0
+
+# Description (required)
+Description=Provides a Knowledge Flow template example for training a DL model on the Kaggle 10 monkeys image data. Includes the data along with training and validation metadata arff files. Once installed, the example can be found in the Knowledge Flow's "template" menu (i.e. third button from the right in the toolbar).
+
+Changes=This release includes a fix to enable windows paths containing backslashes to be handled correctly when generating python code
+
+# Package URL for obtaining the package archive (required)
+PackageURL=http://prdownloads.sourceforge.net/weka/kerasZoo10MonkeysExample1.0.0.zip?download
+
+# URL for further information
+URL=
+
+# Enhances various other packages ?
+# Enhances=packageName1,packageName2,...
+
+# Related to other packages?
+#Related=
+
+# Dependencies
+Depends=weka (>=3.8.0), wekaPython (>=1.0.9), kerasZoo (>=1.0.2)
+
+MessageToDisplayOnInstallation=This package requires python (2.7.x or 3.x) to be installed on your\n\
+ computer before it can be used. The python command must be in the PATH. Within python it requires the:\n\
+ following packages: keras, numpy, pandas, matplotlib and scikit-learn, scipy.

@@ -268,11 +268,14 @@
         }
         var parameters = Object.keys(base_alg_config);
         var sel_parameters = Object.keys(alg_config);
+        console.log(sel_parameters);
         parameters.forEach(function(i){
             var p = $("#"+prefix+i+"_value");
             if(base_alg_config[i].type != "boolean"){
                 let vlv = $("#"+prefix+i+"_activator");
                 let lbl = $("#"+prefix+i+"_activator_label");
+                console.log(vlv);
+                console.log(lbl);
                 if(sel_parameters.includes(i)){
                     if(typeof(alg_config[i]) == "object"){
                         p.val(alg_config[i].alg_name);
@@ -286,7 +289,7 @@
                         }
                     }                    
                 }else{                    
-                    if(vlv.attr("checked")){
+                    if(vlv.prop("checked")){
                         lbl.click();
                     }
                 }
@@ -302,7 +305,7 @@
 
     
     $("document").ready(function(){
-        experiment = {{ experiment | safe }};
+        experiment = {{ experiment|safe }};
         exp_config = JSON.parse(experiment.exp_config);
         //Dataset
         let dataset = $("#data");

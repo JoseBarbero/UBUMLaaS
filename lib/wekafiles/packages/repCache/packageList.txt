@@ -126,6 +126,7 @@ iterativeAbsoluteErrorRegression
 jfreechartOffscreenRenderer
 jsonFieldExtractor
 kerasZoo
+kerasZoo10MonkeysExample
 kernelLogisticRegression
 kfGroovy
 kfKettle

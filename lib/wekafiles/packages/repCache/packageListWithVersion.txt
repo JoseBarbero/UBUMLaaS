@@ -126,6 +126,7 @@ iterativeAbsoluteErrorRegression:1.0.0
 jfreechartOffscreenRenderer:1.0.5
 jsonFieldExtractor:1.0.0
 kerasZoo:1.0.2
+kerasZoo10MonkeysExample:1.0.0
 kernelLogisticRegression:1.0.0
 kfGroovy:1.0.15
 kfKettle:1.0.4
