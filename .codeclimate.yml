@@ -1,3 +1,4 @@
+version: "2"
 exclude_patterns:
 - "lib/"
 - "test/"
@@ -16,4 +17,7 @@ checks:
         threshold: 35
     similar-code:
       enabled: false
+    complex-logic:
+      config:
+        threshold: 10
     
