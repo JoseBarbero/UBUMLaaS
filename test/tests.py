@@ -26,5 +26,5 @@ if __name__ == "__main__":
         finally:
                 
                 jvm.stop()
-        if False in results:
-                exit(1)
+
+        exit(results.count(False))
