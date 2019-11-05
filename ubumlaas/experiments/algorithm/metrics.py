@@ -7,18 +7,6 @@ from sklearn.preprocessing import LabelBinarizer
 def calculate_metrics(typ, y_test, y_pred, y_score, X = None):
     score = {}
 
-    if not is_list(X):
-        X = [X]
-
-    if not is_list(y_test):
-        y_test = [y_test]
-
-    if not is_list(y_pred):
-        y_pred = [y_pred]
-
-    if not is_list(y_score):
-        y_score = [y_score]
-
     if typ == "Regression" or typ == "MultiRegression":
         score = regression_metrics(y_test, y_pred)
     elif typ == "Classification":
@@ -28,11 +16,6 @@ def calculate_metrics(typ, y_test, y_pred, y_score, X = None):
     elif typ == "Clustering":
         score = clustering_metrics(X, y_pred)
     return score
-
-
-def is_list(param):
-    return type(param) == list and type(param[0]) == list
-
 
 def classification_metrics(y_test_param, y_pred_param, y_score_param):
     """Compute classification metrics
