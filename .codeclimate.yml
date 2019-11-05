@@ -9,15 +9,15 @@ checks:
   argument-count:
     config:
       threshold: 10
-    method-complexity:
-      config:
-        threshold: 10
-    method-lines:
-      config:
-        threshold: 35
-    similar-code:
-      enabled: false
-    complex-logic:
-      config:
-        threshold: 10
+  method-complexity:
+    config:
+      threshold: 10
+  method-lines:
+    config:
+      threshold: 35
+  similar-code:
+    enabled: false
+  complex-logic:
+    config:
+      threshold: 10
     
