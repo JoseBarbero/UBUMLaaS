@@ -31,7 +31,7 @@ def calculate_metrics(typ, y_test, y_pred, y_score, X = None):
 
 
 def is_list(param):
-    return type(param) == list
+    return type(param) == list and type(param[0]) == list
 
 
 def classification_metrics(y_test_param, y_pred_param, y_score_param):
