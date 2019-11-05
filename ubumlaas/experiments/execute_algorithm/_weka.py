@@ -33,8 +33,9 @@ class Execute_weka(Abstract_execute):
         """
         Abstract_execute.__init__(self, experiment)
 
-        jvm.start(packages=True)
         self.y_uniques = None
+        if not jvm.started:
+            jvm.start(packages=True)
 
     def create_weka_dataset(self, X, y = None):
         """Create weka dataset using temporaly file
