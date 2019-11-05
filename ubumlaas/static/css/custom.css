@@ -51,9 +51,10 @@ footer .main-footer {
 }
 
 #loader {
-    position: absolute;
-    left: 40%;
-    top: 36%;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
 }
 
 #logos {
