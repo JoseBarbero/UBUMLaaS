@@ -59,10 +59,19 @@ def register():
                         password=form.password.data)
             v.db.session.add(user)
             v.db.session.commit()
-
+            default_datasets(form.username.data)
             flash("User registered.")
             return redirect(url_for("users.login"))
     return render_template("register.html", form=form, title="Register")
+
+
+def default_datasets(username):
+    _dest = "ubumlaas/datasets/"+username+"/"
+    _from = "ubumlaas/default_datasets/"
+
+    os.makedirs(_dest)
+    for d in os.listdir(_from):
+        os.link(_from+d, _dest+d)
 
 
 @users.route("/logout")
