@@ -163,7 +163,6 @@ class TestDefaultSuite():
         """
         self.login("ubumlaas@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
-        self.driver.find_element(By.ID, "data_feedback").click()
         self.driver.execute_script("$('#data').val('breastCancer.csv');")
         self.driver.execute_script("$('#data').change();")
         time.sleep(self.wait)

@@ -44,10 +44,57 @@
 
 {% block js %}
 <script>
+    /*function (){
 
+    }*/
+</script>
+<script>
+    _heads = [];
+    _childs = [];
+    $("#show_predict_dataset > table > thead > tr").each(function(){
+        $(this).children('th').each(function(){
+            let text = $(this).text();
+            _heads.push(text);
+        });
+    });
+
+    for (let i = 0; i<_heads.length; i++){
+        if(_heads[i].startsWith("prediction_")){
+            splited = _heads[i].split("prediction_");
+            _childs.push({
+                class: _heads.indexOf(splited[1]),
+                predicted: i,
+            });
+        }
+    }
+
+    _index=0;
+    
+    $("#show_predict_dataset > table > tbody > tr").each(function(){
+        let row = $(this);        
+        _childs.forEach(function(e){
+           let hit = $(row.children()[e.class]).text()==$(row.children()[e.predicted]).text();
+           let suffix = "-even";
+           if(_index%2==0){
+                suffix = "-odd"
+           }
+           if(!hit){
+               $(row.children()[e.class]).addClass("table-danger"+suffix);
+               $(row.children()[e.predicted]).addClass("table-danger"+suffix);
+           }else{
+               $(row.children()[e.class]).addClass("table-success"+suffix);
+               $(row.children()[e.predicted]).addClass("table-success"+suffix);
+           }
+        }); 
+        _index++;       
+    });
+</script>
+<script>
+    
     $($("#show_predict_dataset").children()[0]).DataTable();
     $($("#show_predict_dataset2").children()[0]).DataTable();
 
 </script>
+
 
 {% endblock js %}

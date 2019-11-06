@@ -5,8 +5,6 @@ export EMAIL_AC=<email>
 export EMAIL_PASS=<email-password>
 LIBFOLDER=/absolute/path/to/UBUMLaaS
 
-
-
 export WEKA_HOME=$LIBFOLDER/lib/wekafiles/packages/
 
 ruta="$WEKA_HOME/packages/"
