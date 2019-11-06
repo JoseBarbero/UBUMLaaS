@@ -67,11 +67,11 @@
             });
         }
     }
-
+    _results = new Array()
     _index=0;
-    
     $("#show_predict_dataset > table > tbody > tr").each(function(){
-        let row = $(this);        
+        let row = $(this);
+        let __inner_array = new Array();
         _childs.forEach(function(e){
            let hit = $(row.children()[e.class]).text()==$(row.children()[e.predicted]).text();
            let suffix = "-even";
@@ -81,13 +81,26 @@
            if(!hit){
                $(row.children()[e.class]).addClass("table-danger"+suffix);
                $(row.children()[e.predicted]).addClass("table-danger"+suffix);
+               __inner_array.push("table-danger"+suffix)
            }else{
                $(row.children()[e.class]).addClass("table-success"+suffix);
                $(row.children()[e.predicted]).addClass("table-success"+suffix);
+               __inner_array.push("table-success"+suffix)
            }
-        }); 
+        });
+        _results.push(__inner_array);
         _index++;       
     });
+
+    _index=0;
+    $("#show_predict_dataset2 > table > tbody > tr").each(function(){
+        let row = $(this);
+        for (i=0; i<_results[0].length; i++){
+            $(row.children()[i+1]).addClass(_results[_index][i]);
+        }
+        _index++;
+    });
+
 </script>
 <script>
     

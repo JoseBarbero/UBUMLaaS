@@ -1,6 +1,6 @@
 $("document").ready(function(){
 
-    let colors = ["danger", "success", "warning", "info", "secondary", "primary"];
+    let colors = ["danger", "success", "warning", "info", "secondary", "primary", "orange"];
 
     colors.forEach(function(e){
         let color = getComputedStyle(document.documentElement)

@@ -4,7 +4,7 @@ hr {
 }
 
 footer .main-footer {
-    background: #3f3f3f;
+    background: /*#3f3f3f*/var(--secondary);
 }
 
 .square {

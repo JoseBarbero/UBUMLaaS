@@ -1,0 +1,11 @@
+.btn-orange {
+    color: #fff;
+    background-color: var(--orange);
+    border-color: var(--orange);
+}
+
+.btn-orange:hover {
+    color: #fff;
+    background-color: rgb(calc(var(--orange-red)/1.2), calc(var(--orange-green)/1.2), calc(var(--orange-blue)/1.2));
+    border-color: rgb(calc(var(--orange-red)/1.28), calc(var(--orange-green)/1.28), calc(var(--orange-blue)/1.28));
+}
