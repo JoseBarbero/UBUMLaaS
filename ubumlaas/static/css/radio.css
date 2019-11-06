@@ -3,7 +3,6 @@
     position: relative;
     display: inline-flexbox;
     align-content: center;
-    color: rgba(var(--pure-material-onsurface-rgb, 0, 0, 0), 0.87);
     font-family: var(--pure-material-font, "Roboto", "Segoe UI", BlinkMacSystemFont, system-ui, -apple-system);
     font-size: 16px;
     line-height: 1.5;
@@ -23,7 +22,7 @@
     border-radius: 50%;
     width: 40px;
     height: 40px;
-    background-color: rgba(var(--pure-material-onsurface-rgb, 0, 0, 0), 0.6);
+    background-color: var(--primary);
     outline: none;
     opacity: 0;
     transform: scale(1);
@@ -46,7 +45,8 @@
     box-sizing: border-box;
     margin: 2px 10px 2px 0;
     border: solid 2px; /* Safari */
-    border-color: rgba(var(--pure-material-onsurface-rgb, 0, 0, 0), 0.6);
+    border-color: var(--primary);
+    /*opacity: 0.6;*/
     border-radius: 50%;
     width: 20px;
     height: 20px;
@@ -65,7 +65,7 @@
     border-radius: 50%;
     width: 10px;
     height: 10px;
-    background-color: rgb(var(--pure-material-primary-rgb, 33, 150, 243));
+    background-color: var(--primary);
     transform: translate(5px, 5px) scale(0);
     transition: transform 0.2s;
     margin-left: 40%;
@@ -73,11 +73,11 @@
 
 /* Checked */
 .pure-material-radio > input:checked {
-    background-color: rgb(var(--pure-material-primary-rgb, 33, 150, 243));
+    background-color: var(--primary);
 }
 
 .pure-material-radio > input:checked + span::before {
-    border-color: rgb(var(--pure-material-primary-rgb, 33, 150, 243));
+    border-color: var(--primary);
 }
 
 .pure-material-radio > input:checked + span::after {

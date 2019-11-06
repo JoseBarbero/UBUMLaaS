@@ -18,13 +18,13 @@
     <div class="row mt-4" id="upload_dataset_block">
         <div class="col-md-6">
             <fieldset>
-                <form class="col-md-6 offset-md-3" id="form_dataset">
+                <form class="col-md-8 offset-md-2" id="form_dataset">
                     {{ form_d.hidden_tag() }}
                     <div class="form-group custom-file">
                         {{ form_d.dataset(class="custom-file-input") }}
                         {{ form_d.dataset.label(class="custom-file-label",id="datasetLabel") }}
                     </div>
-                    <div class="form-group">
+                    <div class="form-group mt-2">
                         <button class="btn btn-secondary btn-block" id="uploadDataset">Upload</button>
                     </div>
                 </form>
@@ -32,7 +32,7 @@
         </div>
         <div class="col-md-6">
             <fieldset>
-                <form class="col-md-6 offset-md-3" id="form_dataset2">
+                <form class="col-md-8 offset-md-2" id="form_dataset2">
                     <div id="select_dataset">
                         {% include 'blocks/select_dataset.html' %}
                     </div>
