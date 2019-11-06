@@ -166,17 +166,25 @@
     </div>
   </footer>
   {% include "./modals/alert_modal.html" %}
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+    integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+    crossorigin="anonymous"></script> -->
   <script src="{{ url_for('static', filename="js/bootstrap.js") }}"></script>
   <script src="{{ url_for('static', filename="js/bootstrap.bundle.js") }}"></script>
   <script src="{{ url_for('static', filename="js/modals.js") }}"></script>
   <script src="{{ url_for('static', filename="js/colors.js") }}"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
-    integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-    crossorigin="anonymous"></script>
   <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
   <script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js"></script>
   <script>
   GLOBAL_STYLE = getComputedStyle(document.body);
+  </script>
+  <script>
+    $(function () {
+        $('[data-toggle="popover"]').popover()
+    })
+    $('.popover-dismiss').popover({
+        trigger: 'focus'
+    });
   </script>
   {% block js %}
   {% endblock %}
