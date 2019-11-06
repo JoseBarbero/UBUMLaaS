@@ -40,24 +40,11 @@ footer .main-footer {
     display: inline-block;
 }
 
-:root {
-    /*rgb(40,167,69) success
-      rgb(195,230,203) success even
-      rgb(185,218,193) success odd
-      
-      rgb(220,53,69) danger
-      rgb(245,198,203) danger even
-      rgb(233,188,193) danger odd
-      */
-    --success-red: 40;
-    --success-green: 167;
-    --success-blue: 69;
+/**Custom colors*/
+:root {    
     --success-even: rgb(calc(var(--success-red)/0.2051),calc(var(--success-green)/0.7260),calc(var(--success-blue)/0.3399));
     --success-odd: rgb(calc(var(--success-red)/0.2162),calc(var(--success-green)/0.7660),calc(var(--success-blue)/0.3575));
 
-    --danger-red: 220;
-    --danger-green: 53;
-    --danger-blue: 69;
     --danger-even: rgb(calc(var(--danger-red)/0.8979),calc(var(--danger-green)/0.2676),calc(var(--danger-blue)/0.3399));
     --danger-odd: rgb(calc(var(--danger-red)/0.9442),calc(var(--danger-green)/0.2819),calc(var(--danger-blue)/0.3575));
 
