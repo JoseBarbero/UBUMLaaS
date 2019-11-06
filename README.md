@@ -16,35 +16,35 @@ MLaaS platform based on ADMIRABLE and BEST-AI research groups methods.
     ```bash
     $ git clone https://github.com/JoseBarbero/UBUMLaaS.git
     ```
-1. Go to UBUMLaaS repository's folder
+2. Go to UBUMLaaS repository's folder
     ```bash
     $ cd UBUMLaaS
     ```
-1. Create a conda environment
+3. Create a conda environment
     ```bash
     $ conda env create -f UBUMLaaS_env.yml
     ```
-1. Activate environment
+4. Activate environment
     ```bash
     $ conda activate UBUMLaaS
     ```
-1. Modify **env_variables.sh** with properly values
+5. Modify **env_variables.sh** with properly values
     ```bash 
     export SECRET_KEY=<app secret key>
     export EMAIL_AC=<email>
     export EMAIL_PASS=<email-password>
     LIBFOLDER=/absolute/path/to/UBUMLaaS
     ```
-1. With the conda environment UBUMLaaS, execute the script to export environment variables when activate conda env.
+6. With the conda environment UBUMLaaS, execute the script to export environment variables when activate conda env.
     ```bash
     $ bash env_vars_to_conda.sh
     ```
-1. Deactivate and activate conda environment to take effect.
+7. Deactivate and activate conda environment to take effect.
     ```bash
     $ conda deactivate
     $ conda activate UBUMLaaS
     ```
-1. Create database
+8. Create database
     ```bash
     $ flask db init
     $ flask db migrate
@@ -52,8 +52,7 @@ MLaaS platform based on ADMIRABLE and BEST-AI research groups methods.
     ```
     *Opt:* 
     Download a database and put it in ./ubumlaas/
-    ```
-1. Install Redis-Server
+9. Install Redis-Server
     ```bash
     $ sudo apt install redis-server
     $ sudo service redis-server start
@@ -66,7 +65,7 @@ MLaaS platform based on ADMIRABLE and BEST-AI research groups methods.
     ```bash
     $ conda activate UBUMLaaS
     ```
-1.  Execute to run the server
+2.  Execute to run the server
     ```bash
     python app.py
     ```
