@@ -3,17 +3,31 @@ import smtplib
 import os
 import variables as v
 import copy
-
+import arff
+import re
 
 def get_dataframe_from_file(path, filename):
-    if filename.split(".")[-1] == "csv":
+    extension = filename.split(".")[-1]
+    if extension == "csv":
         file_df = pd.read_csv(path + filename)
-    elif filename.split(".")[-1] == "xls":
+    elif extension == "xls":
         file_df = pd.read_excel(path + filename)
+    elif extension == "arff":
+        data =  arff.load(open(path+filename, "r"))
+        columns_name = [row[0] for row in data["attributes"]]
+        file_df = pd.DataFrame(data["data"], columns=columns_name)
     else:
         raise Exception("Invalid format for "+filename)
     return file_df
 
+def get_targets_columns(path, filename):
+    extension = filename.split(".")[-1]
+    if extension == "arff":
+        data =  arff.load(open(path+filename, "r"))
+        match = re.search( r'-C[ \t]+(-?\d)', data["relation"])
+        if match:
+            return match.group(1)
+    return None
 
 def send_email(user, email, procid, result=None):
     """SEND an email with the result

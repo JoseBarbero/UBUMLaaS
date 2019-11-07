@@ -14,8 +14,8 @@ from urllib.parse import unquote
 from ubumlaas.experiments.algorithm import task_skeleton
 from ubumlaas.util import get_dataframe_from_file
 import ubumlaas.experiments.views as views
-from ubumlaas.util import (generate_df_html, get_dict_exp, get_ensem_alg_name)
-
+from ubumlaas.util import (generate_df_html, get_dict_exp, get_ensem_alg_name, get_targets_columns)
+import arff
 
 @login_required
 @views.experiments.route("/new_experiment", methods=["GET"])
@@ -88,13 +88,15 @@ def change_column_list():
         str -- HTTP response with JSON
     """
     form_e = ExperimentForm()
-    dataset = form_e.data.data
+    filename = form_e.data.data
     upload_folder = "ubumlaas/datasets/"+current_user.username+"/"
-    df = get_dataframe_from_file(upload_folder, dataset)
+    df = get_dataframe_from_file(upload_folder, filename)
     to_return = {"html": render_template("blocks/show_columns.html", data=df),
                  "html2": render_template("blocks/show_columns_reduced.html",
                                           data=df.columns),
-                 "df": generate_df_html(df)}
+                 "df": generate_df_html(df),
+                 "config": get_targets_columns(upload_folder, filename)}
+
     return jsonify(to_return)
 
 
