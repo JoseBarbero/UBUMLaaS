@@ -5,17 +5,22 @@ import variables as v
 import copy
 import arff
 import re
+import numpy as np
+from scipy.io.arff import loadarff
 
 def get_dataframe_from_file(path, filename):
     extension = filename.split(".")[-1]
     if extension == "csv":
         file_df = pd.read_csv(path + filename)
+        print(file_df.iloc[:,1].values.dtype)
     elif extension == "xls":
         file_df = pd.read_excel(path + filename)
     elif extension == "arff":
-        data =  arff.load(open(path+filename, "r"))
-        columns_name = [row[0] for row in data["attributes"]]
-        file_df = pd.DataFrame(data["data"], columns=columns_name)
+        data, meta =  loadarff(path+filename)
+        
+        file_df = pd.DataFrame(data, columns=meta.names())
+        print(file_df)
+        
     else:
         raise Exception("Invalid format for "+filename)
     return file_df
