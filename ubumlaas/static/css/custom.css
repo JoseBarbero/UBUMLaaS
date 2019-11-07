@@ -4,7 +4,7 @@ hr {
 }
 
 footer .main-footer {
-    background: /*#3f3f3f*/var(--dark);
+    background: /*#3f3f3f*/var(--footer-color);
 }
 
 .square {
@@ -42,7 +42,8 @@ footer .main-footer {
 
 /**Custom colors*/
 :root {
-    --ubu-maroon: #8F5A0C;
+    --footer-color:var(--secondary);
+    --ubu-maroon:#0892d0;
     --success-even: rgb(calc(var(--success-red)/0.2051),calc(var(--success-green)/0.7260),calc(var(--success-blue)/0.3399));
     --success-odd: rgb(calc(var(--success-red)/0.2162),calc(var(--success-green)/0.7660),calc(var(--success-blue)/0.3575));
 
