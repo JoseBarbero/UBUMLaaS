@@ -1,7 +1,7 @@
 /**
  * Possible values of multitarget algorithms
  */
-const MULTITARGET = ["MultiClassification", "MultiRegression"];
+const MULTITARGET = ["MultiClassification"];
 
 /**
  * Possible values of Non-Supervised algorithmsç 

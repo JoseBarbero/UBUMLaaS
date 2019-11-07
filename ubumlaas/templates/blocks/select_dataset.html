@@ -14,8 +14,25 @@
                     $("#dataset_parameters").html(result.html);
                     $("#reduced_parameters").html(result.html2);
                     $("#show_dataset").html(result.df);
-                    if(UNSUPERVISED.includes($("#alg_typ").val())){
-                        no_target();
+                    if(result.config == null){
+                        if(UNSUPERVISED.includes($("#alg_typ").val())){
+                            no_target();
+                        }
+                    }else{
+                        if(Math.abs(result.config) != 1){
+                            no_target();
+                            $("#alg_typ").val(MULTITARGET[0]);
+                            $("#alg_typ").change();
+                        }
+                        let inicio = 0;
+                        let fin = result.config
+                        if(fin < 0){
+                            inicio = dataset_columns.length-fin;
+                            fin = dataset_columns.length;
+                        }
+                        for (let i = inicio; i < fin; i++){
+                            $("#col"+i+"_target_label").click();
+                        }
                     }
                     already_correct.add("data");
                 },

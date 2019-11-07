@@ -17,6 +17,7 @@ import ubumlaas.experiments.views as views
 from ubumlaas.util import (generate_df_html, get_dict_exp, get_ensem_alg_name, get_targets_columns)
 import arff
 
+
 @login_required
 @views.experiments.route("/new_experiment", methods=["GET"])
 def new_experiment():
