@@ -37,7 +37,14 @@
                 {% endfor %}
             </div>
             <div class="control-group">
-                {{form.password.label(class="form-group")}}
+                <div class="row">
+                    {{form.password.label(class="form-group col-lg-1 col-md-2 col-xs-2 col-sm-2 col-2")}}
+                    <div class="col-2">
+                        <a style="color: var(--info);" href="#a" data-trigger="focus" title="" data-container="body" data-toggle="popover" data-placement="top" data-content="{{ password_msg }}">
+                            <i class="material-icons">live_help</i>
+                        </a> 
+                    </div>
+                </div>
                 {{form.password(type="password", class="form-control")}}<br>
                 {% for error in form.password.errors %}
                     <div class="alert alert-warning alert-dismissible fade show" role="alert">{{ error }}

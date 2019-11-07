@@ -28,7 +28,7 @@ $("document").ready(function(){
 });
 
 function colors(){
-    let colors = ["danger", "success", "warning", "info", "secondary", "primary", "orange"];
+    let colors = ["danger", "success", "warning", "info", "secondary", "primary", "orange", "ubu-maroon"];
 
     colors.forEach(function(e){
         let color = getComputedStyle(document.documentElement)

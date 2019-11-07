@@ -25,7 +25,8 @@ class RegistrationForm(FlaskForm):
     """
     email = StringField("Email", validators=[DataRequired(), Email()])
     username = StringField("Username", validators=[DataRequired()])
-    password = PasswordField("Password", validators=[Length(min=4), DataRequired(), EqualTo("confirm_password", message="Passwords must match"), Regexp(regex=r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$", message="Password requirements: Minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character (@$!%*?&)")])
+    password_msg = "Password requirements: Minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character (@$!%*?&)"
+    password = PasswordField("Password", validators=[Length(min=4), DataRequired(), EqualTo("confirm_password", message="Passwords must match"), Regexp(regex=r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$", message=password_msg)])
     confirm_password = PasswordField("Confirm Password", validators=[DataRequired()])
     submit = SubmitField("Register")
 

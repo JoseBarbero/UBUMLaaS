@@ -127,11 +127,12 @@ footer .main-footer {
   }
   
   .widget li a {
-    color: var(--orange);
+    color: var(--ubu-maroon);
   }
   
   .widget li a:hover {
-    color: #4b92dc;
+    font-weight: bold;
+    /*color: #4b92dc;*/
   }
   
   .widget-title {
@@ -139,7 +140,7 @@ footer .main-footer {
   }
   
   .widget-title span {
-    background: #839FAD none repeat scroll 0 0;
+    background: var(--light) none repeat scroll 0 0;
     display: block;
     height: 1px;
     margin-top: 25px;
@@ -184,7 +185,7 @@ footer .main-footer {
   }
   
   ul.social-footer2 li a:hover {
-    background-color: var(--orange);
+    background-color: var(--ubu-maroon);
   }
   
   ul.social-footer2 li a {

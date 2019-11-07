@@ -9,3 +9,15 @@
     background-color: rgb(calc(var(--orange-red)/1.2), calc(var(--orange-green)/1.2), calc(var(--orange-blue)/1.2));
     border-color: rgb(calc(var(--orange-red)/1.28), calc(var(--orange-green)/1.28), calc(var(--orange-blue)/1.28));
 }
+
+.btn-ubu-maroon {
+    color: #fff;
+    background-color: var(--ubu-maroon);
+    border-color: var(--ubu-maroon);
+}
+
+.btn-ubu-maroon:hover {
+    color: #fff;
+    background-color: rgb(calc(var(--ubu-maroon-red)/1.2), calc(var(--ubu-maroon-green)/1.2), calc(var(--ubu-maroon-blue)/1.2));
+    border-color: rgb(calc(var(--ubu-maroon-red)/1.28), calc(var(--ubu-maroon-green)/1.28), calc(var(--ubu-maroon-blue)/1.28));
+}

@@ -28,7 +28,7 @@ def login():
                 login_user(user)
                 go_to = url_for("core.index")
             else:
-                flash("Wrong username or password") 
+                flash("Wrong username or password")
         else:
             flash("Wrong username or password")
         return redirect(go_to)
@@ -62,7 +62,8 @@ def register():
             default_datasets(form.username.data)
             flash("User registered.")
             return redirect(url_for("users.login"))
-    return render_template("register.html", form=form, title="Register")
+    return render_template("register.html", form=form, title="Register",
+                           password_msg=form.password_msg)
 
 
 def default_datasets(username):
