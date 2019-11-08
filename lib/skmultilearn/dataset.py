@@ -259,9 +259,8 @@ def what_columns_is_it(column):
         raise Exception("Type error")
 
 
-def save_to_arff(X, y, label_location="start", save_sparse=False, filename=None):
+def save_to_arff(X, y, label_location="end", save_sparse=True, filename=None):
     """Method for dumping data to ARFF files
-
     Parameters
     ----------
     X : `array_like`, :class:`numpy.matrix` or :mod:`scipy.sparse` matrix, shape=(n_samples, n_features)
@@ -282,25 +281,16 @@ def save_to_arff(X, y, label_location="start", save_sparse=False, filename=None)
     str or None
         the ARFF dump string, if filename is None
     """
-    X_dense = np.array(X.todense())
-    y_dense = np.array(y.todense())
     X = X.todok()
-    y = y.todok()    
+    y = y.todok()
 
     x_prefix = 0
     y_prefix = 0
 
-    x_attributes = [(u'X{}'.format(i), what_columns_is_it(X_dense[:, i]))
-                    for i in range(X.shape[1])]
-
-    y_attributes = [(u'y{}'.format(i), what_columns_is_it(y_dense[:, i]))
-                    for i in range(y.shape[1])]
-
-    """x_attributes = [(u'X{}'.format(i), u'NUMERIC')
+    x_attributes = [(u'X{}'.format(i), u'NUMERIC')
                     for i in range(X.shape[1])]
     y_attributes = [(u'y{}'.format(i), [str(0), str(1)])
-                    for i in range(y.shape[1])]"""
-
+                    for i in range(y.shape[1])]
 
     if label_location == "end":
         y_prefix = X.shape[1]
