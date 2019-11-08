@@ -19,7 +19,6 @@ def get_dataframe_from_file(path, filename):
         data, meta =  loadarff(path+filename)
         
         file_df = pd.DataFrame(data, columns=meta.names())
-        print(file_df)
         
     else:
         raise Exception("Invalid format for "+filename)
