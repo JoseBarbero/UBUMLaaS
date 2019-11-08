@@ -13,7 +13,11 @@ function toggle_click(value,span){
  * Boostrap grid adaptation for multiples ensembles levels
  */
 function beautify_alg_config(filter=false){
-    let children = $(config_fieldset.children()[0]).children();
+    let over = config_fieldset;
+    if (filter){
+        over = filter_fieldset;
+    }
+    let children = $(over.children()[0]).children();
     let offset = 0;
     let base = 6;
     if(children.length > 1){
@@ -101,9 +105,13 @@ function get_basename(param_name, level, filter=false){
  * 
  * @param {Level where start the removing} base_level 
  */
-function clean_levels(base_level){
+function clean_levels(base_level, filter=false){
     sub_clasifiers_count = base_level-1;
-    let children = $(config_fieldset.children()[0]).children();
+    let over = config_fieldset;
+    if (filter){
+        over = filter_fieldset;
+    }
+    let children = $(over.children()[0]).children();
     for(let i = base_level; i<children.length; i++){
         $(children[i]).remove();
     }

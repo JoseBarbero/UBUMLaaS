@@ -4,7 +4,7 @@ from flask import \
 import variables as v
 from ubumlaas.models import \
     (Experiment, load_experiment,
-     get_algorithm_by_name)
+     get_algorithm_by_name, get_filter_by_name)
 from ubumlaas.experiments.forms import \
     (ExperimentForm, DatasetForm, DatasetParametersForm)
 from flask_login import (current_user, login_required)
@@ -192,5 +192,10 @@ def get_filters():
 
 @views.experiments.route("/experiment/filters_generator_form", methods=["POST"])
 def form_generator_for_filter():
-    print(request.form)
-    return jsonify({"config": "{}"})
+    filter_name = request.form.get('name')
+    filter_ = get_filter_by_name(filter_name)
+    if filter_ is not None:
+        to_ret = {"config": filter_.config}
+    else:
+        to_ret = {"config": {}}
+    return jsonify(to_ret)

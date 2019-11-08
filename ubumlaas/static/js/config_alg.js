@@ -10,9 +10,13 @@ $("document").ready(function(){
  * @param {string} alg_name the name of an algorithm to be used as base estimator
  * @param {int, default=null} level of ensemble 
  */
-function load_new_ensemble(alg_name, level = null){
+function load_new_ensemble(alg_name, level = null, filter=false){
     if(level == null){
         level = sub_clasifiers_count;
+    }
+    
+    if(filter){
+        id = "form_config_filter_level"+level;
     }
     let id = "form_config_alg_level"+level;
     let lvl = $("#"+id);
@@ -23,7 +27,7 @@ function load_new_ensemble(alg_name, level = null){
         lvl.html("");
     }
     let alg_config = JSON.parse(load_config(false, alg_name, false));
-    generateForm(alg_config, id, level);
+    generateForm(alg_config, id, level, filter);
 }
 
 /**
@@ -77,7 +81,7 @@ function generateForm(alg_config, place_in_id, level_to_modify=0, filter=false){
     if(new_subalgorithm != ""){
         load_new_ensemble(new_subalgorithm);
     }else if ( sub_clasifiers_count > level_to_modify){
-        clean_levels(level_to_modify+1);            
+        clean_levels(level_to_modify+1, filter);            
     }
     beautify_alg_config(filter);
 }
@@ -244,7 +248,7 @@ function final_decoration_for_form_field(content, basename, parameter, level_to_
  * @param {object} alg_config definition of algorithm configuration posibilities
  */
 function create_algorithm_config_field(place_in, row_number, field, level_to_modify, alg_config, filter=false){
-    let basename = get_basename(field, level_to_modify);        
+    let basename = get_basename(field, level_to_modify, filter);        
     let parameter = alg_config[field];
     let row = $("<div></div>", {class: "row"});
     let block = $("<div></div>", {id: basename, class: "col-12"});
