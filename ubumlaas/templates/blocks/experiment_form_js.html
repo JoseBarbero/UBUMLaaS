@@ -223,15 +223,15 @@
                     }
                 }
             }
-        }        
+        }
+        configure_algorithm();
     }
 
     function configure_algorithm(){
         let alg_typ = $("#alg_typ");
         alg_typ.val(algorithm_selected.alg_typ);
         alg_typ.change();
-        config_algorithm();
-        
+        config_algorithm();        
     }
 
     function config_algorithm(){
@@ -242,7 +242,7 @@
         }
         alg_name.val(algorithm_selected.alg_name);
         alg_name.change();
-        add_algorithm_parameters();
+        add_algorithm_parameters();        
     }
 
     function add_algorithm_parameters(alg=null, alg_config=null, level=0){  
@@ -268,14 +268,11 @@
         }
         var parameters = Object.keys(base_alg_config);
         var sel_parameters = Object.keys(alg_config);
-        console.log(sel_parameters);
         parameters.forEach(function(i){
             var p = $("#"+prefix+i+"_value");
             if(base_alg_config[i].type != "boolean"){
                 let vlv = $("#"+prefix+i+"_activator");
                 let lbl = $("#"+prefix+i+"_activator_label");
-                console.log(vlv);
-                console.log(lbl);
                 if(sel_parameters.includes(i)){
                     if(typeof(alg_config[i]) == "object"){
                         p.val(alg_config[i].alg_name);
@@ -300,12 +297,12 @@
                 }
             }
         });
-        set_dataset_parameters();
+        
     }
 
     
     $("document").ready(function(){
-        experiment = {{ experiment|safe }};
+        experiment = {{ experiment | safe }};
         exp_config = JSON.parse(experiment.exp_config);
         //Dataset
         let dataset = $("#data");
@@ -328,7 +325,7 @@
         //Algorithm
         algorithm_selected = experiment.alg;
         //Try to set dataset configuration:
-        configure_algorithm();     
+        set_dataset_parameters();     
     });
 </script>
 {% endif %}
