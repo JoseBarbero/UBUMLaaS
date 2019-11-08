@@ -152,6 +152,23 @@
             </div>
         </div>
     </fieldset>
+    <fieldset id="select_filter_block">
+        <form class="form-group col-md-6 offset-md-3" id="form_filter">
+            {{ form_d.hidden_tag() }}
+            <div id="show_filters" class="form-group" style="text-align: center;">
+                {% include 'blocks/show_filters.html' %}
+            </div>
+        </form>
+    </fieldset>
+    <fieldset class="container" id="config_filter_fieldset" style="overflow: auto">
+        <div class="row-fluid">
+            <div>
+                <div id="form_config_filter" class="form-group">
+                    
+                </div>
+            </div>
+        </div>
+    </fieldset>
     <fieldset id="submit_completed_experiment_block">
         <form class="col-md-6 offset-3" id="submit_completed_experiment">
             {{ form_e.hidden_tag() }}

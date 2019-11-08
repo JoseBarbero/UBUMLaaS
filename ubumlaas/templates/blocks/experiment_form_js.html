@@ -1,43 +1,70 @@
 <script src="{{ url_for('static', filename="js/include/generate_form_utils.js") }}"></script>
 <script src="{{ url_for('static', filename="js/config_alg.js") }}"></script>
 <script src="{{ url_for('static', filename="js/config_dataset.js") }}"></script>
+<script src="{{ url_for('static', filename="js/filters.js") }}"></script>
 <script src="{{ url_for('static', filename="js/validations.js") }}"></script>
 <script src="{{ url_for('static', filename="js/progress-bar.js") }}"></script>
 <script>
     before_typ = undefined;
-    function load_config(async=true, algorithm=null, reset=true){
+    function load_config(async=true, algorithm=null, reset=true, filter=false){
         if (reset){
-            config_fieldset.html("<div class=\"row-fluid\">"+
-                                    "<div>" +
-                                        "<div id=\"form_config_alg\" class=\"form-group\">" +            
-                                        "</div>" +
-                                    "</div>" +
-                                 "</div>");
-            sub_clasifiers_count = 0;
+            let over;
+            let place_id;
+            if(filter){
+                over = filter_fieldset;
+                place_id = "form_config_filter";
+                sub_filter_count = 0;
+            }else{
+                over = config_fieldset;
+                place_id = "form_config_alg";
+                sub_clasifiers_count = 0;                
+            }
+            over.html(  
+                        "<div class=\"row-fluid\">"+
+                            "<div>" +
+                                "<div id=\""+place_id+"\" class=\"form-group\">" +            
+                                "</div>" +
+                            "</div>" +
+                        "</div>"
+                     );
         }
-        let alg_name;
+        let name;
         if(algorithm == null){
-            alg_name = $("#alg_name").val();
+            let var_name = "alg_name";
+            if (filter){
+                var_name = "filter_name";
+            }
+            name = $("#"+var_name).val();
         }else{
-            alg_name = algorithm;
+            name = algorithm;
+        }
+        let url = '{{ url_for("experiments.form_generator") }}';
+        if(filter){
+            url = '{{ url_for("experiments.form_generator_for_filter") }}';
         }
         let result_ = {};
         $.ajax({
-            url: '{{ url_for("experiments.form_generator") }}',
+            url: url,
             type: 'POST',
             contentType: 'application/x-www-form-urlencoded',
-            data: "alg_name=" + alg_name,
+            data: "name=" + name,
             success: function (result) {
                 if(!async){
-                    result_ = result.alg_config;
+                    result_ = result.config;
                 }else{
-                    generateForm(JSON.parse(result.alg_config));
-                }
-                already_correct.add("alg_name");
+                    let place_in = "form_config_alg";
+                    if(filter){
+                        place_in = "form_config_filter";
+                    }else{
+                        already_correct.add("alg_name");
+                    }
+                    generateForm(JSON.parse(result.config), place_in, 0, filter);
+                }                
             },
             error: function(result){
                 generateForm({})
-                already_correct.delete("alg_name");
+                if(!filter)
+                    already_correct.delete("alg_name");
             },
             complete: function(){
                 update_progress();
@@ -125,7 +152,9 @@
 
     $("document").ready(function () {
         config_fieldset = $("#config_algorithm_fieldset");
+        filter_fieldset = $("#config_filter_fieldset");
         sub_clasifiers_count = 0;
+        sub_filter_count = 0;
         $("#alg_typ").change(function () {
             $.ajax({
                 url: '{{ url_for("experiments.change_alg") }}',

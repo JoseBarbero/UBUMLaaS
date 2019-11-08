@@ -12,7 +12,7 @@ function toggle_click(value,span){
 /**
  * Boostrap grid adaptation for multiples ensembles levels
  */
-function beautify_alg_config(){
+function beautify_alg_config(filter=false){
     let children = $(config_fieldset.children()[0]).children();
     let offset = 0;
     let base = 6;
@@ -30,7 +30,7 @@ function beautify_alg_config(){
             child.addClass("offset-md-"+offset);
         }
         if (loop > 0){
-            child.prepend(name_of_base_clasifier(loop))
+            child.prepend(name_of_base_clasifier(loop, filter))
             child.css("margin-top", (2*(loop-1))+"em");
         }
         child.addClass("col-md-"+base);
@@ -44,8 +44,8 @@ function beautify_alg_config(){
  * @param {int} level 
  * @return {jquery node} 
  */
-function name_of_base_clasifier(level){
-    let basename = get_basename("base_estimator", level-1)
+function name_of_base_clasifier(level, filter=false){
+    let basename = get_basename("base_estimator", level-1, filter)
     if($("#"+basename+"_title").length == 0){
         let name = $("#"+basename+"_value option:selected").text();
         let block = $("<div></div>", {class: "col-12", id: basename+"_title"});
@@ -85,8 +85,11 @@ function change_value(e, ensemble=false){
  * @param {real name of parameter} param_name 
  * @param {level of the estimator} level 
  */
-function get_basename(param_name, level){
+function get_basename(param_name, level, filter=false){
     let basename = param_name;
+    if(filter){
+        basename += "_filter";
+    }
     if(level>0){
         basename = "level"+level+"_"+basename;
     }
@@ -194,8 +197,8 @@ function load_next_ensemble(name, level){
  * @param {parameter object} param 
  * @param {level of the estimator} level 
  */
-function get_base_block(placein, block, param_name, param, level){
-    let basename = get_basename(param_name, level);
+function get_base_block(placein, block, param_name, param, level, filter=false){
+    let basename = get_basename(param_name, level, filter);
     let lbl = $("<label></label>", { "data-toggle": "tooltip",
                                      title: param.help,
                                      for: basename+"_value" });

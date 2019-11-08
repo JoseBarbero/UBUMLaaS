@@ -49,9 +49,15 @@ function change_validate(e){
  * @param {string} place_in_id identifier of div where form be placed
  * @param {int} level_to_modify level of the estimator
  */
-function generateForm(alg_config, place_in_id="form_config_alg", level_to_modify=0){
-    if(level_to_modify == sub_clasifiers_count){
-        sub_clasifiers_count++;
+function generateForm(alg_config, place_in_id, level_to_modify=0, filter=false){
+    if (!filter){
+        if(level_to_modify == sub_clasifiers_count){
+            sub_clasifiers_count++;
+        }
+    }else{
+        if(level_to_modify == sub_filter_count){
+            sub_filter_count++;
+        }
     }
     alg_config_reference = alg_config;
     var place_in = $("#"+place_in_id);
@@ -62,7 +68,7 @@ function generateForm(alg_config, place_in_id="form_config_alg", level_to_modify
     var row_number = 0;
     parameters.forEach(function(i){
         row_number += 1;
-        let subalgorithm = create_algorithm_config_field(place_in, row_number, i, level_to_modify, alg_config);
+        let subalgorithm = create_algorithm_config_field(place_in, row_number, i, level_to_modify, alg_config, filter);
         if (subalgorithm != ""){
             new_subalgorithm = subalgorithm;
         }
@@ -73,7 +79,7 @@ function generateForm(alg_config, place_in_id="form_config_alg", level_to_modify
     }else if ( sub_clasifiers_count > level_to_modify){
         clean_levels(level_to_modify+1);            
     }
-    beautify_alg_config();
+    beautify_alg_config(filter);
 }
 
 /**
@@ -237,7 +243,7 @@ function final_decoration_for_form_field(content, basename, parameter, level_to_
  * @param {int} level_to_modify level of the ensemble
  * @param {object} alg_config definition of algorithm configuration posibilities
  */
-function create_algorithm_config_field(place_in, row_number, field, level_to_modify, alg_config){
+function create_algorithm_config_field(place_in, row_number, field, level_to_modify, alg_config, filter=false){
     let basename = get_basename(field, level_to_modify);        
     let parameter = alg_config[field];
     let row = $("<div></div>", {class: "row"});
@@ -245,7 +251,7 @@ function create_algorithm_config_field(place_in, row_number, field, level_to_mod
     if (row_number%2 == 1){
         block.addClass("row-odd");
     }
-    get_base_block(row, block, field, parameter, level_to_modify);        
+    get_base_block(row, block, field, parameter, level_to_modify, filter);        
     let content = create_form_fields(basename, parameter);
     
     if(["integer", "float", "boolean"].includes(parameter.type)){

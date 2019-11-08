@@ -163,10 +163,34 @@ def form_generator():
     Returns:
         str -- HTTP response with JSON
     """
-    alg_name = request.form.get('alg_name')
+    alg_name = request.form.get('name')
     alg = get_algorithm_by_name(alg_name)
     if alg is not None:
-        to_ret = {"alg_config": alg.config}
+        to_ret = {"config": alg.config}
     else:
-        to_ret = {"alg_config": {}}
+        to_ret = {"config": {}}
     return jsonify(to_ret)
+
+
+@views.experiments.route("/experiment/get_filters", methods=["POST"])
+def get_filters():
+    """Get filters compatible
+
+    Returns:
+        str -- HTTP response with rendered filter selectable
+        str -- HTTP JSON/response with list of filters
+    """
+    form_e = ExperimentForm()
+    alg_name = request.form.get("alg_name")
+    filter_name = request.form.get("filter_name", None)
+    form_e.filter_list(alg_name, filter_name)
+    if filter_name is None:
+        return render_template("blocks/show_filters.html", form_e=form_e)
+    else:
+        return jsonify(dict(form_e.filter_name.choices))
+
+
+@views.experiments.route("/experiment/filters_generator_form", methods=["POST"])
+def form_generator_for_filter():
+    print(request.form)
+    return jsonify({"config": "{}"})
