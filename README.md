@@ -12,9 +12,9 @@ Machine Learning as a Service (MLaaS) platform based on ADMIRABLE and BEST-AI re
 This application is described as one of the result of two different projects (with objectives partially overlapping, and being this application in the intersection of the objectives):
 
 1. <a href="http://www.mineco.gob.es/portal/site/mineco/"><img align="right" width="20%" src="ubumlaas/static/img/MEC.svg"></a>
-Project "***Algoritmos de ensembles para problemas de salidas múltiples - nuevos desarrollos y aplicaciones***" from "**Ministerio de Economía y Competitividad**" (reference: TIN2015-67534-P)
+Project "***Algoritmos de ensembles para problemas de salidas múltiples - nuevos desarrollos y aplicaciones***" from "*Ministerio de Economía y Competitividad*" (reference: TIN2015-67534-P)
 2. <a href="https://www.jcyl.es/"><img align="right" width="20%" src="ubumlaas/static/img/JCYL.svg"></a>
-Project "***Minería de datos para la mejora del mantenimiento y disponibilidad de máquinas de altas presiones***" from **"Consejería de Educación de la Junta de Castilla y León"** (reference: BU085P17)
+Project "***Minería de datos para la mejora del mantenimiento y disponibilidad de máquinas de altas presiones***" from *"Consejería de Educación de la Junta de Castilla y León"* (reference: BU085P17)
 
 ---
 ## Installation (Linux)
