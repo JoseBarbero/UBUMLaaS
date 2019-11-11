@@ -55,9 +55,17 @@ def launch_experiment():
     user = current_user
     dataset_config = json.loads(unquote(request.form.get("dataset_config")))
     exp_config = dataset_config
+    filter_name = request.form.get("filter_name")
+    if filter_name is None or filter_name == "":
+        filter_name = None
+        filter_config = None
+    else:
+        filter_config = request.form.get("filter_config")
     exp = Experiment(user.id, request.form.get("alg_name"),
                      unquote(request.form.get("alg_config")),
-                     json.dumps(exp_config), request.form.get("data"),
+                     json.dumps(exp_config),
+                     filter_name, filter_config,
+                     request.form.get("data"),
                      None, time.time(), None, 0)
     v.db.session.add(exp)
     v.db.session.commit()

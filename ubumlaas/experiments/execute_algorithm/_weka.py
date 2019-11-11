@@ -19,6 +19,7 @@ from weka.core.converters import Loader
 import weka.core.serialization as serialization
 
 import tempfile
+import sys
 
 from ubumlaas.experiments.execute_algorithm import Abstract_execute
 
@@ -32,6 +33,7 @@ class Execute_weka(Abstract_execute):
             experiment {dict} -- experiment dictionary
         """
         Abstract_execute.__init__(self, experiment)
+        self.FILTER = "weka.classifiers.meta.FilteredClassifier"
 
         self.y_uniques = None
         if not jvm.started:
@@ -74,12 +76,12 @@ class Execute_weka(Abstract_execute):
         return data
 
     @staticmethod
-    def create_weka_parameters(alg_name, alg_config, baseconf=None):
+    def create_weka_parameters(name, config, baseconf=None, filter_=False):
         """Create weka command line parameter based in the algorithm name and algorithm configuration
 
         Arguments:
-            alg_name {str} -- algortihm name, for example: weka.classifiers.trees.J48
-            alg_config {dict} -- algorithm configuration
+            name {str} -- algortihm name, for example: weka.classifiers.trees.J48
+            onfig {dict} -- algorithm configuration
 
         Keyword Arguments:
             baseconf {dict} -- base configuration of the algortihm configuration (default: {None})
@@ -88,14 +90,18 @@ class Execute_weka(Abstract_execute):
             [list] -- list of the command line parameter
         """
         if baseconf is None:
-            from ubumlaas.models import get_algorithm_by_name
-            exp = get_algorithm_by_name(alg_name)
+            from ubumlaas.models import \
+                (get_algorithm_by_name, get_filter_by_name)
+            if (filter_):
+                exp = get_filter_by_name(name)
+            else:
+                exp = get_algorithm_by_name(name)
             baseconf = json.loads(exp.config)
 
         lincom = []
 
-        for i in alg_config:
-            parameter = alg_config[i]
+        for i in config:
+            parameter = config[i]
             if type(parameter) == dict:
                 sub_list = Execute_weka.\
                     create_weka_parameters(parameter["alg_name"],
@@ -120,7 +126,27 @@ class Execute_weka(Abstract_execute):
             create_weka_parameters(self.algorithm_name,
                                    self.algorithm_configuration,
                                    self.configuration)
-        return Classifier(classname=self.algorithm_name, options=lincom)
+        if self.filter_name is None:
+            classifier = Classifier(classname=self.algorithm_name,
+                                    options=lincom)
+        else:
+            classifier = self.__create_filter(lincom)
+        return classifier
+
+    def __create_filter(self, alg_options):
+        new_params = ["--", self.algorithm_name, "-W"]
+        for p in new_params:
+            alg_options.insert(0, p)
+        lincom = Execute_weka\
+            .create_weka_parameters(self.filter_name,
+                                    self.filter_config,
+                                    filter_=True)
+        filter_cmd = self.filter_name + \
+                     " " + " ".join(lincom)
+        alg_options.insert(0, filter_cmd)
+        alg_options.insert(0, "-F")
+        return Classifier(classname=self.FILTER,
+                          options=alg_options)
 
     def serialize(self, model, path):
         """Serialize the java model in specific path
