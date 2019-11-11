@@ -6,32 +6,28 @@ import copy
 import arff
 import re
 import numpy as np
-from scipy.io.arff import loadarff
 
-def get_dataframe_from_file(path, filename):
+def get_dataframe_from_file(path, filename, target_column = False):
     extension = filename.split(".")[-1]
+    targets_indexes = None
     if extension == "csv":
         file_df = pd.read_csv(path + filename)
-        print(file_df.iloc[:,1].values.dtype)
     elif extension == "xls":
         file_df = pd.read_excel(path + filename)
     elif extension == "arff":
-        data, meta =  loadarff(path+filename)
-        
-        file_df = pd.DataFrame(data, columns=meta.names())
-        
-    else:
-        raise Exception("Invalid format for "+filename)
-    return file_df
-
-def get_targets_columns(path, filename):
-    extension = filename.split(".")[-1]
-    if extension == "arff":
-        data =  arff.load(open(path+filename, "r"))
+        data =  arff.load(open(path+filename, "r"), encode_nominal=True)
+        columns = [row[0] for row in data["attributes"]]
+        file_df = pd.DataFrame(data["data"], columns=columns)
         match = re.search( r'-C[ \t]+(-?\d)', data["relation"])
         if match:
-            return match.group(1)
-    return None
+            targets_indexes = match.group(1)
+    else:
+        raise Exception("Invalid format for "+filename)
+    
+    if target_column:
+        return file_df, targets_indexes
+    return file_df
+
 
 def send_email(user, email, procid, result=None):
     """SEND an email with the result
