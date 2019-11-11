@@ -142,21 +142,29 @@ function give_me_activator(content, identifier){
  * @param {string} alg_name complete algorithm name
  * @param {int} level level of ensemble
  */
-function get_config_form(alg_name=null, level=0){
+function get_config_form(alg_name=null, level=0, filter=false){
     let name_prefix = "";
+    let name_sufix = "";
+    if(filter){
+        name_sufix = "_filter";
+    }
     if (level > 0){
         name_prefix = "level"+level+"_";
     }
     if(alg_name == null){
-        alg_name = $("#alg_name").val();
+        let id_ = "alg_name";
+        if(filter){
+            id_ = "filter_name"
+        }
+        alg_name = $("#"+id_).val();
     }
-    let config = load_config(false, alg_name, false);
+    let config = load_config(false, alg_name, false, filter);
     var config_refence = JSON.parse(config);
     var parameters = Object.keys(config_refence);
     let result = {};
     parameters.forEach(function(i){
         let par = config_refence[i];
-        let parameter = $("#"+name_prefix+i+"_value");
+        let parameter = $("#"+name_prefix+i+name_sufix+"_value");
         if(!parameter.prop('disabled')){
             result[i] = config_form_value(parameter, par, level)
         }

@@ -110,15 +110,18 @@
     $("form#submit_completed_experiment").submit(function (e) {
         e.preventDefault();
         var alg_name = $("#alg_name").val();
+        var filter_name = $("#filter_name").val();
         var data = $("#data").val();        
         var alg_config = encodeURIComponent(JSON.stringify(get_config_form()));
+        var filter_config = encodeURIComponent(JSON.stringify(get_config_form(null, 0, true)));
         var dataset_config = encodeURIComponent(JSON.stringify(get_dataset_config()));
         $.ajax({
             url: '{{ url_for("experiments.launch_experiment") }}',
             type: 'POST',
             contentType: 'application/x-www-form-urlencoded',
-            data: "alg_name=" + alg_name + "&data=" + data + 
-                "&alg_config="+alg_config+"&dataset_config="+dataset_config,
+            data: "alg_name=" + alg_name + "&data=" + data +
+                  "&filter_name=" + filter_name + "&filter_config=" + filter_config +
+                  "&alg_config="+alg_config+"&dataset_config="+dataset_config,
             success: function (result) {
                 window.location.replace("{{ url_for('users.profile') }}")
             },
