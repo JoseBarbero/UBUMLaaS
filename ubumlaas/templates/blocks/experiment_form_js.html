@@ -196,7 +196,8 @@
             if(UNSUPERVISED.includes(current) && !UNSUPERVISED.includes(before)){
                 no_target();
             }else if(MULTITARGET.includes(before) && !MULTITARGET.includes(current)){
-                $("#data").change();
+                no_target();
+                $("#col"+(dataset_columns.length-1)+"_target_label").click();
             }
         });
 

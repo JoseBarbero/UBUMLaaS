@@ -54,13 +54,10 @@ def create_app(config_name):
         v.workers = 0
         for _ in range(BASE_WORKERS):
             WorkerBuilder().set_queue(v.q).create().start()
-            
-        #Uninstall weka unofficial packages
-        v.q.enqueue(weka_packages.uninstall_unofficial_packages,
-                    "ubumlaas/weka/weka_packages.json")  
-        # Install weka packages
-        v.q.enqueue(weka_packages.install_packages,
-                    "ubumlaas/weka/weka_packages.json")        
+
+        #  Startup weka unofficial packages
+        v.q.enqueue(weka_packages.start_up_weka,
+                    "ubumlaas/weka/weka_packages.json")
 
     ######################
     ###  LOGIN CONFIG  ###
@@ -86,7 +83,6 @@ def create_app(config_name):
     def split_dict_key(cad):
         return cad.split(".")[-1]
 
-    app.jinja_env.filters["split"]=split_dict_key
+    app.jinja_env.filters["split"] = split_dict_key
     v.app = app
     return app
-
