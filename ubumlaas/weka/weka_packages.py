@@ -16,7 +16,7 @@ def install_packages(path):
             weka_packages = json.load(f)
             for package_name, package_path in weka_packages.items(): 
                 if not packages.is_installed(package_name):
-                    print("Installing:", package_path)
+                    print("Installing:",packagename, package_path)
                     packages.install_package(package_path)
 
     finally:
@@ -28,3 +28,16 @@ def uninstall_package(weka_package_name):
         packages.uninstall_package(weka_package_name)
     finally:
         jvm.stop()
+
+def uninstall_unofficial_packages(path):
+    try:
+        jvm.start()
+        with open(path,"r") as f:
+            weka_packages = json.load(f)
+            for package_name, package_path in weka_packages.items(): 
+                if package_name != package_path and packages.is_installed(package_name):
+                    print("Uninstalling", package_name)
+                    packages.uninstall_package(package_name)
+    finally:
+        jvm.stop()
+                 
