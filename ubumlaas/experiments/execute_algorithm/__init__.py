@@ -19,7 +19,7 @@ class Abstract_execute(ABC):
         self.algorithm_configuration = Abstract_execute.__convert_to_dict(experiment["alg_config"])  # configuration algorithm
         self.configuration = Abstract_execute.__convert_to_dict(experiment["alg"]["config"])
         self.experiment_configuration = Abstract_execute.__convert_to_dict(experiment["exp_config"])
-        if (experiment["filter"] is not None):
+        if experiment.get("filter") is not None:
             self.filter_name = experiment["filter"]["filter_name"]
             self.filter_config = Abstract_execute.__convert_to_dict(experiment["filter_config"])
         else:
@@ -218,3 +218,6 @@ class Abstract_execute(ABC):
             [bool] -- True if algorithm is Classfication
         """
         return self.algorithm_type == "Classification"
+
+    def has_filter(self):
+        return self.filter_name is not None
