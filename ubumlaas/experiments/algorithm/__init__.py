@@ -41,6 +41,7 @@ def task_skeleton(experiment, current_user):
     # Diference sklearn executor and weka executor
     # Get algorithm type
     type_app = experiment["alg"]["lib"]
+    execution_lib = None
     try:
         execution_lib = v.apps_functions[type_app](experiment)
 
@@ -107,7 +108,8 @@ def task_skeleton(experiment, current_user):
         print(traceback.format_exc())
         state = 2
     finally:
-        execution_lib.close()
+        if execution_lib:
+            execution_lib.close()
 
     from ubumlaas.models import Experiment
     exp = Experiment.query.filter_by(id=experiment['id']).first()
