@@ -175,9 +175,11 @@ def form_generator():
     alg = get_algorithm_by_name(alg_name)
     if alg is not None:
         to_ret = {"config": alg.config}
+        code = 200
     else:
         to_ret = {"config": {}}
-    return jsonify(to_ret)
+        code = 418
+    return jsonify(to_ret), code
 
 
 @views.experiments.route("/experiment/get_filters", methods=["POST"])
@@ -204,6 +206,8 @@ def form_generator_for_filter():
     filter_ = get_filter_by_name(filter_name)
     if filter_ is not None:
         to_ret = {"config": filter_.config}
+        code = 200
     else:
         to_ret = {"config": {}}
-    return jsonify(to_ret)
+        code = 418
+    return jsonify(to_ret), code

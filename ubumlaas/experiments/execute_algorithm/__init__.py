@@ -22,6 +22,8 @@ class Abstract_execute(ABC):
         if (experiment["filter"] is not None):
             self.filter_name = experiment["filter"]["filter_name"]
             self.filter_config = Abstract_execute.__convert_to_dict(experiment["filter_config"])
+        else:
+            self.filter_name = None
 
     @staticmethod
     def __convert_to_dict(possible_json_str):

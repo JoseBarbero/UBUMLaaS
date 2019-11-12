@@ -39,7 +39,7 @@ class Execute_weka(Abstract_execute):
         if not jvm.started:
             jvm.start(packages=True)
 
-    def create_weka_dataset(self, X, y = None):
+    def create_weka_dataset(self, X, y=None):
         """Create weka dataset using temporaly file
 
         Arguments:
@@ -145,6 +145,7 @@ class Execute_weka(Abstract_execute):
                      " " + " ".join(lincom)
         alg_options.insert(0, filter_cmd)
         alg_options.insert(0, "-F")
+        print(alg_options)
         return Classifier(classname=self.FILTER,
                           options=alg_options)
 

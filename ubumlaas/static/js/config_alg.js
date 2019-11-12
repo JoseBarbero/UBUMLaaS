@@ -10,7 +10,7 @@ $("document").ready(function(){
  * @param {string} alg_name the name of an algorithm to be used as base estimator
  * @param {int, default=null} level of ensemble 
  */
-function load_new_ensemble(alg_name, level = null, filter=false){
+function load_new_ensemble(alg_name, level=null, filter=false){
     if(level == null){
         level = sub_clasifiers_count;
     }
@@ -155,8 +155,10 @@ function create_numeric_block(basename, parameter, mode){
     let step, min, max;
     if(mode === "float"){
         step='any';
-        min=convertExponentialToDecimal(parameter.min);
-        max=convertExponentialToDecimal(parameter.max);
+        if(typeof parameter.min !== "undefined")
+            min=convertExponentialToDecimal(parameter.min);
+        if(typeof parameter.max !== "undefined")
+           max=convertExponentialToDecimal(parameter.max);
     }else if(mode === 'int'){
         step=1;
         min=parameter.min;
