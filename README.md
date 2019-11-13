@@ -46,9 +46,7 @@ MLaaS platform based on ADMIRABLE and BEST-AI research groups methods.
     ```
 8. Create database
     ```bash
-    $ flask db init
-    $ flask db migrate
-    $ flask db upgrade
+    $ mv data_base.sqlite ubumlaas/data.sqlite
     ```
     *Opt:* 
     Download a database and put it in ./ubumlaas/
