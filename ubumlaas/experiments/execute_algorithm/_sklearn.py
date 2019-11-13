@@ -8,7 +8,8 @@ import sklearn.neighbors
 import sklearn.model_selection
 import sklearn.preprocessing
 import sklearn.multiclass
-
+import imblearn
+from imblearn.pipeline import make_pipeline
 import pickle
 
 from ubumlaas.experiments.execute_algorithm import Abstract_execute
@@ -45,11 +46,15 @@ class Execute_sklearn(Abstract_execute):
         """Create the model with experiment
 
         Returns:
-            [object] -- model with the experiment configuration
+            [object] -- model with the experiment configuration or pipeline if has filter
         """
-        return Execute_sklearn\
+        model = Execute_sklearn\
             .__create_sklearn_model(self.algorithm_name,
                                     self.algorithm_configuration)
+        if self.has_filter():
+            filter = eval(self.filter_name+"(**self.filter_config)")
+            return make_pipeline(filter, model)
+        return model
 
     def serialize(self, model, path):
         """Serialize the model in specific path

@@ -145,7 +145,6 @@ class Execute_weka(Abstract_execute):
                      " " + " ".join(lincom)
         alg_options.insert(0, filter_cmd)
         alg_options.insert(0, "-F")
-        print(alg_options)
         return Classifier(classname=self.FILTER,
                           options=alg_options)
 

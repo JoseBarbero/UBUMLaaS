@@ -254,12 +254,12 @@ def what_columns_is_it(column):
     elif column.dtype == 'int':
         return [str(a) for a in np.unique(column)]
     elif column.dtype > '<U0':
-        return [a for a in column]
+        return list(set([a for a in column]))
     else:
         raise Exception("Type error")
 
 
-def save_to_arff(X, y, label_location="end", save_sparse=True, filename=None):
+def save_to_arff(X, y, label_location="end", save_sparse=True, filename=None, x_attributes = None, y_attributes = None):
     """Method for dumping data to ARFF files
     Parameters
     ----------
@@ -276,6 +276,10 @@ def save_to_arff(X, y, label_location="end", save_sparse=True, filename=None):
         zeroes within file, very useful in multi-label classification.
     filename : str or None
         Path to ARFF file, if None, the ARFF representation is returned as string
+    x_attributes:  list or None
+        List of x attributes, if None is considered all numeric
+    y_attributes: list or None
+        List of y attributes, if None is considered all {0,1}
     Returns
     -------
     str or None
@@ -286,11 +290,12 @@ def save_to_arff(X, y, label_location="end", save_sparse=True, filename=None):
 
     x_prefix = 0
     y_prefix = 0
-
-    x_attributes = [(u'X{}'.format(i), u'NUMERIC')
-                    for i in range(X.shape[1])]
-    y_attributes = [(u'y{}'.format(i), [str(0), str(1)])
-                    for i in range(y.shape[1])]
+    if x_attributes is None:
+        x_attributes = [(u'X{}'.format(i), u'NUMERIC')
+                        for i in range(X.shape[1])]
+    if y_attributes is None:
+        y_attributes = [(u'y{}'.format(i), [str(0), str(1)])
+                        for i in range(y.shape[1])]
 
     if label_location == "end":
         y_prefix = X.shape[1]
