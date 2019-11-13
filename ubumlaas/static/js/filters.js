@@ -19,7 +19,7 @@ function load_filters(event){
             }
         });
     }else{
-        //TODO
+        //TODO Not necessary at the moment
     }
 }
 

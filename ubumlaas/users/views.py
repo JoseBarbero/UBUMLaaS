@@ -69,8 +69,10 @@ def register():
 def default_datasets(username):
     _dest = "ubumlaas/datasets/"+username+"/"
     _from = "ubumlaas/default_datasets/"
-
-    os.makedirs(_dest)
+    try:
+        os.makedirs(_dest)
+    except OSError:
+        pass
     for d in os.listdir(_from):
         os.link(_from+d, _dest+d)
 

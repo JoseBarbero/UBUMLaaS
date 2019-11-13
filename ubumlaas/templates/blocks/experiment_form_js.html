@@ -5,9 +5,9 @@
 <script src="{{ url_for('static', filename="js/validations.js") }}"></script>
 <script src="{{ url_for('static', filename="js/progress-bar.js") }}"></script>
 <script>
-    before_typ = undefined;
-    function load_config(async=true, algorithm=null, reset=true, filter=false){
+    function reset_(reset, filter){
         if (reset){
+            console.log("Reset");
             let over;
             let place_id;
             if(filter){
@@ -28,6 +28,12 @@
                         "</div>"
                      );
         }
+    }
+</script>
+<script>
+    before_typ = undefined;
+    function load_config(async=true, algorithm=null, reset=true, filter=false){
+        reset_(reset, filter);
         let name;
         if(algorithm == null){
             let var_name = "alg_name";
@@ -62,7 +68,7 @@
                 }                
             },
             error: function(result){
-                generateForm({})
+                reset(true, filter);
                 if(!filter)
                     already_correct.delete("alg_name");
             },
@@ -71,6 +77,9 @@
             },
             async: async
         });
+        if(!filter){
+            reset_(true, true);
+        }
         return result_;
     }
 
