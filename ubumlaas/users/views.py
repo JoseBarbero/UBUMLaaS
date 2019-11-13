@@ -71,11 +71,10 @@ def default_datasets(username):
     _from = "ubumlaas/default_datasets/"
     try:
         os.makedirs(_dest)
+        for d in os.listdir(_from):
+            os.link(_from+d, _dest+d)
     except OSError:
-        pass
-    for d in os.listdir(_from):
-        os.link(_from+d, _dest+d)
-
+        pass   
 
 @users.route("/logout")
 def logout():
