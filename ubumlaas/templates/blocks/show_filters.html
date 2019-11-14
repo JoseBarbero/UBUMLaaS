@@ -1,0 +1,9 @@
+<div class="control-group">
+    {{form_e.filter_name.label(class="control h5 mt-4")}}
+    {{form_e.filter_name(class="form-control")}}
+    <script>$("document").ready(function(){
+        $("#filter_name").change({element:"#filter_name", to:BLOCKS_ACTIVATORS.filter_name},jump);
+        $("#filter_name").change({level: 0}, render_filter_config);
+    });
+    </script>
+</div>

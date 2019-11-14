@@ -9,7 +9,7 @@ from ubumlaas.models import User
 
 class LoginForm(FlaskForm):
     """Form for the log in.
-    
+
     Inherit:
         FlaskForm {[FlaskForm]} -- Flask-specific subclass of WTForms.
     """

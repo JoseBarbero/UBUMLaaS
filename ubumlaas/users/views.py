@@ -69,11 +69,12 @@ def register():
 def default_datasets(username):
     _dest = "ubumlaas/datasets/"+username+"/"
     _from = "ubumlaas/default_datasets/"
-
-    os.makedirs(_dest)
-    for d in os.listdir(_from):
-        os.link(_from+d, _dest+d)
-
+    try:
+        os.makedirs(_dest)
+        for d in os.listdir(_from):
+            os.link(_from+d, _dest+d)
+    except OSError:
+        pass   
 
 @users.route("/logout")
 def logout():

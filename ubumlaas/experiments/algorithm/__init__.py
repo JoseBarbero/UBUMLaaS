@@ -41,6 +41,7 @@ def task_skeleton(experiment, current_user):
     # Diference sklearn executor and weka executor
     # Get algorithm type
     type_app = experiment["alg"]["lib"]
+    execution_lib = None
     try:
         execution_lib = v.apps_functions[type_app](experiment)
 
@@ -65,7 +66,8 @@ def task_skeleton(experiment, current_user):
         y_test_list = []
         X_test_list = []
         if exp_config.get("mode") == "split" and exp_config["train_partition"] < 100:
-            X_train, X_test, y_train, y_test = execution_lib.generate_train_test_split(X, y, exp_config["train_partition"])
+            X_train, X_test, y_train, y_test = execution_lib\
+                .generate_train_test_split(X, y, exp_config["train_partition"])
             model = execution_lib.create_model()
             execution_lib.train(model, X_train, y_train)
             y_pred, y_score = execution_lib.predict(model, X_test)
@@ -106,7 +108,8 @@ def task_skeleton(experiment, current_user):
         print(traceback.format_exc())
         state = 2
     finally:
-        execution_lib.close()
+        if execution_lib:
+            execution_lib.close()
 
     from ubumlaas.models import Experiment
     exp = Experiment.query.filter_by(id=experiment['id']).first()

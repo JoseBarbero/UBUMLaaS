@@ -4,7 +4,7 @@ from flask import \
 import variables as v
 from ubumlaas.models import \
     (Experiment, load_experiment,
-     get_algorithm_by_name)
+     get_algorithm_by_name, get_filter_by_name)
 from ubumlaas.experiments.forms import \
     (ExperimentForm, DatasetForm, DatasetParametersForm)
 from flask_login import (current_user, login_required)
@@ -15,6 +15,8 @@ from ubumlaas.experiments.algorithm import task_skeleton
 from ubumlaas.util import get_dataframe_from_file
 import ubumlaas.experiments.views as views
 from ubumlaas.util import (generate_df_html, get_dict_exp, get_ensem_alg_name)
+import arff
+import os
 
 
 @login_required
@@ -54,9 +56,17 @@ def launch_experiment():
     user = current_user
     dataset_config = json.loads(unquote(request.form.get("dataset_config")))
     exp_config = dataset_config
+    filter_name = request.form.get("filter_name")
+    if filter_name is None or filter_name == "":
+        filter_name = None
+        filter_config = None
+    else:
+        filter_config = request.form.get("filter_config")
     exp = Experiment(user.id, request.form.get("alg_name"),
                      unquote(request.form.get("alg_config")),
-                     json.dumps(exp_config), request.form.get("data"),
+                     json.dumps(exp_config),
+                     filter_name, filter_config,
+                     request.form.get("data"),
                      None, time.time(), None, 0)
     v.db.session.add(exp)
     v.db.session.commit()
@@ -88,13 +98,15 @@ def change_column_list():
         str -- HTTP response with JSON
     """
     form_e = ExperimentForm()
-    dataset = form_e.data.data
+    filename = form_e.data.data
     upload_folder = "ubumlaas/datasets/"+current_user.username+"/"
-    df = get_dataframe_from_file(upload_folder, dataset)
+    df, target_columns = get_dataframe_from_file(upload_folder, filename, target_column=True)
     to_return = {"html": render_template("blocks/show_columns.html", data=df),
                  "html2": render_template("blocks/show_columns_reduced.html",
                                           data=df.columns),
-                 "df": generate_df_html(df)}
+                 "df": generate_df_html(df),
+                 "config": target_columns}
+
     return jsonify(to_return)
 
 
@@ -127,7 +139,7 @@ def result_experiment(id, admin=False):
     if not admin:
         return render_template("result.html", **template_info)
     else:
-        template = v.app.jinja_env.get_template('email.html')
+        template = v.app.jinja_env.get_template('email.html', external_url = os.getenv("NGROK_URL", "http://localhost"))
         return template.render(**template_info)
 
 
@@ -160,10 +172,43 @@ def form_generator():
     Returns:
         str -- HTTP response with JSON
     """
-    alg_name = request.form.get('alg_name')
+    alg_name = request.form.get('name')
     alg = get_algorithm_by_name(alg_name)
     if alg is not None:
-        to_ret = {"alg_config": alg.config}
+        to_ret = {"config": alg.config}
+        code = 200
     else:
-        to_ret = {"alg_config": {}}
-    return jsonify(to_ret)
+        to_ret = {"config": {}}
+        code = 418
+    return jsonify(to_ret), code
+
+
+@views.experiments.route("/experiment/get_filters", methods=["POST"])
+def get_filters():
+    """Get filters compatible
+
+    Returns:
+        str -- HTTP response with rendered filter selectable
+        str -- HTTP JSON/response with list of filters
+    """
+    form_e = ExperimentForm()
+    alg_name = request.form.get("alg_name")
+    filter_name = request.form.get("filter_name", None)
+    form_e.filter_list(alg_name, filter_name)
+    if filter_name is None:
+        return render_template("blocks/show_filters.html", form_e=form_e)
+    else:
+        return jsonify(dict(form_e.filter_name.choices))
+
+
+@views.experiments.route("/experiment/filters_generator_form", methods=["POST"])
+def form_generator_for_filter():
+    filter_name = request.form.get('name')
+    filter_ = get_filter_by_name(filter_name)
+    if filter_ is not None:
+        to_ret = {"config": filter_.config}
+        code = 200
+    else:
+        to_ret = {"config": {}}
+        code = 418
+    return jsonify(to_ret), code

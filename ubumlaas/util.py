@@ -3,15 +3,29 @@ import smtplib
 import os
 import variables as v
 import copy
+import arff
+import re
+import numpy as np
 
-
-def get_dataframe_from_file(path, filename):
-    if filename.split(".")[-1] == "csv":
+def get_dataframe_from_file(path, filename, target_column = False):
+    extension = filename.split(".")[-1]
+    targets_indexes = None
+    if extension == "csv":
         file_df = pd.read_csv(path + filename)
-    elif filename.split(".")[-1] == "xls":
+    elif extension == "xls":
         file_df = pd.read_excel(path + filename)
+    elif extension == "arff":
+        data =  arff.load(open(path+filename, "r"), encode_nominal=True)
+        columns = [row[0] for row in data["attributes"]]
+        file_df = pd.DataFrame(data["data"], columns=columns)
+        match = re.search( r'-C[ \t]+(-?\d)', data["relation"])
+        if match:
+            targets_indexes = match.group(1)
     else:
         raise Exception("Invalid format for "+filename)
+    
+    if target_column:
+        return file_df, targets_indexes
     return file_df
 
 

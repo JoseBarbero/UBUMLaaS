@@ -1,16 +1,15 @@
 <div class="control-group">
     {% if data|length >= 1 %}
-    <table class="table table-striped table-bordered table-hover">
-        <thead class="thead-dark">
+    <table class="table table-striped table-hover">
+        <thead>
             <tr align="center">
                 <td style="min-width:100px"> </td>
                 {% for i in data %}
-                <td class="font-weight-bold text-center" style="min-width:100px">{{ i }}</td>
+                <th class="" style="min-width:100px">{{ i }}</td>
                 {% endfor %}
             </tr>
         </thead>
         <tbody>
-
             <tr align="center">
                 <th scope="row">Use</th>
                 {% for i in data %}
