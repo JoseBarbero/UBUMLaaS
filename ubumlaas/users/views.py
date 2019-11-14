@@ -8,6 +8,11 @@ import os
 
 users = Blueprint("users", __name__)
 
+@users.before_request
+def before_request():
+    if not request.is_secure and not v.app.debug:
+        url = request.url.replace('http://', 'https://', 1)
+        return redirect(url, code=301)
 
 @users.route("/login", methods=["GET", "POST"])
 def login():
