@@ -40,24 +40,21 @@ Project "***Minería de datos para la mejora del mantenimiento y disponibilidad 
     export SECRET_KEY=<app secret key>
     export EMAIL_AC=<email>
     export EMAIL_PASS=<email-password>
+    export FLASK_ENV=development #development or production
+    export FLASK_DEBUG=1 #0 is debug=False, 1 is debug=True
     LIBFOLDER=/absolute/path/to/UBUMLaaS
     ```
 6. With the conda environment UBUMLaaS, execute the script to export environment variables when activate conda env.
     ```bash
-    $ bash env_vars_to_conda.sh
+    $ source env_vars_to_conda.sh
     ```
-7. Deactivate and activate conda environment to take effect.
-    ```bash
-    $ conda deactivate
-    $ conda activate UBUMLaaS
-    ```
-8. Create database
+7. Create database
     ```bash
     $ mv data_base.sqlite ubumlaas/data.sqlite
     ```
     *Opt:* 
     Download a database and put it in ./ubumlaas/
-9. Install Redis-Server
+8. Install Redis-Server
     ```bash
     $ sudo apt install redis-server
     $ sudo service redis-server start
