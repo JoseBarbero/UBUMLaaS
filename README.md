@@ -41,7 +41,6 @@ Project "***Minería de datos para la mejora del mantenimiento y disponibilidad 
     export EMAIL_AC=<email>
     export EMAIL_PASS=<email-password>
     export FLASK_ENV=development #development or production
-    export FLASK_DEBUG=1 #0 is debug=False, 1 is debug=True
     LIBFOLDER=/absolute/path/to/UBUMLaaS
     ```
 6. With the conda environment UBUMLaaS, execute the script to export environment variables when activate conda env.
