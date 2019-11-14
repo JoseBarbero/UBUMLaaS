@@ -680,6 +680,7 @@ class TestDefaultSuite():
         """
         self.login("ubumlaas@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "Logged in as ubumlaas").click()
+        time.sleep(self.wait)
         assert "No data available in table" in self.driver.find_element(By.CSS_SELECTOR, ".dataTables_empty").text
         self.logout()
 
@@ -694,6 +695,7 @@ class TestDefaultSuite():
         """
         self.login("ubumlaas2@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "Logged in as ubumlaas2").click()
+        time.sleep(self.wait)
         assert "sklearn.neighbors.KNeighborsClassifier" in self.driver.find_element(By.CSS_SELECTOR, "#exper > tbody > tr > td:nth-child(3)").text
         self.logout()
 
@@ -709,7 +711,9 @@ class TestDefaultSuite():
         """
         self.login("ubumlaas2@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "Logged in as ubumlaas2").click()
+        time.sleep(self.wait)
         self.driver.find_element(By.LINK_TEXT, "See").click()
+        time.sleep(self.wait)
         assert "sklearn.neighbors.KNeighborsClassifier" in self.driver.find_element(By.CSS_SELECTOR, "body > div > div > div > div:nth-child(1) > div > div:nth-child(3) > p.col-md-7").text
         self.logout()
 
@@ -724,6 +728,7 @@ class TestDefaultSuite():
         """
         self.login("ubumlaas2@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "Logged in as ubumlaas2").click()
+        time.sleep(self.wait)
         assert "weatherHistory.csv" in self.driver.find_element(By.CSS_SELECTOR, "#dataset_list > tbody > tr:nth-child(1) > td:nth-child(2)").text
         self.logout()
         #dataset_list > tbody > tr:nth-child(1) > td:nth-child(2)
