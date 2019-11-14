@@ -114,7 +114,7 @@ class TestDefaultSuite():
         self.driver.execute_script("$('#data').val('iris.csv');")
         self.driver.execute_script("$('#data').change();")
         time.sleep(self.wait)
-        assert self.driver.find_element(By.CSS_SELECTOR, ".font-weight-bold:nth-child(2)").text == "sepal length (cm)"
+        assert self.driver.find_element(By.CSS_SELECTOR, "th:nth-child(2)").text == "sepal length (cm)"
         self.driver.execute_script("$('#data').val('music.csv');")
         self.driver.execute_script("$('#data').change();")
         time.sleep(self.wait)
@@ -680,7 +680,7 @@ class TestDefaultSuite():
         """
         self.login("ubumlaas@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "Logged in as ubumlaas").click()
-        assert "No data available in table" in self.driver.find_element(By.CSS_SELECTOR, "#exper > tbody > tr > td").text
+        assert "No data available in table" in self.driver.find_element(By.CSS_SELECTOR, ".dataTables_empty").text
         self.logout()
 
     def test_62Experiments(self):

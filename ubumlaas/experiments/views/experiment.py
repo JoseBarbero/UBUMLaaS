@@ -16,6 +16,7 @@ from ubumlaas.util import get_dataframe_from_file
 import ubumlaas.experiments.views as views
 from ubumlaas.util import (generate_df_html, get_dict_exp, get_ensem_alg_name)
 import arff
+import os
 
 
 @login_required
@@ -138,7 +139,7 @@ def result_experiment(id, admin=False):
     if not admin:
         return render_template("result.html", **template_info)
     else:
-        template = v.app.jinja_env.get_template('email.html')
+        template = v.app.jinja_env.get_template('email.html', external_url = os.getenv("NGROK_URL", "http://localhost"))
         return template.render(**template_info)
 
 
