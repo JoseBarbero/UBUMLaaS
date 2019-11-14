@@ -680,7 +680,7 @@ class TestDefaultSuite():
         """
         self.login("ubumlaas@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "Logged in as ubumlaas").click()
-        time.sleep(self.wait+1)
+        time.sleep(self.wait)
         assert "No data available in table" in self.driver.find_element(By.CSS_SELECTOR, ".dataTables_empty").text
         self.logout()
 
