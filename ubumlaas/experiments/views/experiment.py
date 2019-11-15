@@ -135,11 +135,12 @@ def result_experiment(id, admin=False):
                      "title": "Experiment Result",
                      "dict_config": dict_config,
                      "conf": json.loads(get_algorithm_by_name(
-                                        exp.alg_name).config)}
+                                        exp.alg_name).config),
+                     "external_url": os.getenv("NGROK_URL", "http://localhost")}
     if not admin:
         return render_template("result.html", **template_info)
     else:
-        template = v.app.jinja_env.get_template('email.html', external_url = os.getenv("NGROK_URL", "http://localhost"))
+        template = v.app.jinja_env.get_template('email.html')
         return template.render(**template_info)
 
 
