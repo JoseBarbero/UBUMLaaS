@@ -22,7 +22,7 @@ def login():
         string -- redirect new page
     """
     if current_user.is_authenticated:
-        return redirect(url_for('core.index'), _scheme=v.scheme)
+        return redirect(url_for('core.index', _scheme=v.scheme))
     form = LoginForm()
 
     if request.method == "POST":
@@ -49,7 +49,7 @@ def register():
         string -- render register or redirect log in.
     """
     if current_user.is_authenticated:
-        return redirect(url_for('core.index'), _scheme=v.scheme)
+        return redirect(url_for('core.index', _scheme=v.scheme))
 
     form = RegistrationForm()
 
@@ -66,7 +66,7 @@ def register():
             v.db.session.commit()
             default_datasets(form.username.data)
             flash("User registered.", "success")
-            return redirect(url_for("users.login"), _scheme=v.scheme)
+            return redirect(url_for("users.login", _scheme=v.scheme))
     return render_template("register.html", form=form, title="Register",
                            password_msg=form.password_msg)
 
@@ -89,7 +89,7 @@ def logout():
         string -- redirect to index.
     """
     logout_user()
-    return redirect(url_for("core.index"), _scheme=v.scheme)
+    return redirect(url_for("core.index", _scheme=v.scheme))
 
 
 @login_required
