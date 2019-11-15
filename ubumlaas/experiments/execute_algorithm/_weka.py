@@ -199,7 +199,7 @@ class Execute_weka(Abstract_execute):
 
             y_score = model.distributions_for_instances(data_test)
             try:  # Trying to convert to int
-                y_pred = [float(pred) for pred in y_pred]
+                y_pred = [int(pred) for pred in y_pred]
             except ValueError:
                 pass
         else:

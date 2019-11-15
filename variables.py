@@ -1,5 +1,6 @@
 from ubumlaas.experiments.execute_algorithm import\
     (_meka, _weka, _sklearn)
+import os
 
 
 def start():

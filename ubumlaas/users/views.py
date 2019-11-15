@@ -8,6 +8,11 @@ import os
 
 users = Blueprint("users", __name__)
 
+@users.before_request
+def before_request():
+    if not request.is_secure and v.app.env != "development":
+        url = request.url.replace('http://', 'https://', 1)
+        return redirect(url, code=301)
 
 @users.route("/login", methods=["GET", "POST"])
 def login():
@@ -50,9 +55,9 @@ def register():
 
     if form.validate_on_submit():
         if form.email_exists(form.email):
-            flash("Email already exists")
+            flash("Email already exists", "warning")
         elif form.username_exists(form.username):
-            flash("Username already exists")
+            flash("Username already exists", "warning")
         else:
             user = User(email=form.email.data,
                         username=form.username.data,
@@ -60,7 +65,7 @@ def register():
             v.db.session.add(user)
             v.db.session.commit()
             default_datasets(form.username.data)
-            flash("User registered.")
+            flash("User registered.", "success")
             return redirect(url_for("users.login"))
     return render_template("register.html", form=form, title="Register",
                            password_msg=form.password_msg)

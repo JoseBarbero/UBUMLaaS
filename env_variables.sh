@@ -3,6 +3,7 @@
 export SECRET_KEY=<app secret key>
 export EMAIL_AC=<email>
 export EMAIL_PASS=<email-password>
+export FLASK_ENV=development #development or production
 LIBFOLDER=/absolute/path/to/UBUMLaaS
 
 export WEKA_HOME=$LIBFOLDER/lib/wekafiles/packages/
