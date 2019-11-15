@@ -27,9 +27,9 @@ def login():
                 login_user(user)
                 go_to = url_for("core.index")
             else:
-                flash("Wrong username or password")
+                flash("Wrong username or password", "danger")
         else:
-            flash("Wrong username or password")
+            flash("Wrong username or password", "danger")
         return redirect(go_to)
 
     return render_template("login.html", form=form, title="Log in")
