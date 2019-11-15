@@ -66,15 +66,18 @@ def start_predict():
 
         # Open to predict dataset
         file_df, y = execute.open_dataset(upload_folder, filename)
+        print(y)
         prediction_df = file_df[exp_config["columns"]]
 
         model = execute.deserialize(path)
         predictions, _ = execute.predict(model, file_df)
+        print(predictions)
         columns = [prediction_df]
         if y is not None:
             y_df = pd.DataFrame(y, columns=exp_config["target"])
             columns.append(y_df)
-        predictions_columns = ["prediction_"+target_name for target_name in exp_config["target"]]
+
+        predictions_columns = ["prediction_"+target_name for target_name in exp_config["target"]] if exp_config["target"] else ["clusters_"+datetime.datetime.now().strftime("%d_%m_%Y-%H_%M_%S")]
         pred_df = pd.DataFrame(predictions, columns=predictions_columns)
         columns.append(pred_df)
         prediction_df = pd.concat(columns, axis = 1)
