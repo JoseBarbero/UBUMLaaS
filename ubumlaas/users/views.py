@@ -22,7 +22,7 @@ def login():
         string -- redirect new page
     """
     if current_user.is_authenticated:
-        return redirect(url_for('core.index'))
+        return redirect(url_for('core.index'), _scheme=v.scheme)
     form = LoginForm()
 
     if request.method == "POST":
@@ -49,15 +49,15 @@ def register():
         string -- render register or redirect log in.
     """
     if current_user.is_authenticated:
-        return redirect(url_for('core.index'))
+        return redirect(url_for('core.index'), _scheme=v.scheme)
 
     form = RegistrationForm()
 
     if form.validate_on_submit():
         if form.email_exists(form.email):
-            flash("Email already exists")
+            flash("Email already exists", "warning")
         elif form.username_exists(form.username):
-            flash("Username already exists")
+            flash("Username already exists", "warning")
         else:
             user = User(email=form.email.data,
                         username=form.username.data,
@@ -65,8 +65,8 @@ def register():
             v.db.session.add(user)
             v.db.session.commit()
             default_datasets(form.username.data)
-            flash("User registered.")
-            return redirect(url_for("users.login"))
+            flash("User registered.", "success")
+            return redirect(url_for("users.login"), _scheme=v.scheme)
     return render_template("register.html", form=form, title="Register",
                            password_msg=form.password_msg)
 
@@ -89,7 +89,7 @@ def logout():
         string -- redirect to index.
     """
     logout_user()
-    return redirect(url_for("core.index"))
+    return redirect(url_for("core.index"), _scheme=v.scheme)
 
 
 @login_required

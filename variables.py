@@ -1,9 +1,10 @@
 from ubumlaas.experiments.execute_algorithm import\
     (_meka, _weka, _sklearn)
+import os
 
 
 def start():
-    global login_manager, db, basedir, v, q, workers, app, apps_functions
+    global login_manager, db, basedir, v, q, workers, app, apps_functions, scheme
 
     login_manager = None
     db = None
@@ -15,3 +16,4 @@ def start():
                       "weka": _weka.Execute_weka,
                       "meka": _meka.Execute_meka}
     app = None
+    scheme = "https" if os.getenv("FLASK_ENV") == "production" else "http"
