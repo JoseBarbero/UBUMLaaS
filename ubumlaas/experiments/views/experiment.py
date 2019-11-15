@@ -4,7 +4,7 @@ from flask import \
 import variables as v
 from ubumlaas.models import \
     (Experiment, load_experiment,
-     get_algorithm_by_name, get_filter_by_name)
+     get_algorithm_by_name, get_filter_by_name, delete_experiment)
 from ubumlaas.experiments.forms import \
     (ExperimentForm, DatasetForm, DatasetParametersForm)
 from flask_login import (current_user, login_required)
@@ -17,6 +17,7 @@ import ubumlaas.experiments.views as views
 from ubumlaas.util import (generate_df_html, get_dict_exp, get_ensem_alg_name)
 import arff
 import os
+import glob
 
 
 @login_required
@@ -165,6 +166,19 @@ def reuse_experiment(id):
                            form_d=form_d, form_p=form_p,
                            title="New experiment")
 
+@login_required
+@views.experiments.route("/experiment/<int:id>/delete", methods=["DELETE"])
+def remove_experiment(id):
+    exp = load_experiment(id)
+
+    if not exp or exp.idu != current_user.id:
+        abort(404)
+    #remove files starting with id from the user dir
+    for file in glob.glob("ubumlaas/models/{}/{}*".format(current_user.username, id)):
+        os.remove(file)
+    delete_experiment(id)
+
+    return redirect(url_for("users.profile"))
 
 @views.experiments.route("/experiment/form_generator", methods=["POST"])
 def form_generator():

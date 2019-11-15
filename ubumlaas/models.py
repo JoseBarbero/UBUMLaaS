@@ -131,6 +131,9 @@ def get_compatible_filters(lib, typ=None):
     return Filter.query\
         .filter(cond).all()
 
+def delete_experiment(id):
+    Experiment.query.filter_by(id=id).delete()
+    v.db.session.commit()
 
 class User(v.db.Model, UserMixin):
 
