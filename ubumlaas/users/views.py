@@ -75,6 +75,7 @@ def default_datasets(username):
     except OSError:
         pass   
 
+
 @users.route("/logout")
 def logout():
     """User log out.
