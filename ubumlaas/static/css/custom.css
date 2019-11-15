@@ -42,13 +42,13 @@ footer .main-footer {
 
 /**Custom colors*/
 :root {
-    --footer-color:#505050;
+    --footer-color:#808080;
     --ubu-maroon:#a7253b;
-    --success-even: rgb(calc(var(--success-red)/0.2051),calc(var(--success-green)/0.7260),calc(var(--success-blue)/0.3399));
-    --success-odd: rgb(calc(var(--success-red)/0.2162),calc(var(--success-green)/0.7660),calc(var(--success-blue)/0.3575));
+    --success-even: rgb(var(--success-red),var(--success-green),var(--success-blue));
+    --success-odd: rgb(var(--success-red),calc(var(--success-green)/1.051428571),calc(var(--success-blue)/1.054054054));
 
-    --danger-even: rgb(calc(var(--danger-red)/0.8979),calc(var(--danger-green)/0.2676),calc(var(--danger-blue)/0.3399));
-    --danger-odd: rgb(calc(var(--danger-red)/0.9442),calc(var(--danger-green)/0.2819),calc(var(--danger-blue)/0.3575));
+    --danger-even: rgb(var(--danger-red),var(--danger-green),var(--danger-blue));
+    --danger-odd: rgb(calc(var(--danger-red)/1.053398058),calc(var(--danger-green)/1.050632911),calc(var(--danger-blue)/1.053333333));
 
 }
 

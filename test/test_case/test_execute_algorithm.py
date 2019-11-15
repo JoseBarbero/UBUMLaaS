@@ -5,6 +5,7 @@ import unittest
 from ubumlaas.experiments.algorithm.metrics import calculate_metrics
 import tempfile
 import os
+import weka.core.packages as packages
 
 class ParametrizedTestCase(unittest.TestCase):
         """ TestCase classes that want to be parametrized should
@@ -35,6 +36,9 @@ class ExecuteLibsTest(ParametrizedTestCase):
                 self.assertTrue("MEKA_CLASSPATH" in environ, "MEKA_CLASSPATH enviroment variable not found")
                 self.assertTrue("JAVA_HOME" in environ, "JAVA_HOME enviroment variable not found")
                 self.assertTrue("WEKA_HOME" in environ, "WEKA_HOME enviroment variable not found")
+                items = packages.installed_packages()
+                for item in items:
+                        self.assertTrue(item.name in environ["MEKA_CLASSPATH"], item.name +" not in MEKA_CLASSPATH")
 
         def test_open_dataset(self):
                 """Test open dataset for columns and target 

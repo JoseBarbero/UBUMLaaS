@@ -1,49 +1,85 @@
 <script src="{{ url_for('static', filename="js/include/generate_form_utils.js") }}"></script>
 <script src="{{ url_for('static', filename="js/config_alg.js") }}"></script>
 <script src="{{ url_for('static', filename="js/config_dataset.js") }}"></script>
+<script src="{{ url_for('static', filename="js/filters.js") }}"></script>
 <script src="{{ url_for('static', filename="js/validations.js") }}"></script>
 <script src="{{ url_for('static', filename="js/progress-bar.js") }}"></script>
 <script>
-    before_typ = undefined;
-    function load_config(async=true, algorithm=null, reset=true){
+    function reset_(reset, filter){
         if (reset){
-            config_fieldset.html("<div class=\"row-fluid\">"+
-                                    "<div>" +
-                                        "<div id=\"form_config_alg\" class=\"form-group\">" +            
-                                        "</div>" +
-                                    "</div>" +
-                                 "</div>");
-            sub_clasifiers_count = 0;
+            console.log("Reset");
+            let over;
+            let place_id;
+            if(filter){
+                over = filter_fieldset;
+                place_id = "form_config_filter";
+                sub_filter_count = 0;
+            }else{
+                over = config_fieldset;
+                place_id = "form_config_alg";
+                sub_clasifiers_count = 0;                
+            }
+            over.html(  
+                        "<div class=\"row-fluid\">"+
+                            "<div>" +
+                                "<div id=\""+place_id+"\" class=\"form-group\">" +            
+                                "</div>" +
+                            "</div>" +
+                        "</div>"
+                     );
         }
-        let alg_name;
+    }
+</script>
+<script>
+    before_typ = undefined;
+    function load_config(async=true, algorithm=null, reset=true, filter=false){
+        reset_(reset, filter);
+        let name;
         if(algorithm == null){
-            alg_name = $("#alg_name").val();
+            let var_name = "alg_name";
+            if (filter){
+                var_name = "filter_name";
+            }
+            name = $("#"+var_name).val();
         }else{
-            alg_name = algorithm;
+            name = algorithm;
+        }
+        let url = '{{ url_for("experiments.form_generator") }}';
+        if(filter){
+            url = '{{ url_for("experiments.form_generator_for_filter") }}';
         }
         let result_ = {};
         $.ajax({
-            url: '{{ url_for("experiments.form_generator") }}',
+            url: url,
             type: 'POST',
             contentType: 'application/x-www-form-urlencoded',
-            data: "alg_name=" + alg_name,
+            data: "name=" + name,
             success: function (result) {
                 if(!async){
-                    result_ = result.alg_config;
+                    result_ = result.config;
                 }else{
-                    generateForm(JSON.parse(result.alg_config));
-                }
-                already_correct.add("alg_name");
+                    let place_in = "form_config_alg";
+                    if(filter){
+                        place_in = "form_config_filter";
+                    }else{
+                        already_correct.add("alg_name");
+                    }
+                    generateForm(JSON.parse(result.config), place_in, 0, filter);
+                }                
             },
             error: function(result){
-                generateForm({})
-                already_correct.delete("alg_name");
+                reset(true, filter);
+                if(!filter)
+                    already_correct.delete("alg_name");
             },
             complete: function(){
                 update_progress();
             },
             async: async
         });
+        if(!filter){
+            reset_(true, true);
+        }
         return result_;
     }
 
@@ -83,15 +119,22 @@
     $("form#submit_completed_experiment").submit(function (e) {
         e.preventDefault();
         var alg_name = $("#alg_name").val();
+        var filter_name = $("#filter_name").val();
+        var filter_sig = "";
         var data = $("#data").val();        
         var alg_config = encodeURIComponent(JSON.stringify(get_config_form()));
+        if(filter_name != ""){
+            filter_config = encodeURIComponent(JSON.stringify(get_config_form(null, 0, true)))
+            filter_sig = "&filter_name=" + filter_name + "&filter_config=" + filter_config;
+        }
         var dataset_config = encodeURIComponent(JSON.stringify(get_dataset_config()));
         $.ajax({
             url: '{{ url_for("experiments.launch_experiment") }}',
             type: 'POST',
             contentType: 'application/x-www-form-urlencoded',
-            data: "alg_name=" + alg_name + "&data=" + data + 
-                "&alg_config="+alg_config+"&dataset_config="+dataset_config,
+            data: "alg_name=" + alg_name + "&data=" + data +
+                  filter_sig + "&alg_config="+alg_config+
+                  "&dataset_config="+dataset_config,
             success: function (result) {
                 window.location.replace("{{ url_for('users.profile') }}")
             },
@@ -125,7 +168,9 @@
 
     $("document").ready(function () {
         config_fieldset = $("#config_algorithm_fieldset");
+        filter_fieldset = $("#config_filter_fieldset");
         sub_clasifiers_count = 0;
+        sub_filter_count = 0;
         $("#alg_typ").change(function () {
             $.ajax({
                 url: '{{ url_for("experiments.change_alg") }}',
@@ -160,7 +205,8 @@
             if(UNSUPERVISED.includes(current) && !UNSUPERVISED.includes(before)){
                 no_target();
             }else if(MULTITARGET.includes(before) && !MULTITARGET.includes(current)){
-                $("#data").change();
+                no_target();
+                $("#col"+(dataset_columns.length-1)+"_target_label").click();
             }
         });
 
@@ -223,37 +269,61 @@
                     }
                 }
             }
-        }        
+        }
+        config_algorithm();
     }
 
     function configure_algorithm(){
         let alg_typ = $("#alg_typ");
         alg_typ.val(algorithm_selected.alg_typ);
         alg_typ.change();
-        config_algorithm();
-        
+        set_dataset_parameters();
     }
 
-    function config_algorithm(){
-        let alg_name = $("#alg_name");
+    function config_algorithm(filter=false){
+        let id_ = "alg_name";
+        if(filter){
+            id_="filter_name"
+        }
+        let alg_name = $("#"+id_);
         if(alg_name.val() === null){
             setTimeout(config_algorithm, 10);
             return;
         }
-        alg_name.val(algorithm_selected.alg_name);
+        let name_value = algorithm_selected.alg_name;
+        if(filter){
+            name_value = filter_selected.filter_name;
+        }
+        alg_name.val(name_value);
+        console.log(alg_name)
         alg_name.change();
-        add_algorithm_parameters();
+        if(filter){
+            setTimeout(function(){
+                add_algorithm_parameters(filter);
+            }, 100);
+        }else{
+            add_algorithm_parameters();
+        }        
     }
 
-    function add_algorithm_parameters(alg=null, alg_config=null, level=0){  
-        if($(".timeout-finished").length == 0){
-            setTimeout(add_algorithm_parameters, 10);
-            return;
+    function add_algorithm_parameters(filter=false, alg=null, alg_config=null, level=0){
+        console.log(filter+" "+alg+" "+alg_config+" "+level)
+        let suffix = "";
+        if(!filter){
+            if($(".timeout-finished").length == 0){
+                setTimeout(add_algorithm_parameters, 10);
+                return;
+            }
+        }else{
+            suffix = "_filter";
         }
         let base_alg_config;
         let prefix = "";
         if(alg == null){
-            alg = algorithm_selected;
+            alg = algorithm_selected;            
+            if(filter){
+                alg = filter_selected;
+            }
             base_alg_config = JSON.parse(alg.config);
         }else{
             base_alg_config = JSON.parse(alg);
@@ -268,19 +338,16 @@
         }
         var parameters = Object.keys(base_alg_config);
         var sel_parameters = Object.keys(alg_config);
-        console.log(sel_parameters);
         parameters.forEach(function(i){
-            var p = $("#"+prefix+i+"_value");
+            var p = $("#"+prefix+i+suffix+"_value");
             if(base_alg_config[i].type != "boolean"){
-                let vlv = $("#"+prefix+i+"_activator");
-                let lbl = $("#"+prefix+i+"_activator_label");
-                console.log(vlv);
-                console.log(lbl);
+                let vlv = $("#"+prefix+i+suffix+"_activator");
+                let lbl = $("#"+prefix+i+suffix+"_activator_label");
                 if(sel_parameters.includes(i)){
                     if(typeof(alg_config[i]) == "object"){
                         p.val(alg_config[i].alg_name);
                         p.change();
-                        add_algorithm_parameters(load_config(false, p.val(), false), alg_config[i].parameters, level+1);
+                        add_algorithm_parameters(filter, load_config(false, p.val(), false), alg_config[i].parameters, level+1);
                     }else{
                         p.val(alg_config[i]);
                         p.change();
@@ -300,12 +367,17 @@
                 }
             }
         });
-        set_dataset_parameters();
+        if(experiment.filter instanceof Object && !filter && level==0){
+            console.log("please only one time");
+            config_algorithm(true);
+        }
     }
 
     
     $("document").ready(function(){
-        experiment = {{ experiment|safe }};
+        page_information.mode.reuse = true;
+        None = null; //Python - JS compatibility
+        experiment = {{ experiment | safe }};
         exp_config = JSON.parse(experiment.exp_config);
         //Dataset
         let dataset = $("#data");
@@ -327,8 +399,11 @@
         }
         //Algorithm
         algorithm_selected = experiment.alg;
+        if(experiment.filter != null)
+            filter_selected = experiment.filter;
         //Try to set dataset configuration:
-        configure_algorithm();     
+        configure_algorithm();
+        set_dataset_parameters();     
     });
 </script>
 {% endif %}

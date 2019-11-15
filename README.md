@@ -1,7 +1,7 @@
 # UBUMLaaS [![admirable-logo](ubumlaas/static/img/onlyA-32x32.svg)](http://admirable-ubu.es/)
 
 
-[![Travis (.org)](https://img.shields.io/travis/JoseBarbero/UBUMLaaS?label=Travis%20CI&logo=travis-ci&logoColor=white&style=for-the-badge)](https://travis-ci.org/JoseBarbero/UBUMLaaS)
+[![Travis (.org)](https://img.shields.io/travis/JoseBarbero/UBUMLaaS/master.svg?label=Travis%20CI&logo=travis-ci&logoColor=white&style=for-the-badge)](https://travis-ci.org/JoseBarbero/UBUMLaaS)
 [![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability/JoseBarbero/UBUMLaaS?logo=code-climate&style=for-the-badge)](https://codeclimate.com/github/JoseBarbero/UBUMLaaS)
 [![GitHub repo size](https://img.shields.io/github/repo-size/JoseBarbero/UBUMLaaS?color=yellowgreen&logo=github&style=for-the-badge)](https://github.com/JoseBarbero/UBUMLaaS/archive/master.zip)
 [![GitHub](https://img.shields.io/github/license/JoseBarbero/UBUMLaaS?logo=gnu&logoColor=white&style=for-the-badge)](https://github.com/JoseBarbero/UBUMLaaS/blob/master/LICENSE)

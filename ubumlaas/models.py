@@ -103,6 +103,35 @@ def get_algorithm_by_name(name):
         .filter(Algorithm.alg_name == name).first()
 
 
+def get_filter_by_name(name):
+    """Get an algorfilterithm by name.
+
+    Arguments:
+        name {string} -- name of the filter.
+
+    Returns:
+        Filter -- Filter with that name.
+    """
+    return Filter.query\
+        .filter(Filter.filter_name == name).first()
+
+
+def get_compatible_filters(lib, typ=None):
+    """Get an filter by .
+
+    Arguments:
+        name {string} -- name of the algorithm.
+
+    Returns:
+        Algorithm -- Algorithm with that name.
+    """
+    cond = Filter.lib == lib
+    if typ is not None:
+        cond = and_(cond, Filter.typ == typ)
+    return Filter.query\
+        .filter(cond).all()
+
+
 class User(v.db.Model, UserMixin):
 
     __tablename__ = 'users'
@@ -205,6 +234,48 @@ class Algorithm(v.db.Model):
                 "lib": self.lib}
 
 
+class Filter(v.db.Model):
+
+    __tablename__ = "filters"
+
+    id = v.db.Column(v.db.Integer, primary_key=True)
+    filter_name = v.db.Column(v.db.String(64), unique=True)
+    web_name = v.db.Column(v.db.String(64))
+    filter_typ = v.db.Column(v.db.String(64))
+    config = v.db.Column(v.db.Text)
+    lib = v.db.Column(v.db.String(64))
+
+    def __init__(self, filter_name, web_name, filter_typ, config, lib):
+        """Algorithm constructor.
+
+        Arguments:
+            filter_name {str} -- filter name.
+            web_name {str} -- filter web name.
+            filter_typ {str} -- filter type
+            config {str} -- json with filter configuration.
+            lib {str} -- sklearn or weka.
+        """
+
+        self.filter_name = filter_name
+        self.web_name = web_name
+        self.filter_typ = filter_typ
+        self.config = config
+        self.lib = lib
+
+    def to_dict(self):
+        """Algorithm to dict
+
+        Returns:
+            dict -- dict with keys and values from Filter Object.
+        """
+        return {"id": self.id,
+                "filter_name": self.filter_name,
+                "web_name": self.web_name,
+                "filter_typ": self.filter_typ,
+                "config": self.config,
+                "lib": self.lib}
+
+
 class Experiment(v.db.Model):
 
     __tablename__ = 'experiments'
@@ -217,16 +288,23 @@ class Experiment(v.db.Model):
     alg_name = v.db.Column(
         v.db.String(64),
         v.db.ForeignKey('algorithms.alg_name'),
-        )
+    )
     alg_config = v.db.Column(v.db.Text)
     exp_config = v.db.Column(v.db.Text)
+    filter_name = v.db.Column(
+        v.db.String(64),
+        v.db.ForeignKey('filters.filter_name'),
+        nullable=True
+    )
+    filter_config = v.db.Column(v.db.Text, nullable=True)
     data = v.db.Column(v.db.String(128))
     result = v.db.Column(v.db.Text, nullable=True)
     starttime = v.db.Column(v.db.Integer)
     endtime = v.db.Column(v.db.Integer, nullable=True)
     state = v.db.Column(v.db.Integer)
 
-    def __init__(self, idu, alg_name, alg_config, exp_config, data, result,
+    def __init__(self, idu, alg_name, alg_config, exp_config,
+                 filter_name, filter_config, data, result,
                  starttime, endtime, state):
         """Experiment constructor.
 
@@ -245,6 +323,8 @@ class Experiment(v.db.Model):
         self.alg_name = alg_name
         self.alg_config = alg_config
         self.exp_config = exp_config
+        self.filter_name = filter_name
+        self.filter_config = filter_config
         self.data = data
         self.result = result
         self.starttime = starttime
@@ -257,9 +337,14 @@ class Experiment(v.db.Model):
         Returns:
             dict -- dict with keys and values from Experiment Object.
         """
+        filter_ = get_filter_by_name(self.filter_name)
+        if filter_ is not None:
+            filter_ = filter_.to_dict()
         return {"id": self.id, "idu": self.idu,
                 "alg": get_algorithm_by_name(self.alg_name).to_dict(),
                 "alg_config": self.alg_config, "exp_config": self.exp_config,
+                "filter": filter_,
+                "filter_config": self.filter_config,
                 "data": self.data,
                 "result": self.result, "starttime": self.starttime,
                 "endtime": self.endtime}

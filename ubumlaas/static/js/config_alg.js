@@ -10,9 +10,13 @@ $("document").ready(function(){
  * @param {string} alg_name the name of an algorithm to be used as base estimator
  * @param {int, default=null} level of ensemble 
  */
-function load_new_ensemble(alg_name, level = null){
+function load_new_ensemble(alg_name, level=null, filter=false){
     if(level == null){
         level = sub_clasifiers_count;
+    }
+    
+    if(filter){
+        id = "form_config_filter_level"+level;
     }
     let id = "form_config_alg_level"+level;
     let lvl = $("#"+id);
@@ -23,7 +27,7 @@ function load_new_ensemble(alg_name, level = null){
         lvl.html("");
     }
     let alg_config = JSON.parse(load_config(false, alg_name, false));
-    generateForm(alg_config, id, level);
+    generateForm(alg_config, id, level, filter);
 }
 
 /**
@@ -49,9 +53,15 @@ function change_validate(e){
  * @param {string} place_in_id identifier of div where form be placed
  * @param {int} level_to_modify level of the estimator
  */
-function generateForm(alg_config, place_in_id="form_config_alg", level_to_modify=0){
-    if(level_to_modify == sub_clasifiers_count){
-        sub_clasifiers_count++;
+function generateForm(alg_config, place_in_id, level_to_modify=0, filter=false){
+    if (!filter){
+        if(level_to_modify == sub_clasifiers_count){
+            sub_clasifiers_count++;
+        }
+    }else{
+        if(level_to_modify == sub_filter_count){
+            sub_filter_count++;
+        }
     }
     alg_config_reference = alg_config;
     var place_in = $("#"+place_in_id);
@@ -62,7 +72,7 @@ function generateForm(alg_config, place_in_id="form_config_alg", level_to_modify
     var row_number = 0;
     parameters.forEach(function(i){
         row_number += 1;
-        let subalgorithm = create_algorithm_config_field(place_in, row_number, i, level_to_modify, alg_config);
+        let subalgorithm = create_algorithm_config_field(place_in, row_number, i, level_to_modify, alg_config, filter);
         if (subalgorithm != ""){
             new_subalgorithm = subalgorithm;
         }
@@ -71,9 +81,9 @@ function generateForm(alg_config, place_in_id="form_config_alg", level_to_modify
     if(new_subalgorithm != ""){
         load_new_ensemble(new_subalgorithm);
     }else if ( sub_clasifiers_count > level_to_modify){
-        clean_levels(level_to_modify+1);            
+        clean_levels(level_to_modify+1, filter);            
     }
-    beautify_alg_config();
+    beautify_alg_config(filter);
 }
 
 /**
@@ -145,8 +155,10 @@ function create_numeric_block(basename, parameter, mode){
     let step, min, max;
     if(mode === "float"){
         step='any';
-        min=convertExponentialToDecimal(parameter.min);
-        max=convertExponentialToDecimal(parameter.max);
+        if(typeof parameter.min !== "undefined")
+            min=convertExponentialToDecimal(parameter.min);
+        if(typeof parameter.max !== "undefined")
+           max=convertExponentialToDecimal(parameter.max);
     }else if(mode === 'int'){
         step=1;
         min=parameter.min;
@@ -237,15 +249,15 @@ function final_decoration_for_form_field(content, basename, parameter, level_to_
  * @param {int} level_to_modify level of the ensemble
  * @param {object} alg_config definition of algorithm configuration posibilities
  */
-function create_algorithm_config_field(place_in, row_number, field, level_to_modify, alg_config){
-    let basename = get_basename(field, level_to_modify);        
+function create_algorithm_config_field(place_in, row_number, field, level_to_modify, alg_config, filter=false){
+    let basename = get_basename(field, level_to_modify, filter);        
     let parameter = alg_config[field];
     let row = $("<div></div>", {class: "row"});
     let block = $("<div></div>", {id: basename, class: "col-12"});
     if (row_number%2 == 1){
         block.addClass("row-odd");
     }
-    get_base_block(row, block, field, parameter, level_to_modify);        
+    get_base_block(row, block, field, parameter, level_to_modify, filter);        
     let content = create_form_fields(basename, parameter);
     
     if(["integer", "float", "boolean"].includes(parameter.type)){

@@ -34,7 +34,7 @@
                                data-container="body"
                                data-toggle="popover"
                                data-placement="top"
-                               data-content="Upload only CSV files with header. By default the last attribute will be selected as target." 
+                               data-content="Upload only CSV with header or dense ARFF. By default the last attribute will be selected as target." 
                                >
                                 <i class="material-icons">live_help</i>
                         </a> 
@@ -147,6 +147,23 @@
         <div class="row-fluid">
             <div>
                 <div id="form_config_alg" class="form-group">
+                    
+                </div>
+            </div>
+        </div>
+    </fieldset>
+    <fieldset id="select_filter_block">
+        <form class="form-group col-md-6 offset-md-3" id="form_filter">
+            {{ form_d.hidden_tag() }}
+            <div id="show_filters" class="form-group" style="text-align: center;">
+                {% include 'blocks/show_filters.html' %}
+            </div>
+        </form>
+    </fieldset>
+    <fieldset class="container" id="config_filter_fieldset" style="overflow: auto">
+        <div class="row-fluid">
+            <div>
+                <div id="form_config_filter" class="form-group">
                     
                 </div>
             </div>

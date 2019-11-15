@@ -1,0 +1,153 @@
+{
+  "id": 110,
+  "idu": 3,
+  "alg": {
+      "id": 12,
+      "alg_name": "meka.classifiers.multilabel.BR",
+      "web_name": "BR",
+      "alg_typ": "MultiClassification",
+      "config": {
+          "num-decimal-places": {
+              "type": "integer",
+              "default": null,
+              "help": "The number of decimal places for the output of numbers in the model.",
+              "min": 1,
+              "max": 10000000000000000,
+              "command": "-num-decimal-places"
+          },
+          "batch-size": {
+              "type": "integer",
+              "default": null,
+              "help": "The desired batch size for batch prediction.",
+              "min": 1,
+              "max": 10000000000000000,
+              "command": "-batch-size"
+          },
+          "base_estimator": {
+              "type": "ensemble",
+              "default": "weka.classifiers.trees.J48",
+              "help": "Full name of base classifier. (default: weka.classifiers.trees.J48)",
+              "command": "-W"
+          }
+      },
+      "lib": "meka"
+  },
+  "alg_config": {
+      "base_estimator": {
+          "alg_name": "weka.classifiers.meta.RotationForest",
+          "parameters": {
+              "number_or_size": false,
+              "min_size_group": 3,
+              "max_size_group": 3,
+              "perc_remove": 50,
+              "num_iter": 10,
+              "debug_mode": false,
+              "base_estimator": {
+                  "alg_name": "weka.classifiers.trees.J48",
+                  "parameters": {
+                      "unpruned": false,
+                      "collapse": false,
+                      "pruning_confidence": 0.25,
+                      "minimum_n_instances": 2,
+                      "reduced_error_pruning": false,
+                      "binary_split": false,
+                      "not_subtree_raising": false,
+                      "not_clean_up": false,
+                      "laplace": false,
+                      "not_MDL": false,
+                      "not_splitpoint_act_value": false
+                  }
+              }
+          }
+      }
+  },
+  "exp_config": {
+      "mode": "split",
+      "train_partition": 70,
+      "target": [
+          "amazed-suprised",
+          "happy-pleased",
+          "relaxing-clam",
+          "quiet-still",
+          "sad-lonely",
+          "angry-aggresive"
+      ],
+      "columns": [
+          "Mean_Acc1298_Mean_Mem40_Centroid",
+          "Mean_Acc1298_Mean_Mem40_Rolloff",
+          "Mean_Acc1298_Mean_Mem40_Flux",
+          "Mean_Acc1298_Mean_Mem40_MFCC_0",
+          "Mean_Acc1298_Mean_Mem40_MFCC_1",
+          "Mean_Acc1298_Mean_Mem40_MFCC_2",
+          "Mean_Acc1298_Mean_Mem40_MFCC_3",
+          "Mean_Acc1298_Mean_Mem40_MFCC_4",
+          "Mean_Acc1298_Mean_Mem40_MFCC_5",
+          "Mean_Acc1298_Mean_Mem40_MFCC_6",
+          "Mean_Acc1298_Mean_Mem40_MFCC_7",
+          "Mean_Acc1298_Mean_Mem40_MFCC_8",
+          "Mean_Acc1298_Mean_Mem40_MFCC_9",
+          "Mean_Acc1298_Mean_Mem40_MFCC_10",
+          "Mean_Acc1298_Mean_Mem40_MFCC_11",
+          "Mean_Acc1298_Mean_Mem40_MFCC_12",
+          "Mean_Acc1298_Std_Mem40_Centroid",
+          "Mean_Acc1298_Std_Mem40_Rolloff",
+          "Mean_Acc1298_Std_Mem40_Flux",
+          "Mean_Acc1298_Std_Mem40_MFCC_0",
+          "Mean_Acc1298_Std_Mem40_MFCC_1",
+          "Mean_Acc1298_Std_Mem40_MFCC_2",
+          "Mean_Acc1298_Std_Mem40_MFCC_3",
+          "Mean_Acc1298_Std_Mem40_MFCC_4",
+          "Mean_Acc1298_Std_Mem40_MFCC_5",
+          "Mean_Acc1298_Std_Mem40_MFCC_6",
+          "Mean_Acc1298_Std_Mem40_MFCC_7",
+          "Mean_Acc1298_Std_Mem40_MFCC_8",
+          "Mean_Acc1298_Std_Mem40_MFCC_9",
+          "Mean_Acc1298_Std_Mem40_MFCC_10",
+          "Mean_Acc1298_Std_Mem40_MFCC_11",
+          "Mean_Acc1298_Std_Mem40_MFCC_12",
+          "Std_Acc1298_Mean_Mem40_Centroid",
+          "Std_Acc1298_Mean_Mem40_Rolloff",
+          "Std_Acc1298_Mean_Mem40_Flux",
+          "Std_Acc1298_Mean_Mem40_MFCC_0",
+          "Std_Acc1298_Mean_Mem40_MFCC_1",
+          "Std_Acc1298_Mean_Mem40_MFCC_2",
+          "Std_Acc1298_Mean_Mem40_MFCC_3",
+          "Std_Acc1298_Mean_Mem40_MFCC_4",
+          "Std_Acc1298_Mean_Mem40_MFCC_5",
+          "Std_Acc1298_Mean_Mem40_MFCC_6",
+          "Std_Acc1298_Mean_Mem40_MFCC_7",
+          "Std_Acc1298_Mean_Mem40_MFCC_8",
+          "Std_Acc1298_Mean_Mem40_MFCC_9",
+          "Std_Acc1298_Mean_Mem40_MFCC_10",
+          "Std_Acc1298_Mean_Mem40_MFCC_11",
+          "Std_Acc1298_Mean_Mem40_MFCC_12",
+          "Std_Acc1298_Std_Mem40_Centroid",
+          "Std_Acc1298_Std_Mem40_Rolloff",
+          "Std_Acc1298_Std_Mem40_Flux",
+          "Std_Acc1298_Std_Mem40_MFCC_0",
+          "Std_Acc1298_Std_Mem40_MFCC_1",
+          "Std_Acc1298_Std_Mem40_MFCC_2",
+          "Std_Acc1298_Std_Mem40_MFCC_3",
+          "Std_Acc1298_Std_Mem40_MFCC_4",
+          "Std_Acc1298_Std_Mem40_MFCC_5",
+          "Std_Acc1298_Std_Mem40_MFCC_6",
+          "Std_Acc1298_Std_Mem40_MFCC_7",
+          "Std_Acc1298_Std_Mem40_MFCC_8",
+          "Std_Acc1298_Std_Mem40_MFCC_9",
+          "Std_Acc1298_Std_Mem40_MFCC_10",
+          "Std_Acc1298_Std_Mem40_MFCC_11",
+          "Std_Acc1298_Std_Mem40_MFCC_12",
+          "BH_LowPeakAmp",
+          "BH_LowPeakBPM",
+          "BH_HighPeakAmp",
+          "BH_HighPeakBPM",
+          "BHSUM1",
+          "BHSUM2",
+          "BHSUM3"
+      ]
+  },
+  "data": "Music.arff",
+  "result": null,
+  "starttime": 1571908560.8966413,
+  "endtime": null
+}

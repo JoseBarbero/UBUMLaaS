@@ -1,4 +1,6 @@
 {
     "rotationForest": "rotationForest",
-    "randomBalance": "lib/unofficial_weka_packages/randomBalance1.0.0.zip"
+    "SMOTE": "SMOTE",
+    "randomBalance": "lib/unofficial_weka_packages/randomBalance1.0.0.zip",
+    "instanceSelection": "lib/unofficial_weka_packages/instanceSelection1.3.0.zip"
 }

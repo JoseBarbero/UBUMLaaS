@@ -1,0 +1,68 @@
+{
+    "id": 112,
+    "idu": 3,
+    "alg": {
+        "id": 4,
+        "alg_name": "sklearn.neighbors.KNeighborsClassifier",
+        "web_name": "KNN",
+        "alg_typ": "Classification",
+        "config": {
+            "n_neighbors": {
+                "type": "integer",
+                "default": 5,
+                "help": "Number of neighbors to use by default for kneighbors queries.",
+                "min": 1
+            },
+            "weights": {
+                "type": "string",
+                "default": "uniform",
+                "help": "weight function used in prediction. Possible values:\u2018uniform\u2019 : uniform weights. All points in each neighborhood are weighted equally.\u2018distance\u2019 : weight points by the inverse of their distance. in this case, closer neighbors of a query point will have a greater influence than neighbors which are further away.",
+                "options": [
+                    "uniform",
+                    "distance"
+                ]
+            },
+            "algorithm": {
+                "type": "string",
+                "default": "auto",
+                "help": "Algorithm used to compute the nearest neighbors:\u2018ball_tree\u2019 will use BallTree.\u2018kd_tree\u2019 will use KDTree. \u2018brute\u2019 will use a brute-force search. \u2018auto\u2019 will attempt to decide the most appropriate algorithm based on the values passed to fit method.",
+                "options": [
+                    "auto",
+                    "ball_tree",
+                    "kd_tree",
+                    "brute"
+                ]
+            },
+            "p": {
+                "type": "integer",
+                "default": 2,
+                "help": "Power parameter for the Minkowski metric. When p = 1, this is equivalent to using manhattan_distance (l1), and euclidean_distance (l2) for p = 2. For arbitrary p, minkowski_distance (l_p) is used.",
+                "min": 1
+            }
+        },
+        "lib": "sklearn"
+    },
+    "alg_config": {
+        "n_neighbors": 5,
+        "weights": "uniform",
+        "algorithm": "auto",
+        "p": 2
+    },
+    "exp_config": {
+        "mode": "cross",
+        "k_folds": 5,
+        "target": [
+            "class"
+        ],
+        "columns": [
+            "sepallength",
+            "sepalwidth",
+            "petallength",
+            "petalwidth"
+        ]
+    },
+    "data": "iris.arff",
+    "result": null,
+    "starttime": 1571925032.3127408,
+    "endtime": null
+}

@@ -5,7 +5,8 @@ const BLOCKS_ID = ["alg_typ", "data", "config_experiment_block", "alg_name"];
 const BLOCKS_ACTIVATORS = {alg_typ: "upload_dataset_block",
                            data: "config_dataset_block",
                            experiment_seed_activator: "config_experiment_block",
-                           alg_name: "config_algorithm_fieldset"};
+                           alg_name: "config_algorithm_fieldset",
+                           filter_name: "config_filter_fieldset"};
 
 already_correct = new Set([config_experiment_block]);
 
