@@ -73,7 +73,7 @@ def launch_experiment():
     v.q.enqueue(task_skeleton, args=(exp.to_dict(), user.to_dict()),
                 result_ttl=0)
 
-    return redirect(url_for("experiments.new_experiment", _scheme=v.scheme))
+    return redirect(url_for("experiments.new_experiment"))
 
 
 @login_required
