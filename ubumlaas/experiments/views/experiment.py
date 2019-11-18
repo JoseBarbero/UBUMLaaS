@@ -167,8 +167,9 @@ def reuse_experiment(id):
                            title="New experiment")
 
 @login_required
-@views.experiments.route("/experiment/<int:id>/delete", methods=["DELETE"])
-def remove_experiment(id):
+@views.experiments.route("/experiment/delete", methods=["DELETE"])
+def remove_experiment():
+    id = request.get_data().decode('utf-8')
     exp = load_experiment(id)
 
     if not exp or exp.idu != current_user.id:
@@ -178,7 +179,7 @@ def remove_experiment(id):
         os.remove(file)
     delete_experiment(id)
 
-    return redirect(url_for("users.profile"))
+    return "OK", 200
 
 @views.experiments.route("/experiment/form_generator", methods=["POST"])
 def form_generator():
