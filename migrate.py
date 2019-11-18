@@ -71,7 +71,6 @@ def get_column_information(table, column):
         foreign_key_data = next(filter(lambda x: x[3] == column, foreign_key_info))
     except StopIteration:
         foreign_key_data = None
-    print(foreign_key_data)
     column_information = " " + _type
     if _null != 0:
         column_information += " NOT NULL"
