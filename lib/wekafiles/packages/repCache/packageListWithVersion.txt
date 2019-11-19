@@ -45,7 +45,7 @@ RPlugin:1.3.27
 RankCorrelation:1.0.0
 RankerByDTClassification:1.0.0
 RerankingSearch:1.1.0
-Rseslib:3.2.3
+Rseslib:3.2.2
 SMOTE:1.0.3
 SPAARC:1.0
 SPMFWrapper:0.0.2
