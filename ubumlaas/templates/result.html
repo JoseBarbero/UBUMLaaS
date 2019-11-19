@@ -277,7 +277,9 @@
             to_render.forEach(function(e){
                 e.render();
             });
-            generate_graphics();
+            if(result[parameters[0]].length > 1){
+                generate_graphics();
+            }
         });
 
         function generate_colors(length){
