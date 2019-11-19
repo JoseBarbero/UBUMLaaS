@@ -109,6 +109,7 @@ function get_dataset_config(){
 
     random_seed = $("#experiment_seed_value");
     dataset_config.random_seed = random_seed.attr("disabled") ? null : parseInt(random_seed.val());
+    dataset_config.alg_type = alg_typ.val();
     return dataset_config;
 }
 

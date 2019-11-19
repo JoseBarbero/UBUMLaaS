@@ -15,10 +15,10 @@ class Abstract_execute(ABC):
             experiment {dict} -- experiment dictionary
         """
         self.algorithm_name = experiment["alg"]["alg_name"]  # for example: weka.classification.trees.J48
-        self.algorithm_type = Abstract_execute._know_type(experiment)  # classification, reggression or mixed
         self.algorithm_configuration = Abstract_execute.__convert_to_dict(experiment["alg_config"])  # configuration algorithm
         self.configuration = Abstract_execute.__convert_to_dict(experiment["alg"]["config"])
         self.experiment_configuration = Abstract_execute.__convert_to_dict(experiment["exp_config"])
+        self.algorithm_type = self.experiment_configuration["alg_type"]  # classification, reggression or mixed
         if experiment.get("filter") is not None:
             self.filter_name = experiment["filter"]["filter_name"]
             self.filter_config = Abstract_execute.__convert_to_dict(experiment["filter_config"])
@@ -188,28 +188,6 @@ class Abstract_execute(ABC):
             y_train, y_test = y.iloc[train_index, :], y.iloc[test_index, :]
             folds.append((X_train, X_test, y_train, y_test))
         return folds
-
-    @staticmethod
-    def _know_type(exp):
-        """If the algorthim is mixed, find the deepest base classifier
-
-        Arguments:
-            exp {dict} -- experiment dict
-
-        Returns:
-            [str] -- 
-        """
-        if exp["alg"]["alg_typ"] == "Mixed":
-            from ubumlaas.models import get_algorithm_by_name
-            config = Abstract_execute.__convert_to_dict(exp["alg_config"])
-            for c in config:
-                if type(config[c]) == dict:
-                    new_exp = {"alg": get_algorithm_by_name(
-                                        config[c]["alg_name"]
-                                      ).to_dict(),
-                               "alg_config": config[c]["parameters"]}
-                    return Abstract_execute._know_type(new_exp)
-        return exp["alg"]["alg_typ"]
 
     def is_classification(self):
         """Check if the algorithm type is Classification
