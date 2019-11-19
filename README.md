@@ -70,6 +70,12 @@ Project "***Minería de datos para la mejora del mantenimiento y disponibilidad 
     ```bash
     python app.py
     ```
+## Update database
+1. Execute migrate.py
+   ```bash
+   $ python migrate.py
+   ``` 
+
 
 ---
 
