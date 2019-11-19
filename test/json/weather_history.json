@@ -90,7 +90,8 @@
             "Wind Bearing (degrees)",
             "Visibility (km)",
             "Loud Cover"
-        ]
+        ],
+        "alg_type": "Regression"
     },
     "data": "weatherHistory.csv",
     "result": null,

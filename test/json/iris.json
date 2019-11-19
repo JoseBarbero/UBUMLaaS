@@ -59,7 +59,8 @@
             " sepal width (cm)",
             "petal length (cm)",
             " petal width (cm)"
-        ]
+        ],
+        "alg_type": "Classification"
     },
     "data": "iris.csv",
     "result": null,

@@ -59,7 +59,8 @@
             "sepalwidth",
             "petallength",
             "petalwidth"
-        ]
+        ],
+        "alg_type": "Classification"
     },
     "data": "iris.arff",
     "result": null,

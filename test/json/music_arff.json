@@ -144,7 +144,8 @@
           "BHSUM1",
           "BHSUM2",
           "BHSUM3"
-      ]
+      ],
+      "alg_type": "MultiClassification"
   },
   "data": "Music.arff",
   "result": null,
