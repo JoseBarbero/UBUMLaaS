@@ -166,6 +166,7 @@ def reuse_experiment(id):
                            form_d=form_d, form_p=form_p,
                            title="New experiment")
 
+
 @login_required
 @views.experiments.route("/experiment/delete", methods=["DELETE"])
 def remove_experiment():
@@ -180,6 +181,7 @@ def remove_experiment():
     delete_experiment(id)
 
     return "OK", 200
+
 
 @views.experiments.route("/experiment/form_generator", methods=["POST"])
 def form_generator():

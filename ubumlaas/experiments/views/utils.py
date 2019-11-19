@@ -41,7 +41,8 @@ def download_model(id):
 @views.experiments.route("/experiment/base_estimator_getter", methods=["POST"])
 def base_estimator_getter():
     alg_name = request.form.get("alg_name", None)
-    algorithm = get_similar_algorithms(alg_name)
+    exp_typ = request.form.get("exp_typ", None)
+    algorithm = get_similar_algorithms(alg_name, exp_typ)
 
     _ret = dict()
     _ret["algorithms"] = []

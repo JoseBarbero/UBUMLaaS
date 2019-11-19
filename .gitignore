@@ -135,3 +135,5 @@ lib/**/*.html
 lib/**/*.css
 
 debug.log
+
+backups/

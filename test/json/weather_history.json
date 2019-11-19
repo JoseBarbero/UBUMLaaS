@@ -5,7 +5,7 @@
         "id": 7,
         "alg_name": "weka.classifiers.meta.RotationForest",
         "web_name": "Rotation Forest",
-        "alg_typ": "Mixed",
+        "alg_typ": "Regression",
         "config": {
             "number_or_size": {
                 "type": "boolean",
@@ -90,7 +90,8 @@
             "Wind Bearing (degrees)",
             "Visibility (km)",
             "Loud Cover"
-        ]
+        ],
+        "alg_type": "Regression"
     },
     "data": "weatherHistory.csv",
     "result": null,

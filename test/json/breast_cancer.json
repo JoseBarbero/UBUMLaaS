@@ -55,7 +55,8 @@
             "Bl.cromatin",
             "Normal.nucleoli",
             "Mitoses"
-        ]
+        ],
+        "alg_type": "Classification"
     },
     "data": "breastCancer.csv",
     "result": null,
