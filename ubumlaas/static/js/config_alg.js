@@ -95,7 +95,7 @@ function generateForm(alg_config, place_in_id, level_to_modify=0, filter=false){
 function create_ensemble_block(basename, parameter){
     let content;
     content = $("<select></select>", {id: basename+"_value"});
-    let petition = "alg_name="+$("#alg_name").val();
+    let petition = "alg_name="+$("#alg_name").val()+"&exp_typ="+alg_typ.val();
     let _options = give_me_base_estimators(petition);
     _options.forEach(function (e) { 
         content.append($("<option value=\""+e.alg_name+"\">"+e.web_name+"</option>"));

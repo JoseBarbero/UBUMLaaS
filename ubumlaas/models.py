@@ -1,7 +1,7 @@
 import variables as v
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
-from sqlalchemy import and_, or_, text
+from sqlalchemy import and_, or_, text, desc, asc
 
 from flask_login import UserMixin
 
@@ -53,27 +53,51 @@ def get_experiments(idu):
 def get_algorithms_type():
     sql = text('SELECT DISTINCT alg_typ FROM algorithms')
     result = v.db.engine.execute(sql)
-    types = [(row[0], row[0]) for row in result]
+    types = [(row[0], row[0]) for row in result if row[0] != "Mixed"]
     return types
 
 
-def get_similar_algorithms(alg_name):
+# def get_similar_algorithms(alg_name):
+#     """Get algorithm that can be base estimator
+    
+#     Arguments:
+#         alg_name {str} -- Name of the algorithm
+    
+#     Returns:
+#         list of lists -- all similar algorithms
+#     """
+#     alg = get_algorithm_by_name(alg_name)
+#     if alg.lib != "meka":
+#         cond = Algorithm.lib == alg.lib
+#     else:
+#         cond = Algorithm.lib == "weka"
+#         if alg.alg_typ == "MultiClassification":
+#             cond = and_(cond, or_(Algorithm.alg_typ == "Classification",
+#                                   Algorithm.alg_typ == "Mixed"))
+#         else:
+#             cond = and_(cond, or_(Algorithm.alg_typ == "Regression",
+#                                   Algorithm.alg_typ == "Mixed"))
+#     if alg.alg_typ != "Mixed" and alg.lib != "meka":
+#         cond = and_(cond, Algorithm.alg_typ == alg.alg_typ)
+#     elif alg.lib != "meka":
+#         cond = and_(cond, or_(Algorithm.alg_typ == "Classification",
+#                               Algorithm.alg_typ == "Regression"))
+#     algorithms = Algorithm.query.filter(cond).all()
+#     return algorithms
+
+
+def get_similar_algorithms(alg_name, exp_typ):
     alg = get_algorithm_by_name(alg_name)
-    if alg.lib != "meka":
-        cond = Algorithm.lib == alg.lib
+    if alg.lib == "meka":
+        cond = and_(Algorithm.lib == "weka",
+                    or_(Algorithm.alg_typ == "Classification",
+                        Algorithm.alg_typ == "Mixed"))
     else:
-        cond = Algorithm.lib == "weka"
-        if alg.alg_typ == "MultiClassification":
-            cond = and_(cond, or_(Algorithm.alg_typ == "Classification",
-                                  Algorithm.alg_typ == "Mixed"))
-        else:
-            cond = and_(cond, or_(Algorithm.alg_typ == "Regression",
-                                  Algorithm.alg_typ == "Mixed"))
-    if alg.alg_typ != "Mixed" and alg.lib != "meka":
-        cond = and_(cond, Algorithm.alg_typ == alg.alg_typ)
-    elif alg.lib != "meka":
-        cond = and_(cond, or_(Algorithm.alg_typ == "Classification",
-                              Algorithm.alg_typ == "Regression"))
+        cond = Algorithm.lib == alg.lib
+        subcond = Algorithm.alg_typ == exp_typ
+        if exp_typ in ["Classification", "Regression"]:
+            subcond = or_(subcond, Algorithm.alg_typ == "Mixed")
+        cond = and_(cond, subcond)
     algorithms = Algorithm.query.filter(cond).all()
     return algorithms
 
@@ -87,7 +111,10 @@ def get_algorithms(alg_typ):
     Returns:
         algorithm list -- all algorithm of that type.
     """
-    return Algorithm.query.filter(Algorithm.alg_typ == alg_typ).all()
+    cond = Algorithm.alg_typ == alg_typ
+    if alg_typ in ["Classification", "Regression"]:
+        cond = or_(cond, Algorithm.alg_typ == "Mixed")
+    return Algorithm.query.filter(cond).order_by(asc(Algorithm.web_name)).all()
 
 
 def get_algorithm_by_name(name):
