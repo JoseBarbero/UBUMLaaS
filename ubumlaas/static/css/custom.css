@@ -1,3 +1,6 @@
+html {
+    word-break: break-word !important;
+}
 hr {
     border-top: 1px solid var(--light);
     margin-top: 0;

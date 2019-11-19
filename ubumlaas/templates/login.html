@@ -7,8 +7,8 @@
         <form class="form-horizontal" method="POST">
             <h3 class="text-center">Login</h3>
             {{form.hidden_tag()}}
-            {% for message in get_flashed_messages() %}
-                <div class="alert alert-warning alert-dismissible fade show" role="alert">{{ message }}
+            {% for category, message in get_flashed_messages(with_categories=True) %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">{{ message }}
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>

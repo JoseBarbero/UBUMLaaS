@@ -31,9 +31,9 @@
                         </div>
                         <div class="container-fluid" id="{{ loop.index0 }}_estimator_value" style="display:none;">
                         {% for i in dict_config[c] %}
-                            <div class="row ml-3">
-                                <p class="col-md-5 font-weight-bold">{{ i }}</p>
-                                <p class="col-md-7">{{ dict_config[c][i] }} </p>
+                            <div class="row {% if loop.index %2 == 0 %}row-odd{% endif %} ml-2 pt-2 pb-2 d-flex align-items-center">
+                                <p class="col-md-7 font-weight-bold m-0 text-wrap">{{ i }}</p>
+                                <p class="col-md-5 text-left m-0 text-wrap">{{ dict_config[c][i] }} </p>
                             </div>
                         {% endfor %}
                         </div>

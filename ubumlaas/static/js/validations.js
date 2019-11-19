@@ -1,6 +1,7 @@
-/*$("document").ready(function(){
-    verify_all();
-});*/
+$("document").ready(function(){
+    load_verify_elements();
+    submit_button_change(true, "secondary");
+});
 
 function load_verify_elements(){
     //Blocks
