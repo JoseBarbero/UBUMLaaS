@@ -5,7 +5,25 @@
 <div class="container">
   <h3 class="text-center text-monospace font-weight-bold mt-3">Welcome to UBUMLaaS</h3>
   <h4 class="text-center text-monospace font-weight-bold mb-4">The machine learning as a service platform developed by ADMIRABLE</h4>
+  
+  <hr>
+  {% if current_user.is_authenticated %}
+
+  {% else %}
+    <div class="container">    
+      <div class="row d-flex align-items-center">
+        <h2 class="text-center text-monospace font-weight-bold pt-3 pb-3 col-md-7">Start experiment now<br><a class="mt-3 btn btn-ubu-maroon text-monospace text-uppercase btn-lg  btn-block" href="{{ url_for('users.register') }}">Register now</a></h2>
+        <div class="col-md-5">
+          <p class="text-right font-italic mb-0"><q>In God we trust all others must bring data</q></p>
+          <p class="text-right font-italic">W. Edwards Deming</p>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+  
+  <hr>
   <!--Carousel Wrapper-->
+  <h3 class="text-center text-monospace font-weight-bold pt-0 pb-0">Our exclusive algorithms</h3>
   <div id="carousel-algorithms" class="carousel slide carousel-fade" data-ride="carousel">
     <!--Indicators-->
     <ol class="carousel-indicators">

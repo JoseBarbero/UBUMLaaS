@@ -31,9 +31,9 @@
                         </div>
                         <div class="container-fluid" id="{{ loop.index0 }}_estimator_value" style="display:none;">
                         {% for i in dict_config[c] %}
-                            <div class="row ml-3">
-                                <p class="col-md-5 font-weight-bold">{{ i }}</p>
-                                <p class="col-md-7">{{ dict_config[c][i] }} </p>
+                            <div class="row {% if loop.index %2 == 0 %}row-odd{% endif %} ml-2 pt-2 pb-2 d-flex align-items-center">
+                                <p class="col-md-7 font-weight-bold m-0 text-wrap">{{ i }}</p>
+                                <p class="col-md-5 text-left m-0 text-wrap">{{ dict_config[c][i] }} </p>
                             </div>
                         {% endfor %}
                         </div>
@@ -134,6 +134,8 @@
 {% block js %}
 <script src="{{ url_for('static', filename="js/include/generate_form_utils.js") }}"></script>
 <script src="{{ url_for('static', filename="js/config_alg.js") }}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/6.2.2/math.js" integrity="sha256-tPx691vG+n8gBD4vGeaddgXn53101A92tUk6Wy4aeO8=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/color-hash@1.0.3/dist/color-hash.js"></script>
 <script>
     {% if experiment.state == 1 %}
         to_render = [];
@@ -252,8 +254,8 @@
                             to_render.push(chart);
                             div.append(canvas);
                             break;       
-                        case "AUC":
-                            result_val = 1-result_val;
+                        /*case "AUC":
+                            result_val = 1-result_val;*/
                         default:
                             let k = $("<p></p>", {class: "col-md-5 font-weight-bold"});
                             let v = $("<p></p>", {class: "col-md-7"});
@@ -275,7 +277,113 @@
             to_render.forEach(function(e){
                 e.render();
             });
+            if(result[parameters[0]].length > 1){
+                generate_graphics();
+            }
         });
+
+        function generate_colors(length){
+            let ks = [...Array(length).keys()].map(function(e){ return "k"+e});
+            let colors = [];
+            var colorHash = new ColorHash();
+            ks.forEach(function(i){
+                colors.push(convertHex(colorHash.hex(i),50));
+            });
+            console.log(colors);
+            return colors;
+        }
+
+        function generate_graphics(){
+            var parameters = Object.keys(result);
+            var colors = generate_colors(result[parameters[0]].length)
+            parameters.forEach(function(i){
+                if (i != "ROC" && i != "confussion_matrix"){
+                    let nav = $("#"+i+"_chart > ul:nth-child(1)");
+                    let super_div = $("#"+i+"_chart > div:nth-child(2)")
+                    $($(nav.children()[0]).children()[0]).removeClass("active");
+                    $(super_div.children()[0]).removeClass("active show");
+                    let li = $("<li></li>");
+                    li.append($("<a></a>", {"data-toggle": "tab", href: "#"+i+"-graph_tab",
+                                            class: "nav-link", id: i+"-graph_tab-tab",
+                                            "aria-controls": i+"-graph_tab"}));
+                    let a = $(li.children()[0]);
+                    a.addClass("active");
+                    a.attr("aria-selected", true);
+                    a.text("Graph");
+                    nav.prepend(li);
+                    let tab_pane_div = $("<div></div>",{class: "tab-pane fade",
+                                                        id: i+"-graph_tab", role: "tabpanel",
+                                                        "aria-labelledby": i+"-graph_tab-tab"});
+                    let tab_container_div = $("<div></div>", {class: "container-fluid"});
+                    tab_pane_div.append(tab_container_div);
+                    tab_pane_div.addClass("active");
+                    tab_pane_div.addClass("show");
+                    let div = $("<div></div>", {class: "row"});
+
+                    let label = i;
+                    var canvas = $("<canvas></canvas>", {id:i+"_canvas", width: "100%"});
+                    var ctx = canvas.get(0).getContext('2d');
+                    
+                    var myChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            datasets: [ {
+                                label: 'Mean',
+                                data: fillArray(math.round(math.mean(result[i]),3),result[i].length),
+                                type: "line",
+                                borderWidth: 5,
+                                order: 2,
+                                fill: false,
+                                borderColor: getComputedStyle(document.documentElement)
+                                                    .getPropertyValue('--info'),
+                                backgroundColor: getComputedStyle(document.documentElement)
+                                                    .getPropertyValue('--info')
+                            }, {
+                                label: 'Standard deviation',
+                                data: fillArray(math.round(math.std(result[i]),3),result[i].length),
+                                type: "line",
+                                order: 1,
+                                borderWidth: 5,
+                                fill: false,
+                                borderColor: getComputedStyle(document.documentElement)
+                                                    .getPropertyValue('--ubu-maroon'),
+                                backgroundColor: getComputedStyle(document.documentElement)
+                                                    .getPropertyValue('--ubu-maroon')
+                            }, {
+                                label: 'Absolute value',
+                                data: result[i].map(function(e){
+                                    return math.round(e,3);
+                                }),
+                                order: 0,
+                                backgroundColor: colors
+                            }],
+                            labels: [...Array(result[i].length).keys()].map(function(e){ return "k"+e})
+                        },
+                        options: {
+                            tooltips: {
+                                intersect: false,
+                                position: "average",
+                                mode: "index",
+                                enabled: true
+                            },
+                            hover: {
+                                mode: null
+                            },
+                        }
+                    });
+                    div.append(canvas);
+                    tab_container_div.append(div);
+                    super_div.prepend(tab_pane_div);
+                }                
+            });
+        }
+        function fillArray(value, len) {
+            if (len == 0) return [];
+            var a = [value];
+            while (a.length * 2 <= len) a = a.concat(a);
+            if (a.length < len) a = a.concat(a.slice(0, len - a.length));
+            return a;
+        }
     {% endif %}
     
     /**

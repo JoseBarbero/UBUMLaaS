@@ -50,6 +50,7 @@
                             <th scope="col">State</th>
                             <th scope="col" class="no-sort">View Result</th>
                             <th scope="col" class="no-sort">Reuse experiment</th>
+                            <th scope="col" class="no-sort">Delete experiment</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -84,7 +85,10 @@
                                     <a href="{{ url_for("experiments.result_experiment",id=e.id) }}">See</a>
                                 </td>
                                 <td>
-                                    <a href="{{ url_for("experiments.new_experiment") }}?exp={{e.id}}">Reuse</a>
+                                    <a href="{{ url_for("experiments.new_experiment", exp=e.id) }}">Reuse</a>
+                                </td>
+                                <td>
+                                    <a href="javascript:delete_experiment({{e.id}})">Delete</a>
                                 </td>
                         </tr>
                         {% endfor %}
@@ -112,7 +116,25 @@ $(document).ready(function() {
         "pageLength": 5
     } );
 } );
-</script>
+
+function delete_experiment(id){
+    launch_confirm_danger_modal("Delete experiment", "Are you sure to delete experiment?", confirm_delete_experiment, id);
+}
+function confirm_delete_experiment(id){
+    $.ajax({
+    url: '{{url_for("experiments.remove_experiment")}}',
+    type: 'DELETE',
+    contentType: 'text/plain; charset=utf-8',
+    data: id.toString(),
+    success: function(result) {
+        location.reload()
+    },
+    error: function (result) {
+            launch_danger_modal("Delete Failed", "Fail when delete the experiment")
+            }
+});
+}
+</script>12
 
 {% endblock js %}
 
