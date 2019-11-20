@@ -7,19 +7,24 @@
   <h4 class="text-center text-monospace font-weight-bold mb-4">The machine learning as a service platform developed by ADMIRABLE</h4>
   
   <hr>
-  {% if current_user.is_authenticated %}
+  <div class="container">
+    <div class="row d-flex align-items-center">
+      {% if current_user.is_authenticated %}
+      <h2 class="text-center text-monospace font-weight-bold pt-3 pb-3 col-md-12"><a class="mt-0 btn btn-ubu-maroon text-monospace text-uppercase btn-lg  btn-block" href="{{ url_for('experiments.new_experiment') }}">Create a new experiment</a></h2>
 
-  {% else %}
-    <div class="container">    
-      <div class="row d-flex align-items-center">
+      {% else %}      
         <h2 class="text-center text-monospace font-weight-bold pt-3 pb-3 col-md-7">Start experiment now<br><a class="mt-3 btn btn-ubu-maroon text-monospace text-uppercase btn-lg  btn-block" href="{{ url_for('users.register') }}">Register now</a></h2>
-        <div class="col-md-5">
+        <blockquote class="blockquote text-right col-md-5">
+            <p class="mb-0"><q>In God we trust all others must bring data</q></p>
+            <footer class="blockquote-footer"><cite title="W. Edwards Deming">W. Edwards Deming</cite></footer>
+          </blockquote>
+        <!-- <div class="col-md-5">
           <p class="text-right font-italic mb-0"><q>In God we trust all others must bring data</q></p>
           <p class="text-right font-italic">W. Edwards Deming</p>
-        </div>
-      </div>
+        </div> -->
+      {% endif %}
     </div>
-  {% endif %}
+  </div>
   
   <hr>
   <!--Carousel Wrapper-->
@@ -41,9 +46,12 @@
             <div class="mask flex-center rgba-black-strong"></div>
           </div>
           <div class="carousel-caption">
-            <h3 class="h3-responsive">Rotation Forest</h3>
-            <p class="text-justify">Method for generating classifier ensembles based on feature extraction. To create the training data for a base classifier, the feature set is randomly split into K subsets (K is a parameter of the algorithm) and Principal Component Analysis (PCA) is applied to each subset. All principal components are retained in order to preserve the variability information in the data. Thus, K axis rotations take place to form the new features for a base classifier. The idea of the rotation approach is to encourage simultaneously individual accuracy and diversity within the ensemble. Diversity is promoted through the feature extraction for each base classifier. Decision trees were chosen here because they are sensitive to rotation of the feature axes, hence the name "forest." Accuracy is sought by keeping all principal components and also using the whole data set to train each base classifier.</p>
+            <div>
+              <h3 class="h3-responsive">Rotation Forest</h3>
+              <p class="text-justify">Method for generating classifier ensembles based on feature extraction. To create the training data for a base classifier, the feature set is randomly split into K subsets (K is a parameter of the algorithm) and Principal Component Analysis (PCA) is applied to each subset. All principal components are retained in order to preserve the variability information in the data. Thus, K axis rotations take place to form the new features for a base classifier. The idea of the rotation approach is to encourage simultaneously individual accuracy and diversity within the ensemble. Diversity is promoted through the feature extraction for each base classifier. Decision trees were chosen here because they are sensitive to rotation of the feature axes, hence the name "forest." Accuracy is sought by keeping all principal components and also using the whole data set to train each base classifier.</p>
+            </div>
           </div>
+        </a>
       </div>
       <div class="carousel-item">
         <a target="_blank" rel="noopener noreferrer" href="https://www.sciencedirect.com/science/article/pii/S0950705115001720">
@@ -51,19 +59,25 @@
             <img class="d-block w-100" src="static/img/pietro-jeng-n6B49lTx7NM-unsplash.jpg" alt="Second slide">
           </div>
           <div class="carousel-caption">
-            <h3 class="h3-responsive">Random Balance</h3>
-            <p class="text-justify">New approach to building ensembles of classifiers for two-class imbalanced data sets, called Random Balance. Each member of the Random Balance ensemble is trained with data sampled from the training set and augmented by artificial instances obtained using SMOTE. The novelty in the approach is that the proportions of the classes for each ensemble member are chosen randomly. The intuition behind the method is that the proposed diversity heuristic will ensure that the ensemble contains classifiers that are specialized for different operating points on the ROC space, thereby leading to larger AUC compared to other ensembles of classifiers.</p>
+            <div>
+              <h3 class="h3-responsive">Random Balance</h3>
+              <p class="text-justify">New approach to building ensembles of classifiers for two-class imbalanced data sets, called Random Balance. Each member of the Random Balance ensemble is trained with data sampled from the training set and augmented by artificial instances obtained using SMOTE. The novelty in the approach is that the proportions of the classes for each ensemble member are chosen randomly. The intuition behind the method is that the proposed diversity heuristic will ensure that the ensemble contains classifiers that are specialized for different operating points on the ROC space, thereby leading to larger AUC compared to other ensembles of classifiers.</p>
+            </div>
           </div>
+        </a>
       </div>
       <div class="carousel-item">
-        <a target="_blank" rel="noopener noreferrer" href="https://link.springer.com/article/10.1007/s13748-017-0117-5">
+        <a target="_blank" rel="noopener noreferrer" href="https://www.sciencedirect.com/science/article/pii/S0004370210000123">
           <div class="view">
             <img class="d-block w-100" src="static/img/stephen-dawson-qwtCeJ5cLYs-unsplash.jpg" alt="Third slide">
           </div>
           <div class="carousel-caption">
-            <h3 class="h3-responsive">MR-DIS</h3>
-            <p class="text-justify">Instance selection is a popular preprocessing task in knowledge discovery and data mining. Its purpose is to reduce the size of data sets maintaining their predictive capabilities. The usual emerging problem at this point is that these methods quite often suffer of high computational complexity, which becomes highly inconvenient for processing huge datasets. In this paper, a parallel implementation for the instance selection algorithm Democratic Instance Selection(DIS) is presented. The main advantages of the DIS algorithm turn out to be its computational complexity, linear in the number of instances, as well as its internal structure, intuitively parallelizable. In addition, the algorithm is publicly accessible to the scientific community.</p>
+            <div>
+              <h3 class="h3-responsive">Democratic Instance Selection</h3>
+              <p class="text-justify">The method is particularly efficient when we use instance selection algorithms that are high in computational cost. The proposed approach shares the philosophy underlying the construction of ensembles of classifiers. In an ensemble, several <span class="text-italic">weak</span> learners are combined to form a strong classifier; in our method several <span class="text-italic">weak</span> (in the sense that they are applied to subsets of the data) instance selection algorithms are combined to produce a strong and fast instance selection method.</p>
+            </div>
           </div>
+        </a>
       </div>
     </div>
     <!--/.Slides-->

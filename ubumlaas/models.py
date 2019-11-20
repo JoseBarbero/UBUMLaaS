@@ -378,3 +378,6 @@ class Experiment(v.db.Model):
                 "data": self.data,
                 "result": self.result, "starttime": self.starttime,
                 "endtime": self.endtime}
+
+    def web_name(self):
+        return get_algorithm_by_name(self.alg_name).web_name

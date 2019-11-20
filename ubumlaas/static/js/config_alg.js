@@ -84,6 +84,7 @@ function generateForm(alg_config, place_in_id, level_to_modify=0, filter=false){
         clean_levels(level_to_modify+1, filter);            
     }
     beautify_alg_config(filter);
+    $('[data-toggle="tooltip"]').tooltip();
 }
 
 /**
