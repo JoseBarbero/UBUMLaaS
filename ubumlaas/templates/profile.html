@@ -41,7 +41,6 @@
                 <table id="exper" class="table table-striped table-responsive" style="width:100%">
                     <thead>
                         <tr>
-                            <th scope="col">#</th>
                             <th scope="col">Id</th>
                             <th scope="col">Algorithm</th>
                             <th scope="col">Dataset</th>
@@ -56,7 +55,6 @@
                     <tbody>
                         {% for e in experiments %}
                         <tr>
-                                <td scope="col">{{ loop.index }}</td>
                                 <td scope="col">{{ e.id }}</td>
                                 <td scope="col">{{ e.alg_name }}</td>
                                 <td scope="col">{{ e.data }}</td>

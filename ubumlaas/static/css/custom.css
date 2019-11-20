@@ -1,5 +1,5 @@
 html {
-    word-break: break-word !important;
+    word-break: normal;
 }
 hr {
     border-top: 1px solid var(--light);

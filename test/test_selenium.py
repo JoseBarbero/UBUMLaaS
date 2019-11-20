@@ -92,7 +92,7 @@ class TestDefaultSuite():
                 3. Logout (and check logout).
         """
         self.login("ubumlaas@gmail.com")
-        assert self.driver.find_element(By.LINK_TEXT, "Logged in as ubumlaas").text == "Logged in as ubumlaas"
+        assert self.driver.find_element(By.LINK_TEXT, "My launched experiments").text == "My launched experiments"
         self.logout()
 
     def test_31DatasetLoad(self):
@@ -674,12 +674,12 @@ class TestDefaultSuite():
 
             Steps:
                 1. Login.
-                2. Click on Logged in as ubumlaas.
+                2. Click on My launched experiments.
                 3. Check text "No data available in table on experiment" table.
                 4. Logout.
         """
         self.login("ubumlaas@gmail.com")
-        self.driver.find_element(By.LINK_TEXT, "Logged in as ubumlaas").click()
+        self.driver.find_element(By.LINK_TEXT, "My launched experiments").click()
         time.sleep(self.wait)
         assert "No data available in table" in self.driver.find_element(By.CSS_SELECTOR, ".dataTables_empty").text
         self.logout()
@@ -689,12 +689,12 @@ class TestDefaultSuite():
 
             Steps:
                 1. Login as ubumlaas2.
-                2. Click on Logged in as ubumlaas2
+                2. Click on My launched experiments
                 3. Check KNN experiment.
                 4. Logout.
         """
         self.login("ubumlaas2@gmail.com")
-        self.driver.find_element(By.LINK_TEXT, "Logged in as ubumlaas2").click()
+        self.driver.find_element(By.LINK_TEXT, "My launched experiments").click()
         time.sleep(self.wait)
         assert "sklearn.neighbors.KNeighborsClassifier" in self.driver.find_element(By.CSS_SELECTOR, "#exper > tbody > tr > td:nth-child(3)").text
         self.logout()
@@ -704,13 +704,13 @@ class TestDefaultSuite():
 
             Steps:
                 1. Login as ubumlaas2.
-                2. Click on Logged in as ubumlaas2.
+                2. Click on My launched experiments.
                 3. Click on See.
                 3. Check KNN experiment on algorithm information.
                 4. Logout.
         """
         self.login("ubumlaas2@gmail.com")
-        self.driver.find_element(By.LINK_TEXT, "Logged in as ubumlaas2").click()
+        self.driver.find_element(By.LINK_TEXT, "My launched experiments").click()
         time.sleep(self.wait)
         self.driver.find_element(By.LINK_TEXT, "See").click()
         time.sleep(self.wait)
@@ -722,12 +722,12 @@ class TestDefaultSuite():
 
             Steps:
                 1. Login as ubumlaas2.
-                2. Click on Logged in as ubumlaas2.
+                2. Click on My launched experiments.
                 3. Check contact-lenses.arff in on Dataset table.
                 4. Logout.
         """
         self.login("ubumlaas2@gmail.com")
-        self.driver.find_element(By.LINK_TEXT, "Logged in as ubumlaas2").click()
+        self.driver.find_element(By.LINK_TEXT, "My launched experiments").click()
         time.sleep(self.wait)
         assert "contact-lenses.arff" in self.driver.find_element(By.CSS_SELECTOR, "#dataset_list > tbody > tr:nth-child(1) > td:nth-child(2)").text
         self.logout()
