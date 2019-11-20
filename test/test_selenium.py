@@ -712,9 +712,9 @@ class TestDefaultSuite():
         self.login("ubumlaas2@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "My launched experiments").click()
         time.sleep(self.wait)
-        self.driver.find_element(By.LINK_TEXT, "See").click()
+        self.driver.find_element(By.LINK_TEXT, "SEE").click()
         time.sleep(self.wait)
-        assert "KNN" in self.driver.find_element(By.CSS_SELECTOR, "body > div > div > div > div:nth-child(1) > div > div:nth-child(3) > p.col-md-9").text
+        assert "KNeighborsClassifier" in self.driver.find_element(By.CSS_SELECTOR, "body > div > div > div > div:nth-child(1) > div > div:nth-child(3) > p.col-md-9").text
         self.logout()
 
     def test_7DatasetsProfile(self):
