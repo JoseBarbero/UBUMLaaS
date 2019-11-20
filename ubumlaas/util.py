@@ -5,9 +5,9 @@ import variables as v
 import copy
 import arff
 import re
-import numpy as np
 
-def get_dataframe_from_file(path, filename, target_column = False):
+
+def get_dataframe_from_file(path, filename, target_column=False):
     extension = filename.split(".")[-1]
     targets_indexes = None
     if extension == "csv":
@@ -15,15 +15,15 @@ def get_dataframe_from_file(path, filename, target_column = False):
     elif extension == "xls":
         file_df = pd.read_excel(path + filename)
     elif extension == "arff":
-        data =  arff.load(open(path+filename, "r"), encode_nominal=True)
+        data = arff.load(open(path+filename, "r"), encode_nominal=True)
         columns = [row[0] for row in data["attributes"]]
         file_df = pd.DataFrame(data["data"], columns=columns)
-        match = re.search( r'-C[ \t]+(-?\d)', data["relation"])
+        match = re.search(r'-C[ \t]+(-?\d)', data["relation"])
         if match:
             targets_indexes = match.group(1)
     else:
         raise Exception("Invalid format for "+filename)
-    
+
     if target_column:
         return file_df, targets_indexes
     return file_df
@@ -90,12 +90,14 @@ def generate_df_html(df, num=6):
     return html_table
 
 
-def get_ensem_alg_name(conf):
+def get_ensem_alg_name(conf, iteration=1):
     if "base_estimator" in conf["parameters"].keys():
-        return conf["alg_name"] + "-" + get_ensem_alg_name(
-            conf["parameters"]["base_estimator"])
+        return v.app.jinja_env.filters["split"](conf["alg_name"]) \
+            + "<br>"+("&nbsp;"*(4*iteration))+"⤿ "\
+            + get_ensem_alg_name(
+                conf["parameters"]["base_estimator"], iteration+1)
     else:
-        return conf["alg_name"]
+        return v.app.jinja_env.filters["split"](conf["alg_name"])
 
 
 def get_dict_exp(name, dict_config):

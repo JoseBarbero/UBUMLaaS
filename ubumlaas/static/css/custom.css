@@ -1,5 +1,5 @@
 html {
-    word-break: break-word !important;
+    word-break: normal;
 }
 hr {
     border-top: 1px solid var(--light);
@@ -111,4 +111,8 @@ option.list-group-item{
 #sel[multiple]  option.list-group-item-secondary:checked{
     background-color: var(--secondary) !important;
     color: #ffffff !important;
+}
+
+tr.align-middle td{
+    vertical-align: middle !important;
 }
