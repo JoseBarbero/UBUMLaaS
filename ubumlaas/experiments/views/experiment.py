@@ -12,7 +12,7 @@ import time
 import json
 from urllib.parse import unquote
 from ubumlaas.experiments.algorithm import task_skeleton
-from ubumlaas.util import get_dataframe_from_file
+from ubumlaas.util import get_dataframe_from_file, get_ngrok_url
 import ubumlaas.experiments.views as views
 from ubumlaas.util import (generate_df_html, get_dict_exp, get_ensem_alg_name)
 import arff
@@ -137,7 +137,7 @@ def result_experiment(id, admin=False):
                      "dict_config": dict_config,
                      "conf": json.loads(get_algorithm_by_name(
                                         exp.alg_name).config),
-                     "external_url": os.getenv("NGROK_URL", "http://localhost")}
+                     "external_url": get_ngrok_url("experiments.result_experiment", id = exp.id)}
     if not admin:
         return render_template("result.html", **template_info)
     else:

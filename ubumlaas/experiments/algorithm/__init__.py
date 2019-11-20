@@ -10,13 +10,12 @@ import sklearn.model_selection
 import sklearn.preprocessing
 import sklearn.multiclass
 from ubumlaas.experiments.algorithm.metrics import calculate_metrics
-
 from ubumlaas import create_app
 import pandas as pd
 import variables as v
 import traceback
 
-from ubumlaas.util import send_email
+from ubumlaas.util import send_experiment_result_email
 from time import time
 import json
 import os
@@ -118,8 +117,7 @@ def task_skeleton(experiment, current_user):
     exp.endtime = time()
     v.db.session.commit()
 
-    send_email(current_user["username"], current_user["email"],
-               experiment["id"], str(exp.result))
+    send_experiment_result_email(current_user["username"], current_user["email"], experiment["id"], str(exp.result))
 
 
 def execute_weka_predict(username, experiment, tmp_filename, model_path, fil_name):

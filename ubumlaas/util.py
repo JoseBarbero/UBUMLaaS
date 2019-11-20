@@ -6,6 +6,9 @@ import copy
 import arff
 import re
 import numpy as np
+from itsdangerous import URLSafeTimedSerializer
+from flask_mail import Message
+from flask import url_for
 
 def get_dataframe_from_file(path, filename, target_column = False):
     extension = filename.split(".")[-1]
@@ -29,7 +32,7 @@ def get_dataframe_from_file(path, filename, target_column = False):
     return file_df
 
 
-def send_email(user, email, procid, result=None):
+def send_experiment_result_email(user, email, procid, result=None):
     """SEND an email with the result
 
     Arguments:
@@ -42,21 +45,17 @@ def send_email(user, email, procid, result=None):
     """
     from ubumlaas.experiments.views.experiment import result_experiment
 
-    with smtplib.SMTP('smtp.gmail.com', 587) as smtp:
-        smtp.ehlo()
-        smtp.starttls()
-        smtp.ehlo()
+    subject = 'Your process on UBUMLaaS ' + str(procid) + ' has finished.'
 
-        smtp.login(os.environ["EMAIL_AC"], os.environ["EMAIL_PASS"])
+    with v.app.app_context(), v.app.test_request_context():
+        html = result_experiment(procid, admin= True)
 
-        subject = 'Your process on UBUMLaaS ' + str(procid) + ' has finished.'
+        send_email(subject, email, html=html)
 
-        with v.app.app_context(), v.app.test_request_context():
-            body = result_experiment(procid, True)
 
-        msg = f'Content-Type: text/html\nSubject: {subject}\n\n{body}'
-
-        smtp.sendmail(os.environ["EMAIL_AC"], email, msg)
+def send_email(subject, to=None, body=None, html=None):
+    msg = Message(subject = subject, recipients = [to], body = body, html = html)
+    v.mail.send(msg)
 
 
 def generate_df_html(df, num=6):
@@ -125,3 +124,24 @@ def value_to_bool(y_test, y_pred):
     un = y_test.unique()
     d = {un[0]: True, un[1]: False}
     return y_test.map(d), pd.Series(y_pred).map(d)
+
+
+def generate_confirmation_token(email):
+    serializer = URLSafeTimedSerializer(v.app.config['SECRET_KEY'])
+    return serializer.dumps(email, salt=v.app.config['SECURITY_PASSWORD_SALT'])
+
+
+def confirm_token(token, expiration=3600):
+    serializer = URLSafeTimedSerializer(v.app.config['SECRET_KEY'])
+    try:
+        email = serializer.loads(
+            token,
+            salt=v.app.config['SECURITY_PASSWORD_SALT'],
+            max_age=expiration
+        )
+    except:
+        return False
+    return email
+
+def get_ngrok_url(endpoint, **values):
+    return os.getenv("NGROK_URL")+url_for(endpoint, **values) if os.getenv("NGROK_URL") else url_for(endpoint, **values, _external=True)
