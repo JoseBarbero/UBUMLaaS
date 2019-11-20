@@ -137,7 +137,7 @@ def result_experiment(id, admin=False):
                      "dict_config": dict_config,
                      "conf": json.loads(get_algorithm_by_name(
                                         exp.alg_name).config),
-                     "external_url": os.getenv("NGROK_URL", "http://localhost")}
+                     "external_url": os.getenv("NGROK_URL", "http://localhost:5000")}
     if not admin:
         return render_template("result.html", **template_info)
     else:
