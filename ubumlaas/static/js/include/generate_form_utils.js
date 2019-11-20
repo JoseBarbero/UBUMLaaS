@@ -216,7 +216,7 @@ function load_next_ensemble(name, level){
 function get_base_block(placein, block, param_name, param, level, filter=false){
     let basename = get_basename(param_name, level, filter);
     let lbl = $("<label></label>", { "data-toggle": "tooltip",
-                                     "data-placement": "top",
+                                     "data-placement": "left",
                                      title: param.help,
                                      for: basename+"_value" });
     let name = document.createTextNode(param_name);
