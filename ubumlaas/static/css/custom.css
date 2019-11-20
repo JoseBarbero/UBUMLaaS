@@ -112,3 +112,7 @@ option.list-group-item{
     background-color: var(--secondary) !important;
     color: #ffffff !important;
 }
+
+tr.align-middle td{
+    vertical-align: middle !important;
+}

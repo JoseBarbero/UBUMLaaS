@@ -182,8 +182,11 @@
   </script>
   <script>
     $(function () {
-        $('[data-toggle="popover"]').popover()
-    })
+        $('[data-toggle="popover"]').popover();
+    });
+    $(function () {
+      $('[data-toggle="tooltip"]').tooltip();
+    });
     $('.popover-dismiss').popover({
         trigger: 'focus'
     });
