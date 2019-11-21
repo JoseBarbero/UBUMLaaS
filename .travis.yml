@@ -44,3 +44,4 @@ before_script:
 script:
   - python -m test.tests
   - python -m pytest -p no:warning test/test_selenium.py
+ñ

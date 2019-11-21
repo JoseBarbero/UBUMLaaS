@@ -1,0 +1,32 @@
+# Package name (required)
+PackageName=instanceSelection
+
+# Version (required)
+Version=1.3.0
+
+#Date (year-month-day)
+Date=2019-10-18
+
+# Title (required)
+Title=Instace Selection
+
+# Author (required)
+Author=Álvar Arnaiz González<alvaragr@ubu.es>
+
+# Maintainer (required)
+Maintainer=Álvar Arnaiz González<alvaragr@ubu.es>
+
+# License (required)
+License=GPL3
+
+# Description (required)
+Description=Instance selection is becoming increasingly relevant due to the huge amount of data that is constantly being produced in many fields of research. Although current algorithms are useful for fairly large datasets, scaling problems are found when the number of instances is in the hundreds of thousands or millions. When we face huge problems, scalability becomes an issue, and most algorithms are not applicable. Thus, paradoxically, instance selection algorithms are for the most part impracticable for the same problems that would benefit most from their use. This paper presents a way of avoiding this difficulty using several rounds of instance selection on subsets of the original dataset. These rounds are combined using a voting scheme to allow good performance in terms of testing error and storage reduction, while the execution time of the process is significantly reduced. The method is particularly efficient when we use instance selection algorithms that are high in computational cost. The proposed approach shares the philosophy underlying the construction of ensembles of classifiers. In an ensemble, several weak learners are combined to form a strong classifier; in our method several weak (in the sense that they are applied to subsets of the data) instance selection algorithms are combined to produce a strong and fast instance selection method. An extensive comparison of 30 medium and large datasets from the UCI Machine Learning Repository using 3 different classifiers shows the usefulness of our method. Additionally, the method is applied to 5 huge datasets (from three hundred thousand to more than a million instances) with good results and fast execution time.
+
+# Package URL for obtaining the package archive (required)
+PackageURL=None
+
+# URL for further information
+URL=https://www.sciencedirect.com/science/article/pii/S0004370210000123
+
+# Dependencies (format: packageName (equality/inequality version_number)
+Depends=weka (>=3.7.10)
