@@ -1,7 +1,7 @@
-from flask import render_template, url_for, flash, redirect, request, Blueprint
+from flask import render_template, url_for, flash, redirect, request, Blueprint, abort
 from flask_login import login_user, current_user, logout_user, login_required
 import variables as v
-from ubumlaas.users.forms import RegistrationForm, LoginForm
+from ubumlaas.users.forms import RegistrationForm, LoginForm, PasswordForm, EmailForm
 from ubumlaas.models import User, get_experiments
 import os
 from ubumlaas.util import generate_confirmation_token, confirm_token, send_email, get_ngrok_url
@@ -128,7 +128,7 @@ def confirm_email(token):
         flash('You have confirmed your account. Thanks!', 'success')
     return redirect(url_for('users.login'))
 
-users.route('/reset', methods=["GET", "POST"])
+@users.route('/reset', methods=["GET", "POST"])
 def reset():
     form = EmailForm()
     if form.validate_on_submit():
@@ -138,17 +138,14 @@ def reset():
 
         token = generate_confirmation_token(user.email)
 
-        recover_url = url_for(
-            'reset_with_token',
-            token=token,
-            _external=True)
+        recover_url = get_ngrok_url('users.reset_with_token', token=token)
 
         html = render_template(
             'recover.html',
             recover_url=recover_url)
 
-        send_email(subject,user.email, html=html)
-        flash("Email reset sended.")
+        send_email(subject, user.email, html=html)
+        flash("Email reset sended.", "success")
         return redirect(url_for('users.login'))
     return render_template('reset.html', form=form)
 
@@ -166,9 +163,9 @@ def reset_with_token(token):
 
         user.set_password(form.password.data)
 
-        db.session.add(user)
-        db.session.commit()
-
-        return redirect(url_for('signin'))
+        v.db.session.add(user)
+        v.db.session.commit()
+        flash("Password changed", "success")
+        return redirect(url_for('users.login'))
 
     return render_template('reset_with_token.html', form=form, token=token)

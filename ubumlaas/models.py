@@ -186,6 +186,7 @@ class User(v.db.Model, UserMixin):
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
+        
     def check_password(self, password):
         """Compare input password with current password
 
