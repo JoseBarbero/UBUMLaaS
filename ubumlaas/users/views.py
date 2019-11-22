@@ -112,13 +112,14 @@ def profile():
                            user=current_user,
                            datasets=datasets,
                            experiments=experiments)
-@login_required
+
 @users.route('/confirm/<token>')
 def confirm_email(token):
-    try:
-        email = confirm_token(token)
-    except:
+    email = confirm_token(token)
+    if not email:
         flash('The confirmation link is invalid or has expired.', 'danger')
+        return redirect(url_for("users.login"))
+
     user = User.query.filter_by(email=email).first_or_404()
     if user.activated:
         flash('Account already confirmed. Please login.', 'success')
