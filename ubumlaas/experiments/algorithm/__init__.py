@@ -104,7 +104,7 @@ def task_skeleton(experiment, current_user):
     except Exception as ex:
         # If algoritm failed it save traceback as result
         result = str(ex)
-        print(traceback.format_exc())
+        v.app.logger.exception()
         state = 2
     finally:
         if execution_lib:
@@ -164,7 +164,7 @@ def execute_weka_predict(username, experiment, tmp_filename, model_path, fil_nam
 
         dataframes.to_csv(upload_folder + fil_name, index=None)
     except Exception:
-        print(traceback.format_exc())
+        v.app.logger.exception()
         return False
     finally:
         executor.close()

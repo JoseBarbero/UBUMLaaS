@@ -21,3 +21,5 @@ MAIL_USERNAME = os.environ["EMAIL_AC"]
 MAIL_PASSWORD = os.environ["EMAIL_PASS"]
 MAIL_DEFAULT_SENDER = ("UBUMLaaS", MAIL_USERNAME) #tuple of name sender and mail sender
 MAIL_DEBUG = False
+
+

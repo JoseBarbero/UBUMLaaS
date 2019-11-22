@@ -147,7 +147,7 @@ def reset():
             recover_url=recover_url)
 
         send_email(subject, user.email, html=html)
-        flash("Email reset sended.", "success")
+        flash("Reset password sended to: "+user.email, "success")
         return redirect(url_for('users.login'))
     return render_template('reset.html', form=form)
 
