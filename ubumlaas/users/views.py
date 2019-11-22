@@ -95,8 +95,9 @@ def logout():
     return redirect(url_for("core.index"))
 
 
-@login_required
+
 @users.route("/profile")
+@login_required
 def profile():
     """User profile load.
 
@@ -151,9 +152,8 @@ def reset():
 
 @users.route('/reset/<token>', methods=["GET", "POST"])
 def reset_with_token(token):
-    try:
-        email = confirm_token(token)
-    except:
+    email = confirm_token(token)
+    if not email:
         abort(404)
 
     form = PasswordForm()
