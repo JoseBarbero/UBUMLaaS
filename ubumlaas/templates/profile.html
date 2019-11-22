@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
+<div class="container">
     <div class="jumbotron">
         <div class="row">
             <div class="col-md-6">
@@ -41,7 +42,6 @@
                 <table id="exper" class="table table-striped table-responsive" style="width:100%">
                     <thead>
                         <tr>
-                            <th scope="col">#</th>
                             <th scope="col">Id</th>
                             <th scope="col">Algorithm</th>
                             <th scope="col">Dataset</th>
@@ -55,41 +55,40 @@
                     </thead>
                     <tbody>
                         {% for e in experiments %}
-                        <tr>
-                                <td scope="col">{{ loop.index }}</td>
-                                <td scope="col">{{ e.id }}</td>
-                                <td scope="col">{{ e.alg_name }}</td>
-                                <td scope="col">{{ e.data }}</td>
-                                <td scope="col">{{ e.starttime }}</td>
-                                <td scope="col">
-                                    {% if e.endtime is not none %}
-                                        {{ e.endtime }}
-                                    {% else %}
-                                        ---
-                                    {% endif %}
-                                </td>
-                                <td scope="col" align="center">
-                                    <div class="square rounded-circle
-                                    {% if e.state == 0 %}
-                                     bg-warning
-                                    {% elif e.state == 1 %}
-                                     bg-success
-                                    {% elif e.state == 2 %}
-                                     bg-danger
-                                    {% endif %}
-                                    ">
-                                        &nbsp;
-                                    </div>
-                                </td>
-                                <td>
-                                    <a href="{{ url_for("experiments.result_experiment",id=e.id) }}">See</a>
-                                </td>
-                                <td>
-                                    <a href="{{ url_for("experiments.new_experiment", exp=e.id) }}">Reuse</a>
-                                </td>
-                                <td>
-                                    <a href="javascript:delete_experiment({{e.id}})">Delete</a>
-                                </td>
+                        <tr class="align-middle">
+                            <td scope="col">{{ e.id }}</td>
+                            <td scope="col">{{ e.web_name() }}</td>
+                            <td scope="col">{{ e.data }}</td>
+                            <td scope="col">{{ e.starttime }}</td>
+                            <td scope="col">
+                                {% if e.endtime is not none %}
+                                    {{ e.endtime }}
+                                {% else %}
+                                    ---
+                                {% endif %}
+                            </td>
+                            <td scope="col" align="center">
+                                <div class="square rounded-circle
+                                {% if e.state == 0 %}
+                                    bg-warning
+                                {% elif e.state == 1 %}
+                                    bg-success
+                                {% elif e.state == 2 %}
+                                    bg-danger
+                                {% endif %}
+                                ">
+                                    &nbsp;
+                                </div>
+                            </td>
+                            <td>
+                                <a class="btn btn-lg btn-info text-uppercase font-weight-bold" data-toggle="tooltip" data-placement="top" title="See configuration and results." href="{{ url_for("experiments.result_experiment",id=e.id) }}">See</a>
+                            </td>
+                            <td>
+                                <a class="btn btn-lg btn-warning text-uppercase font-weight-bold" data-toggle="tooltip" data-placement="top" title="Create a new experiment with this configuration." href="{{ url_for("experiments.new_experiment", exp=e.id) }}">Reuse</a>
+                            </td>
+                            <td>
+                                <a class="btn btn-lg btn-danger text-uppercase font-weight-bold" data-toggle="tooltip" data-placement="top" title="Delete this experiment, its results and the model generated" href="javascript:delete_experiment({{e.id}})">Delete</a>
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -97,7 +96,7 @@
             </div>
         </div>
     </div>
-
+</div>
 {% endblock content %}
 
 {% block js %}

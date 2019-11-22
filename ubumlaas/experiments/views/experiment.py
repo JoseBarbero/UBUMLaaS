@@ -126,10 +126,10 @@ def result_experiment(id, admin=False):
     exp = load_experiment(id)
     if not admin and exp.idu != current_user.id:
         return "", 403
-    name = exp.alg_name
+    name = v.app.jinja_env.filters["split"](exp.alg_name)
     dict_config = json.loads(exp.alg_config)
     if "base_estimator" in dict_config.keys():
-        name += "-" + get_ensem_alg_name(dict_config["base_estimator"])
+        name += " <br>⤿ " + get_ensem_alg_name(dict_config["base_estimator"])
     dict_config = get_dict_exp(exp.alg_name, dict_config)
     template_info = {"experiment": exp,
                      "name": name,
