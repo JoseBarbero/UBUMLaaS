@@ -25,10 +25,14 @@ def create_app(config_name):
     """
     v.start()
     v.basedir = os.path.abspath(os.path.dirname(__file__))
+    v.appdir = os.path.join(v.basedir,"..")
     # loggin setup
+    import ubumlaas.logger
+    ubumlaas.logger.create_folders_if_needed()
     logging.config.dictConfig(json.load(open(os.getenv("LOGGING_CONFIG") or "logging_config.json")))
     app = Flask(__name__)
     v.app = app
+    app.logger.operation("value","anothervalue",53)
     app.config.from_pyfile('../config.py') # from config.py
     ###########################################
     ############ CONFIGURATIONS ###############
