@@ -1,91 +1,92 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="jumbotron">
-  <h2 class="text-center ">About ADMIRABLE</h2>
-  <div class="col-md-10 offset-md-1">
-    <p class="text-justify">
-      The <a href="http://admirable-ubu.es/">ADMIRABLE</a> — Advanced Data MIning Research And (Business intelligence | Bioinformatics | Big data) LEarning —
-      research group main aim is the development of new ensemble algorithms and the application of data mining, data
-      visualization and pattern matching techniques to diverse fields as bioinformatics, time series classification and
-      high dimensional data analysis.
-    </p>
-    <p class="text-justify">
-      Among the main achievements of the researchers of the group is the development of several new ensemble
-      construction
-      algorithms: Rotation Forest, Disturbing Neighbours, Nonlinear Boosting Projections, Random Balance, …, that have
-      aroused the interest of the data mining community.
-    </p>
-    <p class="text-justify">
-      Its members are in close relationship with research groups of other universities, currently collaborating with
-      groups
-      from the universities of Córdoba and Valladolid. The researchers of the group have international connections too.
-      They
-      have done research works while visiting other universities such as Stockholm University in Sweden, University of
-      Gales
-      and West Scotland University in United Kingdom, and Tsinghua University in China.
-    </p>
-    <p class="text-justify">
-      Its research interests are among others: Artificial Intelligence, Data Mining, Multi-Dimensional Data
-      Visualization,
-      Ensemble Construction, Bioinformatics, Regressors Ensembles, Instance Selection, Feature Selection, Decision
-      Trees.
-    </p>
-    <p class="text-justify">
-      The group is recognized by the regional government of Castile and Leon as a Consolidated Research Unit.</p>
-    </p>
-  </div>
-  <h3 class="text-center ">About this application</h3>
-  <div class="col-md-10 offset-md-1">
-    <p class="text-justify">
-      Machine Learning as a Service (MLaaS) platform based on <a target="_blank" rel="noopener noreferrer" href="http://admirable-ubu.es/">ADMIRABLE</a> and <a target="_blank" rel="noopener noreferrer" href="https://www.ubu.es/best-ai-biologia-educacion-y-salud-con-tecnologias-avanzadas-informaticas-best-ai">BEST-AI</a> research groups methods.
-    </p>
-    <p class="text-justify">
-      This application is described as one of the result of two different projects
-      (with objectives partially overlapping, and being this application in the
-      intersection of the objectives):
-    </p>
-    <ol>
-      <li>
-        <p class="text-justify">
-          Project <span class="font-weight-bold font-italic">"Algoritmos de ensembles para problemas de salidas múltiples - nuevos
-          desarrollos y aplicaciones"</span> from <span class="font-italic">"Ministerio de Economía y Competitividad"</span>
-          (reference: TIN2015-67534-P)
-        </p>
-        <div class="row d-flex" >
-          <div class="col-xs-12 col-sm-6 col-md-3 align-self-start">
-            <a target="_blank" rel="noopener noreferrer" href="https://ec.europa.eu/regional_policy/es/funding/erdf/">
-              <img class="img-fluid" src={{ url_for("static",filename="img/FEDER.svg") }}>
-            </a>
+<div class="container">
+  <div class="jumbotron">
+    <h2 class="text-center ">About ADMIRABLE</h2>
+    <div class="col-md-10 offset-md-1">
+      <p class="text-justify">
+        The <a href="http://admirable-ubu.es/">ADMIRABLE</a> — Advanced Data MIning Research And (Business intelligence | Bioinformatics | Big data) LEarning —
+        research group main aim is the development of new ensemble algorithms and the application of data mining, data
+        visualization and pattern matching techniques to diverse fields as bioinformatics, time series classification and
+        high dimensional data analysis.
+      </p>
+      <p class="text-justify">
+        Among the main achievements of the researchers of the group is the development of several new ensemble
+        construction
+        algorithms: Rotation Forest, Disturbing Neighbours, Nonlinear Boosting Projections, Random Balance, …, that have
+        aroused the interest of the data mining community.
+      </p>
+      <p class="text-justify">
+        Its members are in close relationship with research groups of other universities, currently collaborating with
+        groups
+        from the universities of Córdoba and Valladolid. The researchers of the group have international connections too.
+        They
+        have done research works while visiting other universities such as Stockholm University in Sweden, University of
+        Gales
+        and West Scotland University in United Kingdom, and Tsinghua University in China.
+      </p>
+      <p class="text-justify">
+        Its research interests are among others: Artificial Intelligence, Data Mining, Multi-Dimensional Data
+        Visualization,
+        Ensemble Construction, Bioinformatics, Regressors Ensembles, Instance Selection, Feature Selection, Decision
+        Trees.
+      </p>
+      <p class="text-justify">
+        The group is recognized by the regional government of Castile and Leon as a Consolidated Research Unit.</p>
+      </p>
+    </div>
+    <h3 class="text-center ">About this application</h3>
+    <div class="col-md-10 offset-md-1">
+      <p class="text-justify">
+        Machine Learning as a Service (MLaaS) platform based on <a target="_blank" rel="noopener noreferrer" href="http://admirable-ubu.es/">ADMIRABLE</a> and <a target="_blank" rel="noopener noreferrer" href="https://www.ubu.es/best-ai-biologia-educacion-y-salud-con-tecnologias-avanzadas-informaticas-best-ai">BEST-AI</a> research groups methods.
+      </p>
+      <p class="text-justify">
+        This application is described as one of the result of two different projects
+        (with objectives partially overlapping, and being this application in the
+        intersection of the objectives):
+      </p>
+      <ol>
+        <li>
+          <p class="text-justify">
+            Project <span class="font-weight-bold font-italic">"Algoritmos de ensembles para problemas de salidas múltiples - nuevos
+            desarrollos y aplicaciones"</span> from <span class="font-italic">"Ministerio de Economía y Competitividad"</span>
+            (reference: TIN2015-67534-P)
+          </p>
+          <div class="row d-flex" >
+            <div class="col-xs-12 col-sm-6 col-md-3 align-self-start">
+              <a target="_blank" rel="noopener noreferrer" href="https://ec.europa.eu/regional_policy/es/funding/erdf/">
+                <img class="img-fluid" src={{ url_for("static",filename="img/FEDER.svg") }}>
+              </a>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-3">
+              <a target="_blank" rel="noopener noreferrer" href="http://www.mineco.gob.es/portal/site/mineco/">
+                <img class="img-fluid" src={{ url_for("static",filename="img/MEC.svg") }}>
+              </a>
+            </div>
           </div>
-          <div class="col-xs-12 col-sm-6 col-md-3">
-            <a target="_blank" rel="noopener noreferrer" href="http://www.mineco.gob.es/portal/site/mineco/">
-              <img class="img-fluid" src={{ url_for("static",filename="img/MEC.svg") }}>
-            </a>
+        </li>
+        <li class="mt-4">
+          <p class="text-justify">
+            Project <span class="font-weight-bold font-italic">"Minería de datos para la mejora del mantenimiento y disponibilidad de máquinas de altas presiones"</span> from <span class="font-italic">"Consejería de Educación de la Junta de Castilla y León"</span> (reference: BU085P17)
+          </p>
+          <div class="row d-flex" >        
+            <div class="col-xs-12 col-sm-6 col-md-3">
+              <a target="_blank" rel="noopener noreferrer" href="https://www.jcyl.es/">
+                <img class="img-fluid" src={{ url_for("static",filename="img/JCYL.svg") }}>
+              </a>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-3 align-self-end">
+              <a target="_blank" rel="noopener noreferrer" href="https://www.educa.jcyl.es/universidad/es/fondos-europeos/fondo-europeo-desarrollo-regional-feder/">
+                <img class="img-fluid" src={{ url_for("static",filename="img/JCYL_impulsa.svg") }}>
+              </a>
+            </div>
           </div>
-        </div>
-      </li>
-      <li class="mt-4">
-        <p class="text-justify">
-          Project <span class="font-weight-bold font-italic">"Minería de datos para la mejora del mantenimiento y disponibilidad de máquinas de altas presiones"</span> from <span class="font-italic">"Consejería de Educación de la Junta de Castilla y León"</span> (reference: BU085P17)
-        </p>
-        <div class="row d-flex" >        
-          <div class="col-xs-12 col-sm-6 col-md-3">
-            <a target="_blank" rel="noopener noreferrer" href="https://www.jcyl.es/">
-              <img class="img-fluid" src={{ url_for("static",filename="img/JCYL.svg") }}>
-            </a>
-          </div>
-          <div class="col-xs-12 col-sm-6 col-md-3 align-self-end">
-            <a target="_blank" rel="noopener noreferrer" href="https://www.educa.jcyl.es/universidad/es/fondos-europeos/fondo-europeo-desarrollo-regional-feder/">
-              <img class="img-fluid" src={{ url_for("static",filename="img/JCYL_impulsa.svg") }}>
-            </a>
-          </div>
-        </div>
 
-      </li>
-    </ol>
+        </li>
+      </ol>
 
 
+    </div>
   </div>
 </div>
-
 {% endblock %}

@@ -68,7 +68,7 @@
                 }                
             },
             error: function(result){
-                reset(true, filter);
+                reset_(true, filter);
                 if(!filter)
                     already_correct.delete("alg_name");
             },
@@ -236,6 +236,19 @@
         test_perc.innerHTML = "Test: " + (100 - this.value) + " %";
     }
 </script>
+<script>
+    $("document").ready(function(){
+        const ONLY_FILTERS_ON = ["Classification", ""];
+        $("#alg_typ").change(function(){
+            if (ONLY_FILTERS_ON.includes($(this).val())){
+                $("#form_filter").show();
+            }else{
+                $("#form_filter").hide();
+            }
+        });
+    });
+
+</script>
 
 {% if experiment != none %}
 <script>
@@ -275,7 +288,7 @@
 
     function configure_algorithm(){
         let alg_typ = $("#alg_typ");
-        alg_typ.val(algorithm_selected.alg_typ);
+        alg_typ.val(exp_config.alg_type);
         alg_typ.change();
         set_dataset_parameters();
     }
@@ -403,7 +416,7 @@
             filter_selected = experiment.filter;
         //Try to set dataset configuration:
         configure_algorithm();
-        set_dataset_parameters();     
+        set_dataset_parameters();
     });
 </script>
 {% endif %}

@@ -23,6 +23,7 @@
   <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
   <meta charset="utf-8">
   <title>{{ title }}</title>
+  {% block css %}{% endblock %}
 </head>
 
 <body>
@@ -30,7 +31,7 @@
   {% block before_anyelse %}
   {% endblock %}
 
-  <nav class="navbar sticky-top navbar-expand-lg navbar-dark" style="background-color: #A7253B;">
+  <nav class="navbar sticky-top navbar-expand-lg navbar-dark" style="background-color: var(--ubu-maroon);">
     <div class="rounded float-left">
       <a href="http://www.admirable-ubu.es/" target="_blank" rel="noopener noreferrer"><img class="navbar-brand mr-3" src={{ url_for("static",filename="img/onlyA-32x32.svg") }}></a>
     </div>
@@ -46,7 +47,7 @@
       </div>
       <div class="navbar-nav ml-auto">
         {% if current_user.is_authenticated %}
-        <a class="nav-item nav-link {% if "Profile" in title %}active{% endif %}" href="{{ url_for('users.profile') }}">Logged in as {{current_user.username}}</a>
+        <a class="nav-item nav-link {% if "Profile" in title %}active{% endif %}" href="{{ url_for('users.profile') }}">My launched experiments</a>
         <a class="nav-item nav-link {% if title=="New experiment" %}active{% endif %}" href="{{ url_for('experiments.new_experiment') }}">New Experiment</a>
         <a class="nav-item nav-link " href="{{ url_for('users.logout') }}">Logout</a>
         {% else %}
@@ -59,12 +60,11 @@
 
   </ul>
 
-  <div class="container">
-    {% block content %}
+  {% block content %}
 
-    {% endblock %}
-  </div>
+  {% endblock %}
 
+  {% block footer %}
   <footer id="footer">
     <div class="main-footer widgets-dark typo-light d-flex">
       <div class="container">
@@ -165,6 +165,7 @@
       </div>
     </div>
   </footer>
+  {% endblock %}
   {% include "./modals/alert_modal.html" %}
   {% include "./modals/confirm_modal.html" %}
   <script>
@@ -181,8 +182,11 @@
   </script>
   <script>
     $(function () {
-        $('[data-toggle="popover"]').popover()
-    })
+        $('[data-toggle="popover"]').popover();
+    });
+    $(function () {
+      $('[data-toggle="tooltip"]').tooltip();
+    });
     $('.popover-dismiss').popover({
         trigger: 'focus'
     });
