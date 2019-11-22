@@ -31,7 +31,7 @@
   {% block before_anyelse %}
   {% endblock %}
 
-  <nav class="navbar sticky-top navbar-expand-lg navbar-dark" style="background-color: #A7253B;">
+  <nav class="navbar sticky-top navbar-expand-lg navbar-dark" style="background-color: var(--ubu-maroon);">
     <div class="rounded float-left">
       <a href="http://www.admirable-ubu.es/" target="_blank" rel="noopener noreferrer"><img class="navbar-brand mr-3" src={{ url_for("static",filename="img/onlyA-32x32.svg") }}></a>
     </div>
@@ -60,12 +60,11 @@
 
   </ul>
 
-  <div class="container">
-    {% block content %}
+  {% block content %}
 
-    {% endblock %}
-  </div>
+  {% endblock %}
 
+  {% block footer %}
   <footer id="footer">
     <div class="main-footer widgets-dark typo-light d-flex">
       <div class="container">
@@ -166,6 +165,7 @@
       </div>
     </div>
   </footer>
+  {% endblock %}
   {% include "./modals/alert_modal.html" %}
   {% include "./modals/confirm_modal.html" %}
   <script>

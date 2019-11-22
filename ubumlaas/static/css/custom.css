@@ -45,8 +45,8 @@ footer .main-footer {
 
 /**Custom colors*/
 :root {
-    --footer-color:#808080;
-    --ubu-maroon:#a7253b;
+    --footer-color:#AAA;
+    --ubu-maroon:#aa223c;
     --success-even: rgb(var(--success-red),var(--success-green),var(--success-blue));
     --success-odd: rgb(var(--success-red),calc(var(--success-green)/1.051428571),calc(var(--success-blue)/1.054054054));
 

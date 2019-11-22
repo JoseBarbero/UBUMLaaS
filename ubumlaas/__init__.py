@@ -7,9 +7,8 @@ import variables as v
 import redis
 from rq import Queue
 from ubumlaas.jobs import WorkerBuilder
-
 import ubumlaas.weka.weka_packages as weka_packages
-
+from flask_mail import Mail
 import time
 
 
@@ -23,28 +22,26 @@ def create_app(config_name):
         Flask -- flask application.
     """
     v.start()
+    v.basedir = os.path.abspath(os.path.dirname(__file__))
     app = Flask(__name__)
 
+    app.config.from_pyfile('../config.py') # from config.py
     ###########################################
     ############ CONFIGURATIONS ###############
     ###########################################
 
-    # Remember you need to set your environment variables at the command line
-    # when you deploy this to a real website.
-    # export SECRET_KEY=mysecret
-    # set SECRET_KEY=mysecret
-    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
-
     ######################
     ### DATABASE SETUP ###
     ######################
-    v.basedir = os.path.abspath(os.path.dirname(__file__))
-    app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///"+os.path.join(v.basedir, "data.sqlite")
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+
 
     v.db = SQLAlchemy(app)
     Migrate(app, v.db)
 
+
+    mail = Mail(app)
+    v.mail = mail
     if config_name == "main_app":
         # Redis
         v.r = redis.Redis()

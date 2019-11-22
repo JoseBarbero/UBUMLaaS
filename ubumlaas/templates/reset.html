@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="jumbotron">
+    <fieldset>
+        <form class="form-horizontal" method="POST">
+            <h3 class="text-center">Send reset password request</h3>
+            {{form.hidden_tag()}}
+            {% for category, message in get_flashed_messages(with_categories=True) %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">{{ message }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            {% endfor %}
+            <div class="control-group">
+                {{form.email.label(class="control")}}
+                {{form.email(class="form-control")}}<br>
+            </div>
+            <div class="control-group">
+                {{form.submit(class="btn btn-primary")}}
+            </div>
+        </form>
+    </fieldset>
+</div>
+{% endblock %}

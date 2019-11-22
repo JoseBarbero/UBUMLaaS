@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="jumbotron">
+    <fieldset>
+        <form class="form-horizontal" method="POST">
+            <h3 class="text-center">Reset password</h3>
+            {{form.hidden_tag()}}
+            {% for category, message in get_flashed_messages(with_categories=True) %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">{{ message }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            {% endfor %}
+            <div class="control-group">
+                <div class="row">
+                    {{form.password.label(class="form-group col-lg-1 col-md-2 col-xs-2 col-sm-2 col-4 pr-0")}}
+                    <div class="col-2 pl-0">
+                        <a style="color: var(--info);" href="#a" data-trigger="focus" title="" data-container="body" data-toggle="popover" data-placement="top" data-content="{{ password_msg }}">
+                            <i class="material-icons">live_help</i>
+                        </a> 
+                    </div>
+                </div>
+                {{form.password(type="password", class="form-control")}}<br>
+                {% for error in form.password.errors %}
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">{{ error }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="control-group">
+                {{form.confirm_password.label(class="form-group")}}
+                {{form.confirm_password(type="password", class="form-control")}}<br>
+            </div>
+            <div class="control-group">
+                {{form.submit(class="btn btn-primary")}}
+            </div>
+        </form>
+    </fieldset>
+</div>
+{% endblock %}

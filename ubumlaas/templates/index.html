@@ -1,100 +1,98 @@
 {% extends "base.html" %}
+{% block css %}
+<style>
+    html, body {
+        height: 100%;
+    }      
+    .index {
+        color: white;
+        min-height: 87.5%;
+    }
+    .index_background{
+        background-color: rgba(var(--ubu-maroon-red), var(--ubu-maroon-green), var(--ubu-maroon-blue), 0.75); /*#ca7c89;*/
+    }
+    .blockquote-footer{
+        color: rgba(255,255,255,0.6);
+    }
+    footer .main-footer{
+        margin-top: 0px;
+    }
+    #index-right{
+        color: white !important;
+    }
+    #index-left{
+        color: var(--ubu-maroon);
+    }
+    #index-left cite{
+        color: var(--ubu-maroon);
+        opacity: 0.6;
+        float: right;
+    }
+</style>
+{% endblock %}
 {% block content %}
 
-
-<div class="container">
-  <h3 class="text-center text-monospace font-weight-bold mt-3">Welcome to UBUMLaaS</h3>
-  <h4 class="text-center text-monospace font-weight-bold mb-4">The machine learning as a service platform developed by ADMIRABLE</h4>
-  
-  <hr>
-  <div class="container">
-    <div class="row d-flex align-items-center">
-      {% if current_user.is_authenticated %}
-      <h2 class="text-center text-monospace font-weight-bold pt-3 pb-3 col-md-12"><a class="mt-0 btn btn-ubu-maroon text-monospace text-uppercase btn-lg  btn-block" href="{{ url_for('experiments.new_experiment') }}">Create a new experiment</a></h2>
-
-      {% else %}      
-        <h2 class="text-center text-monospace font-weight-bold pt-3 pb-3 col-md-7">Start experiment now<br><a class="mt-3 btn btn-ubu-maroon text-monospace text-uppercase btn-lg  btn-block" href="{{ url_for('users.register') }}">Register now</a></h2>
-        <blockquote class="blockquote text-right col-md-5">
-            <p class="mb-0"><q>In God we trust all others must bring data</q></p>
-            <footer class="blockquote-footer"><cite title="W. Edwards Deming">W. Edwards Deming</cite></footer>
-          </blockquote>
-        <!-- <div class="col-md-5">
-          <p class="text-right font-italic mb-0"><q>In God we trust all others must bring data</q></p>
-          <p class="text-right font-italic">W. Edwards Deming</p>
-        </div> -->
-      {% endif %}
+<div class="container-fluid index d-flex align-items-stretch p-0" style="z-index: 999;">
+    <div class="container-fluid index d-flex align-items-stretch p-0">
+        <div class="row container-fluid p-0 m-0">        
+            <div class="col-md-6 col-12 pt-3 d-flex align-items-center" id="index-left">
+                <div class="container">
+                    <div class="col-md-9 col-sm-12">
+                        <blockquote class="blockquote text-center mt-2">
+                            <p class="mb-0"><q>In God we trust, all others must bring data</q></p>
+                            <footer class="blockquote-footer"><cite title="W. Edwards Deming">W. Edwards Deming</cite></footer>
+                        </blockquote>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-12 index_background pt-3 d-flex align-items-center" id="index-right">
+                <div class="container">
+                    <div class="col-12">
+                        <h3 class="text-center text-monospace font-weight-bold">Welcome to UBUMLaaS</h3>
+                    </div>                
+                    <div class="col-12">
+                        <div class="container">
+                        {% if current_user.is_authenticated %}
+                            <div class="row">
+                                <div class="col-md-8 offset-md-2 mb-3">
+                                    <a class="mt-3 btn btn-ubu-maroon font-weight-bold text-monospace text-uppercase btn-lg btn-block" href="{{ url_for('experiments.new_experiment') }}">Create a new experiment</a>
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="row">
+                                <div class="col-md-8 offset-md-2 mb-3">
+                                    <a class="mt-3 btn btn-ubu-maroon font-weight-bold text-monospace text-uppercase btn-lg btn-block" href="{{ url_for('users.register') }}">Register</a>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-8 offset-md-2 mb-3">
+                                    <a class="mt-3 btn btn-outline-ubu-maroon font-weight-bold text-monospace text-uppercase btn-lg btn-block" href="{{ url_for('users.register') }}" style="color: white;">Login</a>
+                                </div>
+                            </div>
+                        {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>    
     </div>
-  </div>
-  
-  <hr>
-  <!--Carousel Wrapper-->
-  <h3 class="text-center text-monospace font-weight-bold pt-0 pb-0">Our exclusive algorithms</h3>
-  <div id="carousel-algorithms" class="carousel slide carousel-fade" data-ride="carousel">
-    <!--Indicators-->
-    <ol class="carousel-indicators">
-      <li data-target="#carousel-algorithms" data-slide-to="0" class="active"></li>
-      <li data-target="#carousel-algorithms" data-slide-to="1"></li>
-      <li data-target="#carousel-algorithms" data-slide-to="2"></li>
-    </ol>
-    <!--/.Indicators-->
-    <!--Slides-->
-    <div class="carousel-inner" role="listbox">
-      <div class="carousel-item active">
-        <a target="_blank" rel="noopener noreferrer" href="https://ieeexplore.ieee.org/abstract/document/1677518">
-          <div class="view">
-            <img class="d-block w-100" src="static/img/markus-spiske-466ENaLuhLY-unsplash.jpg" alt="First slide">
-            <div class="mask flex-center rgba-black-strong"></div>
-          </div>
-          <div class="carousel-caption">
-            <div>
-              <h3 class="h3-responsive">Rotation Forest</h3>
-              <p class="text-justify">Method for generating classifier ensembles based on feature extraction. To create the training data for a base classifier, the feature set is randomly split into K subsets (K is a parameter of the algorithm) and Principal Component Analysis (PCA) is applied to each subset. All principal components are retained in order to preserve the variability information in the data. Thus, K axis rotations take place to form the new features for a base classifier. The idea of the rotation approach is to encourage simultaneously individual accuracy and diversity within the ensemble. Diversity is promoted through the feature extraction for each base classifier. Decision trees were chosen here because they are sensitive to rotation of the feature axes, hence the name "forest." Accuracy is sought by keeping all principal components and also using the whole data set to train each base classifier.</p>
-            </div>
-          </div>
-        </a>
-      </div>
-      <div class="carousel-item">
-        <a target="_blank" rel="noopener noreferrer" href="https://www.sciencedirect.com/science/article/pii/S0950705115001720">
-          <div class="view">
-            <img class="d-block w-100" src="static/img/pietro-jeng-n6B49lTx7NM-unsplash.jpg" alt="Second slide">
-          </div>
-          <div class="carousel-caption">
-            <div>
-              <h3 class="h3-responsive">Random Balance</h3>
-              <p class="text-justify">New approach to building ensembles of classifiers for two-class imbalanced data sets, called Random Balance. Each member of the Random Balance ensemble is trained with data sampled from the training set and augmented by artificial instances obtained using SMOTE. The novelty in the approach is that the proportions of the classes for each ensemble member are chosen randomly. The intuition behind the method is that the proposed diversity heuristic will ensure that the ensemble contains classifiers that are specialized for different operating points on the ROC space, thereby leading to larger AUC compared to other ensembles of classifiers.</p>
-            </div>
-          </div>
-        </a>
-      </div>
-      <div class="carousel-item">
-        <a target="_blank" rel="noopener noreferrer" href="https://www.sciencedirect.com/science/article/pii/S0004370210000123">
-          <div class="view">
-            <img class="d-block w-100" src="static/img/stephen-dawson-qwtCeJ5cLYs-unsplash.jpg" alt="Third slide">
-          </div>
-          <div class="carousel-caption">
-            <div>
-              <h3 class="h3-responsive">Democratic Instance Selection</h3>
-              <p class="text-justify">The method is particularly efficient when we use instance selection algorithms that are high in computational cost. The proposed approach shares the philosophy underlying the construction of ensembles of classifiers. In an ensemble, several <span class="text-italic">weak</span> learners are combined to form a strong classifier; in our method several <span class="text-italic">weak</span> (in the sense that they are applied to subsets of the data) instance selection algorithms are combined to produce a strong and fast instance selection method.</p>
-            </div>
-          </div>
-        </a>
-      </div>
+    <div class="container-fluid index d-md-flex align-items-stretch p-0 position-fixed d-sm-none" style="z-index: -100;">
+        <div class="container-fluid d-flex justify-content-center" style="min-height: fit-content;">
+            <img src="{{ url_for("static", filename="img/mano-robotica.svg")}}" class="pt-md-5 h-90"  />
+        </div>
     </div>
-    <!--/.Slides-->
-    <!--Controls-->
-    <a class="carousel-control-prev" href="#carousel-algorithms" role="button" data-slide="prev">
-      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-      <span class="sr-only">Previous</span>
-    </a>
-    <a class="carousel-control-next" href="#carousel-algorithms" role="button" data-slide="next">
-      <span class="carousel-control-next-icon" aria-hidden="true"></span>
-      <span class="sr-only">Next</span>
-    </a>
-    <!--/.Controls-->
-  </div>
-  <!--/.Carousel Wrapper-->
-
-
 </div>
 
+{% endblock %}
+
+{% block footer %}
+<div class="footer-copyright fixed-bottom">
+    <div class="container">
+        <div class="row">
+        <div class="col-md-12 text-center">
+            <p>UBUMLaaS. © 2019. All rights reserved.</p>
+        </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
