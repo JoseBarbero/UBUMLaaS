@@ -170,6 +170,7 @@ class User(v.db.Model, UserMixin):
     email = v.db.Column(v.db.String(64), unique=True, index=True)
     username = v.db.Column(v.db.String(64), unique=True, index=True)
     password_hash = v.db.Column(v.db.String(128))
+    activated = v.db.Column(v.db.Boolean, nullable=False, default = False)
 
     def __init__(self, email, username, password):
         """User constructor
@@ -183,6 +184,9 @@ class User(v.db.Model, UserMixin):
         self.username = username
         self.password_hash = generate_password_hash(password)
 
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+        
     def check_password(self, password):
         """Compare input password with current password
 
