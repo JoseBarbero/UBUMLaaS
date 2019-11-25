@@ -20,10 +20,13 @@
                 </div>
                 <div class="control-group">
                     {{form.password.label(class="form-group")}}
-                    {{form.password(class="form-control")}}<br>
+                    {{form.password(class="form-control")}}
                 </div>
                 <div class="control-group">
-                    {{form.submit(class="btn btn-primary")}}
+                    <a class="font-weight-light" href="{{ url_for("users.reset") }}">Forgot your password?</a>
+                </div>
+                <div class="control-group">
+                    <br>{{form.submit(class="btn btn-primary")}}
                 </div>
             </form>
         </fieldset>

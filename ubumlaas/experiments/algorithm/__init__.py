@@ -104,7 +104,7 @@ def task_skeleton(experiment, current_user):
     except Exception as ex:
         # If algoritm failed it save traceback as result
         result = str(ex)
-        v.app.logger.exception()
+        v.app.logger.exception(result)
         state = 2
     finally:
         if execution_lib:

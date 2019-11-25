@@ -32,7 +32,6 @@ def create_app(config_name):
     logging.config.dictConfig(json.load(open(os.getenv("LOGGING_CONFIG") or "logging_config.json")))
     app = Flask(__name__)
     v.app = app
-    app.logger.operation("value","anothervalue",53)
     app.config.from_pyfile('../config.py') # from config.py
     ###########################################
     ############ CONFIGURATIONS ###############
@@ -42,18 +41,22 @@ def create_app(config_name):
     ### DATABASE SETUP ###
     ######################
 
-
-
     v.db = SQLAlchemy(app)
     Migrate(app, v.db)
 
+    ######################
+    #### EMAIL SETUP #####
+    ######################
 
     mail = Mail(app)
     v.mail = mail
     if config_name == "main_app":
+        ######################
+        ##### BASE SETUP #####
+        ######################
         # Redis
         v.r = redis.Redis()
-        v.q = Queue(connection=v.r, default_timeout=-1)
+        v.q = Queue("medium-ubumlaas", connection=v.r, default_timeout=-1)
 
         BASE_WORKERS = 3
         v.workers = 0
