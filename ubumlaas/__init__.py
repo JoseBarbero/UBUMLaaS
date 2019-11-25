@@ -10,6 +10,8 @@ from ubumlaas.jobs import WorkerBuilder
 import ubumlaas.weka.weka_packages as weka_packages
 from flask_mail import Mail
 import time
+import json
+import logging.config
 
 
 def create_app(config_name):
@@ -23,8 +25,13 @@ def create_app(config_name):
     """
     v.start()
     v.basedir = os.path.abspath(os.path.dirname(__file__))
+    v.appdir = os.path.join(v.basedir,"..")
+    # loggin setup
+    import ubumlaas.logger
+    ubumlaas.logger.create_folders_if_needed()
+    logging.config.dictConfig(json.load(open(os.getenv("LOGGING_CONFIG") or "logging_config.json")))
     app = Flask(__name__)
-
+    v.app = app
     app.config.from_pyfile('../config.py') # from config.py
     ###########################################
     ############ CONFIGURATIONS ###############
@@ -34,18 +41,22 @@ def create_app(config_name):
     ### DATABASE SETUP ###
     ######################
 
-
-
     v.db = SQLAlchemy(app)
     Migrate(app, v.db)
 
+    ######################
+    #### EMAIL SETUP #####
+    ######################
 
     mail = Mail(app)
     v.mail = mail
     if config_name == "main_app":
+        ######################
+        ##### BASE SETUP #####
+        ######################
         # Redis
         v.r = redis.Redis()
-        v.q = Queue(connection=v.r, default_timeout=-1)
+        v.q = Queue("medium-ubumlaas", connection=v.r, default_timeout=-1)
 
         BASE_WORKERS = 3
         v.workers = 0
@@ -81,5 +92,5 @@ def create_app(config_name):
         return cad.split(".")[-1]
 
     app.jinja_env.filters["split"] = split_dict_key
-    v.app = app
+
     return app

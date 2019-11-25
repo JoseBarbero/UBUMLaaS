@@ -95,8 +95,9 @@ def logout():
     return redirect(url_for("core.index"))
 
 
-@login_required
+
 @users.route("/profile")
+@login_required
 def profile():
     """User profile load.
 
@@ -111,13 +112,14 @@ def profile():
                            user=current_user,
                            datasets=datasets,
                            experiments=experiments)
-@login_required
+
 @users.route('/confirm/<token>')
 def confirm_email(token):
-    try:
-        email = confirm_token(token)
-    except:
+    email = confirm_token(token)
+    if not email:
         flash('The confirmation link is invalid or has expired.', 'danger')
+        return redirect(url_for("users.login"))
+
     user = User.query.filter_by(email=email).first_or_404()
     if user.activated:
         flash('Account already confirmed. Please login.', 'success')
@@ -145,15 +147,14 @@ def reset():
             recover_url=recover_url)
 
         send_email(subject, user.email, html=html)
-        flash("Email reset sended.", "success")
+        flash("Reset password sended to: "+user.email, "success")
         return redirect(url_for('users.login'))
     return render_template('reset.html', form=form)
 
 @users.route('/reset/<token>', methods=["GET", "POST"])
 def reset_with_token(token):
-    try:
-        email = confirm_token(token)
-    except:
+    email = confirm_token(token)
+    if not email:
         abort(404)
 
     form = PasswordForm()

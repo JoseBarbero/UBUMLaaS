@@ -66,12 +66,10 @@ def start_predict():
 
         # Open to predict dataset
         file_df, y = execute.open_dataset(upload_folder, filename)
-        print(y)
         prediction_df = file_df[exp_config["columns"]]
 
         model = execute.deserialize(path)
         predictions, _ = execute.predict(model, file_df)
-        print(predictions)
         columns = [prediction_df]
         if y is not None:
             y_df = pd.DataFrame(y, columns=exp_config["target"])

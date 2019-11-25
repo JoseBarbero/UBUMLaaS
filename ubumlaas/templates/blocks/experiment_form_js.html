@@ -7,7 +7,7 @@
 <script>
     function reset_(reset, filter){
         if (reset){
-            console.log("Reset");
+            //console.log("Reset");
             let over;
             let place_id;
             if(filter){
@@ -77,7 +77,7 @@
             },
             async: async
         });
-        if(!filter){
+        if(async && !filter){
             reset_(true, true);
         }
         return result_;
@@ -308,7 +308,7 @@
             name_value = filter_selected.filter_name;
         }
         alg_name.val(name_value);
-        console.log(alg_name)
+        //console.log(alg_name)
         alg_name.change();
         if(filter){
             setTimeout(function(){
@@ -320,7 +320,7 @@
     }
 
     function add_algorithm_parameters(filter=false, alg=null, alg_config=null, level=0){
-        console.log(filter+" "+alg+" "+alg_config+" "+level)
+        //console.log(filter+" "+alg+" "+alg_config+" "+level)
         let suffix = "";
         if(!filter){
             if($(".timeout-finished").length == 0){
@@ -328,6 +328,12 @@
                 return;
             }
         }else{
+            if($("#form_config_filter").html() === ""){
+                setTimeout(function(){
+                    add_algorithm_parameters(filter);
+                    return;
+                }, 100);
+            }
             suffix = "_filter";
         }
         let base_alg_config;
@@ -381,7 +387,6 @@
             }
         });
         if(experiment.filter instanceof Object && !filter && level==0){
-            console.log("please only one time");
             config_algorithm(true);
         }
     }
