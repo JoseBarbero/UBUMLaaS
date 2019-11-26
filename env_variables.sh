@@ -1,10 +1,10 @@
 #!/bin/bash
 
-export SECRET_KEY=K6sjcLWvFt
-export EMAIL_AC=ubumlaas@gmail.com
-export EMAIL_PASS=rotationforest
+export SECRET_KEY=<app secret key>
+export EMAIL_AC=<email>
+export EMAIL_PASS=<email-password>
 export FLASK_ENV=development #development or production
-LIBFOLDER=/home/jlgarridol/GitHub/UBUMLaaS
+LIBFOLDER=/absolute/path/to/UBUMLaaS
 
 export WEKA_HOME=$LIBFOLDER/lib/wekafiles/packages/
 
