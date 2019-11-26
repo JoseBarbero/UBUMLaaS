@@ -1,10 +1,10 @@
 #!/bin/bash
 
-export SECRET_KEY=<app secret key>
-export EMAIL_AC=<email>
-export EMAIL_PASS=<email-password>
+export SECRET_KEY=K6sjcLWvFt
+export EMAIL_AC=ubumlaas@gmail.com
+export EMAIL_PASS=rotationforest
 export FLASK_ENV=development #development or production
-LIBFOLDER=/absolute/path/to/UBUMLaaS
+LIBFOLDER=/home/jlgarridol/GitHub/UBUMLaaS
 
 export WEKA_HOME=$LIBFOLDER/lib/wekafiles/packages/
 
@@ -17,7 +17,7 @@ IFS=$'\n'       # make newlines the only separator
 for p in $packages; do
     
     first=$(echo $p | cut -f1 -d" " | head -c 1)
-    if [ $first == "d" ]; then
+    if [[ $first == "d" ]]; then
         pack=("${pack[@]}" $(echo $p | rev |cut -d" " -f1 | rev))
     fi
 done

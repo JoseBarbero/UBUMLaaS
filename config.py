@@ -1,7 +1,7 @@
 import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 
-SERVER_NAME = "localhost:5000"
+SERVER_NAME = os.getenv("NGROK_URL", "localhost:5000")
 SECRET_KEY = os.getenv("SECRET_KEY", "dev")
 SECURITY_PASSWORD_SALT = os.getenv("SECURITY_PASSWORD_SALT", "password_salt")
 TESTING = os.getenv("TESTING", "0") == "1"
