@@ -7,35 +7,63 @@
         <!--<link rel="stylesheet" href="{{ url_for('static', filename="css/bootstrap.css") }}" />-->
         <link rel="stylesheet" href="{{ url_for('static', filename="css/bootstrap-grid.css") }}" />
         <link rel="stylesheet" href="{{ url_for('static', filename="css/bootstrap-append.css") }}" />
+        <link rel="stylesheet" href="{{ url_for('static', filename="css/buttons.css") }}" /> 
         <link rel="stylesheet" href="{{ url_for('static', filename="css/custom.css") }}" />   
         <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.ico') }}" />
         <meta charset="utf-8">
         <title>{{ title }}</title>
         <style>
-                .index_background{
-                    background-color: rgba(var(--ubu-maroon-red), var(--ubu-maroon-green), var(--ubu-maroon-blue), 0.75); /*#ca7c89;*/
-                }
-                .blockquote-footer{
-                    color: rgba(255,255,255,0.6);
-                }
-                footer .main-footer{
-                    margin-top: 0px;
-                }
-                #index-right{
-                    color: white !important;
-                }
-                #index-left{
-                    color: var(--ubu-maroon);
-                }
-                #index-left cite{
-                    color: var(--ubu-maroon);
-                    opacity: 0.6;
-                    float: right;
-                }
-            </style>
+            html, body {
+                height: 100%;
+                min-height: 100%;
+                overflow: hidden;
+            }
+
+            body {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .body-content {
+                display: flex;
+                flex-flow: column;
+                flex: 1 1 auto;
+                padding: 0;
+            }
+
+            .footer {    
+                text-align: center;
+                font-family: segoe ui,Arial,sans-serif;
+                flex: 0 0 auto;
+                z-index:3;
+            }
+            .index_background{
+                background-color: rgba(var(--ubu-maroon-red), var(--ubu-maroon-green), var(--ubu-maroon-blue), 0.75); /*#ca7c89;*/
+            }
+            .blockquote-footer{
+                color: rgba(255,255,255,0.6);
+            }
+            footer .main-footer{
+                margin-top: 0px;
+            }
+            #index-right{
+                color: white !important;
+            }
+            #index-left{
+                color: var(--ubu-maroon);
+            }
+            #index-left cite{
+                color: var(--ubu-maroon);
+                opacity: 0.6;
+                float: right;
+            }
+            #hand {
+                ·/*max-height: 50px;*/
+            }
+        </style>
     </head>
-    <body class="d-flex flex-column">
-        <header>
+    <body class="d-flex flex-column h-100">
+        <header id="header">
             <nav class="navbar sticky-top navbar-expand-lg navbar-dark" style="background-color: var(--ubu-maroon);">
                 <div class="rounded float-left">
                     <a href="http://www.admirable-ubu.es/" target="_blank" rel="noopener noreferrer"><img class="navbar-brand mr-3" src={{ url_for("static",filename="img/onlyA-32x32.svg") }}></a>
@@ -63,7 +91,7 @@
                 </div>
             </nav>
         </header>
-        <main class="container-fluid flex-fill">
+        <main class="container-fluid body-content">
             <div class="container-fluid h-100 d-flex align-items-stretch p-0" style="z-index: 999;">
                 <div class="container-fluid h-100 d-flex align-items-stretch p-0">
                     <div class="row container-fluid p-0 m-0">        
@@ -108,14 +136,44 @@
                         </div>
                     </div>    
                 </div>
-                <div class="container-fluid index d-md-flex align-items-stretch p-0 position-fixed d-sm-none" style="z-index: -100;">
+                <div class="container-fluid index h-100 d-md-flex align-items-stretch position-fixed p-0 d-sm-none align-self-center" id="hand" style="z-index: -200;">
                     <div class="container-fluid d-flex justify-content-center" style="min-height: fit-content;">
-                        <img src="{{ url_for("static", filename="img/mano-robotica.svg")}}" class="pt-md-5 h-90"  />
+                        <img src="{{ url_for("static", filename="img/mano-robotica.svg")}}"/>
                     </div>
                 </div>
             </div>
         </main>
-        <footer>
+        <footer class="footer" style="z-index: 999;" id="footer">
+            <div class="main-footer widgets-dark typo-light d-flex">
+                <div class="container">
+                    <div class="row align-items-center" id="logos">
+                        <div class="col-xs-12 col-sm-6 col-md-3">
+                            <a target="_blank" rel="noopener noreferrer"
+                                href="https://ec.europa.eu/regional_policy/es/funding/erdf/">
+                                <img class="img-fluid" src={{ url_for("static",filename="img/FEDER.svg") }}>
+                            </a>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-3">
+                            <a target="_blank" rel="noopener noreferrer"
+                                href="http://www.mineco.gob.es/portal/site/mineco/">
+                                <img class="img-fluid" src={{ url_for("static",filename="img/MEC.svg") }}>
+                            </a>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-3">
+                            <a target="_blank" rel="noopener noreferrer" href="https://www.jcyl.es/">
+                                <img class="img-fluid" src={{ url_for("static",filename="img/JCYL.svg") }}>
+                            </a>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-3">
+                            <a target="_blank" rel="noopener noreferrer"
+                                href="https://www.educa.jcyl.es/universidad/es/fondos-europeos/fondo-europeo-desarrollo-regional-feder/">
+                                <img class="img-fluid" src={{ url_for("static",filename="img/JCYL_impulsa.svg") }}>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
             <div class="footer-copyright">
                 <div class="container">
                     <div class="row">
@@ -126,5 +184,24 @@
                 </div>
             </div>
         </footer>
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+        crossorigin="anonymous"></script>
+        <script src="{{ url_for('static', filename="js/bootstrap.js") }}"></script>
+        <script src="{{ url_for('static', filename="js/colors.js") }}"></script>
+        <script>
+            function resize_hand(){
+                var a = $("body").height()-$("#footer").height()-$("#header").height();
+                $("#hand").css("max-height", a+"px");
+            }
+
+            $("document").ready(function(){
+                resize_hand();
+
+                $(window).resize(function(){
+                    resize_hand();
+                });
+            });
+        </script>
     </body>
 </html>
