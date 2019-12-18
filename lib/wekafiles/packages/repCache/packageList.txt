@@ -123,6 +123,7 @@ imageFilters
 isolationForest
 isotonicRegression
 iterativeAbsoluteErrorRegression
+javaFXScatterPlot3D
 jfreechartOffscreenRenderer
 jsonFieldExtractor
 kerasZoo

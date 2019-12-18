@@ -123,6 +123,7 @@ imageFilters:1.0.3
 isolationForest:1.0.2
 isotonicRegression:1.0.1
 iterativeAbsoluteErrorRegression:1.0.0
+javaFXScatterPlot3D:1.0.0
 jfreechartOffscreenRenderer:1.0.5
 jsonFieldExtractor:1.0.0
 kerasZoo:1.0.2
@@ -198,6 +199,6 @@ vines:1.0.0
 votingFeatureIntervals:1.0.1
 wavelet:1.0.1
 wekaDeeplearning4j:1.5.14
-wekaPython:1.0.10
+wekaPython:1.0.11
 wekaServer:1.1.9
 winnow:1.0.1
