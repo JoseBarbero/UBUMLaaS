@@ -18,6 +18,7 @@ EAR4
 EBMC
 EMImputation
 EvolutionarySearch
+ForExPlusPlus
 ForestPA
 GPAttributeGeneration
 GenClustPlusPlus
