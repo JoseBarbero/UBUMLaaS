@@ -18,6 +18,7 @@ EAR4:1.0
 EBMC:1.0.0
 EMImputation:1.0.1
 EvolutionarySearch:1.0.2
+ForExPlusPlus:1.0
 ForestPA:1.0
 GPAttributeGeneration:1.0.1
 GenClustPlusPlus:1.5
@@ -100,7 +101,7 @@ distributedWekaSpark:1.1.9
 distributedWekaSpark2Dev:1.1.4
 distributedWekaSparkDev:1.1.4
 dualPerturbAndCombine:1.0.0
-elasticNet:1.0.0
+elasticNet:1.0.1
 ensembleLibrary:1.0.6
 ensemblesOfNestedDichotomies:1.0.6
 extraTrees:1.0.2
@@ -123,6 +124,7 @@ imageFilters:1.0.3
 isolationForest:1.0.2
 isotonicRegression:1.0.1
 iterativeAbsoluteErrorRegression:1.0.0
+javaFXScatterPlot3D:1.0.0
 jfreechartOffscreenRenderer:1.0.5
 jsonFieldExtractor:1.0.0
 kerasZoo:1.0.2
@@ -157,7 +159,7 @@ newKnowledgeFlowStepExamples:1.0.0
 niftiLoader:1.0.1
 normalize:1.0.1
 oneClassClassifier:1.0.4
-optics_dbScan:1.0.5
+optics_dbScan:1.0.6
 ordinalClassClassifier:1.0.5
 ordinalLearningMethod:1.0.1
 ordinalStochasticDominance:1.0.1
@@ -198,6 +200,6 @@ vines:1.0.0
 votingFeatureIntervals:1.0.1
 wavelet:1.0.1
 wekaDeeplearning4j:1.5.14
-wekaPython:1.0.10
+wekaPython:1.0.11
 wekaServer:1.1.9
 winnow:1.0.1

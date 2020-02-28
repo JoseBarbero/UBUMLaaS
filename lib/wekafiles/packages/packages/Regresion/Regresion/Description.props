@@ -1,0 +1,44 @@
+# Description file for Regresion
+#
+# 
+
+# Package name (required)
+PackageName=Regresion
+
+# Version (required)
+Version=1.0
+
+#Date
+Date=2011-06-02
+
+# Title (required)
+Title=Clasificadores extra para regresion
+
+Category=Ensemble learning
+
+# Author (required)
+Author=Juan Jose Rodriguez <jjrodriguez@ubu.es>
+
+# Maintainer (required)
+Maintainer=Juan Jose Rodriguez <jjrodriguez@ubu.es>
+
+# License (required)
+License=GPL 2.0
+
+# Description (required)
+Description=RandomizedRandomTree, IteratedBagging, AdaBoost.R2
+
+# Changes
+Changes=No changes
+
+# Package URL for obtaining the package archive (required)
+PackageURL=http://pisuerga.inf.ubu.es/weka/regresion.zip?download
+
+# URL for further information
+URL=http://pisuerga.inf.ubu.es/weka/regresion.zip
+
+# Related to other packages?
+#Related=
+
+# Dependencies
+Depends=weka (>=3.7.1)

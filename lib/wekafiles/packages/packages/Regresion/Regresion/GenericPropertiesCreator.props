@@ -1,0 +1,3 @@
+# GenericPropertiesCreator.props file.
+weka.classifiers.Classifier=weka.ubu
+

@@ -17,7 +17,7 @@ IFS=$'\n'       # make newlines the only separator
 for p in $packages; do
     
     first=$(echo $p | cut -f1 -d" " | head -c 1)
-    if [ $first == "d" ]; then
+    if [[ $first == "d" ]]; then
         pack=("${pack[@]}" $(echo $p | rev |cut -d" " -f1 | rev))
     fi
 done
