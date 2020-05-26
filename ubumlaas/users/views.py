@@ -134,8 +134,10 @@ def confirm_email(token):
 def reset():
     form = EmailForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first_or_404()
-
+        user = User.query.filter_by(email=form.email.data).first()
+        if not user:
+            flash("Email account not exist, try with other", "warning")
+            return redirect(url_for('users.reset'))
         subject = "Password reset requested"
 
         token = generate_confirmation_token(user.email)
