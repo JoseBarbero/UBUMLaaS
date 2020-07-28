@@ -40,6 +40,7 @@ Project "***Minería de datos para la mejora del mantenimiento y disponibilidad 
     export SECRET_KEY=<app secret key>
     export EMAIL_AC=<email>
     export EMAIL_PASS=<email-password>
+    export EMAIL_URL=<email-url>
     export FLASK_ENV=development #development or production
     LIBFOLDER=/absolute/path/to/UBUMLaaS
     ```
