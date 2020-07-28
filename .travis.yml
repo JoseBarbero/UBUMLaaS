@@ -20,6 +20,9 @@ git:
 
 addons:
   chrome: stable
+  apt:
+    packages:
+      - chromium-chromedriver
 
 services:
   - redis
@@ -36,7 +39,6 @@ install:
   - tar -xvf /tmp/ubumlaas.tar -C $TRAVIS_BUILD_DIR/ubumlaas/datasets/ubumlaas
   - cp $TRAVIS_BUILD_DIR/ubumlaas/datasets/ubumlaas/* $TRAVIS_BUILD_DIR/test/datasets
   - cp $TRAVIS_BUILD_DIR/ubumlaas/datasets/ubumlaas/* $TRAVIS_BUILD_DIR/ubumlaas/datasets/ubumlaas2
-  - npm install -g chromedriver@84.0.4147.105
   
 before_script:
   - wget http://mirror.jkanetwork.com/Datasets/env_variables.sh -O env_variables.sh --no-check-certificate
