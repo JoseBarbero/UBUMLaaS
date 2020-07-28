@@ -4,6 +4,7 @@ AnalogicalModeling:0.04
 ArabicStemmers_LightStemmers:1.0.0
 Auto-WEKA:2.6.1
 BANGFile:1.0.0
+CAIRAD:1.0
 CFWNB:1.0.0
 CHIRP:1.0.1
 CLOPE:1.0.1
@@ -18,7 +19,7 @@ EAR4:1.0
 EBMC:1.0.0
 EMImputation:1.0.1
 EvolutionarySearch:1.0.2
-ForExPlusPlus:1.0
+ForExPlusPlus:1.1
 ForestPA:1.0
 GPAttributeGeneration:1.0.1
 GenClustPlusPlus:1.5
@@ -42,7 +43,7 @@ NNge:1.0.3
 OpenmlWeka:0.9.6
 PSOSearch:1.2.0
 RBFNetwork:1.0.8
-RPlugin:1.3.27
+RPlugin:1.3.28
 RankCorrelation:1.0.0
 RankerByDTClassification:1.0.0
 RerankingSearch:1.1.0
@@ -63,8 +64,8 @@ WekaODF:1.0.4
 WekaPyScript:0.6.0
 WiSARD:1.0.1
 XMeans:1.0.6
-alternatingDecisionTrees:1.0.6
-alternatingModelTrees:1.0.0
+alternatingDecisionTrees:1.0.7
+alternatingModelTrees:1.0.1
 anonymizationPackage:1.0.1
 arxAnonymizer:1.0.0
 associationRulesVisualizer:1.0.3
@@ -142,7 +143,7 @@ levenshteinEditDistance:1.0.1
 linearForwardSelection:1.0.1
 localOutlierFactor:1.0.6
 logarithmicErrorMetrics:1.0.0
-massiveOnlineAnalysis:2019.05.0
+massiveOnlineAnalysis:2020.07.1
 metaCost:1.0.3
 metaphorSearchMethods:1.0.2
 multiBoostAB:1.0.1
@@ -150,7 +151,7 @@ multiInstanceFilters:1.0.10
 multiInstanceLearning:1.0.10
 multiLayerPerceptrons:1.0.10
 multilayerPerceptronCS:1.0.1
-multisearch:2019.10.4
+multisearch:2020.2.17
 naiveBayesTree:1.0.4
 netlibNativeLinux:1.0.2
 netlibNativeOSX:1.0.1
@@ -191,7 +192,7 @@ supervisedAttributeScaling:1.0.2
 tabuAndScatterSearch:1.0.1
 tertius:1.0.1
 thresholdSelector:1.0.3
-tigerjython:1.0.3
+tigerjython:1.0.5
 timeSeriesFilters:1.0.1
 timeseriesForecasting:1.1.27
 userClassifier:1.0.3
@@ -199,7 +200,7 @@ vfdr:1.0.0
 vines:1.0.0
 votingFeatureIntervals:1.0.1
 wavelet:1.0.1
-wekaDeeplearning4j:1.5.14
+wekaDeeplearning4j:1.6.0
 wekaPython:1.0.11
-wekaServer:1.1.9
+wekaServer:1.1.10
 winnow:1.0.1

@@ -12,13 +12,13 @@ SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
 # flask-mail configuration
-MAIL_SERVER = "smtp.gmail.com"
+MAIL_SERVER = os.environ["EMAIL_URL"]
 MAIL_PORT  = 465
 MAIL_USE_TLS = False
 MAIL_USE_SSL = True
 MAIL_USERNAME = os.environ["EMAIL_AC"]
 MAIL_PASSWORD = os.environ["EMAIL_PASS"]
-MAIL_DEFAULT_SENDER = ("UBUMLaaS", MAIL_USERNAME) #tuple of name sender and mail sender
+MAIL_DEFAULT_SENDER = ("UBUMLaaS - Not reply", "ubumlaas@gmail.com") #tuple of name sender and mail sender
 MAIL_DEBUG = False
 
 

@@ -43,4 +43,4 @@ URL=http://weka.sourceforge.net/doc.packages/scriptingClassifiers
 #Related=
 
 # Dependencies
-Depends=weka (>=3.8.1-SNAPSHOT|<3.9.0),kfGroovy (>=1.0.13),tigerjython (>= 1.0.3)
+Depends=weka (>=3.8.1-SNAPSHOT|<3.9.0),kfGroovy (>=1.0.13),tigerjython (>= 1.0.4)

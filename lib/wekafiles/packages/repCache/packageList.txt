@@ -4,6 +4,7 @@ AnalogicalModeling
 ArabicStemmers_LightStemmers
 Auto-WEKA
 BANGFile
+CAIRAD
 CFWNB
 CHIRP
 CLOPE

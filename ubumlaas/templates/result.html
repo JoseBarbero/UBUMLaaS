@@ -262,8 +262,8 @@ html {
                             to_render.push(chart);
                             div.append(canvas);
                             break;       
-                        /*case "AUC":
-                            result_val = 1-result_val;*/
+                        case "AUC":
+                            result_val = 1-result_val;
                         default:
                             let k = $("<p></p>", {class: "col-md-5 font-weight-bold"});
                             let v = $("<p></p>", {class: "col-md-7"});

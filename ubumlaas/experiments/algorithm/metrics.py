@@ -48,8 +48,10 @@ def classification_metrics(y_test_param, y_pred_param, y_score_param):
             fpr, tpr, _ = mtr.roc_curve(y_b_test, y_b_score)
             score.setdefault("ROC", []).append([fpr.tolist(), tpr.tolist()])
             score.setdefault("AUC", []).append(mtr.auc(fpr, tpr))
+            print(y_test.values[0][0])
             score.setdefault("f1_score", []).append(mtr.f1_score(y_test,
-                                                                 y_pred))
+                                                                 y_pred,
+                                                                 pos_label=y_test.values[0][0]))
         else:
             score.setdefault("AUC", [])\
                 .append(multiclass_roc_auc_score(y_test, y_pred))

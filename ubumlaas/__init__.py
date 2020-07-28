@@ -56,15 +56,18 @@ def create_app(config_name):
         ######################
         # Redis
         v.r = redis.Redis()
-        v.q = Queue("medium-ubumlaas", connection=v.r, default_timeout=-1)
-
-        BASE_WORKERS = 3
+        #v.qm = Queue("medium-ubumlaas", connection=v.r, default_timeout=-1)
+        v.qh = Queue("high-ubumlaas", connection=v.r, default_timeout=-1)
+        BASE_WORKERS = 2
+        HIGH_PRIORITIES_WORKERS = 5
         v.workers = 0
-        for _ in range(BASE_WORKERS):
-            WorkerBuilder().set_queue(v.q).create().start()
+        #for _ in range(BASE_WORKERS):
+        #    WorkerBuilder().set_queue(v.qm).create().start()
+        for _ in range(HIGH_PRIORITIES_WORKERS):
+            WorkerBuilder().set_queue(v.qh).create().start()
 
         #  Startup weka unofficial packages
-        v.q.enqueue(weka_packages.start_up_weka,
+        v.qh.enqueue(weka_packages.start_up_weka,
                     "ubumlaas/weka/weka_packages.json")
 
     ######################

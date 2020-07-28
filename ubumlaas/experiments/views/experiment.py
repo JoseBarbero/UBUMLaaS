@@ -71,7 +71,7 @@ def launch_experiment():
                      None, time.time(), None, 0)
     v.db.session.add(exp)
     v.db.session.commit()
-    v.q.enqueue(task_skeleton, args=(exp.to_dict(), user.to_dict()),
+    v.qh.enqueue(task_skeleton, args=(exp.to_dict(), user.to_dict()),
                 result_ttl=0)
 
     return redirect(url_for("experiments.new_experiment"))
