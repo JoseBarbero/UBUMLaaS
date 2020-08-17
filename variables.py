@@ -4,7 +4,7 @@ import os
 
 
 def start():
-    global login_manager, db, basedir, v, q, workers, app, apps_functions, app, mail, appdir
+    global login_manager, db, basedir, v, q, workers, app, apps_functions, mail, appdir
 
     login_manager = None
     db = None
