@@ -1,6 +1,7 @@
 import sklearn.metrics as mtr
 import numpy as np
-from ubumlaas.util import value_to_bool
+import pandas as pd
+from ubumlaas.util import value_to_bool, find_y_uniques
 from sklearn.preprocessing import LabelBinarizer
 
 
@@ -118,9 +119,10 @@ def multiclass_roc_auc_score(y_test, y_pred, average="macro"):
 def clustering_metrics(list_X, list_y_pred):
     score = {}
     for X, y_pred in zip(list_X, list_y_pred):
-        set_score(score, "calinski_harabasz_score", mtr.calinski_harabasz_score(X, y_pred))
-        set_score(score, "davies_bouldin_score", mtr.davies_bouldin_score(X, y_pred))
-        set_score(score, "silhouette_score", mtr.silhouette_score(X, y_pred))
+        if len(find_y_uniques(pd.Series(y_pred)))>1:
+            set_score(score, "calinski_harabasz_score", mtr.calinski_harabasz_score(X, y_pred))
+            set_score(score, "davies_bouldin_score", mtr.davies_bouldin_score(X, y_pred))
+            set_score(score, "silhouette_score", mtr.silhouette_score(X, y_pred))
     return score
 
 

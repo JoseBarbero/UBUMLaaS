@@ -5,6 +5,7 @@ from ubumlaas.users.forms import RegistrationForm, LoginForm, PasswordForm, Emai
 from ubumlaas.models import User, get_experiments
 import os
 from ubumlaas.util import generate_confirmation_token, confirm_token, send_email, get_ngrok_url
+import json
 
 users = Blueprint("users", __name__)
 

@@ -1,6 +1,7 @@
 import sklearn
 import sklearn.base
 import sklearn.cluster
+import sklearn.mixture
 import sklearn.linear_model
 import sklearn.metrics
 import sklearn.ensemble
@@ -20,6 +21,8 @@ import weka.core.serialization as serialization
 
 import tempfile
 import sys
+
+from ubumlaas.util import find_y_uniques
 
 from ubumlaas.experiments.execute_algorithm import Abstract_execute
 
@@ -221,6 +224,4 @@ class Execute_weka(Abstract_execute):
             y {Series} -- target column
         """
         if self.is_classification():
-            uniques = np.unique(y.values)
-            uniques.sort()
-            self.y_uniques = uniques
+            self.y_uniques = find_y_uniques(y)

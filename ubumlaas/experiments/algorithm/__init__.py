@@ -3,6 +3,7 @@
 import sklearn
 import sklearn.base
 import sklearn.cluster
+import sklearn.mixture
 import sklearn.linear_model
 import sklearn.ensemble
 import sklearn.neighbors
