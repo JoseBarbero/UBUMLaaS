@@ -182,6 +182,7 @@ html {
                                             class: "nav-link", id: i+"-"+z+"_tab-tab",
                                             "aria-controls": i+"-"+z+"_tab"}));
                     let a = $(li.children()[0]);
+                    
                     a.text("k"+z);
                     let tab_pane_div = $("<div></div>",{class: "tab-pane fade",
                                                         id: i+"-"+z+"_tab", role: "tabpanel",
@@ -234,6 +235,9 @@ html {
                             div.append(canvas);
                             break;
                         case "confussion_matrix":
+                            if (z==result[i].length-1){
+                                a.text("Mean")
+                            }
                             var canvas = $("<div></div>", {id:i+"_canvas", width: "100%"});
                             let opt = {
                                 chart: {

@@ -43,7 +43,7 @@ NNge:1.0.3
 OpenmlWeka:0.9.6
 PSOSearch:1.2.0
 RBFNetwork:1.0.8
-RPlugin:1.3.28
+RPlugin:1.3.29
 RankCorrelation:1.0.0
 RankerByDTClassification:1.0.0
 RerankingSearch:1.1.0
@@ -100,6 +100,7 @@ distributedWekaHadoopCore:1.1.22
 distributedWekaHadoopLibs:1.0.1
 distributedWekaSpark:1.1.9
 distributedWekaSpark2Dev:1.1.4
+distributedWekaSpark3Dev:1.1.0
 distributedWekaSparkDev:1.1.4
 dualPerturbAndCombine:1.0.0
 elasticNet:1.0.1
@@ -201,6 +202,6 @@ vines:1.0.0
 votingFeatureIntervals:1.0.1
 wavelet:1.0.1
 wekaDeeplearning4j:1.6.0
-wekaPython:1.0.11
+wekaPython:1.0.12
 wekaServer:1.1.10
 winnow:1.0.1
