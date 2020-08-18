@@ -94,6 +94,15 @@ def create_app(config_name):
     def split_dict_key(cad):
         return cad.split(".")[-1]
 
+    def hash_(cad):
+        from flask_login import current_user
+        if current_user.is_anonymous:
+            return 0
+        else:
+            return hash(current_user.id)
+
+
     app.jinja_env.filters["split"] = split_dict_key
+    app.jinja_env.filters["user"] = hash_
 
     return app
