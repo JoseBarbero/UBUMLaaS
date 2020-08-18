@@ -12,6 +12,16 @@
         <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.ico') }}" />
         <meta charset="utf-8">
         <title>{{ title }}</title>
+        <script async src="https://www.googletagmanager.com/gtag/js?id=UA-175635481-1"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'UA-175635481-1');
+            gtag('set', {'user_id': '{{ title | user }}'}); // Establezca el ID de usuario mediante el user_id con el que haya iniciado sesión.
+            ga('set', 'userId', '{{ title | user }}'); // Establezca el ID de usuario mediante el user_id con el que haya iniciado sesión.
+        </script>
         <style>
             html, body {
                 height: 100%;
