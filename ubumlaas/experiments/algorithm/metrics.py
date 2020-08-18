@@ -37,6 +37,7 @@ def classification_metrics(y_test_param, y_pred_param, y_score_param):
 
         # First confuse matrix
         conf_matrix = mtr.confusion_matrix(y_test, y_pred)
+        
         score.setdefault("confussion_matrix", []).append(conf_matrix.tolist())
         y_b_score = y_score.max(axis=1)
         if conf_matrix.shape[0] == 2 and y_test.iloc[:, 0].dtype != np.bool:
@@ -63,6 +64,11 @@ def classification_metrics(y_test_param, y_pred_param, y_score_param):
                                                                    y_pred))
         score.setdefault("accuracy", []).append(mtr.accuracy_score(y_test,
                                                                    y_pred))
+
+    conf_matrix_final = np.array(score["confussion_matrix"])
+    if len(conf_matrix_final) > 1:
+            conf_mean = [conf_matrix_final.mean(0)]
+            score["confussion_matrix"] = np.concatenate((conf_matrix_final,conf_mean),axis=0).tolist()
 
     return score
 

@@ -1,10 +1,10 @@
 os: linux
-        dist: xenial
-        language: python
-        python: 3.7
-        node_js: 10
-        jdk:
-          - openjkd8
+dist: bionic
+language: python
+python: 3.7
+node_js: 10
+jdk:
+  - openjkd8
 jobs:
   include:
       - os: linux
@@ -20,9 +20,12 @@ git:
 
 addons:
   chrome: stable
+  apt:
+    packages:
+      - chromium-chromedriver
 
 services:
-  - redis-server
+  - redis
   - xvfb
 
 install:
@@ -36,8 +39,6 @@ install:
   - tar -xvf /tmp/ubumlaas.tar -C $TRAVIS_BUILD_DIR/ubumlaas/datasets/ubumlaas
   - cp $TRAVIS_BUILD_DIR/ubumlaas/datasets/ubumlaas/* $TRAVIS_BUILD_DIR/test/datasets
   - cp $TRAVIS_BUILD_DIR/ubumlaas/datasets/ubumlaas/* $TRAVIS_BUILD_DIR/ubumlaas/datasets/ubumlaas2
-  - chromedriver-update 73.0.3683.68
-  - npm install -g chromedriver
   
 before_script:
   - wget http://mirror.jkanetwork.com/Datasets/env_variables.sh -O env_variables.sh --no-check-certificate

@@ -71,7 +71,7 @@ class Abstract_execute(ABC):
         Arguments:
             model {object} -- model to train
             X {DataFrame} -- attributes columns
-            y {FataFrame} -- targets columns
+            y {DataFrame} -- targets columns
         """
         pass
 
