@@ -25,6 +25,7 @@ class Execute_sklearn(Abstract_execute):
             experiment {dict} -- experiment dictionary
         """
         Abstract_execute.__init__(self, experiment)
+        v.app.logger.info("Execution library - %d - Scikit-Learn", self.id)
 
     @staticmethod
     def __create_sklearn_model(alg_name, alg_config):
@@ -64,6 +65,7 @@ class Execute_sklearn(Abstract_execute):
             model {object} -- the model to serialize
             path {str} -- path to save the model serialized
         """
+        v.app.logger.info("Model saved - %d - %s", self.id, self.algorithm_name)
         pickle.dump(model, open(path, 'wb'))
 
     def deserialize(self, path):
@@ -75,6 +77,7 @@ class Execute_sklearn(Abstract_execute):
         Returns:
             [object] -- model deserialized
         """
+        v.app.logger.info("Model readed - %d - %s", self.id, self.algorithm_name)
         return pickle.load(open(path, 'rb'))
 
     def train(self, model, X, y):
@@ -85,10 +88,12 @@ class Execute_sklearn(Abstract_execute):
             X {DataFrame} -- attributes columns
             y {FataFrame} -- targets columns
         """
+        v.app.logger.info("Training model - %d - %s", self.id, self.algorithm_name)
         if y is None:
             model.fit(X)
         else:
             model.fit(X, y.values.ravel())
+        v.app.logger.info("Model trained - %d - %s", self.id, self.algorithm_name)
 
     def predict(self, model, X):
         """Predict with X columns values using the model
