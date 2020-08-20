@@ -2,6 +2,7 @@ import variables as v
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 from sqlalchemy import and_, or_, text, desc, asc
+import variables as v
 
 from flask_login import UserMixin
 
@@ -16,6 +17,7 @@ def load_user(user_id):
     Returns:
         User -- User with that id.
     """
+    v.app.logger.info("Getting user with id %d from the data base", user_id)
     return User.query.get(user_id)
 
 
@@ -28,6 +30,7 @@ def load_experiment(exp_id):
     Returns:
         Experiment -- Experiment with that id.
     """
+    v.app.logger.info("Getting experiment with id %d from the data base", exp_id)
     return Experiment.query.get(exp_id)
 
 
@@ -47,6 +50,7 @@ def get_experiments(idu):
         if i.endtime is not None:
             i.endtime = datetime.fromtimestamp(i.endtime)\
                 .strftime("%d/%m/%Y - %H:%M:%S")
+    v.app.logger.info("Getting experiments from user with id %d, %d experiments found", idu, len(listexp))
     return listexp
 
 
@@ -54,10 +58,12 @@ def get_algorithms_type():
     sql = text('SELECT DISTINCT alg_typ FROM algorithms')
     result = v.db.engine.execute(sql)
     types = [(row[0], row[0]) for row in result if row[0] != "Mixed"]
+    v.app.logger.info("Getting algorithm types")
     return types
 
 
 def get_similar_algorithms(alg_name, exp_typ):
+    v.app.logger.info("Getting algorithm similar to %s", alg_name)
     alg = get_algorithm_by_name(alg_name)
     if alg.lib == "meka":
         cond = and_(Algorithm.lib == "weka",
@@ -82,6 +88,7 @@ def get_algorithms(alg_typ):
     Returns:
         algorithm list -- all algorithm of that type.
     """
+    v.app.logger.info("Getting all %s algorithms", alg_typ)
     cond = Algorithm.alg_typ == alg_typ
     if alg_typ in ["Classification", "Regression"]:
         cond = or_(cond, Algorithm.alg_typ == "Mixed")
@@ -97,12 +104,13 @@ def get_algorithm_by_name(name):
     Returns:
         Algorithm -- Algorithm with that name.
     """
+    v.app.logger.info("Getting algorithm %s by name", name)
     return Algorithm.query\
         .filter(Algorithm.alg_name == name).first()
 
 
 def get_filter_by_name(name):
-    """Get an algorfilterithm by name.
+    """Get an filter by name.
 
     Arguments:
         name {string} -- name of the filter.
@@ -110,6 +118,7 @@ def get_filter_by_name(name):
     Returns:
         Filter -- Filter with that name.
     """
+    v.app.logger.info("Getting filter %s by name", name)
     return Filter.query\
         .filter(Filter.filter_name == name).first()
 
@@ -118,7 +127,7 @@ def get_compatible_filters(lib, typ=None):
     """Get an filter by .
 
     Arguments:
-        name {string} -- name of the algorithm.
+        lib {string} -- name of the library sklearn or weka.
 
     Returns:
         Algorithm -- Algorithm with that name.
@@ -126,10 +135,12 @@ def get_compatible_filters(lib, typ=None):
     cond = Filter.lib == lib
     if typ is not None:
         cond = and_(cond, Filter.typ == typ)
+    v.app.logger.info("Getting filter for %s", lib)
     return Filter.query\
         .filter(cond).all()
 
 def delete_experiment(id):
+    v.app.logger.info("Deleting experiment with id %d", id)
     Experiment.query.filter_by(id=id).delete()
     v.db.session.commit()
 

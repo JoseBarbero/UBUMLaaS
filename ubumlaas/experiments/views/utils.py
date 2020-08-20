@@ -6,7 +6,7 @@ from ubumlaas.models import \
      get_algorithm_by_name, get_similar_algorithms)
 from flask_login import (current_user, login_required)
 import ubumlaas.experiments.views as views
-
+import variables as v
 
 @login_required
 @views.experiments.route("/experiment/<int:id>/download_model")
@@ -19,6 +19,8 @@ def download_model(id):
     Returns:
         file -- model file
     """
+
+    v.app.logger.info("%d - Downloading model from experiment %d", current_user.id, id)
 
     exp = load_experiment(id)
 
@@ -35,6 +37,7 @@ def download_model(id):
         return send_file(path, attachment_filename=download_filename,
                          as_attachment=True)
     except FileNotFoundError:
+        v.app.logger.warning("%d - Failed model download experiment %d, model file not found",current_user.id, id)
         abort(404)
 
 
