@@ -219,7 +219,7 @@ function get_base_block(placein, block, param_name, param, level, filter=false){
                                      "data-placement": "left",
                                      title: param.help,
                                      for: basename+"_value" });
-    let name = document.createTextNode(param_name);
+    let name = document.createTextNode(titleCase(param_name));
     let span = $("<span></span>", { id: basename+"_span" });
     span.text("("+param.default+")");
     lbl.append(name);
