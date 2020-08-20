@@ -164,7 +164,7 @@ html {
                 }
                 row.append(block);
                 block.html("<label for=\""+i+"_value"+"\">"+
-                                i+
+                            titleCase(i)+
                             "</label>");
                 block.append($("<a onClick=\"toggle_click('"+i+"_chart"+"','"+i+"_not_exists"+"')\" href=\"#a\" id=\""+i+"_open"+"\">"+
                                     "<i class=\"material-icons\" style=\"float: right;\">"+
