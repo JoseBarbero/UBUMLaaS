@@ -235,7 +235,7 @@ html {
                             div.append(canvas);
                             break;
                         case "confussion_matrix":
-                            if (z==result[i].length-1){
+                            if (z==result[i].length-1 && z>0){
                                 a.text("Mean")
                             }
                             var canvas = $("<div></div>", {id:i+"_canvas", width: "100%"});
