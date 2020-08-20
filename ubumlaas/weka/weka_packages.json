@@ -5,5 +5,6 @@
     "instanceSelection": "lib/unofficial_weka_packages/instanceSelection1.3.0.zip",
     "regresion": "lib/unofficial_weka_packages/Regresion.zip",
     "liblinear": "LibLINEAR",
-    "libsvm": "LibSVM"
+    "libsvm": "LibSVM",
+    "admirable": "lib/unofficial_weka_packages/ADMIRABLE.zip"
 }
