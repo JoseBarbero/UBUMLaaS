@@ -33,6 +33,11 @@ def create_app(config_name):
     app = Flask(__name__)
     v.app = app
     app.config.from_pyfile('../config.py') # from config.py
+
+    v.app.logger.info("Creating and setting up application")
+    v.app.logger.debug("basedir - %s", v.basedir)
+    v.app.logger.debug("appdir - %s", v.appdir)
+
     ###########################################
     ############ CONFIGURATIONS ###############
     ###########################################
@@ -44,6 +49,8 @@ def create_app(config_name):
     v.db = SQLAlchemy(app)
     Migrate(app, v.db)
 
+    v.app.logger.info("Setting up DDBB")
+
     ######################
     #### EMAIL SETUP #####
     ######################
@@ -54,6 +61,9 @@ def create_app(config_name):
         ######################
         ##### BASE SETUP #####
         ######################
+
+        v.app.logger.debug("Setting up Redis Workers")
+
         # Redis
         v.r = redis.Redis()
         #v.qm = Queue("medium-ubumlaas", connection=v.r, default_timeout=-1)
@@ -73,6 +83,9 @@ def create_app(config_name):
     ######################
     ###  LOGIN CONFIG  ###
     ######################
+
+    v.app.logger.debug("Setting up Login Config")
+
     v.login_manager = LoginManager()
 
     v.login_manager.init_app(app)
@@ -91,14 +104,18 @@ def create_app(config_name):
     app.register_blueprint(error_pages)
     app.register_blueprint(experiments)
 
+    v.app.logger.debug("Registering BluePrints")
+
     def split_dict_key(cad):
         return cad.split(".")[-1]
 
     def hash_(cad):
         from flask_login import current_user
         if current_user.is_anonymous:
+            v.app.logger.info("-1 - Getting anonymous user hash (0)")
             return 0
         else:
+            v.app.logger.info("%d - Getting user hash", current_user.id)
             return hash(current_user.id)
 
 

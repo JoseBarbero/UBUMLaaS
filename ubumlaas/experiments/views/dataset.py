@@ -9,6 +9,7 @@ import os
 import calendar
 import ubumlaas.experiments.views as views
 from ubumlaas.util import generate_df_html
+import variables as v
 
 
 @login_required
@@ -20,7 +21,7 @@ def update_dataset_list():
         str -- HTTP response with rendered dataset selector
     """
     form_e = ExperimentForm()
-    form_e.dataset_list()
+    form_e.dataset_list() #log inside dataset_list
     return render_template("blocks/select_dataset.html", form_e=form_e)
 
 
@@ -48,11 +49,14 @@ def add_predict_dataset(id):
 def upload_dataset(base_folder):
     form_d = DatasetForm()
     upload_folder = base_folder+current_user.username+"/"
+    v.app.logger.info("%d - Uploading new dataset", current_user.id)
+    v.app.logger.debug("%d - upload_folder path - %s", current_user.id, upload_folder)
 
     if form_d.validate():
         filename = secure_filename(form_d.dataset.data.filename)
         if not os.path.exists(upload_folder):
             os.makedirs(upload_folder)
+            v.app.logger.debug("%d - mkdir upload_folder - %s", current_user.id, upload_folder)
 
         filename, exists = check_exists(upload_folder, filename)
 
@@ -61,9 +65,11 @@ def upload_dataset(base_folder):
         file_df = form_d.to_dataframe(filename, upload_folder)
 
         df_html = generate_df_html(file_df)
+        v.app.logger.info("%d - Dataset valid and rendering show_dataset block", current_user.id)
         return render_template("blocks/show_dataset.html", data=df_html,
                                exists=exists, name=filename)
     else:
+        v.app.logger.warn("%d - Form for upload dataset not validated ERROR 400", current_user.id)
         return "Error", 400
 
 

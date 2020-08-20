@@ -17,7 +17,7 @@ def load_user(user_id):
     Returns:
         User -- User with that id.
     """
-    v.app.logger.info("Getting user with id %d from the data base", user_id)
+    v.app.logger.info("Getting user with id %s from the data base", user_id)
     return User.query.get(user_id)
 
 
@@ -30,7 +30,7 @@ def load_experiment(exp_id):
     Returns:
         Experiment -- Experiment with that id.
     """
-    v.app.logger.info("Getting experiment with id %d from the data base", exp_id)
+    v.app.logger.info("Getting experiment with id %s from the data base", exp_id)
     return Experiment.query.get(exp_id)
 
 
