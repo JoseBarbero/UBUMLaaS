@@ -8,4 +8,16 @@ function titleCase(str) {
     }
     // Directly return the joined string
     return splitStr.join(' '); 
- }
+}
+
+function firstClick(){
+    setTimeout(function(){
+        $(".selectpicker").each(function(){
+            console.log($(this).parent());
+            $(this).next().click();
+            $("body").click();
+        });
+    }, 100);
+
+}
+ 

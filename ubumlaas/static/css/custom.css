@@ -71,6 +71,10 @@ footer .main-footer {
     background-color: var(--danger-odd);
 }
 
+.bootstrap-select.form-control{
+    background-color: transparent !important;
+}
+
 #loader-div {
     background-color: var(--secondary);
     opacity: 0.9;
