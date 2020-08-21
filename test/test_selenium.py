@@ -391,7 +391,6 @@ class TestDefaultSuite():
         """
         self.login("ubumlaas@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
-        self.driver.find_element(By.ID, "data").click()
         self.driver.execute_script("$('#data').val('breastCancer.csv');")
         self.driver.execute_script("$('#data').change();")
         time.sleep(self.wait)
@@ -439,7 +438,7 @@ class TestDefaultSuite():
         time.sleep(self.wait)
         assert self.driver.find_element(By.CSS_SELECTOR, "#alert_modal_body > p:nth-child(1)").text == "You can't select more than 1 target in no multilabel algorithms."
         self.driver.find_element(By.ID, "alert_modal_close").click()
-        time.sleep(self.wait)
+        time.sleep(self.wait*2)
         self.logout()
 
     def test_381DatasetMultiLabelTargetNormal(self):
@@ -656,7 +655,6 @@ class TestDefaultSuite():
         assert self.driver.find_element(By.CSS_SELECTOR, "#base_estimator_title > .font-weight-bold").text == "Bagging"
         for i in range(1,3):
             self.driver.find_element(By.CSS_SELECTOR, "#level"+str(i)+"_base_estimator_open > .material-icons").click()
-            self.driver.find_element(By.ID, "level"+str(i)+"_base_estimator_value").click()
             self.driver.execute_script("$('#level"+str(i)+"_base_estimator_value').val(\"sklearn.ensemble.BaggingClassifier\");")
             self.driver.execute_script("$('#level"+str(i)+"_base_estimator_value').change();")
             time.sleep(self.wait)

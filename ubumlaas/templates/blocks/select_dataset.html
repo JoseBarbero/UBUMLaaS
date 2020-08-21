@@ -1,6 +1,6 @@
 <div class="control-group">
     {{form_e.data.label(class="control")}}
-    {{form_e.data(class="form-control")}}
+    {{form_e.data(class="form-control selectpicker", **{"data-live-search": "true"}) }}
     <div id="data_feedback" class="invalid-feedback" style="display: hidden">You must select an uploaded dataset</div>
     <script> 
         $("#data").change(function () {

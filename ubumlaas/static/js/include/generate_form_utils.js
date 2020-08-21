@@ -219,19 +219,29 @@ function get_base_block(placein, block, param_name, param, level, filter=false){
                                      "data-placement": "left",
                                      title: param.help,
                                      for: basename+"_value" });
-    let name = document.createTextNode(param_name);
+    let name = document.createTextNode(titleCase(param_name));
     let span = $("<span></span>", { id: basename+"_span" });
     span.text("("+param.default+")");
     lbl.append(name);
     lbl.append(span);
     //Dropdown button
-    let a = $("<a></a>", { onClick: "toggle_click('"+basename+"_value'"+",'"+basename+"_span'"+")",
+    let bname = basename;
+    if(param.type=="ensemble"){
+        bname=basename+"_selector";
+    }else{
+        bname=basename+"_div";
+    }
+    let a = $("<a></a>", { onClick: "toggle_click('"+bname+"','"+basename+"_span'"+")",
                            href: "#a",
                            id: basename+"_open" });
     let icon = $("<i></i>", { class: "material-icons float-right" });
     icon.text("arrow_drop_down_circle")
     a.append(icon);
-    block.append(lbl);
-    block.append(a);
+    let dv = $("<div></div>");
+    dv.append(lbl);
+    dv.append(a);
+    block.append(dv);
+    /*block.append(lbl);
+    block.append(a);*/
     placein.append(block);
 }
