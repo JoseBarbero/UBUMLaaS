@@ -19,6 +19,8 @@ from lib.skmultilearn.ext import Meka
 from ubumlaas.experiments.execute_algorithm import Abstract_execute
 from ubumlaas.experiments.execute_algorithm._weka import Execute_weka
 
+import variables as v
+
 
 class Execute_meka(Abstract_execute):
 
