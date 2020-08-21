@@ -3,7 +3,8 @@ import numpy as np
 import pandas as pd
 from ubumlaas.util import value_to_bool, find_y_uniques
 from sklearn.preprocessing import LabelBinarizer
-
+import variables as v
+from flask_login import current_user
 
 def calculate_metrics(typ, y_test, y_pred, y_score, X = None):
     score = {}
@@ -16,6 +17,8 @@ def calculate_metrics(typ, y_test, y_pred, y_score, X = None):
         score = multiclassication_metrics(y_test, y_pred)
     elif typ == "Clustering":
         score = clustering_metrics(X, y_pred)
+    v.app.logger.info("Calculating %s metrics", typ)
+    v.app.logger.debug("Score of %s metrics: %s",typ, score)
     return score
 
 

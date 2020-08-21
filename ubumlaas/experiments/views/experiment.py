@@ -41,6 +41,8 @@ def new_experiment():
     if exp is not None:
         experiment = load_experiment(exp).to_dict()
 
+    v.app.logger.info("%d - Start to create a experiment", current_user.id)    
+
     return render_template("experiment_form.html", form_e=form_e,
                            form_d=form_d, form_p=form_p,
                            title="New experiment", experiment=experiment)
@@ -69,10 +71,12 @@ def launch_experiment():
                      filter_name, filter_config,
                      request.form.get("data"),
                      None, time.time(), None, 0)
+    v.app.logger.info("%d - Create experiment", current_user.id)    
     v.db.session.add(exp)
     v.db.session.commit()
     v.qh.enqueue(task_skeleton, args=(exp.to_dict(), user.to_dict()),
                 result_ttl=0)
+    v.app.logger.info("%d - Enqueue experiment %d", current_user.id, exp.id)    
 
     return redirect(url_for("experiments.new_experiment"))
 
@@ -87,6 +91,7 @@ def change_alg():
     """
     form_e = ExperimentForm()
     form_e.alg_list(alg_typ=request.form.get("alg_typ"))
+    v.app.logger.info("%d - Select algorithms from type - %s", current_user.id, request.form.get("alg_typ"))    
     return render_template("blocks/show_algorithms.html", form_e=form_e)
 
 
@@ -107,7 +112,7 @@ def change_column_list():
                                           data=df.columns),
                  "df": generate_df_html(df),
                  "config": target_columns}
-
+    v.app.logger.info("%d - Get dataset information - %s%s%s", current_user.id, upload_folder,"/",filename)
     return jsonify(to_return)
 
 
@@ -125,6 +130,7 @@ def result_experiment(id, admin=False):
     """
     exp = load_experiment(id)
     if not admin and exp.idu != current_user.id:
+        v.app.logger.warning("%d - Not allowed to see this experiment")
         return "", 403
     name = v.app.jinja_env.filters["split"](exp.alg_name)
     dict_config = json.loads(exp.alg_config)
@@ -139,8 +145,10 @@ def result_experiment(id, admin=False):
                                         exp.alg_name).config),
                      "external_url": get_ngrok_url("experiments.result_experiment", id = exp.id)}
     if not admin:
+        v.app.logger.info("%d - Get result of experiment - %d", current_user.id, exp.id)
         return render_template("result.html", **template_info)
     else:
+        v.app.logger.info("Sending email with result - %d", exp.id)
         template = v.app.jinja_env.get_template('email.html')
         return template.render(**template_info)
 
@@ -151,6 +159,7 @@ def reuse_experiment(id):
     exp = load_experiment(id)
 
     if not exp or exp.idu != current_user.id:
+        v.app.logger.warning("%d - Experiment to reuse doesn't exist - %d", current_user.id, exp.id)
         abort(404)
 
     form_e = ExperimentForm()
@@ -161,7 +170,7 @@ def reuse_experiment(id):
     form_d = DatasetForm()
 
     form_p = DatasetParametersForm()
-
+    v.app.logger.info("%d - Reuse experiment - %d", current_user.id, exp.id)
     return render_template("experiment_form.html", form_e=form_e,
                            form_d=form_d, form_p=form_p,
                            title="New experiment")
@@ -174,6 +183,7 @@ def remove_experiment():
     exp = load_experiment(id)
 
     if not exp or exp.idu != current_user.id:
+        v.app.logger.warning("%d - Experiment to remove doesn't exists or doesn't belong to user - %d", current_user.id, exp.id)
         abort(404)
     #remove files starting with id from the user dir
     for file in glob.glob("ubumlaas/models/{}/{}*".format(current_user.username, id)):
@@ -191,12 +201,14 @@ def form_generator():
         str -- HTTP response with JSON
     """
     alg_name = request.form.get('name')
+    v.app.logger.info("%d - Requests the information of algorithm - %s", current_user.id, alg_name)
     alg = get_algorithm_by_name(alg_name)
     if alg is not None:
         to_ret = {"config": alg.config}
         code = 200
     else:
         to_ret = {"config": {}}
+        v.app.logger.warning("%d - The algorithm doesn't exists - %s", current_user.id, alg_name)
         code = 418
     return jsonify(to_ret), code
 
@@ -213,6 +225,9 @@ def get_filters():
     alg_name = request.form.get("alg_name")
     filter_name = request.form.get("filter_name", None)
     form_e.filter_list(alg_name, filter_name)
+    v.app.logger.info("%d - Requests the information of compatible filters - %s", current_user.id, alg_name)
+    if len(form_e.filter_name.choices) == 0:
+        v.app.logger.warning("%d - Don't exist compatible filters with the algorithm - %s", current_user.id, alg_name)
     if filter_name is None:
         return render_template("blocks/show_filters.html", form_e=form_e)
     else:
@@ -223,10 +238,12 @@ def get_filters():
 def form_generator_for_filter():
     filter_name = request.form.get('name')
     filter_ = get_filter_by_name(filter_name)
+    v.app.logger.info("%d - Requests the information of filter - %s", current_user.id, filter_name)
     if filter_ is not None:
         to_ret = {"config": filter_.config}
         code = 200
     else:
+        v.app.logger.warning("%d - The filter doesn't exists - %s", current_user.id, filter_name)
         to_ret = {"config": {}}
         code = 418
     return jsonify(to_ret), code

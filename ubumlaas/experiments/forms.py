@@ -12,6 +12,7 @@ from ubumlaas.models import \
 import pandas as pd
 import os
 from ubumlaas.util import get_dataframe_from_file
+import variables as v
 
 
 class ExperimentForm(FlaskForm):
@@ -39,17 +40,23 @@ class ExperimentForm(FlaskForm):
         Arguments:
             alg_typ {str} -- Type of algorithm (Regression, Classification etc.)
         """
+        v.app.logger.info("%d - Generatting %s algorithms", current_user.id, alg_typ)
+
         self.alg_name.choices = [("", "---")]+[(x.alg_name, x.web_name)
                                                for x in get_algorithms(alg_typ)]
 
     def dataset_list(self):
         """Generate a list of uploaded dataset by current user.
         """
+        v.app.logger.info("%d - Getting user datasets", current_user.id)
         if os.path.isdir("ubumlaas/datasets/"+current_user.username):
             self.data.choices = [("", "---")]+[(x, x) for x in os.listdir(
                 "ubumlaas/datasets/"+current_user.username)]
 
     def filter_list(self, alg_name, filter_name=None):
+
+        v.app.logger.info("%d - Get filters for %s algorithm", current_user.id, alg_name)
+
         alg = get_algorithm_by_name(alg_name)
         if alg is not None:
             alg_lib = alg.lib
@@ -82,7 +89,7 @@ class DatasetForm(FlaskForm):
             [type] -- [description]
         """
         try:
-            file_df = get_dataframe_from_file(upload_folder, filename)
+            file_df = get_dataframe_from_file(upload_folder, filename) #log for this form already done in this function
         except Exception:
             flash("File format not allowed")
         return file_df

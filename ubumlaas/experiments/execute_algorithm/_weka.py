@@ -1,3 +1,5 @@
+import variables as v
+
 import sklearn
 import sklearn.base
 import sklearn.cluster
@@ -36,6 +38,7 @@ class Execute_weka(Abstract_execute):
             experiment {dict} -- experiment dictionary
         """
         Abstract_execute.__init__(self, experiment)
+        v.app.logger.info("Execution library - %d - WEKA", self.id)
         self.FILTER = "weka.classifiers.meta.FilteredClassifier"
 
         self.y_uniques = None
@@ -158,6 +161,7 @@ class Execute_weka(Abstract_execute):
             model {java object} -- the model to serialize
             path {str} -- path to save the model serialized
         """
+        v.app.logger.info("Model saved - %d - %s", self.id, self.algorithm_name)    
         serialization.write(path, model)
 
     def deserialize(self, path):
@@ -170,6 +174,8 @@ class Execute_weka(Abstract_execute):
             [java object] -- model deserialized
         """
         return Classifier(jobject=serialization.read(path))
+        v.app.logger.info("Model readed - %d - %s", self.id, self.algorithm_name)    
+
 
     def train(self, model, X, y):
         """Train the model with attributes columns (X) and targets columns (Y)
@@ -180,7 +186,10 @@ class Execute_weka(Abstract_execute):
             y {Series} -- target column
         """
         data = self.create_weka_dataset(X, y)
+        v.app.logger.info("Training model - %d - %s", self.id, self.algorithm_name)
         model.build_classifier(data)
+        v.app.logger.info("Model trained - %d - %s", self.id, self.algorithm_name)
+
 
     def predict(self, model, X):
         """Predict with X columns values using the model
