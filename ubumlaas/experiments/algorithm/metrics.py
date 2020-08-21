@@ -17,8 +17,8 @@ def calculate_metrics(typ, y_test, y_pred, y_score, X = None):
         score = multiclassication_metrics(y_test, y_pred)
     elif typ == "Clustering":
         score = clustering_metrics(X, y_pred)
-    v.app.logger.info("%d - Calculating %s metrics",current_user.id, typ)
-    v.app.logger.debug("%d - Score of %s metrics: %s",current_user.id, typ, score)
+    v.app.logger.info("Calculating %s metrics", typ)
+    v.app.logger.debug("Score of %s metrics: %s",typ, score)
     return score
 
 

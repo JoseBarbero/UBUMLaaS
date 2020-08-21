@@ -2,9 +2,8 @@ import variables as v
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 from sqlalchemy import and_, or_, text, desc, asc
-import variables as v
 
-from flask_login import UserMixin
+from flask_login import UserMixin,AnonymousUserMixin
 
 
 @v.login_manager.user_loader
@@ -18,7 +17,11 @@ def load_user(user_id):
         User -- User with that id.
     """
     v.app.logger.info("Getting user with id %s from the data base", user_id)
-    return User.query.get(user_id)
+    us= User.query.get(user_id)
+    if us is None:
+        return AnonymousUserMixin()
+    else:
+        return us
 
 
 def load_experiment(exp_id):

@@ -10,27 +10,38 @@ from itsdangerous import URLSafeTimedSerializer
 from flask_mail import Message
 from flask import url_for
 from flask_login import current_user
-import variables as v
 
 def get_dataframe_from_file(path, filename, target_column=False):
     extension = filename.split(".")[-1]
     targets_indexes = None
     if extension == "csv":
         file_df = pd.read_csv(path + filename)
-        v.app.logger.info("%d - csv file %s selected", current_user.id, filename)
+        try:
+            v.app.logger.info("%d - csv file %s selected", current_user.id, filename)
+        except AttributeError:
+            pass
     elif extension == "xls":
         file_df = pd.read_excel(path + filename)
-        v.app.logger.info("%d - xls file %s selected", current_user.id, filename)
+        try:
+            v.app.logger.info("%d - xls file %s selected", current_user.id, filename)
+        except AttributeError:
+            pass
     elif extension == "arff":
         data = arff.load(open(path+filename, "r"), encode_nominal=True)
-        v.app.logger.info("%d - arff file %s selected", current_user.id, filename)
+        try:
+            v.app.logger.info("%d - arff file %s selected", current_user.id, filename)
+        except AttributeError:
+            pass
         columns = [row[0] for row in data["attributes"]]
         file_df = pd.DataFrame(data["data"], columns=columns)
         match = re.search(r'-C[ \t]+(-?\d)', data["relation"])
         if match:
             targets_indexes = match.group(1)
     else:
-        v.app.logger.info("%d - Trying to use unsupported format dataset", current_user.id)
+        try:
+            v.app.logger.error("%d - Trying to use unsupported format dataset", current_user.id)
+        except AttributeError:
+            raise Exception("Unknown user trying upload dataset")
         raise Exception("Invalid format for "+filename)
 
     if target_column:
