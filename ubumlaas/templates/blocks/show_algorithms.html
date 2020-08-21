@@ -1,8 +1,10 @@
 <div class="control-group">
     {{form_e.alg_name.label(class="control h5 mt-4")}}
-    {{form_e.alg_name(class="form-control")}}
+    {{form_e.alg_name(class="form-control selectpicker", **{"data-live-search": "true"})}}
     <div id="alg_name_feedback" class="invalid-feedback" style="display: hidden">You must select an algorithm</div>
     <script>$("document").ready(function(){
+        $('.selectpicker').selectpicker();
+        firstClick();
         $("#alg_name").change({element:"#alg_name", to:BLOCKS_ACTIVATORS.alg_name},jump);
         $("#alg_name").change(load_config);
         $("#alg_name").change({mode: "default", url: "{{ url_for("experiments.get_filters") }}"},load_filters)

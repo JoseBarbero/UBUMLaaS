@@ -96,14 +96,21 @@ function generateForm(alg_config, place_in_id, level_to_modify=0, filter=false){
 function create_ensemble_block(basename, parameter){
     let content;
     content = $("<select></select>", {id: basename+"_value"});
+    //content.addClass("d-block");
+    content.addClass("selectpicker");
+    content.attr("data-live-search", "true");
+    content.attr("data-width", "fit");
+    content.attr("data-size",5);
     let petition = "alg_name="+$("#alg_name").val()+"&exp_typ="+alg_typ.val();
     let _options = give_me_base_estimators(petition);
     _options.forEach(function (e) { 
         content.append($("<option value=\""+e.alg_name+"\">"+e.web_name+"</option>"));
-     });
-     content.val(parameter.default);
-     
-     return content;
+    });
+    content.val(parameter.default);
+    content.selectpicker();
+    content.parent().attr("id",basename+"_selector");
+    content.parent().css("display","none");
+    return content.parent();
 }
 
 /**
@@ -254,7 +261,7 @@ function create_algorithm_config_field(place_in, row_number, field, level_to_mod
     let basename = get_basename(field, level_to_modify, filter);        
     let parameter = alg_config[field];
     let row = $("<div></div>", {class: "row"});
-    let block = $("<div></div>", {id: basename, class: "col-12"});
+    let block = $("<div></div>", {id: basename, class: "col-12 d-flex flex-column"});
     if (row_number%2 == 1){
         block.addClass("row-odd");
     }
@@ -267,10 +274,12 @@ function create_algorithm_config_field(place_in, row_number, field, level_to_mod
         content.addClass("form-control");
     }
     
-    content_attributes(content, basename);        
+    content_attributes(content, basename);    
     block.append(content);
     place_in.append(row);
     new_subalgorithm = final_decoration_for_form_field(content, basename, parameter, level_to_modify);
+    firstClick();
+    
     return new_subalgorithm;
 }
 
