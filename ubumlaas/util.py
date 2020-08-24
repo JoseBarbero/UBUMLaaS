@@ -175,5 +175,5 @@ def find_y_uniques(y):
 
 def string_is_array(a):
     if a[0]=="[":
-        return a[1,-1].split(",")
+        return a[1:-1].split(",")
     return a

@@ -84,7 +84,11 @@
                                 <a class="btn btn-lg btn-info text-uppercase font-weight-bold" data-toggle="tooltip" data-placement="top" title="See configuration and results." href="{{ url_for("experiments.result_experiment",id=e.id) }}">See</a>
                             </td>
                             <td>
-                                <a class="btn btn-lg btn-warning text-uppercase font-weight-bold" data-toggle="tooltip" data-placement="top" title="Create a new experiment with this configuration." href="{{ url_for("experiments.new_experiment", exp=e.id) }}">Reuse</a>
+                                {% if e.alg_name | arrayOrString %}
+                                    <a class="btn btn-lg btn-secondary text-uppercase font-weight-bold" data-toggle="tooltip" data-placement="top" title="You can't reuse a multiexperiment.">Reuse</a>
+                                {% else %}
+                                    <a class="btn btn-lg btn-warning text-uppercase font-weight-bold" data-toggle="tooltip" data-placement="top" title="Create a new experiment with this configuration." href="{{ url_for("experiments.new_experiment", exp=e.id) }}">Reuse</a>
+                                {% endif %}
                             </td>
                             <td>
                                 <a class="btn btn-lg btn-danger text-uppercase font-weight-bold" data-toggle="tooltip" data-placement="top" title="Delete this experiment, its results and the model generated" href="javascript:delete_experiment({{e.id}})">Delete</a>

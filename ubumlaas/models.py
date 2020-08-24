@@ -305,19 +305,12 @@ class Experiment(v.db.Model):
         v.db.Integer,
         v.db.ForeignKey('users.id'),
     )
-    alg_name = v.db.Column(
-        v.db.String(64),
-        v.db.ForeignKey('algorithms.alg_name'),
-    )
+    alg_name = v.db.Column(v.db.Text)
     alg_config = v.db.Column(v.db.Text)
     exp_config = v.db.Column(v.db.Text)
-    filter_name = v.db.Column(
-        v.db.String(64),
-        v.db.ForeignKey('filters.filter_name'),
-        nullable=True
-    )
+    filter_name = v.db.Column(v.db.Text,nullable=True)
     filter_config = v.db.Column(v.db.Text, nullable=True)
-    data = v.db.Column(v.db.String(128))
+    data = v.db.Column(v.db.Text)
     result = v.db.Column(v.db.Text, nullable=True)
     starttime = v.db.Column(v.db.Integer)
     endtime = v.db.Column(v.db.Integer, nullable=True)
@@ -340,13 +333,13 @@ class Experiment(v.db.Model):
                                (0. Execution, 1. completed, 2. Error)
         """
         self.idu = idu
-        self.alg_name=string_is_array(alg_name)
-        self.alg_config = string_is_array(alg_config)
+        self.alg_name=self.alg_name
+        self.alg_config = alg_config
         self.exp_config = exp_config
         self.filter_name = filter_name
         self.filter_config = filter_config
         self.data = data
-        self.result = string_is_array(result)
+        self.result = result
         self.starttime = starttime
         self.endtime = endtime
         self.state = state
@@ -360,8 +353,9 @@ class Experiment(v.db.Model):
         filter_ = get_filter_by_name(self.filter_name)
         if filter_ is not None:
             filter_ = filter_.to_dict()
-        if isinstance(self.alg_name,list):
-            aux_alg_name=[get_algorithm_by_name(x).to_dict() for x in self.alg_name]
+        aux = string_is_array(self.alg_name)
+        if isinstance(aux,list):
+            aux_alg_name=[get_algorithm_by_name(x).to_dict() for x in aux]
         else:
             aux_alg_name = get_algorithm_by_name(self.alg_name).to_dict()
         return {"id": self.id, "idu": self.idu,
@@ -376,4 +370,7 @@ class Experiment(v.db.Model):
                 "endtime": self.endtime}
 
     def web_name(self):
-        return get_algorithm_by_name(self.alg_name).web_name
+        aux = string_is_array(self.alg_name)
+        if isinstance(aux,list):
+            return "-".join([get_algorithm_by_name(x).web_name for x in aux])
+        return get_algorithm_by_name(aux).web_name
