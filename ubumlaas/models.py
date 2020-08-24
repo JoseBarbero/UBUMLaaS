@@ -339,7 +339,10 @@ class Experiment(v.db.Model):
                                (0. Execution, 1. completed, 2. Error)
         """
         self.idu = idu
-        self.alg_name = alg_name
+        if alg_name[0]=="[":
+            self.alg_name = alg_name[1-:-1].split(",")
+        else:
+            self.alg_name = alg_name
         self.alg_config = alg_config
         self.exp_config = exp_config
         self.filter_name = filter_name
