@@ -2,6 +2,7 @@ import variables as v
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 from sqlalchemy import and_, or_, text, desc, asc
+from ubumlaas.util import string_is_array
 
 from flask_login import UserMixin,AnonymousUserMixin
 
@@ -339,16 +340,13 @@ class Experiment(v.db.Model):
                                (0. Execution, 1. completed, 2. Error)
         """
         self.idu = idu
-        if alg_name[0]=="[":
-            self.alg_name = alg_name[1-:-1].split(",")
-        else:
-            self.alg_name = alg_name
-        self.alg_config = alg_config
+        self.alg_name=string_is_array(alg_name)
+        self.alg_config = string_is_array(alg_config)
         self.exp_config = exp_config
         self.filter_name = filter_name
         self.filter_config = filter_config
         self.data = data
-        self.result = result
+        self.result = string_is_array(result)
         self.starttime = starttime
         self.endtime = endtime
         self.state = state
@@ -362,13 +360,19 @@ class Experiment(v.db.Model):
         filter_ = get_filter_by_name(self.filter_name)
         if filter_ is not None:
             filter_ = filter_.to_dict()
+        if isinstance(self.alg_name,list):
+            aux_alg_name=[get_algorithm_by_name(x).to_dict() for x in self.alg_name]
+        else:
+            aux_alg_name = get_algorithm_by_name(self.alg_name).to_dict()
         return {"id": self.id, "idu": self.idu,
-                "alg": get_algorithm_by_name(self.alg_name).to_dict(),
-                "alg_config": self.alg_config, "exp_config": self.exp_config,
+                "alg": aux_alg_name,
+                "alg_config": self.alg_config, 
+                "exp_config": self.exp_config,
                 "filter": filter_,
                 "filter_config": self.filter_config,
                 "data": self.data,
-                "result": self.result, "starttime": self.starttime,
+                "result": self.result, 
+                "starttime": self.starttime,
                 "endtime": self.endtime}
 
     def web_name(self):

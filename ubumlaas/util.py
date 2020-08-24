@@ -172,3 +172,8 @@ def find_y_uniques(y):
     uniques = np.unique(y.values)
     uniques.sort()
     return uniques
+
+def string_is_array(a):
+    if a[0]=="[":
+        return a[1,-1].split(",")
+    return a
