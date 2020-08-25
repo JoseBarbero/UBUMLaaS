@@ -75,6 +75,7 @@ footer .main-footer {
     background-color: transparent !important;
 }
 
+
 #loader-div {
     background-color: var(--secondary);
     opacity: 0.9;

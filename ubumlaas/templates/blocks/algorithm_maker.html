@@ -1,0 +1,32 @@
+<fieldset id="select_algorithm_block">
+    <form class="form-group col-md-6 offset-md-3" id="form_algorithm">
+        <div id="show_algorithms_{{ idex }}" class="form-group" style="text-align: center;">
+            {% include 'blocks/show_algorithms.html' %}
+        </div>
+    </form>
+</fieldset>
+<fieldset class="container" id="config_algorithm_fieldset_{{ idex }}" style="overflow: auto">
+    <div class="row-fluid">
+        <div>
+            <div id="form_config_alg_{{ idex }}" class="form-group">
+                
+            </div>
+        </div>
+    </div>
+</fieldset>
+<fieldset id="select_filter_block_{{ idex }}">
+    <form class="form-group col-md-6 offset-md-3" id="form_filter">
+        <div id="show_filters_{{ idex }}" class="form-group" style="text-align: center;">
+            {% include 'blocks/show_filters.html' %}
+        </div>
+    </form>
+</fieldset>
+<fieldset class="container" id="config_filter_fieldset_{{ idex }}" style="overflow: auto">
+    <div class="row-fluid">
+        <div>
+            <div id="form_config_filter_{{ idex }}" class="form-group">
+                
+            </div>
+        </div>
+    </div>
+</fieldset>

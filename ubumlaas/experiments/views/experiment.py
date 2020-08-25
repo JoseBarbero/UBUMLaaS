@@ -29,7 +29,7 @@ def new_experiment():
         str -- HTTP response with rendered page.
     """
 
-    form_e = ExperimentForm()
+    form_e = ExperimentForm(0)
     form_e.dataset_list()
 
     form_d = DatasetForm()
@@ -45,7 +45,7 @@ def new_experiment():
 
     return render_template("experiment_form.html", form_e=form_e,
                            form_d=form_d, form_p=form_p,
-                           title="New experiment", experiment=experiment)
+                           title="New experiment", experiment=experiment, idex=0)
 
 
 @login_required
@@ -80,6 +80,21 @@ def launch_experiment():
 
     return redirect(url_for("experiments.new_experiment"))
 
+
+@login_required
+@views.experiments.route("/new_algorithm_maker", methods=["POST"])
+def new_algorithm_maker():
+    """Render a new algorithm block
+
+    Returns:
+        str -- HTTP response with rendered algorithm block
+    """
+    alg_typ = request.form.get("alg_typ")
+    idex = request.form.get("idex")
+    form_e = ExperimentForm(idex)
+    form_e.alg_list(alg_typ=alg_typ)
+    v.app.logger.info("%d - Add a new algorithm block to experiment with idex - %d", current_user.id, idex)
+    return render_template("blocks/algorithm_maker.html", form_e=form_e)
 
 @login_required
 @views.experiments.route("/update_alg_list", methods=["POST"])
