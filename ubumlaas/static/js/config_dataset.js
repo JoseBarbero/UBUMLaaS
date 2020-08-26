@@ -113,10 +113,3 @@ function get_dataset_config(){
     return dataset_config;
 }
 
-function no_target(){
-    for (let i = 0; i<dataset_columns.length; i++){
-        if($("#col"+i+"_target").prop("checked")){
-            $("#col"+i+"_use_label").click();
-        }
-    }
-}

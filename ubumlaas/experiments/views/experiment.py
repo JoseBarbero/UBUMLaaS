@@ -29,7 +29,7 @@ def new_experiment():
         str -- HTTP response with rendered page.
     """
 
-    form_e = ExperimentForm()
+    form_e = ExperimentForm(0)
     form_e.dataset_list()
 
     form_d = DatasetForm()
@@ -45,7 +45,7 @@ def new_experiment():
 
     return render_template("experiment_form.html", form_e=form_e,
                            form_d=form_d, form_p=form_p,
-                           title="New experiment", experiment=experiment)
+                           title="New experiment", experiment=experiment, idex=0)
 
 
 @login_required
@@ -65,8 +65,18 @@ def launch_experiment():
         filter_config = None
     else:
         filter_config = request.form.get("filter_config")
-    exp = Experiment(user.id, request.form.get("alg_name"),
-                     unquote(request.form.get("alg_config")),
+
+    alg_name = request.form.get("alg_name")
+    alg_config = request.form.get("alg_config")
+    if "," in alg_name:
+        alg_name = "["+alg_name+"]"
+        alg_config = "["+alg_config+"]"
+        if filter_name is not None:
+            filter_name = "["+filter_name+"]"
+            filter_config = "["+filter_config+"]"
+        
+    exp = Experiment(user.id, alg_name,
+                     unquote(alg_config),
                      json.dumps(exp_config),
                      filter_name, filter_config,
                      request.form.get("data"),
@@ -82,6 +92,36 @@ def launch_experiment():
 
 
 @login_required
+@views.experiments.route("/new_algorithm_maker", methods=["POST"])
+def new_algorithm_maker():
+    """Render a new algorithm block
+
+    Returns:
+        str -- HTTP response with rendered algorithm block
+    """
+    alg_typ = request.form.get("alg_type")
+    idex = request.form.get("idex")
+    form_e = ExperimentForm(idex)
+    form_e.alg_list(alg_typ=alg_typ)
+    v.app.logger.info("%d - Add a new algorithm block to experiment with idex - %s", current_user.id, idex)
+    return render_template("blocks/algorithm_maker.html", form_e=form_e, idex=idex)
+
+
+@login_required
+@views.experiments.route("/reset_multiexperiment", methods=["POST"])
+def multiexperiment_reset():
+    """Render a new algorithm block
+
+    Returns:
+        str -- HTTP response with rendered algorithm block
+    """
+    alg_typ = request.form.get("alg_type")
+    form_e = ExperimentForm(0)
+    form_e.alg_list(alg_typ=alg_typ)
+    v.app.logger.info("%d - Reset the makers", current_user.id)
+    return render_template("blocks/algorithm_maker.html", form_e=form_e, idex=0)
+
+@login_required
 @views.experiments.route("/update_alg_list", methods=["POST"])
 def change_alg():
     """Update algorithm list.
@@ -89,10 +129,11 @@ def change_alg():
     Returns:
         str -- HTTP response with rendered algorithm selector
     """
-    form_e = ExperimentForm()
+    idex = request.form.get("idex")
+    form_e = ExperimentForm(idex)
     form_e.alg_list(alg_typ=request.form.get("alg_typ"))
     v.app.logger.info("%d - Select algorithms from type - %s", current_user.id, request.form.get("alg_typ"))    
-    return render_template("blocks/show_algorithms.html", form_e=form_e)
+    return render_template("blocks/show_algorithms.html", form_e=form_e, idex=idex)
 
 
 @login_required
@@ -254,7 +295,8 @@ def get_filters():
         str -- HTTP response with rendered filter selectable
         str -- HTTP JSON/response with list of filters
     """
-    form_e = ExperimentForm()
+    idex = request.form.get("idex")
+    form_e = ExperimentForm(idex)
     alg_name = request.form.get("alg_name")
     filter_name = request.form.get("filter_name", None)
     form_e.filter_list(alg_name, filter_name)
@@ -262,7 +304,7 @@ def get_filters():
     if len(form_e.filter_name.choices) == 0:
         v.app.logger.warning("%d - Don't exist compatible filters with the algorithm - %s", current_user.id, alg_name)
     if filter_name is None:
-        return render_template("blocks/show_filters.html", form_e=form_e)
+        return render_template("blocks/show_filters.html", form_e=form_e, idex=idex)
     else:
         return jsonify(dict(form_e.filter_name.choices))
 

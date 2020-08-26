@@ -13,11 +13,17 @@ function titleCase(str) {
 function firstClick(){
     setTimeout(function(){
         $(".selectpicker").each(function(){
-            console.log($(this).parent());
             $(this).next().click();
             $("body").click();
         });
     }, 100);
 
 }
- 
+
+function removeItemOnce(arr, value) { 
+    var index = arr.indexOf(value);
+    if (index > -1) {
+        arr.splice(index, 1);
+    }
+    return arr;
+}

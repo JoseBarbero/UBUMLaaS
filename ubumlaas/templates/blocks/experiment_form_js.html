@@ -5,19 +5,17 @@
 <script src="{{ url_for('static', filename="js/validations.js") }}"></script>
 <script src="{{ url_for('static', filename="js/progress-bar.js") }}"></script>
 <script>
-    function reset_(reset, filter){
+    function reset_(reset, filter, all=false){     
         if (reset){
             //console.log("Reset");
             let over;
             let place_id;
             if(filter){
-                over = filter_fieldset;
-                place_id = "form_config_filter";
-                sub_filter_count = 0;
+                over = filter_fieldset();
+                place_id = "form_config_filter_"+me_cidex();
             }else{
-                over = config_fieldset;
-                place_id = "form_config_alg";
-                sub_clasifiers_count = 0;                
+                over = config_fieldset();
+                place_id = "form_config_alg_"+me_cidex();
             }
             over.html(  
                         "<div class=\"row-fluid\">"+
@@ -34,11 +32,13 @@
     before_typ = undefined;
     function load_config(async=true, algorithm=null, reset=true, filter=false){
         reset_(reset, filter);
+        
+        let idex = me_cidex();
         let name;
         if(algorithm == null){
-            let var_name = "alg_name";
+            let var_name = "alg_name_"+idex;
             if (filter){
-                var_name = "filter_name";
+                var_name = "filter_name_"+idex;
             }
             name = $("#"+var_name).val();
         }else{
@@ -58,11 +58,11 @@
                 if(!async){
                     result_ = result.config;
                 }else{
-                    let place_in = "form_config_alg";
+                    let place_in = "form_config_alg_"+idex;
                     if(filter){
-                        place_in = "form_config_filter";
+                        place_in = "form_config_filter_"+idex;
                     }else{
-                        already_correct.add("alg_name");
+                        already_correct.add("alg_name_"+idex);
                     }
                     generateForm(JSON.parse(result.config), place_in, 0, filter);
                 }                
@@ -70,7 +70,7 @@
             error: function(result){
                 reset_(true, filter);
                 if(!filter)
-                    already_correct.delete("alg_name");
+                    already_correct.delete("alg_name_"+idex);
             },
             complete: function(){
                 update_progress();
@@ -116,24 +116,82 @@
         })
     }
 
+    function no_target(){
+        for (let i = 0; i<dataset_columns.length; i++){
+            if($("#col"+i+"_target").prop("checked")){
+                $("#col"+i+"_use_label").click();
+            }
+        }
+    }   
+
+    function get_algs_names(howmany){
+        let algs = [];
+        let filters = [];
+        for(let i = 0; i< howmany; i++){
+            let a = $("#alg_name_"+me_idexs[i]);
+            if(a.val()==""){
+                launch_danger_modal("Experiment error", "At least one algorithm is not selected. Delete or configure it.");
+                return null;
+            }
+            algs.push(a.val());
+
+            let f = $("#filter_name_"+me_idexs[i]).val();
+            if(f == ""){
+                f=null;
+            }
+            filters.push(f);
+        }
+        return [algs, filters];
+    }
+
     $("form#submit_completed_experiment").submit(function (e) {
         e.preventDefault();
-        var alg_name = $("#alg_name").val();
-        var filter_name = $("#filter_name").val();
-        var filter_sig = "";
-        var data = $("#data").val();        
-        var alg_config = encodeURIComponent(JSON.stringify(get_config_form()));
+      
+        // Dataset and experiment configuration
+        var data = $("#data").val();
+        var dataset_config = encodeURIComponent(JSON.stringify(get_dataset_config()));
+
+        // Algorithm and filters configuration
+
+        let howmany = me_idexs.length;
+
+        let algs_filters = get_algs_names(howmany);
+        if (algs_filters == null){
+            return;
+        }
+
+        let alg_configs = [];
+        let filter_configs = [];
+        for(let i = 0; i< howmany; i++){
+            alg_configs.push(JSON.stringify(get_config_form(algs_filters[0][i], 0, false, me_idexs[i])));
+            if(algs_filters[1][i] != null){
+                filter_configs.push(JSON.stringify(get_config_form(algs_filters[1][i], 0, true, me_idexs[i])));
+            }else{
+                filter_configs.push(JSON.stringify({}));
+            }
+        }
+
+        /*var filter_sig = "";
         if(filter_name != ""){
             filter_config = encodeURIComponent(JSON.stringify(get_config_form(null, 0, true)))
             filter_sig = "&filter_name=" + filter_name + "&filter_config=" + filter_config;
+        }*/
+        let alg_name = algs_filters[0];
+        let filter_name = algs_filters[1];
+        if(howmany == 1){
+            alg_configs = alg_configs[0];
+            filter_configs = filter_configs[0];
+            alg_name = alg_name[0];
+            filter_name = filter_name[0];
         }
-        var dataset_config = encodeURIComponent(JSON.stringify(get_dataset_config()));
+
         $.ajax({
             url: '{{ url_for("experiments.launch_experiment") }}',
             type: 'POST',
             contentType: 'application/x-www-form-urlencoded',
-            data: "alg_name=" + alg_name + "&data=" + data +
-                  filter_sig + "&alg_config="+alg_config+
+            data: "alg_name=" + encodeURIComponent(alg_name) + "&data=" + encodeURIComponent(data) +
+                  "&filter_name=" + encodeURIComponent(filter_name) + "&filter_config=" + encodeURIComponent(filter_configs) +
+                  "&alg_config="+encodeURIComponent(alg_configs)+
                   "&dataset_config="+dataset_config,
             success: function (result) {
                 window.location.replace("{{ url_for('users.profile') }}")
@@ -166,21 +224,35 @@
         });
     });
 
+    function config_fieldset(){
+        return $("#config_algorithm_fieldset_"+me_idexs[me_index]);
+    }
+
+    function filter_fieldset(){
+        return $("#config_filter_fieldset_"+me_idexs[me_index]);
+    }
+
+    function sub_clasifiers_count(){
+        return me_sub_clasifiers_count[me_index];
+    }
+
+    function sub_filter_count(){
+        return me_sub_filter_count[me_index];
+    }
+
     $("document").ready(function () {
-        config_fieldset = $("#config_algorithm_fieldset");
-        filter_fieldset = $("#config_filter_fieldset");
-        sub_clasifiers_count = 0;
-        sub_filter_count = 0;
         $("#alg_typ").change(function () {
+            me_reset();
+            let idex = me_cidex();
             $.ajax({
                 url: '{{ url_for("experiments.change_alg") }}',
                 type: 'POST',
                 contentType: 'application/x-www-form-urlencoded',
-                data: "alg_typ=" + $("#alg_typ").val(),
+                data: "alg_typ=" + $("#alg_typ").val()+"&idex="+idex,
                 success: function (result) {
-                    $("#show_algorithms").html(result);
+                    $("#show_algorithms_"+idex).html(result);
                     setTimeout(function(){
-                        $("#alg_name").change();
+                        $("#alg_name_"+idex).change();
                     }, 100);                    
                 },
                 error: function (result) {
@@ -189,9 +261,9 @@
                 },
                 complete: function (result) {
                     if($("#alg_typ").val() == ""){
-                        already_correct.delete("config_algorithm_fieldset");
+                        already_correct.delete("config_algorithm_fieldset_"+idex);
                     }else{
-                        already_correct.add("config_algorithm_fieldset");
+                        already_correct.add("config_algorithm_fieldset_"+idex);
                     }
                     update_progress();
                 },
@@ -237,13 +309,26 @@
     }
 </script>
 <script>
+    function filters_show(){
+        $("head").append('<style type="text/css"></style>');
+        var newStyleElement = $("head").children(':last');
+        newStyleElement.html('.filters{display:revert;}');
+    }
+
+    function filters_off(){
+        $("head").append('<style type="text/css"></style>');
+        var newStyleElement = $("head").children(':last');
+        newStyleElement.html('.filters{display:none;}');
+    }
+
     $("document").ready(function(){
+        let idex = me_cidex();
         const ONLY_FILTERS_ON = ["Classification", ""];
         $("#alg_typ").change(function(){
             if (ONLY_FILTERS_ON.includes($(this).val())){
-                $("#form_filter").show();
+                filters_show();
             }else{
-                $("#form_filter").hide();
+                filters_off();
             }
         });
     });
@@ -294,9 +379,10 @@
     }
 
     function config_algorithm(filter=false){
-        let id_ = "alg_name";
+        let idex = me_cidex();
+        let id_ = "alg_name_"+idex;
         if(filter){
-            id_="filter_name"
+            id_="filter_name_"+idex;
         }
         let alg_name = $("#"+id_);
         if(alg_name.val() === null){
@@ -321,6 +407,7 @@
 
     function add_algorithm_parameters(filter=false, alg=null, alg_config=null, level=0){
         //console.log(filter+" "+alg+" "+alg_config+" "+level)
+        let idex = me_cidex();
         let suffix = "";
         if(!filter){
             if($(".timeout-finished").length == 0){
@@ -328,7 +415,7 @@
                 return;
             }
         }else{
-            if($("#form_config_filter").html() === ""){
+            if($("#form_config_filter_"+idex).html() === ""){
                 setTimeout(function(){
                     add_algorithm_parameters(filter);
                     return;
@@ -337,7 +424,7 @@
             suffix = "_filter";
         }
         let base_alg_config;
-        let prefix = "";
+        let prefix = "alg"+idex+"_";
         if(alg == null){
             alg = algorithm_selected;            
             if(filter){

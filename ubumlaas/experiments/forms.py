@@ -34,6 +34,12 @@ class ExperimentForm(FlaskForm):
     filter_name = SelectField("Select Filter",
                               choices=[("", "---")])
 
+    def __init__(self, id=None):
+        super(ExperimentForm, self).__init__()
+        if id is not None:
+            self.alg_name.id="alg_name_"+str(id)
+            self.filter_name.id="filter_name_"+str(id)
+
     def alg_list(self, alg_typ):
         """Generate a list of supported algorithms by type.
 

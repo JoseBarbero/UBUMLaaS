@@ -8,7 +8,7 @@ function load_verify_elements(){
     select_dataset = $("#data");
     train_slider = $("#train_slider");
     alg_typ = $("#alg_typ");
-    alg_name = $("#alg_name");
+    alg_name = $("#alg_name_0");
     form_dataset_configuration = $("#form_dataset_configuration");
     submit_experiment = $("#submit");
     //Mesages

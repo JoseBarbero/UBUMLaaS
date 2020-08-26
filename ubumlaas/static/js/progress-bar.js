@@ -20,11 +20,16 @@ $("document").ready(function(){
 });
 
 function jump(event){
-    if ($(event.data.element).val() != ""){
-        $("html, body").animate({
-            scrollTop: $("#"+event.data.to).offset().top-$($(".navbar")[0]).height()*2
-        }, 200);
+    try{
+        if ($(event.data.element).val() != ""){
+            $("html, body").animate({
+                scrollTop: $("#"+event.data.to).offset().top-$($(".navbar")[0]).height()*2
+            }, 200);
+        }
+    }catch(e){
+        console.error("Scroll crash");
     }
+    
 }
 
 function update_progress(){

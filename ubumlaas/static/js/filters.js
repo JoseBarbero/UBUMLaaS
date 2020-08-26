@@ -4,14 +4,15 @@ function load_filters(event){
      *  over_level_<num>: load all compatibles filters for level
      */
     let mode = event.data.mode;
+    let idex = me_cidex();
     if (mode == "default"){
         $.ajax({
             url: event.data.url,
             type: 'POST',
             contentType: 'application/x-www-form-urlencoded',
-            data: "alg_name=" + $("#alg_name").val(),
+            data: "alg_name=" + $("#alg_name_"+idex).val()+"&idex="+me_cidex(),
             success: function(result){
-                $("#show_filters").html(result);
+                $("#show_filters_"+idex).html(result);
             },
             error: function(result){
                 console.log("Error");
