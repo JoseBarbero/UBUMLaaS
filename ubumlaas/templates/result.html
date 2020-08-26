@@ -179,20 +179,23 @@ html {
         //Write the name of selected algorithm
         var names = {{ name|safe }};
         var name_alg_selected = names[$(this).val()];
-        $("#name_alg").text(names[$(this).val()]);
-        console.log($("#alg_selection_multi option:selected").text());
+
+        var param_config =  {{ dict_config|safe }};
+        param_config =  param_config[$(this).val()];
 
         //show algorithm parameters
         $("#alg_params").html("");
         var title_alg_param = "<h5 class=\"text-center\">Algorithm Parameters M</h5>";
         $("#alg_params").append(title_alg_param);
 
-        var param_config =  {{ dict_config|safe }};
-        param_config =  param_config[$(this).val()];
         //Recover dict keys: maybe its a ensemble
         var algs = Object.keys(param_config);
         var row_number = 0;
+        
         algs.forEach(function(i){
+            if (row_number>0){
+                name_alg_selected = name_alg_selected.concat(" <br>⤿ "+i.split(".").pop())
+            }
             row_number += 1;
             console.log("i: "+i);
             let row = $("<div></div>", {class: "row"});
@@ -201,23 +204,44 @@ html {
                 block.addClass("row-odd");
             }
             row.append(block);
-            block.html("<label for=\""+i+"_value"+"\">"+
+
+            block.html("<label for=\""+row_number+"_estimator_value\">"+
                         i.split(".").pop()+
                         "</label>");
-            block.append($("<a onClick=\"toggle_click('"+i+"_chart"+"','"+i+"_not_exists"+"')\" href=\"#a\" id=\""+i+"_open"+"\">"+
+            block.append($("<a onclick=\"toggle_estimator('"+row_number+"_estimator_value')\" href=\"#a\" id=\""+i+"_open\">"+
                 "<i class=\"material-icons\" style=\"float: right;\">"+
                     "arrow_drop_down_circle"+
                 "</i>"+
                 "</a>"));
-                
+ 
+
+            //Add parameter configuration for this algorithm
+            let block_2_alg = $("<div></div>", {id: row_number+"_estimator_value", class: "container-fluid", style:"display:none;"});
+            row.append(block_2_alg);
+            
             var config = param_config[i];
             console.log(config);
-            $("#alg_params").append(row);
+            var params = Object.keys(config);
+            var inner_row_number = 0;
+            block_2_alg.html("")
+            params.forEach(function(j){ //Show each parameter of model
+                inner_row_number += 1;
+                let block_3_param = $("<div></div>", {class: "row ml-2 pt-2 pb-2 d-flex align-items-center"});
+                if (inner_row_number%2 == 1){
+                    block_3_param.addClass("row-odd");
+                }
+                block_2_alg.append(block_3_param);
+                
+                block_3_param.html("<p class=\"col-md-7 font-weight-bold m-0 text-wrap alg_param\">"+j+"</p>"+
+                "<p class=\"col-md-5 text-left m-0 text-wrap\">"+config[j]+"</p>");
+                   
+                console.log(j);
+            });
+
+            $("#alg_params").append(row);  
         });
         
-
-        
-
+        $("#name_alg").html(name_alg_selected);     
     });
 </script>
 <script>
