@@ -9,7 +9,15 @@ html {
 {% block content %}
 <div class="container">
     <div class="jumbotron">
-        <h3 class="text-center">Experiment Result</h3>
+        <h3 class="text-center">{{ title }}</h3>
+        {% if multi %}
+            <select class="custom-select" id="alg_selection_multi">
+                <option style="display:none">---</option>
+                {% for n in name %}
+                    <option id="{{ loop.index0 }}_opt" class="list-group-item {% if loop.last %}list-group-item-success {% else %} list-group-item-primary{% endif %}" value="{{ loop.index0  }}">{{ n }}</option>
+                {% endfor %}
+            </select>
+        {% endif %}
         <div class="row">
             <div class="col-md-6">
                 <h3 class="text-center">Experiment Info</h3>
@@ -24,40 +32,62 @@ html {
                     </div>
                     <div class="row">
                         <p class="col-md-3 font-weight-bold">Algorithm</p>
-                        <p class="col-md-9">{{ name | safe}} </p>
+                        {% if not multi %}
+                            <p class="col-md-9">{{ name | safe}} </p>
+                        {% else %}
+                            <p class="col-md-9" id="name_alg">
+                                Select one of the list above
+                            </p>
+                        {% endif %}
                     </div>
-                    <div class="container-fluid mb-2">
+                    <div class="container-fluid mb-2"  id="alg_params">
                         <h5 class="text-center">Algorithm Parameters</h5>
-                        {% for c in dict_config %}
-                        <div class="row">
-                            <div class="col-12 {% if loop.index%2 == 1 %}row-odd{% endif %}">
-                                <label for="{{ loop.index0 }}_estimator_value">{{ c | split }}</label>
-                                <a onclick="toggle_estimator('{{ loop.index0 }}_estimator_value')" href="#a" id="{{ c }}_open">
-                                    <i class="material-icons float-right">arrow_drop_down_circle</i>
-                                </a>
-                            </div>
-                            <div class="container-fluid" id="{{ loop.index0 }}_estimator_value" style="display:none;">
-                            {% for i in dict_config[c] %}
-                                <div class="row {% if loop.index %2 == 0 %}row-odd{% endif %} ml-2 pt-2 pb-2 d-flex align-items-center">
-                                    <p class="col-md-7 font-weight-bold m-0 text-wrap alg_param">{{ i }}</p>
-                                    <p class="col-md-5 text-left m-0 text-wrap">{{ dict_config[c][i] }} </p>
+                        {% if not multi %}
+                            {% for c in dict_config %}
+                            <div class="row">
+                                <div class="col-12 {% if loop.index%2 == 1 %}row-odd{% endif %}">
+                                    <label for="{{ loop.index0 }}_estimator_value">{{ c | split }}</label>
+                                    <a onclick="toggle_estimator('{{ loop.index0 }}_estimator_value')" href="#a" id="{{ c }}_open">
+                                        <i class="material-icons float-right">arrow_drop_down_circle</i>
+                                    </a>
                                 </div>
-                            {% endfor %}
+                                <div class="container-fluid" id="{{ loop.index0 }}_estimator_value" style="display:none;">
+                                {% for i in dict_config[c] %}
+                                    <div class="row {% if loop.index %2 == 0 %}row-odd{% endif %} ml-2 pt-2 pb-2 d-flex align-items-center">
+                                        <p class="col-md-7 font-weight-bold m-0 text-wrap alg_param">{{ i }}</p>
+                                        <p class="col-md-5 text-left m-0 text-wrap">{{ dict_config[c][i] }} </p>
+                                    </div>
+                                {% endfor %}
+                                </div>
                             </div>
-                        </div>
-                        {% endfor %}
+                            {% endfor %}
+                        {% else %}
+                            <p class="font-italic">Waiting for algorithm selection</p>
+                        {% endif %}
                     </div>
                     
                     <div class="row">
                         <div class="col-md-3">
-                                <a class="btn btn-primary btn-block" role="button" href={{ url_for("experiments.new_experiment") }}?exp={{experiment.id}} >Reuse</a>
+                                {% if multi %}
+                                    <a class="btn btn-secondary btn-block" data-toggle="tooltip" data-placement="top" title="You can't reuse a multiexperiment.">Reuse</a>
+                                {% else %}
+                                    <a class="btn btn-primary btn-block" role="button" href={{ url_for("experiments.new_experiment") }}?exp={{experiment.id}} >Reuse</a>
+                                {% endif %}
                         </div>
                     {% if experiment.state == 1 %}
                         <div class="col-md-6">
-                            <a class="btn btn-primary btn-block" role="button" href={{url_for("experiments.download_model",id=experiment.id)}} >Download model</a>
+                            {% if multi %}
+                                <a class="btn btn-secondary btn-block" data-toggle="tooltip" data-placement="top" title="You can't download a multiexperiment.">Download model</a>
+                            {% else %}
+                                <a class="btn btn-primary btn-block" role="button" href={{url_for("experiments.download_model",id=experiment.id)}} >Download model</a>
+                            {% endif %}
                         </div>
                         <div class="col-md-3">
-                            <a class="btn btn-primary btn-block" role="button" href={{url_for("experiments.predict",id=experiment.id)}}>Predict</a>
+                            {% if multi %}
+                                <a class="btn btn-secondary btn-block" data-toggle="tooltip" data-placement="top" title="You can't predict a multiexperiment.">Predict</a>
+                            {% else %}
+                                <a class="btn btn-primary btn-block" role="button" href={{url_for("experiments.predict",id=experiment.id)}}>Predict</a>
+                            {% endif %} 
                         </div>
                     {% endif %}
                     </div>    
@@ -144,6 +174,52 @@ html {
 <script src="{{ url_for('static', filename="js/config_alg.js") }}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/6.2.2/math.js" integrity="sha256-tPx691vG+n8gBD4vGeaddgXn53101A92tUk6Wy4aeO8=" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/color-hash@1.0.3/dist/color-hash.js"></script>
+<script>
+    $("#alg_selection_multi").change(function(){
+        //Write the name of selected algorithm
+        var names = {{ name|safe }};
+        var name_alg_selected = names[$(this).val()];
+        $("#name_alg").text(names[$(this).val()]);
+        console.log($("#alg_selection_multi option:selected").text());
+
+        //show algorithm parameters
+        $("#alg_params").html("");
+        var title_alg_param = "<h5 class=\"text-center\">Algorithm Parameters M</h5>";
+        $("#alg_params").append(title_alg_param);
+
+        var param_config =  {{ dict_config|safe }};
+        param_config =  param_config[$(this).val()];
+        //Recover dict keys: maybe its a ensemble
+        var algs = Object.keys(param_config);
+        var row_number = 0;
+        algs.forEach(function(i){
+            row_number += 1;
+            console.log("i: "+i);
+            let row = $("<div></div>", {class: "row"});
+            let block = $("<div></div>", {id: i, class: "col-12"});
+            if (row_number%2 == 1){
+                block.addClass("row-odd");
+            }
+            row.append(block);
+            block.html("<label for=\""+i+"_value"+"\">"+
+                        i.split(".").pop()+
+                        "</label>");
+            block.append($("<a onClick=\"toggle_click('"+i+"_chart"+"','"+i+"_not_exists"+"')\" href=\"#a\" id=\""+i+"_open"+"\">"+
+                "<i class=\"material-icons\" style=\"float: right;\">"+
+                    "arrow_drop_down_circle"+
+                "</i>"+
+                "</a>"));
+                
+            var config = param_config[i];
+            console.log(config);
+            $("#alg_params").append(row);
+        });
+        
+
+        
+
+    });
+</script>
 <script>
     {% if experiment.state == 1 %}
         to_render = [];

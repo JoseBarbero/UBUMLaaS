@@ -12,7 +12,7 @@ import time
 import json
 from urllib.parse import unquote
 from ubumlaas.experiments.algorithm import task_skeleton
-from ubumlaas.util import get_dataframe_from_file, get_ngrok_url
+from ubumlaas.util import get_dataframe_from_file, get_ngrok_url, string_is_array
 import ubumlaas.experiments.views as views
 from ubumlaas.util import (generate_df_html, get_dict_exp, get_ensem_alg_name)
 import arff
@@ -130,20 +130,53 @@ def result_experiment(id, admin=False):
     """
     exp = load_experiment(id)
     if not admin and exp.idu != current_user.id:
-        v.app.logger.warning("%d - Not allowed to see this experiment")
+        v.app.logger.warning("%d - Not allowed to see this experiment", current_user.id)
         return "", 403
-    name = v.app.jinja_env.filters["split"](exp.alg_name)
+    #name = v.app.jinja_env.filters["split"](exp.alg_name)
     dict_config = json.loads(exp.alg_config)
-    if "base_estimator" in dict_config.keys():
-        name += " <br>⤿ " + get_ensem_alg_name(dict_config["base_estimator"])
-    dict_config = get_dict_exp(exp.alg_name, dict_config)
-    template_info = {"experiment": exp,
-                     "name": name,
-                     "title": "Experiment Result",
-                     "dict_config": dict_config,
-                     "conf": json.loads(get_algorithm_by_name(
-                                        exp.alg_name).config),
-                     "external_url": get_ngrok_url("experiments.result_experiment", id = exp.id)}
+
+    v.app.logger.debug("exp.alg_name: %s", exp.alg_name)
+    v.app.logger.debug("exp.alg_name type: %s", type(exp.alg_name))
+    v.app.logger.debug("dict_config: %s", dict_config)
+    v.app.logger.debug("dict_config type: %s", type(dict_config))
+    #v.app.logger.debug("result: %s", exp.result)
+    v.app.logger.debug("result type: %s", type(exp.result))
+
+    name =  string_is_array(exp.alg_name)
+    if isinstance(name, list): #if is a multiexperiment
+        v.app.logger.info("%d- Results of multiexperiment: %s", current_user.id, name)
+        
+        #ToDO Enviar diferentes cosas en template 
+
+        #dict_config = {n:d for n,d in zip(name, dict_config)}
+        dict_config = [get_dict_exp(n,d) for n,d in zip(name, dict_config)]
+        dict_config = json.dumps(dict_config)
+
+        v.app.logger.debug("dict_config: %s", dict_config)
+        v.app.logger.debug("dict_config type: %s", type(dict_config))
+
+        template_info = {"experiment": exp,
+                        "name": [v.app.jinja_env.filters["split"](n) for n in name],
+                        "title": "Multi-Experiment Result",
+                        "dict_config": dict_config,
+                        "multi": True,
+                        "external_url": get_ngrok_url("experiments.result_experiment", id = exp.id)}
+
+    else:
+        name = v.app.jinja_env.filters["split"](exp.alg_name)
+        if "base_estimator" in dict_config.keys():
+            name += " <br>⤿ " + get_ensem_alg_name(dict_config["base_estimator"])
+        dict_config = get_dict_exp(exp.alg_name, dict_config)
+        v.app.logger.debug("dict_config: %s", dict_config)
+        v.app.logger.debug("dict_config type: %s", type(dict_config))
+        template_info = {"experiment": exp,
+                        "name": name,
+                        "title": "Experiment Result",
+                        "dict_config": dict_config,
+                        "multi": False,
+                        #"conf": json.loads(get_algorithm_by_name(
+                        #                    exp.alg_name).config),
+                        "external_url": get_ngrok_url("experiments.result_experiment", id = exp.id)}
     if not admin:
         v.app.logger.info("%d - Get result of experiment - %d", current_user.id, exp.id)
         return render_template("result.html", **template_info)
