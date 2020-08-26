@@ -55,14 +55,14 @@ def task_skeleton(experiment, current_user):
             res.append(r)
             state.append(s)
             #TODO: CHANGE TO GLOBAL EXPERIMENT STATE NOT ONLY FIRST ONE
-            state=state[0]
+        state=state[0]
 
     else:
         res,state=execute_model(exp["alg"]["lib"],data,exp,current_user)
     
     from ubumlaas.models import Experiment
     experi = Experiment.query.filter_by(id=experiment['id']).first()
-    experi.result = res
+    experi.result = json.dumps(res)
     experi.state = state
     experi.endtime = time()
     v.db.session.commit()

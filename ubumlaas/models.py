@@ -353,9 +353,16 @@ class Experiment(v.db.Model):
         if self.filter_name is not None:
             aux= string_is_array(self.filter_name)
             if isinstance(aux,list):
-                filter_ = [get_filter_by_name(x).to_dict() for x in aux]
+                filter_ = []
+                for x in aux:
+                    f = get_filter_by_name(x)
+                    if f is None:
+                        filter_.append(f)
+                    else:
+                        filter_.append(f.to_dict())
+                    #filter_ = [get_filter_by_name(x).to_dict() for x in aux]
             else:
-                filter_ =get_filter_by_name(self.filter_name).to_dict()
+                filter_ = get_filter_by_name(self.filter_name).to_dict()
         else:
             filter_=get_filter_by_name(self.filter_name)
         aux = string_is_array(self.alg_name)

@@ -56,10 +56,7 @@ class Experiment_manager():
         
         self.algorithm_configuration = convert_to_dict(experiment["alg_config"])  # configuration algorithm
         self.experiment_configuration = convert_to_dict(experiment["exp_config"])
-        if isinstance(self.experiment_configuration,list):
-            self.algorithm_type = self.experiment_configuration[0]["alg_type"]
-        else:
-            self.algorithm_type = self.experiment_configuration["alg_type"]# classification, reggression...
+        self.algorithm_type = self.experiment_configuration["alg_type"]# classification, reggression...
 
         v.app.logger.info("New execution - %d - %s - %s", self.id, self.algorithm_name, self.algorithm_type)
 
@@ -67,7 +64,7 @@ class Experiment_manager():
         experiments=[]
         for i in range(len(self.algorithm_name)):
             experiments.append({"id":self.id,"alg":{"alg_name":self.algorithm_name[i],"config":self.configuration[i],"lib":self.library[i]},"alg_config":self.algorithm_configuration[i],
-                                                    "exp_config":self.experiment_configuration[i],"alg_type":self.algorithm_type})  
+                                                    "exp_config":self.experiment_configuration,"alg_type":self.algorithm_type})  
         return experiments
 
     def create_experiments(self):

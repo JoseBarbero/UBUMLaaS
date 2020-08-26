@@ -135,11 +135,11 @@
             }
             algs.push(a.val());
 
-            let f = $("#filter_name_"+me_idexs[i]);
+            let f = $("#filter_name_"+me_idexs[i]).val();
             if(f == ""){
                 f=null;
             }
-            filters.push(f.val());
+            filters.push(f);
         }
         return [algs, filters];
     }

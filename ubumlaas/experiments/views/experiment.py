@@ -65,8 +65,18 @@ def launch_experiment():
         filter_config = None
     else:
         filter_config = request.form.get("filter_config")
-    exp = Experiment(user.id, request.form.get("alg_name"),
-                     unquote(request.form.get("alg_config")),
+
+    alg_name = request.form.get("alg_name")
+    alg_config = request.form.get("alg_config")
+    if "," in alg_name:
+        alg_name = "["+alg_name+"]"
+        alg_config = "["+alg_config+"]"
+        if filter_name is not None:
+            filter_name = "["+filter_name+"]"
+            filter_config = "["+filter_config+"]"
+        
+    exp = Experiment(user.id, alg_name,
+                     unquote(alg_config),
                      json.dumps(exp_config),
                      filter_name, filter_config,
                      request.form.get("data"),
