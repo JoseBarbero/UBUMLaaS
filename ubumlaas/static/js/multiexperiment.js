@@ -4,7 +4,40 @@ let me_idexs = [0]; // List of identifier of algorithms
 let med_index = 0; // Current index of list of datasets
 let med_idexs = [0]; // List of identifier of datasets
 
+let me_sub_clasifiers_count = [0];
+let me_sub_filter_count = [0];
+
 let sp_ANIMATION = false;
+
+function me_cidex(){
+    return me_idexs[me_index];
+}
+
+/**
+ * Reset the multiexperiment.
+ */
+function me_reset(){
+
+    let makers = $("#makers");
+    let block = $("<div></div>").addClass("maker").attr("data-idex", 0);
+    $.ajax({
+        url: "/reset_multiexperiment",
+        type: "POST",
+        contentType: 'application/x-www-form-urlencoded',
+        data: "alg_type=" + $("#alg_typ").val(),
+        success: function(result){
+            block.html(result);
+            makers.empty();
+            makers.append(block);
+        }
+    })
+
+    me_index = 0;
+    me_idexs = [0];
+
+    me_sub_clasifiers_count = [0];
+    me_sub_filter_count = [0];
+}
 
 /**
  * Create a new algorithm for a multiexperiment.
@@ -24,6 +57,9 @@ function me_new_alg(){
             $("#makers").append(block);
             me_idexs.push(nidex);
             me_move();
+
+            me_sub_clasifiers_count.push(0);
+            me_sub_filter_count.push(0);
         }
     })
 }
@@ -43,7 +79,9 @@ function me_delete_alg(){
         }
         setTimeout(function(){
             $("div[data-idex=\""+me_idexs[index]+"\"]").remove();
-            me_idexs = removeItemOnce(me_idexs, me_idexs[index])
+            me_idexs = removeItemOnce(me_idexs, me_idexs[index]);
+            me_sub_clasifiers_count.splice(index,1);
+            me_sub_filter_count.splice(index,1);
             // If remove the last algorithm
             if(me_index == me_idexs.length){
                 me_index--;
@@ -104,13 +142,6 @@ function me_move(right=true, deleted=false){
 
 }
 
-function no_target(){
-    for (let i = 0; i<dataset_columns.length; i++){
-        if($("#col"+i+"_target").prop("checked")){
-            $("#col"+i+"_use_label").click();
-        }
-    }
-}
 
 $(document).ready(function(){
     $("#delete_alg").click(function(){
@@ -145,8 +176,13 @@ $(document).ready(function(){
         if(!sp_ANIMATION){
             sp_ANIMATION=true;
             if(me_index == me_idexs.length-1){
-                me_new_alg();
-                $("#delete_alg").removeClass("disabled");
+                if($("#alg_typ").val()!=""){
+                    me_new_alg();
+                    $("#delete_alg").removeClass("disabled");
+                }else{
+                    launch_warning_modal("Add a new algorithm is not allowed","Select a algorithm type before add a new algorithm");
+                    sp_ANIMATION=false;
+                }
             }else{
                 me_move();
             }

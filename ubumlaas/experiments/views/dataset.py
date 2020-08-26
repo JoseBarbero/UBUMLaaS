@@ -20,7 +20,7 @@ def update_dataset_list():
     Returns:
         str -- HTTP response with rendered dataset selector
     """
-    form_e = ExperimentForm()
+    form_e = ExperimentForm(0)
     form_e.dataset_list() #log inside dataset_list
     return render_template("blocks/select_dataset.html", form_e=form_e)
 

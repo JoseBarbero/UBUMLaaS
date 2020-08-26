@@ -75,6 +75,9 @@ footer .main-footer {
     background-color: transparent !important;
 }
 
+.filters {
+    display: none;
+}
 
 #loader-div {
     background-color: var(--secondary);

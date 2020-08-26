@@ -614,8 +614,8 @@ class TestDefaultSuite():
         self.driver.execute_script("$('#alg_typ').val(\"Classification\");")
         self.driver.execute_script("$('#alg_typ').change();")
         time.sleep(self.wait)
-        self.driver.execute_script("$('#alg_name').val(\"sklearn.ensemble.BaggingClassifier\");")
-        self.driver.execute_script("$('#alg_name').change();")
+        self.driver.execute_script("$('#alg_name_0').val(\"sklearn.ensemble.BaggingClassifier\");")
+        self.driver.execute_script("$('#alg_name_0').change();")
         time.sleep(self.wait)
         assert self.driver.find_element(By.CSS_SELECTOR, "p.font-weight-bold").text == "Decision Tree"
         self.driver.find_element(By.CSS_SELECTOR, "#base_estimator_open > .material-icons").click()
@@ -644,8 +644,8 @@ class TestDefaultSuite():
         self.driver.execute_script("$('#alg_typ').val(\"Classification\");")
         self.driver.execute_script("$('#alg_typ').change();")
         time.sleep(self.wait)
-        self.driver.execute_script("$('#alg_name').val(\"sklearn.ensemble.BaggingClassifier\");")
-        self.driver.execute_script("$('#alg_name').change();")
+        self.driver.execute_script("$('#alg_name_0').val(\"sklearn.ensemble.BaggingClassifier\");")
+        self.driver.execute_script("$('#alg_name_0).change();")
         time.sleep(self.wait)
         assert self.driver.find_element(By.CSS_SELECTOR, "p.font-weight-bold").text == "Decision Tree"
         self.driver.find_element(By.CSS_SELECTOR, "#base_estimator_open > .material-icons").click()

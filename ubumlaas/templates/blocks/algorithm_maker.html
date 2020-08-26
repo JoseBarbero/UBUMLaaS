@@ -1,5 +1,5 @@
 <fieldset id="select_algorithm_block">
-    <form class="form-group col-md-6 offset-md-3" id="form_algorithm">
+    <form class="form-group col-md-6 offset-md-3" id="form_algorithm_{{idex}}">
         <div id="show_algorithms_{{ idex }}" class="form-group" style="text-align: center;">
             {% include 'blocks/show_algorithms.html' %}
         </div>
@@ -14,8 +14,8 @@
         </div>
     </div>
 </fieldset>
-<fieldset id="select_filter_block_{{ idex }}">
-    <form class="form-group col-md-6 offset-md-3" id="form_filter">
+<fieldset id="select_filter_block_{{ idex }}" class="filters">
+    <form class="form-group col-md-6 offset-md-3" id="form_filter_{{ idex }}">
         <div id="show_filters_{{ idex }}" class="form-group" style="text-align: center;">
             {% include 'blocks/show_filters.html' %}
         </div>
