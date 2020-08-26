@@ -333,7 +333,7 @@ class Experiment(v.db.Model):
                                (0. Execution, 1. completed, 2. Error)
         """
         self.idu = idu
-        self.alg_name=self.alg_name
+        self.alg_name = alg_name
         self.alg_config = alg_config
         self.exp_config = exp_config
         self.filter_name = filter_name
@@ -350,9 +350,14 @@ class Experiment(v.db.Model):
         Returns:
             dict -- dict with keys and values from Experiment Object.
         """
-        filter_ = get_filter_by_name(self.filter_name)
-        if filter_ is not None:
-            filter_ = filter_.to_dict()
+        if self.filter_name is not None:
+            aux= string_is_array(self.filter_name)
+            if isinstance(aux,list):
+                filter_ = [get_filter_by_name(x).to_dict() for x in aux]
+            else:
+                filter_ =get_filter_by_name(self.filter_name).to_dict()
+        else:
+            filter_=get_filter_by_name(self.filter_name)
         aux = string_is_array(self.alg_name)
         if isinstance(aux,list):
             aux_alg_name=[get_algorithm_by_name(x).to_dict() for x in aux]
