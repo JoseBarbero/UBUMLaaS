@@ -144,15 +144,15 @@
                     </span></button>
             </div>
             <div class="d-flex align-items-center justify-content-between w-100 col-12">
-                <div class="col-1"><button id="before_button" class="btn btn-block btn-info btn-lg d-flex justify-content-center disabled"><span class="material-icons">
+                <div class="col-1" style="margin-left: -3rem;"><button id="before_button" class="btn btn-block btn-info btn-lg d-flex justify-content-center disabled"><span class="material-icons">
                     arrow_back_ios
                     </span></button></div>
-                <div id="makers" class="col-10 border-left border-right w-100 h-auto">
+                <div id="makers" class="col-11 border-left border-right w-100 position-relative">
                     <div class="maker" data-idex="{{ idex }}">
                         {% include 'blocks/algorithm_maker.html' %}
                     </div>
                 </div>
-                <div class="col-1"><button id="after_button" class="btn btn-block btn-info btn-lg d-flex justify-content-center"><span class="material-icons">
+                <div class="col-1" style="margin-right: -3rem;"><button id="after_button" class="btn btn-block btn-info btn-lg d-flex justify-content-center"><span class="material-icons">
                     {#arrow_forward_ios#}add
                     </span></button></div>
             </div>

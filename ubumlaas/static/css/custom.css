@@ -124,3 +124,16 @@ option.list-group-item{
 tr.align-middle td{
     vertical-align: middle !important;
 }
+
+#makers{
+    position: relative !important;
+    display: flex;
+
+}
+
+.maker{
+    position: static;
+    height: 100%;
+    width: 100%;
+    min-width: 100%;
+}
