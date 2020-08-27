@@ -37,6 +37,9 @@ class Execute_weka(Abstract_execute):
         Arguments:
             experiment {dict} -- experiment dictionary
         """
+        print("\n\n--------------------- EXPERIMENTO--------------------")
+        print(str(experiment))
+        print("\n--------------------------------------------------------\n\n")
         Abstract_execute.__init__(self, experiment)
         v.app.logger.info("Execution library - %d - WEKA", self.id)
         self.FILTER = "weka.classifiers.meta.FilteredClassifier"

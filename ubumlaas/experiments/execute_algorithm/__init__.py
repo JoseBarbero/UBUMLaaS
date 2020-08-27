@@ -63,7 +63,7 @@ class Experiment_manager():
     def divide_experiments(self):
         experiments=[]
         for i in range(len(self.algorithm_name)):
-            experiments.append({"id":self.id,"alg":{"alg_name":self.algorithm_name[i],"config":self.configuration[i],"lib":self.library[i]},"alg_config":self.algorithm_configuration[i],
+            experiments.append({"id":self.id,"alg":{"alg_name":self.algorithm_name[i],"config":convert_to_dict(self.configuration[i]),"lib":self.library[i]},"alg_config":self.algorithm_configuration[i],
                                                     "exp_config":self.experiment_configuration,"alg_type":self.algorithm_type})  
         return experiments
 
