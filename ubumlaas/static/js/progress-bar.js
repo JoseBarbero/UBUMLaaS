@@ -20,7 +20,8 @@ $("document").ready(function(){
 });
 
 function jump(event){
-    try{
+    /*try{
+        console.log(event.data.element)
         if ($(event.data.element).val() != ""){
             $("html, body").animate({
                 scrollTop: $("#"+event.data.to).offset().top-$($(".navbar")[0]).height()*2
@@ -28,7 +29,7 @@ function jump(event){
         }
     }catch(e){
         console.error("Scroll crash");
-    }
+    }*/
     
 }
 

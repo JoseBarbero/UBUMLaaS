@@ -5,7 +5,7 @@
     <script>$("document").ready(function(){
         $('.selectpicker').selectpicker();
         firstClick();
-        //$("#alg_name_{{ idex }}").change({element:"#alg_name_{{ idex }}", to:BLOCKS_ACTIVATORS.alg_name},jump);
+        $("#alg_name_{{ idex }}").change({element:"#alg_name_{{ idex }}", to:BLOCKS_ACTIVATORS.alg_name+"_{{ idex }}"},jump);
         $("#alg_name_{{ idex }}").change(load_config);
         $("#alg_name_{{ idex }}").change({mode: "default", url: "{{ url_for("experiments.get_filters") }}"},load_filters)
         $("#alg_name_{{ idex }}").change(verify_all);

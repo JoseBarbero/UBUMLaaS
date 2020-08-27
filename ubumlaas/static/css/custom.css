@@ -128,6 +128,7 @@ tr.align-middle td{
 #makers{
     position: relative !important;
     display: flex;
+    align-items: stretch;
 
 }
 
