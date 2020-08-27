@@ -247,7 +247,7 @@ html {
 
         {% if not multi %}
         $("document").ready(function(){
-            result = {{ experiment.result|safe  }};
+            result = {{ res|safe  }};
         {% else %}
         $("#alg_selection_multi").change(function(){
             result = {{ multi_result|safe  }};

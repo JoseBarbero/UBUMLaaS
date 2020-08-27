@@ -227,7 +227,13 @@ def result_experiment(id, admin=False):
         dict_config = get_dict_exp(exp.alg_name, dict_config)
         v.app.logger.debug("dict_config: %s", dict_config)
         v.app.logger.debug("dict_config type: %s", type(dict_config))
+        try:
+            r = json.loads(exp.result)
+        except:
+            r = exp.result
+
         template_info = {"experiment": exp,
+                        "res": r,
                         "name": name,
                         "title": "Experiment Result",
                         "dict_config": dict_config,
