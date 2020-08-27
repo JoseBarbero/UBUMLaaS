@@ -350,7 +350,7 @@ class Experiment(v.db.Model):
         Returns:
             dict -- dict with keys and values from Experiment Object.
         """
-        if self.filter_name is not None:
+        if self.filter_name is not None and self.filter_name != "null":
             aux= string_is_array(self.filter_name)
             if isinstance(aux,list):
                 filter_ = []

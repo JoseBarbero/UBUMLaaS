@@ -15,6 +15,7 @@ from ubumlaas import create_app
 import pandas as pd
 import variables as v
 import traceback
+import random
 
 from ubumlaas.util import send_experiment_result_email
 from time import time
@@ -50,8 +51,10 @@ def task_skeleton(experiment, current_user):
     if exp_manager.is_multi:
         res=[]
         state=[]
+        #Seed for no seed experiments, multi experiments should execute with the same data
+        rand = random.randint(1,1000000000)        
         for i in range(len(exp)):
-            r,s = execute_model(exp[i]["alg"]["lib"],data,exp[i],current_user)
+            r,s = execute_model(exp[i]["alg"]["lib"],data,exp[i],current_user,rand)
             res.append(r)
             state.append(s)
             #TODO: CHANGE TO GLOBAL EXPERIMENT STATE NOT ONLY FIRST ONE
@@ -69,7 +72,7 @@ def task_skeleton(experiment, current_user):
 
     send_experiment_result_email(current_user["username"], current_user["email"], experiment["id"], str(experi.result))
 
-def execute_model(alg_lib,data, exp, current_user):
+def execute_model(alg_lib,data, exp, current_user,seed_multi=None):
     type_app = alg_lib
     execution_lib = None
     try:
@@ -100,7 +103,7 @@ def execute_model(alg_lib,data, exp, current_user):
         X_test_list = []
         if exp_config.get("mode") == "split" and exp_config["train_partition"] < 100:
             X_train, X_test, y_train, y_test = execution_lib\
-                .generate_train_test_split(X, y, exp_config["train_partition"])
+                .generate_train_test_split(X, y, exp_config["train_partition"],random_state=seed_multi)
             model = execution_lib.create_model()
             execution_lib.train(model, X_train, y_train)
             y_pred, y_score = execution_lib.predict(model, X_test)
@@ -112,7 +115,7 @@ def execute_model(alg_lib,data, exp, current_user):
 
         elif exp_config.get("mode") == "cross":
 
-            kfolds = execution_lib.generate_KFolds(X, y, exp_config["k_folds"])
+            kfolds = execution_lib.generate_KFolds(X, y, exp_config["k_folds"],random_state=seed_multi)
             for X_train, X_test, y_train, y_test in kfolds:
                 model = execution_lib.create_model()
                 execution_lib.train(model, X_train, y_train)

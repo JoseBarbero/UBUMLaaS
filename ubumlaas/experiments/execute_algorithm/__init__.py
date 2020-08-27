@@ -222,16 +222,18 @@ class Abstract_execute(ABC):
         Returns:
             [DataFrames] -- X_train, X_test, y_train, y_test
         """
-
+        aux = self.experiment_configuration["random_seed"]
+        if aux is None:
+            aux = random_state
         if y is None:
             X_train, X_test = sklearn.model_selection. \
             train_test_split(X, train_size=train_size/100,
-                             random_state=self.experiment_configuration.get("random_seed", random_state))
+                             random_state=aux)
             return X_train, X_test, None, None
 
         return sklearn.model_selection. \
             train_test_split(X, y, train_size=train_size/100,
-                             random_state=self.experiment_configuration.get("random_seed", random_state))
+                             random_state=aux)
 
     def generate_KFolds(self, X, y, n_splits=3, shuffle=True, random_state=None):
         """Generate KFolds
@@ -248,9 +250,11 @@ class Abstract_execute(ABC):
             [list] -- list of tuples with X_train, X_test, y_train, y_test in each tuple
         """
         folds = []
-
+        aux = self.experiment_configuration["random_seed"]
+        if aux is None:
+            aux = random_state
         kf = self.kfold_algorithm()(n_splits=n_splits, shuffle=shuffle,
-                                    random_state=self.experiment_configuration.get("random_seed", random_state))
+                                    random_state=aux)
 
         if y is None:
             for train_index, test_index in kf.split(X):
