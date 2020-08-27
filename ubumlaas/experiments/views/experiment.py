@@ -180,15 +180,15 @@ def result_experiment(id, admin=False):
     v.app.logger.debug("exp.alg_name type: %s", type(exp.alg_name))
     v.app.logger.debug("dict_config: %s", dict_config)
     v.app.logger.debug("dict_config type: %s", type(dict_config))
-    #v.app.logger.debug("result: %s", exp.result)
+    v.app.logger.debug("result: %s", exp.result)
     v.app.logger.debug("result type: %s", type(exp.result))
+    
 
     name =  string_is_array(exp.alg_name)
     if isinstance(name, list): #if is a multiexperiment
         v.app.logger.info("%d- Results of multiexperiment: %s", current_user.id, name)
         
-        #ToDO Enviar diferentes cosas en template 
-
+        #set up the list of dicts for multi-experiment
         #dict_config = {n:d for n,d in zip(name, dict_config)}
         dict_config = [get_dict_exp(n,d) for n,d in zip(name, dict_config)]
         dict_config = json.dumps(dict_config)
@@ -196,7 +196,24 @@ def result_experiment(id, admin=False):
         v.app.logger.debug("dict_config: %s", dict_config)
         v.app.logger.debug("dict_config type: %s", type(dict_config))
 
+        #Process the result
+        if exp.result is not None: #if the experiments has terminated
+            list_of_results = eval(exp.result)
+            processed_results = list()
+            for r in list_of_results:
+                try:
+                    processed_results.append(json.loads(r))
+                except:
+                    processed_results.append(r)
+        else:
+            processed_results= None
+
+        v.app.logger.debug("PLOresult: %s", processed_results)
+        v.app.logger.debug("PLOresult type: %s", type(processed_results))
+    
+
         template_info = {"experiment": exp,
+                        "multi_result": processed_results,
                         "name": [v.app.jinja_env.filters["split"](n) for n in name],
                         "title": "Multi-Experiment Result",
                         "dict_config": dict_config,

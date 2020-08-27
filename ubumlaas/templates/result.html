@@ -185,7 +185,7 @@ html {
 
         //show algorithm parameters
         $("#alg_params").html("");
-        var title_alg_param = "<h5 class=\"text-center\">Algorithm Parameters M</h5>";
+        var title_alg_param = "<h5 class=\"text-center\">Algorithm Parameters</h5>";
         $("#alg_params").append(title_alg_param);
 
         //Recover dict keys: maybe its a ensemble
@@ -197,7 +197,6 @@ html {
                 name_alg_selected = name_alg_selected.concat(" <br>⤿ "+i.split(".").pop())
             }
             row_number += 1;
-            console.log("i: "+i);
             let row = $("<div></div>", {class: "row"});
             let block = $("<div></div>", {id: i, class: "col-12"});
             if (row_number%2 == 1){
@@ -220,7 +219,6 @@ html {
             row.append(block_2_alg);
             
             var config = param_config[i];
-            console.log(config);
             var params = Object.keys(config);
             var inner_row_number = 0;
             block_2_alg.html("")
@@ -234,8 +232,7 @@ html {
                 
                 block_3_param.html("<p class=\"col-md-7 font-weight-bold m-0 text-wrap alg_param\">"+j+"</p>"+
                 "<p class=\"col-md-5 text-left m-0 text-wrap\">"+config[j]+"</p>");
-                   
-                console.log(j);
+
             });
 
             $("#alg_params").append(row);  
@@ -247,9 +244,17 @@ html {
 <script>
     {% if experiment.state == 1 %}
         to_render = [];
+
+        {% if not multi %}
         $("document").ready(function(){
             result = {{ experiment.result|safe  }};
-
+        {% else %}
+        $("#alg_selection_multi").change(function(){
+            result = {{ multi_result|safe  }};
+            result = result[$(this).val()];
+            
+        {% endif %}
+            console.log(result);
             var place_in = $("#success_result");
             place_in.html("");
             var parameters = Object.keys(result);
