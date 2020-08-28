@@ -69,6 +69,7 @@ function me_new_alg(){
  */
 function me_delete_alg(){
     if(me_idexs.length == 1){
+        sp_ANIMATION = false;
         launch_danger_modal("Delete error","You can't delete an algorithm if only have one");
     }else{
         let index = me_index;
