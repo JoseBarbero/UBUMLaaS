@@ -186,7 +186,7 @@ def result_experiment(id, admin=False):
 
     name =  string_is_array(exp.alg_name)
     if isinstance(name, list): #if is a multiexperiment
-        v.app.logger.info("%d- Results of multiexperiment: %s", current_user.id, name)
+        v.app.logger.info("%d- Results of multiexperiment: %s - Experiment %d", -1, name, id)
         
         #set up the list of dicts for multi-experiment
         #dict_config = {n:d for n,d in zip(name, dict_config)}

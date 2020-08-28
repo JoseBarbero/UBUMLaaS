@@ -168,7 +168,7 @@ function get_config_form(alg_name=null, level=0, filter=false, idex=0){
         let par = config_refence[i];
         let parameter = $("#"+name_prefix+i+name_sufix+"_"+idex+"_value");
         if(!parameter.prop('disabled')){
-            result[i] = config_form_value(parameter, par, level)
+            result[i] = config_form_value(parameter, par, level, filter, idex)
         }
     });
     return result;

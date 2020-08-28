@@ -3,7 +3,6 @@
     {{form_e.data(class="form-control selectpicker", **{"data-live-search": "true"}) }}
     <div id="data_feedback" class="invalid-feedback" style="display: hidden">You must select an uploaded dataset</div>
     <script> 
-        $('.selectpicker').selectpicker();
         $("#data").change(function () {
             let chosen_dataset = $("#data").val();
             $.ajax({
@@ -48,6 +47,11 @@
                 }
             });
             verify_all("data");
+            try{
+                $('.selectpicker').selectpicker();
+            }catch(e){
+                // Nothing
+            }
         });
     </script>
 </div>

@@ -294,13 +294,13 @@ function create_algorithm_config_field(place_in, row_number, field, level_to_mod
  * @param {object} par definition of parameter
  * @param {int} level level where is the field
  */
-function config_form_value(parameter, par, level){
+function config_form_value(parameter, par, level, filter, idex){
     let result = parameter.val();
     switch(par.type){
         case "ensemble":
             let ens = {};
             ens.alg_name = result;
-            ens.parameters = get_config_form(ens.alg_name, level+1);
+            ens.parameters = get_config_form(ens.alg_name, level+1, filter, idex);
             result = ens;
             break;
         case "boolean":
