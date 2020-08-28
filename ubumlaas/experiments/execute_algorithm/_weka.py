@@ -37,13 +37,9 @@ class Execute_weka(Abstract_execute):
         Arguments:
             experiment {dict} -- experiment dictionary
         """
-        print("\n\n--------------------- EXPERIMENTO--------------------")
-        print(str(experiment))
-        print("\n--------------------------------------------------------\n\n")
         Abstract_execute.__init__(self, experiment)
         v.app.logger.info("Execution library - %d - WEKA", self.id)
         self.FILTER = "weka.classifiers.meta.FilteredClassifier"
-
         self.y_uniques = None
         if not jvm.started:
             jvm.start(packages=True)
@@ -227,7 +223,8 @@ class Execute_weka(Abstract_execute):
     def close(self):
         """Closes Java Virtual Machine
         """
-        jvm.stop()
+        pass
+        #jvm.stop()
 
     def find_y_uniques(self, y):
         """If the algorithm is classification, finds uniques nominal values
