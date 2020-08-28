@@ -90,7 +90,7 @@ function me_delete_alg(){
             if(me_idexs.length == 1){
                 $("#delete_alg").addClass("disabled");
             }
-        }, 1000);
+        }, 1000);   
     }
 }
 
