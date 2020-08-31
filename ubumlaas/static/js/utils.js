@@ -11,11 +11,13 @@ function titleCase(str) {
 }
 
 function firstClick(){
+    let y = window.scrollY
     setTimeout(function(){
         $(".selectpicker").each(function(){
             $(this).next().click();
             $("body").click();
         });
+        window.scrollTo(0, y)
     }, 100);
 
 }

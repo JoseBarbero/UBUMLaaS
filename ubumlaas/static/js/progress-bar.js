@@ -12,11 +12,11 @@ already_correct = new Set([config_experiment_block]);
 
 $("document").ready(function(){
     update_progress();
-    Object.entries(BLOCKS_ACTIVATORS).forEach(function(activator){
+    /*Object.entries(BLOCKS_ACTIVATORS).forEach(function(activator){
         $("#"+activator[0]).change(function(){
             jump({data: {element:this, to: activator[1]}});
         });
-    });
+    });*/
 });
 
 function jump(event){

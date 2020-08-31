@@ -290,14 +290,14 @@ html {
                     for(let z=0; z<result[i].length; z++){
                         let li = $("<li></li>");
                         li.append($("<a></a>", {"data-toggle": "tab", href: "#"+i+"-"+z+"_tab",
-                                                class: "nav-link", id: i+"-"+z+"_tab-tab",
+                                                class: "nav-link", id: i+"-"+z+"_tab_link",
                                                 "aria-controls": i+"-"+z+"_tab"}));
                         let a = $(li.children()[0]);
                         
                         a.text("k"+z);
                         let tab_pane_div = $("<div></div>",{class: "tab-pane fade",
                                                             id: i+"-"+z+"_tab", role: "tabpanel",
-                                                            "aria-labelledby": i+"-"+z+"_tab-tab"});
+                                                            "aria-labelledby": i+"-"+z+"_tab_link"});
                         let tab_container_div = $("<div></div>", {class: "container-fluid"});
                         tab_pane_div.append(tab_container_div);
                         let div = $("<div></div>", {class: "row"});
@@ -428,7 +428,7 @@ html {
                     $(super_div.children()[0]).removeClass("active show");
                     let li = $("<li></li>");
                     li.append($("<a></a>", {"data-toggle": "tab", href: "#"+i+"-graph_tab",
-                                            class: "nav-link", id: i+"-graph_tab-tab",
+                                            class: "nav-link", id: i+"-graph_tab_link",
                                             "aria-controls": i+"-graph_tab"}));
                     let a = $(li.children()[0]);
                     a.addClass("active");
@@ -437,7 +437,7 @@ html {
                     nav.prepend(li);
                     let tab_pane_div = $("<div></div>",{class: "tab-pane fade",
                                                         id: i+"-graph_tab", role: "tabpanel",
-                                                        "aria-labelledby": i+"-graph_tab-tab"});
+                                                        "aria-labelledby": i+"-graph_tab_link"});
                     let tab_container_div = $("<div></div>", {class: "container-fluid"});
                     tab_pane_div.append(tab_container_div);
                     tab_pane_div.addClass("active");
