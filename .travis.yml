@@ -1,8 +1,14 @@
-matrix:
+os: linux
+dist: bionic
+language: python
+python: 3.7
+node_js: 10
+jdk:
+  - openjkd8
+jobs:
   include:
       - os: linux
         dist: xenial
-        sudo: required
         language: python
         python: 3.7
         node_js: 10
@@ -14,32 +20,34 @@ git:
 
 addons:
   chrome: stable
+  apt:
+    packages:
+      - chromium-chromedriver
 
 services:
-  - redis-server
+  - redis
   - xvfb
 
 install:
   - cd $TRAVIS_BUILD_DIR
   - pip install -r requirements.txt
-  - wget http://mirror.jkanetwork.com/Datasets/data.sqlite.tgz -O $TRAVIS_BUILD_DIR/ubumlaas/data.sqlite.tgz
+  - wget http://mirror.jkanetwork.com/Datasets/data.sqlite.tgz -O $TRAVIS_BUILD_DIR/ubumlaas/data.sqlite.tgz --no-check-certificate
   - tar -xvzf $TRAVIS_BUILD_DIR/ubumlaas/data.sqlite.tgz -C $TRAVIS_BUILD_DIR/ubumlaas
-  - wget http://mirror.jkanetwork.com/Datasets/ubumlaas.tar -O /tmp/ubumlaas.tar
+  - wget http://mirror.jkanetwork.com/Datasets/ubumlaas.tar -O /tmp/ubumlaas.tar --no-check-certificate
   - mkdir -p $TRAVIS_BUILD_DIR/ubumlaas/datasets/{ubumlaas,ubumlaas2}
   - mkdir -p $TRAVIS_BUILD_DIR/test/datasets
   - tar -xvf /tmp/ubumlaas.tar -C $TRAVIS_BUILD_DIR/ubumlaas/datasets/ubumlaas
   - cp $TRAVIS_BUILD_DIR/ubumlaas/datasets/ubumlaas/* $TRAVIS_BUILD_DIR/test/datasets
   - cp $TRAVIS_BUILD_DIR/ubumlaas/datasets/ubumlaas/* $TRAVIS_BUILD_DIR/ubumlaas/datasets/ubumlaas2
-  - npm install -g chromedriver
-
+  
 before_script:
-  - wget http://mirror.jkanetwork.com/Datasets/env_variables.sh -O env_variables.sh
+  - wget http://mirror.jkanetwork.com/Datasets/env_variables.sh -O env_variables.sh --no-check-certificate
   - source env_variables.sh
   - python migrate.py
   - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x16"
   - sleep 3
   - python app.py &
-  - sleep 20
+  - sleep 20  
 
 script:
   - python -m pytest test/test_selenium.py --verbose

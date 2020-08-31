@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="https://necolas.github.io/normalize.css/8.0.1/normalize.css" />
+        <link rel="stylesheet" href="{{ url_for('static', filename="css/bootstrap-reboot.css") }}" />
+        <link id="boostrap_css" rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.3.1/litera/bootstrap.min.css">
+        <!--<link rel="stylesheet" href="{{ url_for('static', filename="css/bootstrap.css") }}" />-->
+        <link rel="stylesheet" href="{{ url_for('static', filename="css/bootstrap-grid.css") }}" />
+        <link rel="stylesheet" href="{{ url_for('static', filename="css/bootstrap-append.css") }}" />
+        <link rel="stylesheet" href="{{ url_for('static', filename="css/buttons.css") }}" /> 
+        <link rel="stylesheet" href="{{ url_for('static', filename="css/custom.css") }}" />   
+        <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.ico') }}" />
+        <meta charset="utf-8">
+        <title>{{ title }}</title>
+        <script async src="https://www.googletagmanager.com/gtag/js?id=UA-175635481-1"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'UA-175635481-1');
+            gtag('set', {'user_id': '{{ title | user }}'}); // Establezca el ID de usuario mediante el user_id con el que haya iniciado sesión.
+            ga('set', 'userId', '{{ title | user }}'); // Establezca el ID de usuario mediante el user_id con el que haya iniciado sesión.
+        </script>
+        <style>
+            html, body {
+                height: 100%;
+                min-height: 100%;
+                overflow: hidden;
+            }
+
+            body {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .body-content {
+                display: flex;
+                flex-flow: column;
+                flex: 1 1 auto;
+                padding: 0;
+            }
+
+            .footer {    
+                text-align: center;
+                font-family: segoe ui,Arial,sans-serif;
+                flex: 0 0 auto;
+                z-index:3;
+            }
+            .index_background{
+                background-color: rgba(var(--ubu-maroon-red), var(--ubu-maroon-green), var(--ubu-maroon-blue), 0.75); /*#ca7c89;*/
+            }
+            .blockquote-footer{
+                color: rgba(255,255,255,0.6);
+            }
+            footer .main-footer{
+                margin-top: 0px;
+            }
+            #index-right{
+                color: white !important;
+            }
+            #index-left{
+                color: var(--ubu-maroon);
+            }
+            #index-left cite{
+                color: var(--ubu-maroon);
+                opacity: 0.6;
+                float: right;
+            }
+            #hand {
+                ·/*max-height: 50px;*/
+            }
+        </style>
+    </head>
+    <body class="d-flex flex-column h-100">
+        <header id="header">
+            <nav class="navbar sticky-top navbar-expand-lg navbar-dark" style="background-color: var(--ubu-maroon);">
+                <div class="rounded float-left">
+                    <a href="http://www.admirable-ubu.es/" target="_blank" rel="noopener noreferrer"><img class="navbar-brand mr-3" src={{ url_for("static",filename="img/onlyA-32x32.svg") }}></a>
+                </div>
+                <a class="navbar-brand" href="{{ url_for('core.index') }}"> UBUMLaaS</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup"
+                    aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                    <div class="navbar-nav">
+                    <a class="nav-item nav-link {% if title=="UBUMLaaS" %}active{% endif %}" href="{{ url_for('core.index') }}">Home</a>
+                    <a class="nav-item nav-link {% if title=="Info" %}active{% endif %}" href="{{ url_for('core.info') }}">About</a>
+                    </div>
+                    <div class="navbar-nav ml-auto">
+                    {% if current_user.is_authenticated %}
+                    <a class="nav-item nav-link {% if "Profile" in title %}active{% endif %}" href="{{ url_for('users.profile') }}">My launched experiments</a>
+                    <a class="nav-item nav-link {% if title=="New experiment" %}active{% endif %}" href="{{ url_for('experiments.new_experiment') }}">New Experiment</a>
+                    <a class="nav-item nav-link " href="{{ url_for('users.logout') }}">Logout</a>
+                    {% else %}
+                    <a class="nav-item nav-link {% if title=="Log in" %}active{% endif %}" href="{{ url_for('users.login') }}">Login</a>
+                    <a class="nav-item nav-link {% if title=="Register" %}active{% endif %}" href="{{ url_for('users.register') }}">Register</a>
+                    {% endif %}
+                    </div>
+                </div>
+            </nav>
+        </header>
+        <main class="container-fluid body-content">
+            <div class="container-fluid h-100 d-flex align-items-stretch p-0" style="z-index: 999;">
+                <div class="container-fluid h-100 d-flex align-items-stretch p-0">
+                    <div class="row container-fluid p-0 m-0">        
+                        <div class="col-md-6 col-12 pt-3 d-flex align-items-center" id="index-left">
+                            <div class="container">
+                                <div class="col-md-9 col-sm-12">
+                                    <blockquote class="blockquote text-center mt-2">
+                                        <p class="mb-0" id="cite_text"><q>In God we trust, all others must bring data</q></p>
+                                        <footer class="blockquote-footer"><cite title="W. Edwards Deming" id="cite_name">W. Edwards Deming</cite></footer>
+                                    </blockquote>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-12 index_background pt-3 d-flex align-items-center" id="index-right">
+                            <div class="container">
+                                <div class="col-12">
+                                    <h3 class="text-center text-monospace font-weight-bold">Welcome to UBUMLaaS</h3>
+                                </div>                
+                                <div class="col-12">
+                                    <div class="container">
+                                    {% if current_user.is_authenticated %}
+                                        <div class="row">
+                                            <div class="col-md-8 offset-md-2 mb-3">
+                                                <a class="mt-3 btn btn-ubu-maroon font-weight-bold text-monospace text-uppercase btn-lg btn-block" href="{{ url_for('experiments.new_experiment') }}">Create a new experiment</a>
+                                            </div>
+                                        </div>
+                                    {% else %}
+                                        <div class="row">
+                                            <div class="col-md-8 offset-md-2 mb-3">
+                                                <a class="mt-3 btn btn-ubu-maroon font-weight-bold text-monospace text-uppercase btn-lg btn-block" href="{{ url_for('users.register') }}">Register</a>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-8 offset-md-2 mb-3">
+                                                <a class="mt-3 btn btn-outline-ubu-maroon font-weight-bold text-monospace text-uppercase btn-lg btn-block" href="{{ url_for('users.login') }}" style="color: white;">Login</a>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>    
+                </div>
+                <div class="container-fluid index h-100 d-md-flex align-items-stretch position-fixed p-0 d-sm-none align-self-center" id="hand" style="z-index: -200;">
+                    <div class="container-fluid d-flex justify-content-center" style="min-height: fit-content;">
+                        <img src="{{ url_for("static", filename="img/mano-robotica.svg")}}"/>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <footer class="footer" style="z-index: 999;" id="footer">
+            <div class="main-footer widgets-dark typo-light d-flex">
+                <div class="container">
+                    <div class="row align-items-center" id="logos">
+                        <div class="col-xs-12 col-sm-6 col-md-3">
+                            <a target="_blank" rel="noopener noreferrer"
+                                href="https://ec.europa.eu/regional_policy/es/funding/erdf/">
+                                <img class="img-fluid" src={{ url_for("static",filename="img/FEDER.svg") }}>
+                            </a>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-3">
+                            <a target="_blank" rel="noopener noreferrer"
+                                href="http://www.mineco.gob.es/portal/site/mineco/">
+                                <img class="img-fluid" src={{ url_for("static",filename="img/MEC.svg") }}>
+                            </a>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-3">
+                            <a target="_blank" rel="noopener noreferrer" href="https://www.jcyl.es/">
+                                <img class="img-fluid" src={{ url_for("static",filename="img/JCYL.svg") }}>
+                            </a>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-3">
+                            <a target="_blank" rel="noopener noreferrer"
+                                href="https://www.educa.jcyl.es/universidad/es/fondos-europeos/fondo-europeo-desarrollo-regional-feder/">
+                                <img class="img-fluid" src={{ url_for("static",filename="img/JCYL_impulsa.svg") }}>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+            <div class="footer-copyright">
+                <div class="container">
+                    <div class="row">
+                    <div class="col-md-12 text-center">
+                        <p>UBUMLaaS. © 2019. All rights reserved.</p>
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+        crossorigin="anonymous"></script>
+        <script src="{{ url_for('static', filename="js/bootstrap.js") }}"></script>
+        <script src="{{ url_for('static', filename="js/colors.js") }}"></script>
+        <script>
+            function resize_hand(){
+                var a = $("body").height()-$("#footer").height()-$("#header").height();
+                $("#hand").css("max-height", a+"px");
+            }
+
+            $("document").ready(function(){
+                resize_hand();
+
+                $(window).resize(function(){
+                    resize_hand();
+                });
+            });
+        </script>
+    </body>
+</html>

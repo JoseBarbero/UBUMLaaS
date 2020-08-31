@@ -4,6 +4,7 @@ AnalogicalModeling
 ArabicStemmers_LightStemmers
 Auto-WEKA
 BANGFile
+CAIRAD
 CFWNB
 CHIRP
 CLOPE
@@ -18,6 +19,7 @@ EAR4
 EBMC
 EMImputation
 EvolutionarySearch
+ForExPlusPlus
 ForestPA
 GPAttributeGeneration
 GenClustPlusPlus
@@ -98,6 +100,7 @@ distributedWekaHadoopCore
 distributedWekaHadoopLibs
 distributedWekaSpark
 distributedWekaSpark2Dev
+distributedWekaSpark3Dev
 distributedWekaSparkDev
 dualPerturbAndCombine
 elasticNet
@@ -123,6 +126,7 @@ imageFilters
 isolationForest
 isotonicRegression
 iterativeAbsoluteErrorRegression
+javaFXScatterPlot3D
 jfreechartOffscreenRenderer
 jsonFieldExtractor
 kerasZoo

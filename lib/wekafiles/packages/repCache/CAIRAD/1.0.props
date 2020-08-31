@@ -1,0 +1,38 @@
+# Template Description file for a Weka package
+#
+#
+
+# Package name (required)
+PackageName=CAIRAD
+
+# Version (required)
+Version=1.0
+
+#Date
+Date=2020-05-01
+
+# Title (required)
+Title=CAIRAD: A Co-appearance based Analysis for Incorrect Records and Attribute-values Detection
+
+Category=Classification
+
+# Author (required)
+Author=Michael Furner
+
+# Maintainer (required)
+Maintainer=Michael Furner <mfurner@csu.edu.au>
+
+# License (required)
+License=GPL 3.0
+
+# Description (required)
+Description=Implements the CAIRAD techique for detecting noisy values in a dataset. Does this with an analysis of coappearance between values. Can output whether or not a record is noisy (i.e. includes 1 or more noisy values), or remove all noisy values and replace them with missing values.
+
+# Package URL for obtaining the package archive (required)
+PackageURL=http://csusap.csu.edu.au/~zislam/code/CAIRAD.1.0.zip
+
+# URL for further information
+URL=http://csusap.csu.edu.au/~zislam/
+
+# Dependencies
+Depends=weka (>=3.7.1)

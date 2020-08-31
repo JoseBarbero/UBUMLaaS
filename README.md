@@ -16,6 +16,8 @@ Project "***Algoritmos de ensembles para problemas de salidas múltiples - nuevo
 2. <a href="https://www.jcyl.es/"><img align="right" width="20%" src="ubumlaas/static/img/JCYL.svg"></a>
 Project "***Minería de datos para la mejora del mantenimiento y disponibilidad de máquinas de altas presiones***" from *"Consejería de Educación de la Junta de Castilla y León"* (reference: BU085P17)
 
+<br>
+
 ---
 ## Installation (Linux)
 
@@ -40,6 +42,7 @@ Project "***Minería de datos para la mejora del mantenimiento y disponibilidad 
     export SECRET_KEY=<app secret key>
     export EMAIL_AC=<email>
     export EMAIL_PASS=<email-password>
+    export EMAIL_URL=<email-url>
     export FLASK_ENV=development #development or production
     LIBFOLDER=/absolute/path/to/UBUMLaaS
     ```

@@ -11,7 +11,7 @@ def index():
     Returns:
         str -- HTTP response with rendered first page
     """
-    return render_template('index.html', title="UBUMLaaS")
+    return render_template('index-new.html', title="UBUMLaaS")
 
 
 @core.route('/info')

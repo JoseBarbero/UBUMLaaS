@@ -5,6 +5,7 @@ from ubumlaas.users.forms import RegistrationForm, LoginForm, PasswordForm, Emai
 from ubumlaas.models import User, get_experiments
 import os
 from ubumlaas.util import generate_confirmation_token, confirm_token, send_email, get_ngrok_url
+import json
 
 users = Blueprint("users", __name__)
 
@@ -112,13 +113,14 @@ def profile():
                            user=current_user,
                            datasets=datasets,
                            experiments=experiments)
-@login_required
+
 @users.route('/confirm/<token>')
 def confirm_email(token):
-    try:
-        email = confirm_token(token)
-    except:
+    email = confirm_token(token)
+    if not email:
         flash('The confirmation link is invalid or has expired.', 'danger')
+        return redirect(url_for("users.login"))
+
     user = User.query.filter_by(email=email).first_or_404()
     if user.activated:
         flash('Account already confirmed. Please login.', 'success')
@@ -133,8 +135,10 @@ def confirm_email(token):
 def reset():
     form = EmailForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first_or_404()
-
+        user = User.query.filter_by(email=form.email.data).first()
+        if not user:
+            flash("Email account not exist, try with other", "warning")
+            return redirect(url_for('users.reset'))
         subject = "Password reset requested"
 
         token = generate_confirmation_token(user.email)
@@ -146,7 +150,7 @@ def reset():
             recover_url=recover_url)
 
         send_email(subject, user.email, html=html)
-        flash("Email reset sended.", "success")
+        flash("Reset password sended to: "+user.email, "success")
         return redirect(url_for('users.login'))
     return render_template('reset.html', form=form)
 

@@ -39,7 +39,7 @@ html {
                             <div class="container-fluid" id="{{ loop.index0 }}_estimator_value" style="display:none;">
                             {% for i in dict_config[c] %}
                                 <div class="row {% if loop.index %2 == 0 %}row-odd{% endif %} ml-2 pt-2 pb-2 d-flex align-items-center">
-                                    <p class="col-md-7 font-weight-bold m-0 text-wrap">{{ i }}</p>
+                                    <p class="col-md-7 font-weight-bold m-0 text-wrap alg_param">{{ i }}</p>
                                     <p class="col-md-5 text-left m-0 text-wrap">{{ dict_config[c][i] }} </p>
                                 </div>
                             {% endfor %}
@@ -164,7 +164,7 @@ html {
                 }
                 row.append(block);
                 block.html("<label for=\""+i+"_value"+"\">"+
-                                i+
+                            titleCase(i)+
                             "</label>");
                 block.append($("<a onClick=\"toggle_click('"+i+"_chart"+"','"+i+"_not_exists"+"')\" href=\"#a\" id=\""+i+"_open"+"\">"+
                                     "<i class=\"material-icons\" style=\"float: right;\">"+
@@ -182,6 +182,7 @@ html {
                                             class: "nav-link", id: i+"-"+z+"_tab-tab",
                                             "aria-controls": i+"-"+z+"_tab"}));
                     let a = $(li.children()[0]);
+                    
                     a.text("k"+z);
                     let tab_pane_div = $("<div></div>",{class: "tab-pane fade",
                                                         id: i+"-"+z+"_tab", role: "tabpanel",
@@ -234,6 +235,9 @@ html {
                             div.append(canvas);
                             break;
                         case "confussion_matrix":
+                            if (z==result[i].length-1 && z>0){
+                                a.text("Mean")
+                            }
                             var canvas = $("<div></div>", {id:i+"_canvas", width: "100%"});
                             let opt = {
                                 chart: {
@@ -262,8 +266,8 @@ html {
                             to_render.push(chart);
                             div.append(canvas);
                             break;       
-                        /*case "AUC":
-                            result_val = 1-result_val;*/
+                        case "AUC":
+                            result_val = 1-result_val;
                         default:
                             let k = $("<p></p>", {class: "col-md-5 font-weight-bold"});
                             let v = $("<p></p>", {class: "col-md-7"});
@@ -438,5 +442,12 @@ html {
 
         });
     }
+
+    $("document").ready(function(){
+        $(".alg_param").each(function(){
+            let it = $(this);
+            $(this).text(titleCase($(this).text()))
+        })
+    });
 </script>
 {% endblock %}

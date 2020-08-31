@@ -147,3 +147,8 @@ def confirm_token(token, expiration=3600):
 
 def get_ngrok_url(endpoint, **values):
     return os.getenv("NGROK_URL")+url_for(endpoint, **values) if os.getenv("NGROK_URL") else url_for(endpoint, **values, _external=True)
+
+def find_y_uniques(y):
+    uniques = np.unique(y.values)
+    uniques.sort()
+    return uniques

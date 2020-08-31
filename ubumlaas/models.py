@@ -57,35 +57,6 @@ def get_algorithms_type():
     return types
 
 
-# def get_similar_algorithms(alg_name):
-#     """Get algorithm that can be base estimator
-    
-#     Arguments:
-#         alg_name {str} -- Name of the algorithm
-    
-#     Returns:
-#         list of lists -- all similar algorithms
-#     """
-#     alg = get_algorithm_by_name(alg_name)
-#     if alg.lib != "meka":
-#         cond = Algorithm.lib == alg.lib
-#     else:
-#         cond = Algorithm.lib == "weka"
-#         if alg.alg_typ == "MultiClassification":
-#             cond = and_(cond, or_(Algorithm.alg_typ == "Classification",
-#                                   Algorithm.alg_typ == "Mixed"))
-#         else:
-#             cond = and_(cond, or_(Algorithm.alg_typ == "Regression",
-#                                   Algorithm.alg_typ == "Mixed"))
-#     if alg.alg_typ != "Mixed" and alg.lib != "meka":
-#         cond = and_(cond, Algorithm.alg_typ == alg.alg_typ)
-#     elif alg.lib != "meka":
-#         cond = and_(cond, or_(Algorithm.alg_typ == "Classification",
-#                               Algorithm.alg_typ == "Regression"))
-#     algorithms = Algorithm.query.filter(cond).all()
-#     return algorithms
-
-
 def get_similar_algorithms(alg_name, exp_typ):
     alg = get_algorithm_by_name(alg_name)
     if alg.lib == "meka":

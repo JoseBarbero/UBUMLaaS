@@ -14,10 +14,10 @@ class WorkerBuilder():
 
     def set_name(self, name):
         """Add name to identify worker
-        
+
         Arguments:
             name {str} -- worker name
-        
+
         Returns:
             WorkerBuilder -- self
         """
@@ -26,10 +26,10 @@ class WorkerBuilder():
 
     def set_queue(self, queue):
         """Override queues set with unique queue.
-        
+
         Arguments:
             queue {rq.Queue} -- Queue to add to worker
-        
+
         Returns:
             WorkerBuilder -- self
         """
@@ -38,10 +38,10 @@ class WorkerBuilder():
 
     def add_queue(self, queue):
         """Add new queue to worker
-        
+
         Arguments:
             queue {rq.Queue} -- Queue to add to worker
-        
+
         Returns:
             WorkerBuilder -- self
         """
@@ -50,12 +50,12 @@ class WorkerBuilder():
 
     def create(self):
         """Create a worker object with current configuration.
-        
+
         Returns:
             WorkerBuilder -- self
         """
         if self.name is None:
-            self.name = "Worker "+str(v.workers)
+            self.name = "UBUMLaaS Worker n:"+str(v.workers)
         v.workers += 1
         self.worker = Worker(self.queues, connection=v.r, name=self.name)
         self.proc = mp.Process(target=self.worker.work, daemon=True)
@@ -63,7 +63,7 @@ class WorkerBuilder():
 
     def start(self):
         """Start a new process with the worker.
-        
+
         Returns:
             WorkerBuilder -- self
         """
@@ -72,7 +72,7 @@ class WorkerBuilder():
 
     def kill(self):
         """Kill a process with the worker
-        
+
         Returns:
             WorkerBuilder -- self
         """

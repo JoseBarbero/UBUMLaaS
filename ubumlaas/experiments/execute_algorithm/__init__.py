@@ -71,7 +71,7 @@ class Abstract_execute(ABC):
         Arguments:
             model {object} -- model to train
             X {DataFrame} -- attributes columns
-            y {FataFrame} -- targets columns
+            y {DataFrame} -- targets columns
         """
         pass
 
@@ -152,7 +152,7 @@ class Abstract_execute(ABC):
             train_test_split(X, y, train_size=train_size/100,
                              random_state=self.experiment_configuration.get("random_seed", random_state))
 
-    def generate_KFolds(self, X, y, n_splits=3, shuffle=False, random_state=None):
+    def generate_KFolds(self, X, y, n_splits=3, shuffle=True, random_state=None):
         """Generate KFolds
 
         Arguments:

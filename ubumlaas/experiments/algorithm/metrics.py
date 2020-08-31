@@ -1,6 +1,7 @@
 import sklearn.metrics as mtr
 import numpy as np
-from ubumlaas.util import value_to_bool
+import pandas as pd
+from ubumlaas.util import value_to_bool, find_y_uniques
 from sklearn.preprocessing import LabelBinarizer
 
 
@@ -36,6 +37,7 @@ def classification_metrics(y_test_param, y_pred_param, y_score_param):
 
         # First confuse matrix
         conf_matrix = mtr.confusion_matrix(y_test, y_pred)
+        
         score.setdefault("confussion_matrix", []).append(conf_matrix.tolist())
         y_b_score = y_score.max(axis=1)
         if conf_matrix.shape[0] == 2 and y_test.iloc[:, 0].dtype != np.bool:
@@ -48,8 +50,10 @@ def classification_metrics(y_test_param, y_pred_param, y_score_param):
             fpr, tpr, _ = mtr.roc_curve(y_b_test, y_b_score)
             score.setdefault("ROC", []).append([fpr.tolist(), tpr.tolist()])
             score.setdefault("AUC", []).append(mtr.auc(fpr, tpr))
+            print(y_test.values[0][0])
             score.setdefault("f1_score", []).append(mtr.f1_score(y_test,
-                                                                 y_pred))
+                                                                 y_pred,
+                                                                 pos_label=y_test.values[0][0]))
         else:
             score.setdefault("AUC", [])\
                 .append(multiclass_roc_auc_score(y_test, y_pred))
@@ -60,6 +64,11 @@ def classification_metrics(y_test_param, y_pred_param, y_score_param):
                                                                    y_pred))
         score.setdefault("accuracy", []).append(mtr.accuracy_score(y_test,
                                                                    y_pred))
+
+    conf_matrix_final = np.array(score["confussion_matrix"])
+    if len(conf_matrix_final) > 1:
+            conf_mean = [conf_matrix_final.mean(0)]
+            score["confussion_matrix"] = np.concatenate((conf_matrix_final,conf_mean),axis=0).tolist()
 
     return score
 
@@ -116,9 +125,10 @@ def multiclass_roc_auc_score(y_test, y_pred, average="macro"):
 def clustering_metrics(list_X, list_y_pred):
     score = {}
     for X, y_pred in zip(list_X, list_y_pred):
-        set_score(score, "calinski_harabasz_score", mtr.calinski_harabasz_score(X, y_pred))
-        set_score(score, "davies_bouldin_score", mtr.davies_bouldin_score(X, y_pred))
-        set_score(score, "silhouette_score", mtr.silhouette_score(X, y_pred))
+        if len(find_y_uniques(pd.Series(y_pred)))>1:
+            set_score(score, "calinski_harabasz_score", mtr.calinski_harabasz_score(X, y_pred))
+            set_score(score, "davies_bouldin_score", mtr.davies_bouldin_score(X, y_pred))
+            set_score(score, "silhouette_score", mtr.silhouette_score(X, y_pred))
     return score
 
 

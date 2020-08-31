@@ -28,3 +28,4 @@ dependencies:
      - flask-migrate==2.5.2
      - python-weka-wrapper3==0.1.7
      - liac-arff==2.2.1
+     - email-validator==1.1.1

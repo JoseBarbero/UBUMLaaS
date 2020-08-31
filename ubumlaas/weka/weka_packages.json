@@ -2,5 +2,9 @@
     "rotationForest": "rotationForest",
     "SMOTE": "SMOTE",
     "randomBalance": "lib/unofficial_weka_packages/randomBalance1.0.0.zip",
-    "instanceSelection": "lib/unofficial_weka_packages/instanceSelection1.3.0.zip"
+    "instanceSelection": "lib/unofficial_weka_packages/instanceSelection1.3.0.zip",
+    "regresion": "lib/unofficial_weka_packages/Regresion.zip",
+    "liblinear": "LibLINEAR",
+    "libsvm": "LibSVM",
+    "admirable": "lib/unofficial_weka_packages/ADMIRABLE.zip"
 }
