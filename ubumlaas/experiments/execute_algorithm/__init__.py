@@ -222,7 +222,7 @@ class Abstract_execute(ABC):
         Returns:
             [DataFrames] -- X_train, X_test, y_train, y_test
         """
-        aux = self.experiment_configuration["random_seed"]
+        aux = self.experiment_configuration.get("random_seed", None)
         if aux is None:
             aux = random_state
         if y is None:
@@ -250,7 +250,7 @@ class Abstract_execute(ABC):
             [list] -- list of tuples with X_train, X_test, y_train, y_test in each tuple
         """
         folds = []
-        aux = self.experiment_configuration["random_seed"]
+        aux = self.experiment_configuration.get("random_seed",None)
         if aux is None:
             aux = random_state
         kf = self.kfold_algorithm()(n_splits=n_splits, shuffle=shuffle,

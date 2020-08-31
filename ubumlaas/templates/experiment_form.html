@@ -11,7 +11,7 @@
             <div class="form-group col-md-6 offset-md-3 mb-4">
                 <div class="form-group control-group">
                     {{ form_e.alg_typ.label(class="form-control-label mt-4 h5") }}
-                    {{ form_e.alg_typ(class="form-control") }}
+                    {{ form_e.alg_typ(class="form-control selectpicker", **{"tabindex":"0"}) }}
                     <div id="alg_typ_feedback" class="invalid-feedback" style="display: hidden">You must select an algorithm type</div>
                 </div>
             </div>
@@ -61,14 +61,14 @@
             <div class="tabs-container col-12">
                 <ul class="nav nav-tabs">
                     <li>
-                        <a data-toggle="tab" href="#normal_tab" class="nav-link active" id="normal_tab-tab" aria-controls="normal_tab" aria-selected="true">Normal</a>
+                        <a data-toggle="tab" href="#normal_tab" class="nav-link active" id="normal_tab_link" aria-controls="normal_tab" aria-selected="true">Normal</a>
                     </li>
                     <li>
-                        <a data-toggle="tab" href="#reduced_tab" class="nav-link" id="reduced_tab-tab" aria-controls="reduced_tab">Reduced</a>
+                        <a data-toggle="tab" href="#reduced_tab" class="nav-link" id="reduced_tab_link" aria-controls="reduced_tab">Reduced</a>
                     </li>
                 </ul>
                 <div class="tab-content">
-                    <div class="tab-pane fade active show" id="normal_tab" role="tabpanel" aria-labelledby="normal_tab-tab">
+                    <div class="tab-pane fade active show" id="normal_tab" role="tabpanel" aria-labelledby="normal_tab_link">
                         <div class="container-fluid">    
                             <fieldset>
                                 <form class="col-12 table-responsive" id="form_dataset_configuration">
@@ -82,7 +82,7 @@
                             </fieldset>
                         </div>
                     </div>
-                    <div class="tab-pane fade" id="reduced_tab" role="tabpanel" aria-labelledby="reduced_tab-tab">
+                    <div class="tab-pane fade" id="reduced_tab" role="tabpanel" aria-labelledby="reduced_tab_link">
                         <div class="container-fluid">    
                             <fieldset>
                                 <form class="col-12 table-responsive" id="form_dataset_configuration_reduced">
@@ -172,4 +172,10 @@
 {% block js %}
     {% include "blocks/experiment_form_js.html" %}
     <script src="{{ url_for('static', filename="js/multiexperiment.js") }}"></script>
+    <script>$("document").ready(function(){
+        setTimeout(function(){
+            $("#alg_typ").next().focus();
+        },
+        250);
+    });</script>
 {% endblock %}
