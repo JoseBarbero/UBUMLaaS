@@ -6,6 +6,7 @@ from ubumlaas.models import User, get_experiments
 import os
 from ubumlaas.util import generate_confirmation_token, confirm_token, send_email, get_ngrok_url
 import json
+import variables as v
 
 users = Blueprint("users", __name__)
 
@@ -27,10 +28,13 @@ def login():
             if user is not None and user.check_password(form.password.data):
                 login_user(user)
                 go_to = url_for("core.index")
+                v.app.logger.info("%d - User login", user.id)
             else:
                 flash("Wrong username or password", "danger")
+                v.app.logger.info("-1 - Login failed")
         else:
             flash("Wrong username or password", "danger")
+            v.app.logger.info("-1 - Login failed")
         return redirect(go_to)
 
     return render_template("login.html", form=form, title="Log in")
@@ -51,8 +55,10 @@ def register():
     if form.validate_on_submit():
         if form.email_exists(form.email):
             flash("Email already exists", "warning")
+            v.app.logger.info("-1 - Trying to register with an email that already exists, %s", form.email.data)
         elif form.username_exists(form.username):
             flash("Username already exists", "warning")
+            v.app.logger.info("-1 - Trying to register with an username that already exists, %s", form.username.data)
         else:
             user = User(email=form.email.data,
                         username=form.username.data,
@@ -66,6 +72,8 @@ def register():
             html = render_template('confirm.html', confirm_url=confirm_url)
             subject = "Please confirm your email"
             send_email(subject, user.email, html=html)
+
+            v.app.logger.info("%d - User registered", user.id)
 
             flash('A confirmation email has been sent via email. Please confirm email before login.', 'success')
             v.db.session.commit()
@@ -92,6 +100,7 @@ def logout():
     Returns:
         string -- redirect to index.
     """
+    v.app.logger.info("%d - User logout",current_user.id)
     logout_user()
     return redirect(url_for("core.index"))
 
@@ -108,6 +117,7 @@ def profile():
     datasets = [x for x in
                 os.listdir("ubumlaas/datasets/"+current_user.username)]
     experiments = get_experiments(current_user.id)
+    v.app.logger.info("%d - User enter to profile, %d datasets and %d experiments", current_user.id,len(datasets),len(experiments))
     return render_template("profile.html",
                            title=current_user.username + " Profile",
                            user=current_user,
@@ -138,7 +148,10 @@ def reset():
         user = User.query.filter_by(email=form.email.data).first()
         if not user:
             flash("Email account not exist, try with other", "warning")
+            v.app.logger.info("-1 - Trying to reset password for unknown user")
             return redirect(url_for('users.reset'))
+        v.app.logger.info("%d - Password reset email send", user.id)
+        
         subject = "Password reset requested"
 
         token = generate_confirmation_token(user.email)
@@ -164,6 +177,8 @@ def reset_with_token(token):
 
     if form.validate_on_submit():
         user = User.query.filter_by(email=email).first_or_404()
+
+        v.app.logger.info("%d - User password changed", user.id) 
 
         user.set_password(form.password.data)
 

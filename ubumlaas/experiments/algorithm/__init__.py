@@ -36,6 +36,10 @@ def task_skeleton(experiment, current_user):
                              (see model.Experiment.to_dict)
         current_user {dict} -- user information (see model.User.to_dict)
     """
+
+    v.app.logger.info("%d - Building task skeleton for %s and experiment %s",current_user['id'], current_user['id'], experiment['id'])
+    v.app.logger.debug("%d - experiment['id'] - %d", current_user['id'], experiment['id'])
+
     # Task need app environment
     create_app('subprocess')  # No generate new workers
     # Diference sklearn executor and weka executor
@@ -48,6 +52,8 @@ def task_skeleton(experiment, current_user):
         X, y = execution_lib.open_dataset("ubumlaas/datasets/"+current_user["username"] +"/",
                                           experiment['data'])
 
+        v.app.logger.info("%d - Dataset %s opened",current_user['id'], experiment['data'])
+
         #Find uniques values in weka and is classification
         execution_lib.find_y_uniques(y)
 
@@ -56,6 +62,7 @@ def task_skeleton(experiment, current_user):
         if not os.path.exists(models_dir):
             os.makedirs(models_dir)
         model = execution_lib.create_model()
+        v.app.logger.info("%d - Training model",current_user['id'])
         execution_lib.train(model, X, y)
         execution_lib.serialize(model, "{}{}.model"
                                        .format(models_dir, experiment['id']))
@@ -164,8 +171,10 @@ def execute_weka_predict(username, experiment, tmp_filename, model_path, fil_nam
             os.makedirs(upload_folder)
 
         dataframes.to_csv(upload_folder + fil_name, index=None)
-    except Exception:
-        v.app.logger.exception()
+    except Exception as ex:
+        # If algoritm failed it save traceback as result
+        result = str(ex)
+        v.app.logger.exception(result)
         return False
     finally:
         executor.close()

@@ -3,10 +3,10 @@
   "disable_existing_loggers": false,
   "formatters": {
     "simple": {
-      "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+      "format": "%(asctime)s - %(pathname)s - %(funcName)s - %(levelname)s - %(message)s"
     },
     "operation": {
-      "format": "%(asctime)s;%(message)s"
+      "format": "%(asctime)s;%(pathname)s;%(funcName)s;%(message)s"
     }
   },
   "handlers": {

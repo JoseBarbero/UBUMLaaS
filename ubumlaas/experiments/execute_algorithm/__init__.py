@@ -4,7 +4,7 @@ import json
 
 from sklearn.model_selection import StratifiedKFold, KFold
 import sklearn.model_selection
-
+import variables as v
 
 class Abstract_execute(ABC):
 
@@ -14,16 +14,24 @@ class Abstract_execute(ABC):
         Arguments:
             experiment {dict} -- experiment dictionary
         """
+        self.id = experiment["id"]
         self.algorithm_name = experiment["alg"]["alg_name"]  # for example: weka.classification.trees.J48
         self.algorithm_configuration = Abstract_execute.__convert_to_dict(experiment["alg_config"])  # configuration algorithm
         self.configuration = Abstract_execute.__convert_to_dict(experiment["alg"]["config"])
         self.experiment_configuration = Abstract_execute.__convert_to_dict(experiment["exp_config"])
-        self.algorithm_type = self.experiment_configuration["alg_type"]  # classification, reggression or mixed
-        if experiment.get("filter") is not None:
+        self.algorithm_type = self.experiment_configuration["alg_type"]  # classification, reggression...
+
+        v.app.logger.info("New execution - %d - %s - %s", self.id, self.algorithm_name, self.algorithm_type)
+
+        if experiment.get("filter") is not None:            
             self.filter_name = experiment["filter"]["filter_name"]
             self.filter_config = Abstract_execute.__convert_to_dict(experiment["filter_config"])
+            v.app.logger.info("Filtered - %d - %s - %s", self.id, self.algorithm_name, self.filter_name)
         else:
             self.filter_name = None
+            v.app.logger.info("Not Filtered - %d - %s", self.id, self.algorithm_name)
+        
+        
 
     @staticmethod
     def __convert_to_dict(possible_json_str):
