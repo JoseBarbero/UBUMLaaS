@@ -2,6 +2,7 @@ import variables as v
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 from sqlalchemy import and_, or_, text, desc, asc
+from ubumlaas.util import string_is_array
 
 from flask_login import UserMixin,AnonymousUserMixin
 
@@ -304,19 +305,12 @@ class Experiment(v.db.Model):
         v.db.Integer,
         v.db.ForeignKey('users.id'),
     )
-    alg_name = v.db.Column(
-        v.db.String(64),
-        v.db.ForeignKey('algorithms.alg_name'),
-    )
+    alg_name = v.db.Column(v.db.Text)
     alg_config = v.db.Column(v.db.Text)
     exp_config = v.db.Column(v.db.Text)
-    filter_name = v.db.Column(
-        v.db.String(64),
-        v.db.ForeignKey('filters.filter_name'),
-        nullable=True
-    )
+    filter_name = v.db.Column(v.db.Text,nullable=True)
     filter_config = v.db.Column(v.db.Text, nullable=True)
-    data = v.db.Column(v.db.String(128))
+    data = v.db.Column(v.db.Text)
     result = v.db.Column(v.db.Text, nullable=True)
     starttime = v.db.Column(v.db.Integer)
     endtime = v.db.Column(v.db.Integer, nullable=True)
@@ -356,17 +350,39 @@ class Experiment(v.db.Model):
         Returns:
             dict -- dict with keys and values from Experiment Object.
         """
-        filter_ = get_filter_by_name(self.filter_name)
-        if filter_ is not None:
-            filter_ = filter_.to_dict()
+        if self.filter_name is not None and self.filter_name != "null":
+            aux= string_is_array(self.filter_name)
+            if isinstance(aux,list):
+                filter_ = []
+                for x in aux:
+                    f = get_filter_by_name(x)
+                    if f is None:
+                        filter_.append(f)
+                    else:
+                        filter_.append(f.to_dict())
+                    #filter_ = [get_filter_by_name(x).to_dict() for x in aux]
+            else:
+                filter_ = get_filter_by_name(self.filter_name).to_dict()
+        else:
+            filter_=get_filter_by_name(self.filter_name)
+        aux = string_is_array(self.alg_name)
+        if isinstance(aux,list):
+            aux_alg_name=[get_algorithm_by_name(x).to_dict() for x in aux]
+        else:
+            aux_alg_name = get_algorithm_by_name(self.alg_name).to_dict()
         return {"id": self.id, "idu": self.idu,
-                "alg": get_algorithm_by_name(self.alg_name).to_dict(),
-                "alg_config": self.alg_config, "exp_config": self.exp_config,
+                "alg": aux_alg_name,
+                "alg_config": self.alg_config, 
+                "exp_config": self.exp_config,
                 "filter": filter_,
                 "filter_config": self.filter_config,
                 "data": self.data,
-                "result": self.result, "starttime": self.starttime,
+                "result": self.result, 
+                "starttime": self.starttime,
                 "endtime": self.endtime}
 
     def web_name(self):
-        return get_algorithm_by_name(self.alg_name).web_name
+        aux = string_is_array(self.alg_name)
+        if isinstance(aux,list):
+            return "-".join([get_algorithm_by_name(x).web_name for x in aux])
+        return get_algorithm_by_name(aux).web_name

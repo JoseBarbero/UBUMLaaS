@@ -11,18 +11,19 @@ $("document").ready(function(){
  * @param {int, default=null} level of ensemble 
  */
 function load_new_ensemble(alg_name, level=null, filter=false){
+    let idex = me_cidex();
     if(level == null){
-        level = sub_clasifiers_count;
+        level = sub_clasifiers_count();
     }
     
     if(filter){
-        id = "form_config_filter_level"+level;
+        id = "form_config_filter_"+idex+"_level"+level;
     }
-    let id = "form_config_alg_level"+level;
+    let id = "form_config_alg_"+idex+"_level"+level;
     let lvl = $("#"+id);
     if(lvl.length == 0){
         lvl = $("<div></div>", {id: id});
-        $(config_fieldset.children()[0]).append(lvl);
+        $(config_fieldset().children()[0]).append(lvl);
     }else{
         lvl.html("");
     }
@@ -55,15 +56,17 @@ function change_validate(e){
  */
 function generateForm(alg_config, place_in_id, level_to_modify=0, filter=false){
     if (!filter){
-        if(level_to_modify == sub_clasifiers_count){
-            sub_clasifiers_count++;
+        if(level_to_modify == sub_clasifiers_count()){
+            me_sub_clasifiers_count[me_index]++;
+            //sub_clasifiers_count++;
         }
     }else{
-        if(level_to_modify == sub_filter_count){
-            sub_filter_count++;
+        if(level_to_modify == sub_filter_count()){
+            me_sub_filter_count[me_index]++;
+            //sub_filter_count++;
         }
     }
-    alg_config_reference = alg_config;
+    //alg_config_reference = alg_config;
     var place_in = $("#"+place_in_id);
     place_in.html("");
 
@@ -80,7 +83,7 @@ function generateForm(alg_config, place_in_id, level_to_modify=0, filter=false){
     place_in.append($("<div></div>", {class: "timeout-finished"}));
     if(new_subalgorithm != ""){
         load_new_ensemble(new_subalgorithm);
-    }else if ( sub_clasifiers_count > level_to_modify){
+    }else if ( sub_clasifiers_count() > level_to_modify){
         clean_levels(level_to_modify+1, filter);            
     }
     beautify_alg_config(filter);
@@ -94,6 +97,7 @@ function generateForm(alg_config, place_in_id, level_to_modify=0, filter=false){
  * @param {object} parameter parameters of algorithm
  */
 function create_ensemble_block(basename, parameter){
+    let idex = me_cidex();
     let content;
     content = $("<select></select>", {id: basename+"_value"});
     //content.addClass("d-block");
@@ -101,7 +105,7 @@ function create_ensemble_block(basename, parameter){
     content.attr("data-live-search", "true");
     content.attr("data-width", "fit");
     content.attr("data-size",5);
-    let petition = "alg_name="+$("#alg_name").val()+"&exp_typ="+alg_typ.val();
+    let petition = "alg_name="+$("#alg_name_"+idex).val()+"&exp_typ="+alg_typ.val();
     let _options = give_me_base_estimators(petition);
     _options.forEach(function (e) { 
         content.append($("<option value=\""+e.alg_name+"\">"+e.web_name+"</option>"));
@@ -290,13 +294,13 @@ function create_algorithm_config_field(place_in, row_number, field, level_to_mod
  * @param {object} par definition of parameter
  * @param {int} level level where is the field
  */
-function config_form_value(parameter, par, level){
+function config_form_value(parameter, par, level, filter, idex){
     let result = parameter.val();
     switch(par.type){
         case "ensemble":
             let ens = {};
             ens.alg_name = result;
-            ens.parameters = get_config_form(ens.alg_name, level+1);
+            ens.parameters = get_config_form(ens.alg_name, level+1, filter, idex);
             result = ens;
             break;
         case "boolean":

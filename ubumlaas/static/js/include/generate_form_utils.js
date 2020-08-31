@@ -13,9 +13,9 @@ function toggle_click(value,span){
  * Boostrap grid adaptation for multiples ensembles levels
  */
 function beautify_alg_config(filter=false){
-    let over = config_fieldset;
+    let over = config_fieldset();
     if (filter){
-        over = filter_fieldset;
+        over = filter_fieldset();
     }
     let children = $(over.children()[0]).children();
     let offset = 0;
@@ -90,7 +90,8 @@ function change_value(e, ensemble=false){
  * @param {level of the estimator} level 
  */
 function get_basename(param_name, level, filter=false){
-    let basename = param_name;
+    let idex = me_cidex();
+    let basename = param_name+"_"+idex;
     if(filter){
         basename += "_filter";
     }
@@ -106,10 +107,10 @@ function get_basename(param_name, level, filter=false){
  * @param {Level where start the removing} base_level 
  */
 function clean_levels(base_level, filter=false){
-    sub_clasifiers_count = base_level-1;
-    let over = config_fieldset;
+    me_sub_clasifiers_count[me_index] = base_level-1;
+    let over = config_fieldset();
     if (filter){
-        over = filter_fieldset;
+        over = filter_fieldset();
     }
     let children = $(over.children()[0]).children();
     for(let i = base_level; i<children.length; i++){
@@ -142,7 +143,7 @@ function give_me_activator(content, identifier){
  * @param {string} alg_name complete algorithm name
  * @param {int} level level of ensemble
  */
-function get_config_form(alg_name=null, level=0, filter=false){
+function get_config_form(alg_name=null, level=0, filter=false, idex=0){
     let name_prefix = "";
     let name_sufix = "";
     if(filter){
@@ -154,8 +155,9 @@ function get_config_form(alg_name=null, level=0, filter=false){
     if(alg_name == null){
         let id_ = "alg_name";
         if(filter){
-            id_ = "filter_name"
+            id_ = "filter_name";
         }
+        id_ += "_"+idex;
         alg_name = $("#"+id_).val();
     }
     let config = load_config(false, alg_name, false, filter);
@@ -164,9 +166,9 @@ function get_config_form(alg_name=null, level=0, filter=false){
     let result = {};
     parameters.forEach(function(i){
         let par = config_refence[i];
-        let parameter = $("#"+name_prefix+i+name_sufix+"_value");
+        let parameter = $("#"+name_prefix+i+name_sufix+"_"+idex+"_value");
         if(!parameter.prop('disabled')){
-            result[i] = config_form_value(parameter, par, level)
+            result[i] = config_form_value(parameter, par, level, filter, idex)
         }
     });
     return result;
@@ -228,6 +230,9 @@ function get_base_block(placein, block, param_name, param, level, filter=false){
     let bname = basename;
     if(param.type=="ensemble"){
         bname=basename+"_selector";
+    }
+    else if (param.type == "string"){
+        bname=basename+"_value";
     }else{
         bname=basename+"_div";
     }

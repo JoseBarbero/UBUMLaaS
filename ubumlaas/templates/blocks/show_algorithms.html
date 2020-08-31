@@ -1,14 +1,14 @@
 <div class="control-group">
     {{form_e.alg_name.label(class="control h5 mt-4")}}
-    {{form_e.alg_name(class="form-control selectpicker", **{"data-live-search": "true"})}}
-    <div id="alg_name_feedback" class="invalid-feedback" style="display: hidden">You must select an algorithm</div>
+    {{form_e.alg_name(class="form-control selectpicker", **{"data-live-search": "true", "tabindex":-1})}}
+    <div id="alg_name_feedback_{{ idex }}" class="invalid-feedback" style="display: hidden">You must select an algorithm</div>
     <script>$("document").ready(function(){
         $('.selectpicker').selectpicker();
         firstClick();
-        $("#alg_name").change({element:"#alg_name", to:BLOCKS_ACTIVATORS.alg_name},jump);
-        $("#alg_name").change(load_config);
-        $("#alg_name").change({mode: "default", url: "{{ url_for("experiments.get_filters") }}"},load_filters)
-        $("#alg_name").change(verify_all);
+        $("#alg_name_{{ idex }}").change({element:"#alg_name_{{ idex }}", to:BLOCKS_ACTIVATORS.alg_name+"_{{ idex }}"},jump);
+        $("#alg_name_{{ idex }}").change(load_config);
+        $("#alg_name_{{ idex }}").change({mode: "default", url: "{{ url_for("experiments.get_filters") }}"},load_filters)
+        $("#alg_name_{{ idex }}").change(verify_all);
     });
     </script>
 </div>

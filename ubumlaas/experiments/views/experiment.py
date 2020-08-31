@@ -12,7 +12,7 @@ import time
 import json
 from urllib.parse import unquote
 from ubumlaas.experiments.algorithm import task_skeleton
-from ubumlaas.util import get_dataframe_from_file, get_ngrok_url
+from ubumlaas.util import get_dataframe_from_file, get_ngrok_url, string_is_array
 import ubumlaas.experiments.views as views
 from ubumlaas.util import (generate_df_html, get_dict_exp, get_ensem_alg_name)
 import arff
@@ -29,7 +29,7 @@ def new_experiment():
         str -- HTTP response with rendered page.
     """
 
-    form_e = ExperimentForm()
+    form_e = ExperimentForm(0)
     form_e.dataset_list()
 
     form_d = DatasetForm()
@@ -45,7 +45,7 @@ def new_experiment():
 
     return render_template("experiment_form.html", form_e=form_e,
                            form_d=form_d, form_p=form_p,
-                           title="New experiment", experiment=experiment)
+                           title="New experiment", experiment=experiment, idex=0)
 
 
 @login_required
@@ -65,8 +65,18 @@ def launch_experiment():
         filter_config = None
     else:
         filter_config = request.form.get("filter_config")
-    exp = Experiment(user.id, request.form.get("alg_name"),
-                     unquote(request.form.get("alg_config")),
+
+    alg_name = request.form.get("alg_name")
+    alg_config = request.form.get("alg_config")
+    if "," in alg_name:
+        alg_name = "["+alg_name+"]"
+        alg_config = "["+alg_config+"]"
+        if filter_name is not None:
+            filter_name = "["+filter_name+"]"
+            filter_config = "["+filter_config+"]"
+        
+    exp = Experiment(user.id, alg_name,
+                     unquote(alg_config),
                      json.dumps(exp_config),
                      filter_name, filter_config,
                      request.form.get("data"),
@@ -82,6 +92,36 @@ def launch_experiment():
 
 
 @login_required
+@views.experiments.route("/new_algorithm_maker", methods=["POST"])
+def new_algorithm_maker():
+    """Render a new algorithm block
+
+    Returns:
+        str -- HTTP response with rendered algorithm block
+    """
+    alg_typ = request.form.get("alg_type")
+    idex = request.form.get("idex")
+    form_e = ExperimentForm(idex)
+    form_e.alg_list(alg_typ=alg_typ)
+    v.app.logger.info("%d - Add a new algorithm block to experiment with idex - %s", current_user.id, idex)
+    return render_template("blocks/algorithm_maker.html", form_e=form_e, idex=idex)
+
+
+@login_required
+@views.experiments.route("/reset_multiexperiment", methods=["POST"])
+def multiexperiment_reset():
+    """Render a new algorithm block
+
+    Returns:
+        str -- HTTP response with rendered algorithm block
+    """
+    alg_typ = request.form.get("alg_type")
+    form_e = ExperimentForm(0)
+    form_e.alg_list(alg_typ=alg_typ)
+    v.app.logger.info("%d - Reset the makers", current_user.id)
+    return render_template("blocks/algorithm_maker.html", form_e=form_e, idex=0)
+
+@login_required
 @views.experiments.route("/update_alg_list", methods=["POST"])
 def change_alg():
     """Update algorithm list.
@@ -89,10 +129,11 @@ def change_alg():
     Returns:
         str -- HTTP response with rendered algorithm selector
     """
-    form_e = ExperimentForm()
+    idex = request.form.get("idex")
+    form_e = ExperimentForm(idex)
     form_e.alg_list(alg_typ=request.form.get("alg_typ"))
     v.app.logger.info("%d - Select algorithms from type - %s", current_user.id, request.form.get("alg_typ"))    
-    return render_template("blocks/show_algorithms.html", form_e=form_e)
+    return render_template("blocks/show_algorithms.html", form_e=form_e, idex=idex)
 
 
 @login_required
@@ -130,20 +171,76 @@ def result_experiment(id, admin=False):
     """
     exp = load_experiment(id)
     if not admin and exp.idu != current_user.id:
-        v.app.logger.warning("%d - Not allowed to see this experiment")
+        v.app.logger.warning("%d - Not allowed to see this experiment", current_user.id)
         return "", 403
-    name = v.app.jinja_env.filters["split"](exp.alg_name)
+    #name = v.app.jinja_env.filters["split"](exp.alg_name)
     dict_config = json.loads(exp.alg_config)
-    if "base_estimator" in dict_config.keys():
-        name += " <br>⤿ " + get_ensem_alg_name(dict_config["base_estimator"])
-    dict_config = get_dict_exp(exp.alg_name, dict_config)
-    template_info = {"experiment": exp,
-                     "name": name,
-                     "title": "Experiment Result",
-                     "dict_config": dict_config,
-                     "conf": json.loads(get_algorithm_by_name(
-                                        exp.alg_name).config),
-                     "external_url": get_ngrok_url("experiments.result_experiment", id = exp.id)}
+
+    v.app.logger.debug("exp.alg_name: %s", exp.alg_name)
+    v.app.logger.debug("exp.alg_name type: %s", type(exp.alg_name))
+    v.app.logger.debug("dict_config: %s", dict_config)
+    v.app.logger.debug("dict_config type: %s", type(dict_config))
+    v.app.logger.debug("result: %s", exp.result)
+    v.app.logger.debug("result type: %s", type(exp.result))
+    
+
+    name =  string_is_array(exp.alg_name)
+    if isinstance(name, list): #if is a multiexperiment
+        v.app.logger.info("%d- Results of multiexperiment: %s - Experiment %d", -1, name, id)
+        
+        #set up the list of dicts for multi-experiment
+        #dict_config = {n:d for n,d in zip(name, dict_config)}
+        dict_config = [get_dict_exp(n,d) for n,d in zip(name, dict_config)]
+        dict_config = json.dumps(dict_config)
+
+        v.app.logger.debug("dict_config: %s", dict_config)
+        v.app.logger.debug("dict_config type: %s", type(dict_config))
+
+        #Process the result
+        if exp.result is not None: #if the experiments has terminated
+            list_of_results = eval(exp.result)
+            processed_results = list()
+            for r in list_of_results:
+                try:
+                    processed_results.append(json.loads(r))
+                except:
+                    processed_results.append(r)
+        else:
+            processed_results= None
+
+        v.app.logger.debug("PLOresult: %s", processed_results)
+        v.app.logger.debug("PLOresult type: %s", type(processed_results))
+    
+
+        template_info = {"experiment": exp,
+                        "multi_result": processed_results,
+                        "name": [v.app.jinja_env.filters["split"](n) for n in name],
+                        "title": "Multi-Experiment Result",
+                        "dict_config": dict_config,
+                        "multi": True,
+                        "external_url": get_ngrok_url("experiments.result_experiment", id = exp.id)}
+
+    else:
+        name = v.app.jinja_env.filters["split"](exp.alg_name)
+        if "base_estimator" in dict_config.keys():
+            name += " <br>⤿ " + get_ensem_alg_name(dict_config["base_estimator"])
+        dict_config = get_dict_exp(exp.alg_name, dict_config)
+        v.app.logger.debug("dict_config: %s", dict_config)
+        v.app.logger.debug("dict_config type: %s", type(dict_config))
+        try:
+            r = json.loads(exp.result)
+        except:
+            r = exp.result
+
+        template_info = {"experiment": exp,
+                        "res": r,
+                        "name": name,
+                        "title": "Experiment Result",
+                        "dict_config": dict_config,
+                        "multi": False,
+                        #"conf": json.loads(get_algorithm_by_name(
+                        #                    exp.alg_name).config),
+                        "external_url": get_ngrok_url("experiments.result_experiment", id = exp.id)}
     if not admin:
         v.app.logger.info("%d - Get result of experiment - %d", current_user.id, exp.id)
         return render_template("result.html", **template_info)
@@ -221,7 +318,8 @@ def get_filters():
         str -- HTTP response with rendered filter selectable
         str -- HTTP JSON/response with list of filters
     """
-    form_e = ExperimentForm()
+    idex = request.form.get("idex")
+    form_e = ExperimentForm(idex)
     alg_name = request.form.get("alg_name")
     filter_name = request.form.get("filter_name", None)
     form_e.filter_list(alg_name, filter_name)
@@ -229,7 +327,7 @@ def get_filters():
     if len(form_e.filter_name.choices) == 0:
         v.app.logger.warning("%d - Don't exist compatible filters with the algorithm - %s", current_user.id, alg_name)
     if filter_name is None:
-        return render_template("blocks/show_filters.html", form_e=form_e)
+        return render_template("blocks/show_filters.html", form_e=form_e, idex=idex)
     else:
         return jsonify(dict(form_e.filter_name.choices))
 

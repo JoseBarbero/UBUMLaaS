@@ -15,6 +15,7 @@ from ubumlaas import create_app
 import pandas as pd
 import variables as v
 import traceback
+import random
 
 from ubumlaas.util import send_experiment_result_email
 from time import time
@@ -24,9 +25,9 @@ import os
 import weka.core.jvm as jvm
 from ubumlaas.util import get_dataframe_from_file
 from ubumlaas.experiments.execute_algorithm._weka import Execute_weka
+from ubumlaas.experiments.execute_algorithm import Experiment_manager
 
 import shutil
-
 
 def task_skeleton(experiment, current_user):
     """Base skeleton to execute an experiment.
@@ -36,6 +37,8 @@ def task_skeleton(experiment, current_user):
                              (see model.Experiment.to_dict)
         current_user {dict} -- user information (see model.User.to_dict)
     """
+    exp_manager = Experiment_manager(experiment)
+    exp = exp_manager.create_experiments()
 
     v.app.logger.info("%d - Building task skeleton for %s and experiment %s",current_user['id'], current_user['id'], experiment['id'])
     v.app.logger.debug("%d - experiment['id'] - %d", current_user['id'], experiment['id'])
@@ -44,15 +47,41 @@ def task_skeleton(experiment, current_user):
     create_app('subprocess')  # No generate new workers
     # Diference sklearn executor and weka executor
     # Get algorithm type
-    type_app = experiment["alg"]["lib"]
+    data = experiment["data"]
+    if exp_manager.is_multi:
+        res=[]
+        state=[]
+        #Seed for no seed experiments, multi experiments should execute with the same data
+        rand = random.randint(1,1000000000)        
+        for i in range(len(exp)):
+            r,s = execute_model(exp[i]["alg"]["lib"],data,exp[i],current_user,rand)
+            res.append(r)
+            state.append(s)
+            #TODO: CHANGE TO GLOBAL EXPERIMENT STATE NOT ONLY FIRST ONE
+        state=state[0]
+
+    else:
+        res,state=execute_model(exp["alg"]["lib"],data,exp,current_user)
+    
+    from ubumlaas.models import Experiment
+    experi = Experiment.query.filter_by(id=experiment['id']).first()
+    experi.result = json.dumps(res)
+    experi.state = state
+    experi.endtime = time()
+    v.db.session.commit()
+
+    send_experiment_result_email(current_user["username"], current_user["email"], experiment["id"], str(experi.result))
+
+def execute_model(alg_lib,data, exp, current_user,seed_multi=None):
+    type_app = alg_lib
     execution_lib = None
     try:
-        execution_lib = v.apps_functions[type_app](experiment)
+        execution_lib = v.apps_functions[type_app](exp)
 
         X, y = execution_lib.open_dataset("ubumlaas/datasets/"+current_user["username"] +"/",
-                                          experiment['data'])
+                                        data)
 
-        v.app.logger.info("%d - Dataset %s opened",current_user['id'], experiment['data'])
+        v.app.logger.info("%d - Dataset %s opened",current_user['id'], data)
 
         #Find uniques values in weka and is classification
         execution_lib.find_y_uniques(y)
@@ -65,7 +94,7 @@ def task_skeleton(experiment, current_user):
         v.app.logger.info("%d - Training model",current_user['id'])
         execution_lib.train(model, X, y)
         execution_lib.serialize(model, "{}{}.model"
-                                       .format(models_dir, experiment['id']))
+                                    .format(models_dir, exp['id']))
 
         exp_config = execution_lib.experiment_configuration
         y_pred_list = []
@@ -74,7 +103,7 @@ def task_skeleton(experiment, current_user):
         X_test_list = []
         if exp_config.get("mode") == "split" and exp_config["train_partition"] < 100:
             X_train, X_test, y_train, y_test = execution_lib\
-                .generate_train_test_split(X, y, exp_config["train_partition"])
+                .generate_train_test_split(X, y, exp_config["train_partition"],random_state=seed_multi)
             model = execution_lib.create_model()
             execution_lib.train(model, X_train, y_train)
             y_pred, y_score = execution_lib.predict(model, X_test)
@@ -86,7 +115,7 @@ def task_skeleton(experiment, current_user):
 
         elif exp_config.get("mode") == "cross":
 
-            kfolds = execution_lib.generate_KFolds(X, y, exp_config["k_folds"])
+            kfolds = execution_lib.generate_KFolds(X, y, exp_config["k_folds"],random_state=seed_multi)
             for X_train, X_test, y_train, y_test in kfolds:
                 model = execution_lib.create_model()
                 execution_lib.train(model, X_train, y_train)
@@ -118,15 +147,10 @@ def task_skeleton(experiment, current_user):
         if execution_lib:
             execution_lib.close()
 
-    from ubumlaas.models import Experiment
-    exp = Experiment.query.filter_by(id=experiment['id']).first()
-    exp.result = result
-    exp.state = state
-    exp.endtime = time()
-    v.db.session.commit()
+    return result,state
+    
 
-    send_experiment_result_email(current_user["username"], current_user["email"], experiment["id"], str(exp.result))
-
+    send_experiment_result_email(current_user["username"], current_user["email"], exp["id"], str(exp.result))
 
 def execute_weka_predict(username, experiment, tmp_filename, model_path, fil_name):
 

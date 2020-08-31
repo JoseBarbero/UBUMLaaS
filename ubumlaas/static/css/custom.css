@@ -75,6 +75,10 @@ footer .main-footer {
     background-color: transparent !important;
 }
 
+.filters {
+    display: none;
+}
+
 #loader-div {
     background-color: var(--secondary);
     opacity: 0.9;
@@ -119,4 +123,18 @@ option.list-group-item{
 
 tr.align-middle td{
     vertical-align: middle !important;
+}
+
+#makers{
+    position: relative !important;
+    display: flex;
+    align-items: stretch;
+
+}
+
+.maker{
+    position: static;
+    height: 100%;
+    width: 100%;
+    min-width: 100%;
 }

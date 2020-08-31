@@ -17,12 +17,11 @@
 
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
     <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.ico') }}" />
-
-
     <script src="{{ url_for('static', filename='js/Chart.js') }}"></script>
     <script src="{{ url_for('static', filename='js/jquery/jquery.js') }}"></script>
     <script src="{{ url_for('static', filename='js/apexcharts.js') }}"></script>
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-175635481-1"></script>
+  
     <!-- Google Analytics -->
     <script>
         window.dataLayer = window.dataLayer || [];
@@ -34,6 +33,8 @@
         ga('set', 'userId', '{{ title | user }}'); // Establezca el ID de usuario mediante el user_id con el que haya iniciado sesión.
     </script>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <!-- Global site tag (gtag.js) - Google Analytics -->
     
 

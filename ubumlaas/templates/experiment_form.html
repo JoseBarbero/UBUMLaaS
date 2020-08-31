@@ -11,7 +11,7 @@
             <div class="form-group col-md-6 offset-md-3 mb-4">
                 <div class="form-group control-group">
                     {{ form_e.alg_typ.label(class="form-control-label mt-4 h5") }}
-                    {{ form_e.alg_typ(class="form-control") }}
+                    {{ form_e.alg_typ(class="form-control selectpicker", **{"tabindex":"0"}) }}
                     <div id="alg_typ_feedback" class="invalid-feedback" style="display: hidden">You must select an algorithm type</div>
                 </div>
             </div>
@@ -61,14 +61,14 @@
             <div class="tabs-container col-12">
                 <ul class="nav nav-tabs">
                     <li>
-                        <a data-toggle="tab" href="#normal_tab" class="nav-link active" id="normal_tab-tab" aria-controls="normal_tab" aria-selected="true">Normal</a>
+                        <a data-toggle="tab" href="#normal_tab" class="nav-link active" id="normal_tab_link" aria-controls="normal_tab" aria-selected="true">Normal</a>
                     </li>
                     <li>
-                        <a data-toggle="tab" href="#reduced_tab" class="nav-link" id="reduced_tab-tab" aria-controls="reduced_tab">Reduced</a>
+                        <a data-toggle="tab" href="#reduced_tab" class="nav-link" id="reduced_tab_link" aria-controls="reduced_tab">Reduced</a>
                     </li>
                 </ul>
                 <div class="tab-content">
-                    <div class="tab-pane fade active show" id="normal_tab" role="tabpanel" aria-labelledby="normal_tab-tab">
+                    <div class="tab-pane fade active show" id="normal_tab" role="tabpanel" aria-labelledby="normal_tab_link">
                         <div class="container-fluid">    
                             <fieldset>
                                 <form class="col-12 table-responsive" id="form_dataset_configuration">
@@ -82,7 +82,7 @@
                             </fieldset>
                         </div>
                     </div>
-                    <div class="tab-pane fade" id="reduced_tab" role="tabpanel" aria-labelledby="reduced_tab-tab">
+                    <div class="tab-pane fade" id="reduced_tab" role="tabpanel" aria-labelledby="reduced_tab_link">
                         <div class="container-fluid">    
                             <fieldset>
                                 <form class="col-12 table-responsive" id="form_dataset_configuration_reduced">
@@ -136,40 +136,27 @@
                 </div>
             </form>
         </fieldset>
-        <fieldset id="select_algorithm_block">
-            <form class="form-group col-md-6 offset-md-3" id="form_algorithm">
-                {{ form_d.hidden_tag() }}
-                <div id="show_algorithms" class="form-group" style="text-align: center;">
-                    {% include 'blocks/show_algorithms.html' %}
-                </div>
-            </form>
-        </fieldset>
-        <fieldset class="container" id="config_algorithm_fieldset" style="overflow: auto">
-            <div class="row-fluid">
-                <div>
-                    <div id="form_config_alg" class="form-group">
-                        
+        <hr>
+        <div class="d-flex flex-column" id="container_experiments">
+            <div class="col-1 offset-9 d-flex w-100">
+                <button id="delete_alg" class="btn btn-block btn-danger btn-sm d-flex justify-content-center disabled"><span class="material-icons">
+                    delete
+                    </span></button>
+            </div>
+            <div class="d-flex align-items-center justify-content-between w-100 col-12">
+                <div class="col-1" style="margin-left: -3rem;"><button id="before_button" class="btn btn-block btn-info btn-lg d-flex justify-content-center disabled"><span class="material-icons">
+                    arrow_back_ios
+                    </span></button></div>
+                <div id="makers" class="col-11 border-left border-right w-100 position-relative">
+                    <div class="maker" data-idex="{{ idex }}">
+                        {% include 'blocks/algorithm_maker.html' %}
                     </div>
                 </div>
+                <div class="col-1" style="margin-right: -3rem;"><button id="after_button" class="btn btn-block btn-info btn-lg d-flex justify-content-center"><span class="material-icons">
+                    {#arrow_forward_ios#}add
+                    </span></button></div>
             </div>
-        </fieldset>
-        <fieldset id="select_filter_block">
-            <form class="form-group col-md-6 offset-md-3" id="form_filter">
-                {{ form_d.hidden_tag() }}
-                <div id="show_filters" class="form-group" style="text-align: center;">
-                    {% include 'blocks/show_filters.html' %}
-                </div>
-            </form>
-        </fieldset>
-        <fieldset class="container" id="config_filter_fieldset" style="overflow: auto">
-            <div class="row-fluid">
-                <div>
-                    <div id="form_config_filter" class="form-group">
-                        
-                    </div>
-                </div>
-            </div>
-        </fieldset>
+        </div>
         <fieldset id="submit_completed_experiment_block">
             <form class="col-md-6 offset-3" id="submit_completed_experiment">
                 {{ form_e.hidden_tag() }}
@@ -184,4 +171,11 @@
 {% endblock %}
 {% block js %}
     {% include "blocks/experiment_form_js.html" %}
+    <script src="{{ url_for('static', filename="js/multiexperiment.js") }}"></script>
+    <script>$("document").ready(function(){
+        setTimeout(function(){
+            $("#alg_typ").next().focus();
+        },
+        250);
+    });</script>
 {% endblock %}

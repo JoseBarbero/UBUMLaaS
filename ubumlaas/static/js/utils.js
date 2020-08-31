@@ -11,13 +11,21 @@ function titleCase(str) {
 }
 
 function firstClick(){
+    let y = window.scrollY
     setTimeout(function(){
         $(".selectpicker").each(function(){
-            console.log($(this).parent());
             $(this).next().click();
             $("body").click();
         });
+        window.scrollTo(0, y)
     }, 100);
 
 }
- 
+
+function removeItemOnce(arr, value) { 
+    var index = arr.indexOf(value);
+    if (index > -1) {
+        arr.splice(index, 1);
+    }
+    return arr;
+}

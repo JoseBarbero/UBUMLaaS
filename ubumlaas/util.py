@@ -5,6 +5,7 @@ import variables as v
 import copy
 import arff
 import re
+import json
 import numpy as np
 from itsdangerous import URLSafeTimedSerializer
 from flask_mail import Message
@@ -172,3 +173,16 @@ def find_y_uniques(y):
     uniques = np.unique(y.values)
     uniques.sort()
     return uniques
+
+def string_is_array(a):
+    
+    if a[0]=="[":
+        return a[1:-1].split(",")
+    return a
+
+def convert_to_dict(possible_json_str):
+        """Convert to dictionary
+        """
+        if type(possible_json_str) != dict:
+            possible_json_str = json.loads(possible_json_str)
+        return possible_json_str

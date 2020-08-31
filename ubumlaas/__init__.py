@@ -118,8 +118,13 @@ def create_app(config_name):
             v.app.logger.info("%d - Getting user hash", current_user.id)
             return hash(current_user.id)
 
+    def array_or_string_(cad):
+        if cad[0]=="[":
+            return True
+        return False
 
     app.jinja_env.filters["split"] = split_dict_key
     app.jinja_env.filters["user"] = hash_
+    app.jinja_env.filters["arrayOrString"] = array_or_string_
 
     return app
