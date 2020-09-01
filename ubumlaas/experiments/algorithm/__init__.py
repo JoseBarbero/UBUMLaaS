@@ -78,7 +78,7 @@ def task_skeleton(experiment, current_user):
             res_global.append(json.loads(res))
             
         state_global.append(state)
-    if rep == 1 and not exp_manager.is_multi:
+    if rep == 1:
         res_global = res_global[0]
 
     #Calculate result means
@@ -87,30 +87,15 @@ def task_skeleton(experiment, current_user):
         state=1        
         if exp_manager.is_multi:
             res_mean = []
-            for i in res[0][0].keys():
-                aux_dict = {}
-                aux=[]
-                for j in range(len(res[0])):
-                    aux2=[]
-                    for k in range(rep):
-                       aux2.append(res[k][j][i])
-                    aux.append(aux2)
-                if isinstance(res[0][0][i],list):
-                    aux_dict[i]= [np.array(aux).mean(1).tolist()]
-                else:
-                    aux_dict[i]=np.array(aux).mean(1).tolist()
-                res_mean.append(aux_dict)
-            
+            for i in range(len(res[0])):
+                res_aux = []
+                for j in range(len(res)):
+                    res_aux.append(res[j][i])
+                r_mean = calc_res_mean(res_aux, rep)
+                res_mean.append(r_mean)            
         else:
-            res_mean={}
-            for i in res[0].keys():
-                aux=[]
-                for j in range(rep):
-                    aux.append(res[j][i])
-                if isinstance(res[0][i],list):
-                    res_mean[i]= np.array(aux).mean(0).tolist()
-                else:
-                    res_mean[i]=np.array(aux).mean().tolist()
+            res_mean=calc_res_mean(res, rep)
+
         res=res_mean
     elif 2 not in state_global:
         state = 1
@@ -125,6 +110,27 @@ def task_skeleton(experiment, current_user):
     v.db.session.commit()
 
     send_experiment_result_email(current_user["username"], current_user["email"], experiment["id"], str(experi.result))
+
+def calc_res_mean(res, rep):
+    """Calculate the mean for result of an algorithm
+
+    Args:
+        res ([list]): Executions
+        rep ([int]): Repetitins
+
+    Returns:
+        dict: Results mean
+    """
+    res_mean={}
+    for i in res[0].keys():
+        aux=[]
+        for j in range(rep):
+            aux.append(res[j][i])
+        if isinstance(res[0][i],list):
+            res_mean[i]= np.array(aux).mean(0).tolist()
+        else:
+            res_mean[i]=np.array(aux).mean().tolist()
+    return res_mean
 
 def execute_model(alg_lib,data, exp, current_user,seed_multi=None):
     type_app = alg_lib
