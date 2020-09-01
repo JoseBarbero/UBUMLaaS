@@ -166,6 +166,12 @@ html {
             </div>
         </div>
     </div>
+
+    {% if multi and (experiment.state == 1 or experiment.state == 2) %}
+        <div class="jumbotron" id="multi_comparison">
+            
+        </div>
+    {% endif %}
 </div>
 
 {% endblock %}
@@ -242,6 +248,60 @@ html {
     });
 </script>
 <script>
+    {% if multi and (experiment.state == 1 or experiment.state == 2) %}
+        $("document").ready(function(){
+            result = {{ multi_result|safe  }};
+            $("#multi_comparison").html("<h3 class=\"text-center\">Comparing Models</h3>");
+            var n_exp_ok = 0;
+            var exp_ok = new Array();
+            var single_results = Object.keys(result);
+            //Check number of ok results
+            single_results.forEach(function(i){
+                if (typeof result[i] == "object"){
+                    n_exp_ok+=1;
+                    exp_ok.push(i);
+                } else {
+                    n_exp_ok=n_exp_ok;
+                } 
+            });
+            //console.log({{name|safe}});
+            console.log(exp_ok);
+
+            if ( n_exp_ok<2 ){ //1 or 0 experiment with result ok
+                $("#multi_comparison").append("<p class=\"text-danger text-center\" ><i class=\"material-icons\"> error</i> No possible comparison. "+n_exp_ok+" experiments finished OK.</p>");
+            } else {
+                
+                let sel_metric = $("<select></select>", {id: "metric_comparison_selector", class: "custom-select"});
+                sel_metric.html("");
+                sel_metric.append("<option style=\"display:none\">---Select comparison---<\option>");
+                // Get all types of metrics along different experiments -> union of metrics
+                var metrics_types = new Array();
+                exp_ok.forEach(function(id_exp, indice, array) {
+                    console.log(id_exp, indice);
+                    var single_exp_metrics = Object.keys(result[id_exp]);
+                    console.log(single_exp_metrics);
+                    single_exp_metrics.forEach(function(metrica, indice, array) {
+                        if (metrics_types.indexOf(metrica)==-1){
+                            metrics_types.push(metrica);
+                            var opt = $("<option></option>", {id: indice+"_opt", value: metrica, class:"list-group-item"});
+                            if (indice<metrics_types.length){
+                                opt.addClass("list-group-item-success");
+                            }else{
+                                opt.addClass("list-group-item-primary");
+                            }
+                            opt.text(metrica);
+                            sel_metric.append(opt);
+                        }
+                    });
+                });
+                console.log(metrics_types);
+
+                $("#multi_comparison").append(sel_metric);
+            }
+        });
+    {% endif %}
+</script>
+<script>
     {% if (not multi and experiment.state == 1) or (multi and (experiment.state == 1 or experiment.state == 2)) %}
         to_render = [];
 
@@ -252,8 +312,6 @@ html {
         $("#alg_selection_multi").change(function(){
             result = {{ multi_result|safe  }};
             result = result[$(this).val()];    
-            console.log(result);
-            console.log(typeof(result));
         {% endif %}
             if (typeof result == "string"){
                 $("#header_result").text("Error"); 
