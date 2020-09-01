@@ -15,9 +15,7 @@ function launch_alert_modal(title, text, title_class=null, after=null){
         $("#alert_modal_label").addClass(title_class);
     }
 
-    $("#alert_modal").modal({
-        show: true
-    });
+    launchModal($("#alert_modal"));
 
     if(after !== null){
         $("#alert_modal").on("hide.bs.modal", after)

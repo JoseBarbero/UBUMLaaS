@@ -37,7 +37,10 @@ Project "***Minería de datos para la mejora del mantenimiento y disponibilidad 
     ```bash
     $ conda activate UBUMLaaS
     ```
-5. Modify **env_variables.sh** with properly values
+5. Install *frontend* libraries
+   ```bash
+   $ npm i
+6. Modify **env_variables.sh** with properly values
     ```bash 
     export SECRET_KEY=<app secret key>
     export EMAIL_AC=<email>
@@ -46,17 +49,17 @@ Project "***Minería de datos para la mejora del mantenimiento y disponibilidad 
     export FLASK_ENV=development #development or production
     LIBFOLDER=/absolute/path/to/UBUMLaaS
     ```
-6. With the conda environment UBUMLaaS, execute the script to export environment variables when activate conda env.
+7. With the conda environment UBUMLaaS, execute the script to export environment variables when activate conda env.
     ```bash
     $ source env_vars_to_conda.sh
     ```
-7. Create database
+8. Create database
     ```bash
     $ mv data_base.sqlite ubumlaas/data.sqlite
     ```
     *Opt:* 
     Download a database and put it in ./ubumlaas/
-8. Install Redis-Server
+9.  Install Redis-Server
     ```bash
     $ sudo apt install redis-server
     $ sudo service redis-server start
@@ -71,7 +74,7 @@ Project "***Minería de datos para la mejora del mantenimiento y disponibilidad 
     ```
 2.  Execute to run the server
     ```bash
-    python app.py
+    $ python app.py
     ```
 ## Update database
 1. Execute migrate.py
@@ -79,7 +82,16 @@ Project "***Minería de datos para la mejora del mantenimiento y disponibilidad 
    $ python migrate.py
    ``` 
 
-
+## Using with ngrok
+1. Install [ngrok](https://ngrok.com/download)
+2. Connect to your account
+    ```bash
+    $ ngrok authtoken <your token>
+    ```
+3. Open http with port 5000 (or any other port as appropieate)
+   ```bash
+   $ ngrok http 5000
+   ```
 ---
 
 <a href="https://ec.europa.eu/regional_policy/es/funding/erdf/"><img hspace="2%" align="center" width="20%" src="ubumlaas/static/img/FEDER.svg"></a>
