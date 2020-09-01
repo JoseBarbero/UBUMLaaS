@@ -63,45 +63,39 @@ def task_skeleton(experiment, current_user):
             rand = random.randint(1,1000000000)        
             for i in range(len(exp)):
                 r,s = execute_model(exp[i]["alg"]["lib"],data,exp[i],current_user,rand)
-                res.append(r)
+                if s == 1:
+                    res.append(json.loads(r))
+                else:
+                    res.append(r)
                 state.append(s)
-                #TODO: CHANGE TO GLOBAL EXPERIMENT STATE NOT ONLY FIRST ONE
             if 2 in state:
                 state = 2
             else:
                 state = 1
-
+            res_global.append(res)
         else:
             res,state=execute_model(exp["alg"]["lib"],data,exp,current_user)
-        res_global.append(res)
-        state_global.append(state)
-    
-    #Calculate result means
-    if rep>1 and 2 not in state_global:
-        state=1
-        res_mean={}
-        if exp_manager.is_multi:
-           for i in res[0][0].keys():
-               aux=[]
-               for j in range(len(res[0])):
-                   aux2=[]
-                   for k in range(rep):
-                       aux2.append(res[k][j][i])
-                    aux.append(aux2)
-                if isinstance(res[0][0][i],list):
-                    res_mean[i]= [np.array(aux.mean(1))]
-                else:
-                    res_mean[i]=np.array(aux).mean(1)
+            res_global.append(json.loads(res))
             
+        state_global.append(state)
+    if rep == 1:
+        res_global = res_global[0]
+
+    #Calculate result means
+    res = res_global
+    if rep>1 and 2 not in state_global:
+        state=1        
+        if exp_manager.is_multi:
+            res_mean = []
+            for i in range(len(res[0])):
+                res_aux = []
+                for j in range(len(res)):
+                    res_aux.append(res[j][i])
+                r_mean = calc_res_mean(res_aux, rep)
+                res_mean.append(r_mean)            
         else:
-            for i in res[0].keys():
-                aux=[]
-                for j in range(rep):
-                    aux.append(res[j][i])
-                if isinstance(res[0][i],list):
-                    res_mean[i]= [np.array(aux.mean(0))]
-                else:
-                    res_mean[i]=np.array(aux).mean()
+            res_mean=calc_res_mean(res, rep)
+
         res=res_mean
     elif 2 not in state_global:
         state = 1
@@ -116,6 +110,27 @@ def task_skeleton(experiment, current_user):
     v.db.session.commit()
 
     send_experiment_result_email(current_user["username"], current_user["email"], experiment["id"], str(experi.result))
+
+def calc_res_mean(res, rep):
+    """Calculate the mean for result of an algorithm
+
+    Args:
+        res ([list]): Executions
+        rep ([int]): Repetitins
+
+    Returns:
+        dict: Results mean
+    """
+    res_mean={}
+    for i in res[0].keys():
+        aux=[]
+        for j in range(rep):
+            aux.append(res[j][i])
+        if isinstance(res[0][i],list):
+            res_mean[i]= np.array(aux).mean(0).tolist()
+        else:
+            res_mean[i]=np.array(aux).mean().tolist()
+    return res_mean
 
 def execute_model(alg_lib,data, exp, current_user,seed_multi=None):
     type_app = alg_lib

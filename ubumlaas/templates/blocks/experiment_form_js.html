@@ -289,6 +289,13 @@
             cv.toggle();
         });
 
+        $("input[type=radio][name=seed_or_repetition]").on("change", function(){
+            let tt = $("#random_seed_div");
+            let cv = $("#repetition_activator_div");
+            tt.toggle();
+            cv.toggle();
+        });
+
         $("#dataset").change(function(){
             var filename =  $("#dataset").val().replace(/C:\\fakepath\\/i, '')
             $("#datasetLabel").text(filename);
