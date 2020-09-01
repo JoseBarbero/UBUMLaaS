@@ -2,7 +2,7 @@ os: linux
 dist: bionic
 language: python
 python: 3.7
-node_js: 10
+node_js: 12
 jdk:
   - openjkd8
 jobs:
@@ -39,6 +39,7 @@ install:
   - tar -xvf /tmp/ubumlaas.tar -C $TRAVIS_BUILD_DIR/ubumlaas/datasets/ubumlaas
   - cp $TRAVIS_BUILD_DIR/ubumlaas/datasets/ubumlaas/* $TRAVIS_BUILD_DIR/test/datasets
   - cp $TRAVIS_BUILD_DIR/ubumlaas/datasets/ubumlaas/* $TRAVIS_BUILD_DIR/ubumlaas/datasets/ubumlaas2
+  - npm i
   
 before_script:
   - wget http://mirror.jkanetwork.com/Datasets/env_variables.sh -O env_variables.sh --no-check-certificate
