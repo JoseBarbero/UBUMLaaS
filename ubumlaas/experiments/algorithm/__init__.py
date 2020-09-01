@@ -16,6 +16,7 @@ import pandas as pd
 import variables as v
 import traceback
 import random
+import numpy as np
 
 from ubumlaas.util import send_experiment_result_email
 from time import time
@@ -49,20 +50,64 @@ def task_skeleton(experiment, current_user):
     # Get algorithm type
     data = experiment["data"]
     if exp_manager.is_multi:
-        res=[]
-        state=[]
-        #Seed for no seed experiments, multi experiments should execute with the same data
-        rand = random.randint(1,1000000000)        
-        for i in range(len(exp)):
-            r,s = execute_model(exp[i]["alg"]["lib"],data,exp[i],current_user,rand)
-            res.append(r)
-            state.append(s)
-            #TODO: CHANGE TO GLOBAL EXPERIMENT STATE NOT ONLY FIRST ONE
-        state=state[0]
-
+        rep = exp[0]["exp_config"]["repetition"]
     else:
-        res,state=execute_model(exp["alg"]["lib"],data,exp,current_user)
+        rep = exp["exp_config"]["repetition"]
+    res_global = []
+    state_global=[]
+    for i in range(rep):
+        if exp_manager.is_multi:
+            res=[]
+            state=[]
+            #Seed for no seed experiments, multi experiments should execute with the same data
+            rand = random.randint(1,1000000000)        
+            for i in range(len(exp)):
+                r,s = execute_model(exp[i]["alg"]["lib"],data,exp[i],current_user,rand)
+                res.append(r)
+                state.append(s)
+                #TODO: CHANGE TO GLOBAL EXPERIMENT STATE NOT ONLY FIRST ONE
+            if 2 in state:
+                state = 2
+            else:
+                state = 1
+
+        else:
+            res,state=execute_model(exp["alg"]["lib"],data,exp,current_user)
+        res_global.append(res)
+        state_global.append(state)
     
+    #Calculate result means
+    if rep>1 and 2 not in state_global:
+        state=1
+        res_mean={}
+        if exp_manager.is_multi:
+           for i in res[0][0].keys():
+               aux=[]
+               for j in range(len(res[0])):
+                   aux2=[]
+                   for k in range(rep):
+                       aux2.append(res[k][j][i])
+                    aux.append(aux2)
+                if isinstance(res[0][0][i],list):
+                    res_mean[i]= [np.array(aux.mean(1))]
+                else:
+                    res_mean[i]=np.array(aux).mean(1)
+            
+        else:
+            for i in res[0].keys():
+                aux=[]
+                for j in range(rep):
+                    aux.append(res[j][i])
+                if isinstance(res[0][i],list):
+                    res_mean[i]= [np.array(aux.mean(0))]
+                else:
+                    res_mean[i]=np.array(aux).mean()
+        res=res_mean
+    elif 2 not in state_global:
+        state = 1
+    else:
+        state = 2
+
     from ubumlaas.models import Experiment
     experi = Experiment.query.filter_by(id=experiment['id']).first()
     experi.result = json.dumps(res)
