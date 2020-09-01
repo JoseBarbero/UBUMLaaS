@@ -722,19 +722,3 @@ class TestDefaultSuite():
         time.sleep(self.wait)
         assert "KNeighborsClassifier" in self.driver.find_element(By.CSS_SELECTOR, "#alg_params > div > div.col-12.row-odd > label").text
         self.logout()
-
-    def test_7DatasetsProfile(self):
-        """Check experiment on user2.
-
-            Steps:
-                1. Login as ubumlaas2.
-                2. Click on My launched experiments.
-                3. Check weather.nominal.arff in on Dataset table.
-                4. Logout.
-        """
-        self.login("ubumlaas2@gmail.com")
-        self.driver.find_element(By.LINK_TEXT, "My launched experiments").click()
-        time.sleep(self.wait)
-        assert "weather.nominal.arff" in self.driver.find_element(By.CSS_SELECTOR, "#dataset_list > tbody > tr:nth-child(4) > td:nth-child(2)").text
-        self.logout()
-        #dataset_list > tbody > tr:nth-child(1) > td:nth-child(2)
