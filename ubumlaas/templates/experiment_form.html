@@ -98,9 +98,21 @@
         </div>
         <fieldset id="config_experiment_block">
             <form class="col-md-6 offset-md-3" id="form_dataset_parameters">
-                <div class="form-group row mt-4">
+                <div class="form-group row mt-4" >
                     <div class="center float-left">
-                            <label for="experiment_seed_value">Experiment random seed</label>
+                        <label class="pure-material-radio mr-2">
+                            <input type="radio" checked="checked" value="part_seed" name="seed_or_repetition">
+                            <span><br>Partition seed</span>
+                        </label>
+                        <label class="pure-material-radio ml-2">
+                            <input type="radio" value="repetition" name="seed_or_repetition">                    
+                            <span><br>Multiple executions</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group row mt-4">
+                    <div class="form-group col-md-4 offset-md-4 config_alg" id="random_seed_div">
+                            <label for="experiment_seed_value">Random seed</label>
                             <div class="row config_alg" id="experiment_seed_activator_div">
                                 <input data-toggle="tooltip" title="The random seed for dataset distribution" type="number" step="1" min="0" max="4294967295" id="experiment_seed_value" value="0" class="col-10 form-control" disabled="disabled">
                                 <div class="material-switch pull-right col-2" id="experiment_seed_activator_beauty">
@@ -109,6 +121,10 @@
                                         onclick="change_validate('experiment_seed')" class="badge-danger"></label>
                                 </div>
                             </div>
+                    </div>
+                    <div class="form-group col-md-4 offset-md-4 config_alg" id="repetition_activator_div" style="display: none">
+                        <label for="repetition_value">Repetitions</label>
+                        <input class="form-control" id="repetition_value" min="1" max="100" name="repetition_value" type="number" value="10">
                     </div>
                 </div>
                 <div class="form-group row mt-4" >

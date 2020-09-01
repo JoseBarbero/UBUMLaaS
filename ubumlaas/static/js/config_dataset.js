@@ -106,9 +106,19 @@ function get_dataset_config(){
     }
 
     dataset_config.columns = selected_columns;
+    
+    let r_s = $("input[type=radio][name=seed_or_repetition]:checked").val();
+    switch(r_s){
+        case "part_seed":
+            random_seed = $("#experiment_seed_value");
+            dataset_config.random_seed = random_seed.attr("disabled") ? null : parseInt(random_seed.val());
+            break;
+        case "repetition":
+            dataset_config.repetition = parseInt($("#repetition_value").val());
+            break;
+    }
 
-    random_seed = $("#experiment_seed_value");
-    dataset_config.random_seed = random_seed.attr("disabled") ? null : parseInt(random_seed.val());
+
     dataset_config.alg_type = alg_typ.val();
     return dataset_config;
 }
