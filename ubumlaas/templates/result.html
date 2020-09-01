@@ -171,6 +171,9 @@ html {
         <div class="jumbotron" id="multi_comparison">
             
         </div>
+        <div id='svg_container'>
+            <svg> </svg>
+        </div>
     {% endif %}
 </div>
 
@@ -247,31 +250,22 @@ html {
         $("#name_alg").html(name_alg_selected);     
     });
 </script>
+<script src="https://d3js.org/d3.v6.min.js"></script>
 <script>
     {% if multi and (experiment.state == 1 or experiment.state == 2) %}
         $("document").ready(function(){
             result = {{ multi_result|safe  }};
             $("#multi_comparison").html("<h3 class=\"text-center\">Comparing Models</h3>");
-            var n_exp_ok = 0;
-            var exp_ok = new Array();
-            var single_results = Object.keys(result);
-            //Check number of ok results
-            single_results.forEach(function(i){
-                if (typeof result[i] == "object"){
-                    n_exp_ok+=1;
-                    exp_ok.push(i);
-                } else {
-                    n_exp_ok=n_exp_ok;
-                } 
-            });
-            //console.log({{name|safe}});
+            
+            exp_ok = get_exp_ok(result);
+            n_exp_ok = exp_ok.length;
             console.log(exp_ok);
 
             if ( n_exp_ok<2 ){ //1 or 0 experiment with result ok
                 $("#multi_comparison").append("<p class=\"text-danger text-center\" ><i class=\"material-icons\"> error</i> No possible comparison. "+n_exp_ok+" experiments finished OK.</p>");
             } else {
                 
-                let sel_metric = $("<select></select>", {id: "metric_comparison_selector", class: "custom-select"});
+                var sel_metric = $("<select></select>", {id: "metric_comparison_selector", class: "custom-select", onchange:"comparison_onchange()"});
                 //sel_metric.html("");
                 var def_opt = $("<option></option>", {style:"display:none"})
                 def_opt.text("--- Select comparison ---");
@@ -304,6 +298,191 @@ html {
             }
         });
     {% endif %}
+
+    function comparison_onchange(){
+
+        var metric_selected = jQuery('#metric_comparison_selector').val();
+        var div = document.getElementById('TBD');
+        if (div) {
+            div.parentNode.removeChild(div);
+        }
+                      
+        if (metric_selected != "ROC" && metric_selected != "confussion_matrix"){
+
+            //Create json of data
+            var metric_data = [];
+            var alg_names = {{ name|safe }};
+            var result = {{ multi_result|safe }};
+            var exp_ok = get_exp_ok(result);
+            exp_ok.forEach(function(id_exp, indice, array){
+                //Mean of all k-folds if exists
+                item = {};
+                item['algorithm'] = alg_names[id_exp]+"_"+indice;
+                var arr = result[id_exp][metric_selected];
+                var mean = (arr.reduce((a,b) => a + b, 0) / arr.length)*100;
+                item["metric"] = Math.round((mean + Number.EPSILON) * 100) / 100
+                metric_data.push(item); 
+            });
+
+            //Make D3 graph       
+            const margin = 60;
+            const width = 1000 - 2 * margin;
+            const height = 600 - 2 * margin;
+
+            const svg = d3.select('svg');
+            svg.html("");
+            document.getElementsByTagName("svg")[0].setAttribute("width", "1000px");
+            document.getElementsByTagName("svg")[0].setAttribute("height", "600px");
+
+            const chart = svg.append('g').attr('transform', `translate(${margin}, ${margin})`);
+
+            //Set up axis
+            const xScale = d3.scaleBand().range([0, width]).domain(metric_data.map((e) => e.algorithm)).padding(0.2);
+            const yScale = d3.scaleLinear().range([height, 0]).domain([0, 100]);
+
+            const makeYLines = () => d3.axisLeft().scale(yScale)
+
+            chart.append('g').attr('transform', `translate(0, ${height})`).call(d3.axisBottom(xScale));
+            chart.append('g').call(d3.axisLeft(yScale));
+
+
+            chart.append('g')
+                .attr('class', 'grid')
+                .call(makeYLines()
+                    .tickSize(-width, 0, 0)
+                    .tickFormat('')
+            )
+
+            const barGroups = chart.selectAll()
+            .data(metric_data)
+            .enter()
+            .append('g')
+
+            barGroups
+            .append('rect')
+            .attr('class', 'bar')
+            .attr('x', (g) => xScale(g.algorithm))
+            .attr('y', (g) => yScale(g.metric))
+            .attr('height', (g) => height - yScale(g.metric))
+            .attr('width', xScale.bandwidth())
+            .style('fill', getComputedStyle(document.documentElement).getPropertyValue('--ubu-maroon'))
+            .on('mouseenter', function (actual, i) {
+
+                d3.selectAll('.metric')
+                    .attr('opacity', 0)
+        
+                d3.select(this)
+                    .transition()
+                    .duration(300)
+                    .attr('opacity', 0.6)
+                    .attr('x', (a) => xScale(a.algorithm) - 5)
+                    .attr('width', xScale.bandwidth() + 10)
+        
+                const y = yScale(i.metric)
+        
+                line = chart.append('line')
+                    .attr('id', 'limit')
+                    .attr('x1', 0)
+                    .attr('y1', y)
+                    .attr('x2', width)
+                    .attr('y2', y)
+                    .style("stroke", getComputedStyle(document.documentElement).getPropertyValue('--ubu-maroon'))
+                    .style("stroke-dasharray", "3 6")
+                    .style("stroke-width", "3")
+        
+                barGroups.append('text')
+                    .attr('class', 'divergence')
+                    .attr('x', (a) => xScale(a.algorithm) + xScale.bandwidth() / 2)
+                    .attr('y', (a) => yScale(a.metric) + 30)
+                    .attr('fill', 'white')
+                    .attr('text-anchor', 'middle')
+                    .text((a, idx) => {
+                    const divergence = (a.metric - i.metric).toFixed(1)
+                    
+                    let text = ''
+                    if (divergence > 0) text += '+'
+                    text += `${divergence}%`
+        
+                    return idx !== i ? text : '';
+                    })
+      
+            })
+            .on('mouseleave', function () {
+              d3.selectAll('.metric')
+                .attr('opacity', 1)
+      
+              d3.select(this)
+                .transition()
+                .duration(300)
+                .attr('opacity', 1)
+                .attr('x', (a) => xScale(a.algorithm))
+                .attr('width', xScale.bandwidth())
+      
+              chart.selectAll('#limit').remove()
+              chart.selectAll('.divergence').remove()
+            })
+            
+            barGroups 
+                .append('text')
+                .attr('class', 'metric')
+                .attr('x', (a) => xScale(a.algorithm) + xScale.bandwidth() / 2)
+                .attr('y', (a) => yScale(a.metric) + 30)
+                .attr('text-anchor', 'middle')
+                .attr('fill', 'white')
+                .attr('font-size', '20px')
+                .text((a) => `${a.metric}%`)
+            
+            svg
+                .append('text')
+                .attr('class', 'label')
+                .attr('x', -(height / 2) - margin)
+                .attr('y', margin / 2.4)
+                .attr('transform', 'rotate(-90)')
+                .attr('text-anchor', 'middle')
+                .text(metric_selected+' (%)')
+
+            svg.append('text')
+                .attr('class', 'label')
+                .attr('x', width / 2 + margin)
+                .attr('y', height + margin * 1.7)
+                .attr('text-anchor', 'middle')
+                .text('Experiments')
+
+            svg.append('text')
+                .attr('class', 'title')
+                .attr('x', width / 2 + margin)
+                .attr('y', 40)
+                .attr('text-anchor', 'middle')
+                .text(metric_selected+" comparison")
+
+        } else {
+            
+            document.getElementsByTagName("svg")[0].setAttribute("width", "0px");
+            document.getElementsByTagName("svg")[0].setAttribute("height", "0px");
+            $("svg").html("");
+            $("#multi_comparison").append("<p id=\"TBD\">To Be Done...</p>");
+        }
+
+    }
+
+     /**
+     * Get experiments with OK result
+     *
+     * @param {list[][]} matrix
+     * @return {list[]} list of index of experimests OK
+     */
+     function get_exp_ok(all_result){
+        var n_exp_ok = 0;
+        var exp_ok = new Array();
+        var single_results = Object.keys(all_result);
+        //Check number of ok results
+        single_results.forEach(function(i){
+            if (typeof all_result[i] == "object"){
+                exp_ok.push(i);
+            } 
+        });
+        return exp_ok;
+    }
 </script>
 <script>
     {% if (not multi and experiment.state == 1) or (multi and (experiment.state == 1 or experiment.state == 2)) %}
