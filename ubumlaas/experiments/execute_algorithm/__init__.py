@@ -55,7 +55,12 @@ class Experiment_manager():
                 v.app.logger.info("Not Filtered - %d - %s", self.id, self.algorithm_name)
         
         self.algorithm_configuration = convert_to_dict(experiment["alg_config"])  # configuration algorithm
-        self.experiment_configuration = convert_to_dict(experiment["exp_config"])
+        aux_exp_config = convert_to_dict(experiment["exp_config"])
+        if aux_exp_config.get("repetition",None) is None:
+            aux_exp_config["repetition"]=1
+        else:
+            aux_exp_config["seed"]=None
+        self.experiment_configuration = aux_exp_config
         self.algorithm_type = self.experiment_configuration["alg_type"]# classification, reggression...
 
         v.app.logger.info("New execution - %d - %s - %s", self.id, self.algorithm_name, self.algorithm_type)
