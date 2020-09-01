@@ -596,8 +596,11 @@ class TestDefaultSuite():
         self.login("ubumlaas@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
         assert self.driver.find_element(By.CSS_SELECTOR, "#train_test_div > .form-control-label").text == "Train/Test partition"
-        self.driver.find_element(By.CSS_SELECTOR, ".ml-2 > span").click()
-        assert self.driver.find_element(By.CSS_SELECTOR, "#cross_validation_div > .form-control-label").text == "Number of folds"
+        time.sleep(self.wait*2)
+        self.driver.execute_script("arguments[0].scrollIntoView();", self.driver.find_element(By.ID, "random_seed_div"))
+        time.sleep(self.wait*2)
+        self.driver.find_element(By.CSS_SELECTOR, "#config_experiment_block > div:nth-child(3) > div > label.pure-material-radio.ml-2").click()
+        assert self.driver.find_element(By.CSS_SELECTOR, "#cross_validation_div > label").text == "Number of folds"
         self.logout()
 
     def test_51Algorithm(self):
@@ -717,21 +720,5 @@ class TestDefaultSuite():
         time.sleep(self.wait)
         self.driver.find_element(By.LINK_TEXT, "SEE").click()
         time.sleep(self.wait)
-        assert "KNeighborsClassifier" in self.driver.find_element(By.CSS_SELECTOR, "body > div > div > div > div:nth-child(1) > div > div:nth-child(3) > p.col-md-9").text
+        assert "KNeighborsClassifier" in self.driver.find_element(By.CSS_SELECTOR, "#alg_params > div > div.col-12.row-odd > label").text
         self.logout()
-
-    def test_7DatasetsProfile(self):
-        """Check experiment on user2.
-
-            Steps:
-                1. Login as ubumlaas2.
-                2. Click on My launched experiments.
-                3. Check contact-lenses.arff in on Dataset table.
-                4. Logout.
-        """
-        self.login("ubumlaas2@gmail.com")
-        self.driver.find_element(By.LINK_TEXT, "My launched experiments").click()
-        time.sleep(self.wait)
-        assert "contact-lenses.arff" in self.driver.find_element(By.CSS_SELECTOR, "#dataset_list > tbody > tr:nth-child(1) > td:nth-child(2)").text
-        self.logout()
-        #dataset_list > tbody > tr:nth-child(1) > td:nth-child(2)
