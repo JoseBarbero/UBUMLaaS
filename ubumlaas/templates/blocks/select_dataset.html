@@ -3,17 +3,17 @@
     {{form_e.data(class="form-control selectpicker", **{"data-live-search": "true"}) }}
     <div id="data_feedback" class="invalid-feedback" style="display: hidden">You must select an uploaded dataset</div>
     <script> 
-        $("#data").change(function () {
-            let chosen_dataset = $("#data").val();
+        $("#data_{{ iddex }}").change(function () {
+            let chosen_dataset = $("#data_{{ iddex }}").val();
             $.ajax({
                 url: '{{ url_for("experiments.change_column_list") }}',
                 type: 'POST',
                 contentType: 'application/x-www-form-urlencoded',
-                data: "data=" + chosen_dataset,
+                data: "data=" + chosen_dataset+"&iddex={{ iddex }}",
                 success: function (result) {
-                    $("#dataset_parameters").html(result.html);
-                    $("#reduced_parameters").html(result.html2);
-                    $("#show_dataset").html(result.df);
+                    $("#dataset_parameters_{{ iddex }}").html(result.html);
+                    $("#reduced_parameters_{{ iddex }}").html(result.html2);
+                    $("#show_dataset_{{ iddex }}").html(result.df);
                     if(!page_information.mode.reuse){
                         if(result.config == null){
                             if(UNSUPERVISED.includes($("#alg_typ").val())){

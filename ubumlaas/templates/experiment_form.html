@@ -16,86 +16,26 @@
                 </div>
             </div>
         </fieldset>
-        <div class="row mt-4" id="upload_dataset_block">
-            <div class="col-md-6">
-                <fieldset>
-                    <form class="col-md-8 offset-md-2" id="form_dataset">
-                        {{ form_d.hidden_tag() }}
-                        <div class="row">
-                            <div class="form-group custom-file col-10">
-                                {{ form_d.dataset(class="custom-file-input") }}
-                                {{ form_d.dataset.label(class="custom-file-label",id="datasetLabel") }}                        
-                            </div>
-                            <div class="col-2">
-                                <a
-                                style="color: var(--info);"
-                                href="#a"
-                                data-trigger="focus"
-                                title="Detaset help"
-                                data-container="body"
-                                data-toggle="popover"
-                                data-placement="top"
-                                data-content="Upload only CSV with header or dense ARFF. By default the last attribute will be selected as target." 
-                                >
-                                    <i class="material-icons">live_help</i>
-                            </a> 
-                            </div>
-                        </div>
-                        <div class="form-group mt-2">
-                            <button class="btn btn-secondary btn-block" id="uploadDataset">Upload</button>
-                        </div>
-                    </form>
-                </fieldset>
+        <div class="d-flex flex-column" id="container_algs">
+            <div class="col-1 offset-9 d-flex w-100">
+                <button id="delete_data" class="btn btn-block btn-danger btn-sm d-flex justify-content-center disabled"><span class="material-icons">
+                    delete
+                    </span></button>
             </div>
-            <div class="col-md-6">
-                <fieldset>
-                    <form class="col-md-8 offset-md-2" id="form_dataset2">
-                        <div id="select_dataset">
-                            {% include 'blocks/select_dataset.html' %}
-                        </div>
-                    </form>
-                </fieldset>
+            <div class="d-flex align-items-center justify-content-between w-100 col-12">
+                <div class="col-1" style="margin-left: -3rem;"><button id="before_d_button" type="button" class="btn btn-block btn-info btn-lg d-flex justify-content-center disabled"><span class="material-icons">
+                    arrow_back_ios
+                    </span></button></div>
+                <div id="data-makers" class="col-11 border-left border-right w-100 position-relative">
+                    {% include "blocks/dataset_maker.html" %}
+                </div>
+                <div class="col-1" style="margin-right: -3rem;"><button id="after_d_button" type="button" class="btn btn-block btn-info btn-lg d-flex justify-content-center"><span class="material-icons">
+                    {#arrow_forward_ios#}add
+                    </span></button></div>
             </div>
         </div>
-        <div class="row" id="config_dataset_block">
-            <div class="tabs-container col-12">
-                <ul class="nav nav-tabs">
-                    <li>
-                        <a data-toggle="tab" href="#normal_tab" class="nav-link active" id="normal_tab_link" aria-controls="normal_tab" aria-selected="true">Normal</a>
-                    </li>
-                    <li>
-                        <a data-toggle="tab" href="#reduced_tab" class="nav-link" id="reduced_tab_link" aria-controls="reduced_tab">Reduced</a>
-                    </li>
-                </ul>
-                <div class="tab-content">
-                    <div class="tab-pane fade active show" id="normal_tab" role="tabpanel" aria-labelledby="normal_tab_link">
-                        <div class="container-fluid">    
-                            <fieldset>
-                                <form class="col-12 table-responsive" id="form_dataset_configuration">
-                                    <div id="dataset_parameters" class="form-group">
-                                        {% include 'blocks/show_columns.html' %}
-                                    </div>
-                                    <div id="show_dataset" class="form-group">
-                                        {% include 'blocks/show_dataset.html' %}
-                                    </div>
-                                </form>
-                            </fieldset>
-                        </div>
-                    </div>
-                    <div class="tab-pane fade" id="reduced_tab" role="tabpanel" aria-labelledby="reduced_tab_link">
-                        <div class="container-fluid">    
-                            <fieldset>
-                                <form class="col-12 table-responsive" id="form_dataset_configuration_reduced">
-                                    <div id="reduced_parameters" class="form-group">
-                                        {% include 'blocks/show_columns_reduced.html' %}
-                                    </div>
-                                <form>
-                            </fieldset>    
-                        </div>    
-                    </div>
-                </div>    
-            </div>
-        </div>
+
+
         <fieldset id="config_experiment_block">
             <form class="col-md-6 offset-md-3" id="form_dataset_parameters">
                 <div class="form-group row mt-4" >
@@ -152,6 +92,7 @@
                 </div>
             </form>
         </fieldset>
+
         <hr>
         <div class="d-flex flex-column" id="container_experiments">
             <div class="col-1 offset-9 d-flex w-100">

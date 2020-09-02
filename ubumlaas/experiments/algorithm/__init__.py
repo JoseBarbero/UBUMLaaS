@@ -55,7 +55,7 @@ def task_skeleton(experiment, current_user):
         rep = exp["exp_config"]["repetition"]
     res_global = []
     state_global=[]
-    for i in range(rep):
+    for _ in range(rep):
         if exp_manager.is_multi:
             res=[]
             state=[]

@@ -1,5 +1,5 @@
 from flask import \
-    (render_template)
+    (render_template, request)
 from ubumlaas.experiments.forms import \
     (ExperimentForm, DatasetForm)
 from flask_login import (current_user, login_required)
@@ -23,6 +23,16 @@ def update_dataset_list():
     form_e = ExperimentForm(0)
     form_e.dataset_list() #log inside dataset_list
     return render_template("blocks/select_dataset.html", form_e=form_e)
+
+@login_required
+@views.experiments.route("/new_dataset_maker", methods=["POST"])
+def new_dataset_maker():
+
+    iddex = request.form.get("idex", 0)
+    form_e = ExperimentForm(0, iddex)
+    form_e.dataset_list()
+    form_d = DatasetForm()
+    return  render_template("blocks/dataset_maker.html", form_e=form_e, iddex=iddex, form_d=form_d);
 
 
 @login_required

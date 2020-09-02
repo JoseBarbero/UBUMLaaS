@@ -14,11 +14,11 @@
                 <th scope="row">Use</th>
                 {% for i in data %}
                 <td class="column-dataset center-block" style="min-width:100px" data-toggle="tooltip" title="Use or not {{ i }} attribute.">
-                    <div class="material-switch" id="col{{ loop.index0 }}_use_div">
-                        <input type="checkbox" id="col{{ loop.index0 }}_use" {% if not loop.last %} checked="checked"
+                    <div class="material-switch" id="col{{ loop.index0 }}_use_div_{{ iddex }}">
+                        <input type="checkbox" id="col{{ loop.index0 }}_use_{{ iddex }}" {% if not loop.last %} checked="checked"
                             {% endif %} />
-                        <label for="col{{ loop.index0 }}_use" id="col{{ loop.index0 }}_use_label" class="badge-primary"
-                            onclick="target_or_use('col{{ loop.index0 }}','use')"></label>
+                        <label for="col{{ loop.index0 }}_use_{{ iddex }}" id="col{{ loop.index0 }}_use_label_{{ iddex }}" class="badge-primary"
+                            onclick="target_or_use('col{{ loop.index0 }}','use', {{ iddex }})"></label>
                     </div>
                 </td>
                 {% endfor %}
@@ -27,11 +27,11 @@
                 <th scope="row">Target</th>
                 {% for i in data %}
                 <td class="column-dataset" style="min-width:100px" data-toggle="tooltip" title="Use {{ i }} attribute as target or not.">
-                    <div class="material-switch " id="col{{ loop.index0 }}_target_div">
-                        <input type="checkbox" id="col{{ loop.index0 }}_target" class="col_target" {% if loop.last %}
+                    <div class="material-switch " id="col{{ loop.index0 }}_target_div_{{ iddex }}">
+                        <input type="checkbox" id="col{{ loop.index0 }}_target_{{ iddex }}" class="col_target" {% if loop.last %}
                             checked="checked" {% endif %} />
-                        <label for="col{{ loop.index0 }}_target" id="col{{ loop.index0 }}_target_label" class="badge-info"
-                            onclick="only_one_target('col{{ loop.index0 }}_target');target_or_use('col{{ loop.index0 }}','target')"></label>
+                        <label for="col{{ loop.index0 }}_target_{{ iddex }}" id="col{{ loop.index0 }}_target_label_{{ iddex }}" class="badge-info"
+                            onclick="only_one_target('col{{ loop.index0 }}_target_{{ iddex }}', {{ iddex }});target_or_use('col{{ loop.index0 }}','target', {{ iddex }})"></label>
                     </div>
                 </td>
                 {% endfor %}
