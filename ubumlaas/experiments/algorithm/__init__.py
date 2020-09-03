@@ -22,6 +22,7 @@ from ubumlaas.util import send_experiment_result_email
 from time import time
 import json
 import os
+from ubumlaas.util import string_is_array
 
 import weka.core.jvm as jvm
 from ubumlaas.util import get_dataframe_from_file
@@ -49,55 +50,80 @@ def task_skeleton(experiment, current_user):
     # Diference sklearn executor and weka executor
     # Get algorithm type
     data = experiment["data"]
+    data = string_is_array(data)
+    if not isinstance(data,list):
+        data = [data]
     if exp_manager.is_multi:
         rep = exp[0]["exp_config"]["repetition"]
     else:
         rep = exp["exp_config"]["repetition"]
-    res_global = []
-    state_global=[]
-    for i in range(rep):
-        if exp_manager.is_multi:
-            res=[]
-            state=[]
-            #Seed for no seed experiments, multi experiments should execute with the same data
-            rand = random.randint(1,1000000000)        
-            for i in range(len(exp)):
-                r,s = execute_model(exp[i]["alg"]["lib"],data,exp[i],current_user,rand)
-                if s == 1:
-                    res.append(json.loads(r))
+    res_global_data = []
+    state_global_data=[]
+    for j in range(len(data)):
+        res_global = []
+        state_global=[]
+        for i in range(rep):
+            if exp_manager.is_multi:
+                res=[]
+                state=[]
+                #Seed for no seed experiments, multi experiments should execute with the same data
+                rand = random.randint(1,1000000000)        
+                for i in range(len(exp)):
+                    aux_exp = exp[i]
+                    if len(data)>1:
+                        aux_exp["exp_config"]["target"]=aux_exp["exp_config"]["target"][j]
+                        aux_exp["exp_config"]["columns"]=aux_exp["exp_config"]["columns"][j]
+                    r,s = execute_model(exp[i]["alg"]["lib"],data[i],aux_exp,current_user,rand)
+                    if s == 1:
+                        res.append(json.loads(r))
+                    else:
+                        res.append(r)
+                    state.append(s)
+                if 2 in state:
+                    state = 2
                 else:
-                    res.append(r)
-                state.append(s)
-            if 2 in state:
-                state = 2
+                    state = 1
+                res_global.append(res)
             else:
-                state = 1
-            res_global.append(res)
+                aux_exp = exp
+                if len(data)>1:
+                        aux_exp["exp_config"]["target"]=aux_exp["exp_config"]["target"][j]
+                        aux_exp["exp_config"]["columns"]=aux_exp["exp_config"]["columns"][j]
+                res,state=execute_model(exp["alg"]["lib"],data[i],aux_exp,current_user)
+                res_global.append(json.loads(res))
+                
+            state_global.append(state)
+        if 2 in state_global:
+            state_global = 2
         else:
-            res,state=execute_model(exp["alg"]["lib"],data,exp,current_user)
-            res_global.append(json.loads(res))
-            
-        state_global.append(state)
-    if rep == 1:
-        res_global = res_global[0]
+            state_global = 1
+        if rep == 1:
+            res_global = res_global[0]
+        
+        res_global_data.append(res_global)
+        state_global_data.append(state_global)
 
     #Calculate result means
-    res = res_global
-    if rep>1 and 2 not in state_global:
-        state=1        
-        if exp_manager.is_multi:
-            res_mean = []
-            for i in range(len(res[0])):
-                res_aux = []
-                for j in range(len(res)):
-                    res_aux.append(res[j][i])
-                r_mean = calc_res_mean(res_aux, rep)
-                res_mean.append(r_mean)            
-        else:
-            res_mean=calc_res_mean(res, rep)
-
-        res=res_mean
-    elif 2 not in state_global:
+    res = res_global_data
+    res_data=[]
+    for k in range(len(data)):
+        if rep>1 and 2 not in state_global_data:
+            state=1        
+            if exp_manager.is_multi:
+                res_mean = []
+                for i in range(len(res[k][0])):
+                    res_aux = []
+                    for j in range(len(res[k])):
+                        res_aux.append(res[k][j][i])
+                    r_mean = calc_res_mean(res_aux, rep)
+                    res_mean.append(r_mean)            
+            else:
+                res_mean=calc_res_mean(res[k], rep)
+        res_data.append(res_mean)
+    res=res_data
+    if len(data)==1:
+        res = res[0]
+    elif 2 not in state_global_data:
         state = 1
     else:
         state = 2
