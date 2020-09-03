@@ -4,7 +4,7 @@
 const MULTITARGET = ["MultiClassification"];
 
 /**
- * Possible values of Non-Supervised algorithmsç 
+ * Possible values of Non-Supervised algorithms
  */
 const UNSUPERVISED = ["Clustering"]
 
@@ -12,9 +12,10 @@ const UNSUPERVISED = ["Clustering"]
  * It guarantees only one target if algorithms is not MULTITARGET 
  * And not target allowed in UNSUPERVISED
  * 
- * @param {string} target identifier of target selected 
+ * @param {string} target identifier of target selected
+ * @param {int} External identifier for dataset
  */
-function only_one_target(target){
+function only_one_target(target, iddex){
     let typ = $("#alg_typ").val();
     if(UNSUPERVISED.includes(typ)){
         $("#"+target).prop("checked", true);
@@ -26,7 +27,7 @@ function only_one_target(target){
         target_candidates.each(function(){
             if($(this).attr("id")!=target){
                 $(this).prop("checked",false);
-                let ido = $("#"+$(this).attr("id").split("_")[0].split("col")[1] + "_opt");
+                let ido = $("#"+$(this).attr("id").split("_")[0].split("col")[1] + "_opt_"+iddex);
                 if(ido.hasClass("list-group-item-success")){
                     ido.removeClass("list-group-item list-group-item-success");
                     ido.addClass("list-group-item list-group-item-secondary");
@@ -41,21 +42,22 @@ function only_one_target(target){
  * 
  * @param {string} identifier of column 
  * @param {string} mode value between target or use
+ * @param {int} identifier for the dataset in external form
  */
-function target_or_use(identifier, mode){
+function target_or_use(identifier, mode, iddex){
     let typ = $("#alg_typ").val();
     if(!UNSUPERVISED.includes(typ) || mode == "use"){
         let id = identifier.split("col")[1];
-        let use = $("#"+identifier+"_use");
-        let target = $("#"+identifier+"_target");
-        let v = $("#"+id+"_opt");
+        let use = $("#"+identifier+"_use_"+iddex);
+        let target = $("#"+identifier+"_target_"+iddex);
+        let v = $("#"+id+"_opt_"+iddex);
         v.removeClass("list-group-item-primary list-group-item-secondary list-group-item-success");
         if (mode == "target"){
             if(use.is(":checked")){
                 use.prop("checked", false);
             }
             if(!target.is(":checked")){
-                v.addClass("list-group-item-success");
+                v.addClass("list-group-item-success")
             }else{
                 v.addClass("list-group-item-secondary");
             }

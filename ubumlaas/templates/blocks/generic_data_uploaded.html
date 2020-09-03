@@ -1,0 +1,28 @@
+<fieldset>
+    <form class="col-md-8 offset-md-2" id="form_dataset_{{ iddex }}">
+        {{ form_d.hidden_tag() }}
+        <div class="row">
+            <div class="form-group custom-file col-10">
+                {{ form_d.dataset(class="custom-file-input dataset_upload") }}
+                {{ form_d.dataset.label(class="custom-file-label") }}                        
+            </div>
+            <div class="col-2">
+                <a
+                style="color: var(--info);"
+                href="#a"
+                data-trigger="focus"
+                title="Detaset help"
+                data-container="body"
+                data-toggle="popover"
+                data-placement="top"
+                data-content="Upload only CSV with header or dense ARFF. By default the last attribute will be selected as target." 
+                >
+                    <i class="material-icons">live_help</i>
+                </a> 
+            </div>
+        </div>
+        <div class="form-group mt-2">
+            <button class="btn btn-secondary btn-block uploadDataset">Upload</button>
+        </div>
+    </form>
+</fieldset>

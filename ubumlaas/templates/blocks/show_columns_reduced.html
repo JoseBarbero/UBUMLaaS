@@ -2,65 +2,30 @@
     {% if data|length >= 1 %}
         <div class="row mt-3">
             <div class="col-md-4">
-                <a class="btn btn-primary btn-block" id="use" role="button" href="#a" onclick="onClickButton('use')">Use</a>
+                <a class="btn btn-primary btn-block" id="use_{{ iddex }}" role="button" href="#a" onclick="onClickButton('use',{{ iddex }})">Use</a>
             </div>
             <div class="col-md-4">
-                <a class="btn btn-secondary btn-block" id="nuse" role="button" href="#a" onclick="onClickButton('nuse')">Don't use</a>
+                <a class="btn btn-secondary btn-block" id="nuse_{{ iddex }}" role="button" href="#a" onclick="onClickButton('nuse', {{ iddex }})">Don't use</a>
             </div>
             <div class="col-md-4">
-                <a class="btn btn-success btn-block" id="target" role="button" href="#a" onclick="onClickButton('target')">Target</a>
+                <a class="btn btn-success btn-block" id="target_{{ iddex }}" role="button" href="#a" onclick="onClickButton('target', {{ iddex }})">Target</a>
             </div>
         </div>
         <div class="row d-flex mt-3 align-items-stretch h-100">
             <div class="col-md-12 d-flex align-items-stretch">
-                <select class="custom-select" id="sel" {% if data|length > 15 %}size="15" {% else %}size="{{ data|length }}"{% endif %} multiple>
+                <select class="custom-select sel" id="sel_{{ iddex }}" {% if data|length > 15 %}size="15" {% else %}size="{{ data|length }}"{% endif %} multiple>
                     {% for g in data %}
-                        <option id="{{ loop.index0 }}_opt" class="list-group-item {% if loop.last %}list-group-item-success {% else %} list-group-item-primary{% endif %}" value="{{ g }}">{{ g }}</option>
+                        <option id="{{ loop.index0 }}_opt_{{ iddex }}" class="list-group-item {% if loop.last %}list-group-item-success {% else %} list-group-item-primary{% endif %}" value="{{ g }}">{{ g }}</option>
                     {% endfor %}
                 </select>
             </div>
         </div>
-        
-        
+        <script>
+        $(document).ready(function(){
+            let a = $("#0_opt_{{ iddex }}").height()*(parseInt($("#sel_{{ iddex }}").attr("size"))+2);
+            $("#sel_{{ iddex }}").height(a);
+        });
+
+        </script>
     {% endif %}
 </div>
-<script>
-    function onClickButton(idb){
-        let lis = $("#sel option").filter(":selected");
-        let cod;
-        let typ = $("#alg_typ").val();
-        if(lis.length > 1 && idb=="target" && !MULTITARGET.includes(typ)){
-            launch_warning_modal("Only one target", "You can't select more than 1 target in no multilabel algorithms.")
-        }else{
-            lis.each(function(e){
-                let v = $(lis[e]);
-                let ids = "col" + v.attr("id").split("_")[0]
-                switch(idb){
-                    case "use":
-                        if(!v.hasClass("list-group-item-primary")){
-                            $("#"+ids+"_use_label").click();
-                        }
-                        break;
-                    case "nuse":
-                        if(v.hasClass("list-group-item-success")){
-                             $("#"+ids+"_target_label").click();
-                             v.removeClass("list-group-item-success");
-                             v.addClass("list-group-item-secondary");
-                        }
-                        if(v.hasClass("list-group-item-primary")){
-                            $("#"+ids+"_use_label").click();
-                        }
-                        break;
-                    case "target":
-                        if(!v.hasClass("list-group-item-success")){
-                            $("#"+ids+"_target_label").click();
-                        }
-                        break;
-                }
-                v.removeAttr('selected');
-                v.prop("selected", false);
-            });
-        }
-    }
-
-</script>

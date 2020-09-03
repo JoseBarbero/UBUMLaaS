@@ -13,6 +13,46 @@ function me_cidex(){
     return me_idexs[me_index];
 }
 
+function me_ciddex(){
+    return med_idexs[med_index];
+}
+
+function onClickButton(idb, iddex){
+    let lis = $("#sel_"+iddex+" option").filter(":selected");
+    let typ = $("#alg_typ").val();
+    if(lis.length > 1 && idb==="target" && !MULTITARGET.includes(typ)){
+        launch_warning_modal("Only one target", "You can't select more than 1 target in no multilabel algorithms.")
+    }else{
+        lis.each(function(e){
+            let v = $(lis[e]);
+            let ids = "col" + v.attr("id").split("_")[0]
+            switch(idb){
+                case "use":
+                    if(!v.hasClass("list-group-item-primary")){
+                        $("#"+ids+"_use_label_"+iddex).click();
+                    }
+                    break;
+                case "nuse":
+                    if(v.hasClass("list-group-item-success")){
+                         $("#"+ids+"_target_label_"+iddex).click();
+                         //v.removeClass("list-group-item-success");
+                         v.addClass("list-group-item-secondary");
+                    }else if(v.hasClass("list-group-item-primary")){
+                        $("#"+ids+"_use_label_"+iddex).click();
+                    }
+                    break;
+                case "target":
+                    if(!v.hasClass("list-group-item-success")){
+                        $("#"+ids+"_target_label_"+iddex).click();
+                    }
+                    break;
+            }
+            v.removeAttr('selected');
+            v.prop("selected", false);
+        });
+    }
+}
+
 /**
  * Reset the multiexperiment.
  */
@@ -48,23 +88,43 @@ $(document).ready(function(){
      * Create a new algorithm for a multiexperiment.
      * Render a new algorithms
      */
-    function me_new_alg(){
+    function me_new_alg(algs=true){
+        let nidex, block, url, on;
+        if (algs){
+            nidex = me_idexs[me_idexs.length-1]+1;
+            block = $("<div></div>").addClass("maker").attr("data-idex", nidex).css("display","none");
+            url = "/new_algorithm_maker"
+            on = "makers"
+        }else{
+            nidex = med_idexs[med_idexs.length-1]+1;
+            url = "/new_dataset_maker";
+            on = "data-makers"
+        }
         // First create a new block
-        let nidex = me_idexs[me_idexs.length-1]+1;
-        let block = $("<div></div>").addClass("maker").attr("data-idex", nidex).css("display","none");
+
         $.ajax({
-            url: "/new_algorithm_maker",
+            url: url,
             type: 'POST',
             contentType: 'application/x-www-form-urlencoded',
             data: "alg_type=" + $("#alg_typ").val() + "&idex="+nidex,
             success: function (result) {
-                block.html(result);
-                $("#makers").append(block);
-                me_idexs.push(nidex);
-                me_move();
+                if(algs){
+                    block.html(result);
+                }else{
+                    block = $(result);
+                    block.css("display","none");
+                }
 
-                me_sub_clasifiers_count.push(0);
-                me_sub_filter_count.push(0);
+                $("#"+on).append(block);
+                if(algs){
+                    me_idexs.push(nidex);
+                    me_sub_clasifiers_count.push(0);
+                    me_sub_filter_count.push(0);
+                }else{
+                    med_idexs.push(nidex);
+                }
+
+                me_move(true, false, algs);
             }
         })
     }
@@ -72,28 +132,55 @@ $(document).ready(function(){
     /**
      * Delete the algorithm for the current index
      */
-    function me_delete_alg(){
-        if(me_idexs.length == 1){
-            sp_ANIMATION = false;
-            launch_danger_modal("Delete error","You can't delete an algorithm if only have one");
+    function me_delete_alg(algs=true){
+        let deletion;
+        if(algs){
+            deletion = "algorithm";
         }else{
-            let index = me_index;
-            if(me_index == me_idexs.length-1){
-                me_move(false, true);
+            deletion = "dataset";
+        }
+        let idexs, index;
+        if (algs){
+            idexs = me_idexs;
+            index = me_index;
+        }else{
+            idexs = med_idexs;
+            index = med_index;
+        }
+
+        if(idexs.length == 1){
+            sp_ANIMATION = false;
+            launch_danger_modal("Delete error","You can't delete an "+deletion+" if only have one");
+        }else{
+            if(index == idexs.length-1){
+                me_move(false, true, algs);
             }else{
-                me_move(true, true);
+                me_move(true, true, algs);
             }
             setTimeout(function(){
-                $("div[data-idex=\""+me_idexs[index]+"\"]").remove();
-                me_idexs = removeItemOnce(me_idexs, me_idexs[index]);
-                me_sub_clasifiers_count.splice(index,1);
-                me_sub_filter_count.splice(index,1);
-                // If remove the last algorithm
-                if(me_index == me_idexs.length){
-                    me_index--;
+                $("div[data-idex=\""+idexs[index]+"\"]").remove();
+                idexs = removeItemOnce(idexs, idexs[index]);
+                if(algs){
+                    me_sub_clasifiers_count.splice(index,1);
+                    me_sub_filter_count.splice(index,1);
                 }
-                if(me_idexs.length == 1){
-                    $("#delete_alg").addClass("disabled");
+
+                // If remove the last algorithm
+                if(index == idexs.length){
+                    if(algs){
+                        me_index--;
+                    }else{
+                        med_index--;
+                    }
+
+                }
+                if(idexs.length == 1){
+                    if(algs){
+                       $("#delete_alg").addClass("disabled");
+                    }else{
+                       $("#delete_data").addClass("disabled");
+                    }
+
                 }
             }, 1000);   
         }
@@ -103,21 +190,33 @@ $(document).ready(function(){
      * Change the current algorithm displayed. By default move to right.
      * @param {boolean} right Direction for the movement
      * @param {boolean} deleted  If current index will be removed
+     * @param {boolean} if algorithms of datasets
      */
-    function me_move(right=true, deleted=false){
-        let from = me_idexs[me_index];
-        let to;
-        if (right){
-            to = me_idexs[me_index+1];
-        }else{
-            to = me_idexs[me_index-1];
-        }
-        
-        let from_block = $("div[data-idex=\""+from+"\"]");
-        let to_block = $("div[data-idex=\""+to+"\"]");
+    function me_move(right=true, deleted=false, algs = true) {
+        let from, to, from_block, to_block;
+        if (algs) {
+            from = me_idexs[me_index];
+            if (right) {
+                to = me_idexs[me_index + 1];
+            } else {
+                to = me_idexs[me_index - 1];
+            }
 
-        let anim;
-        
+            from_block = $("div[data-idex=\"" + from + "\"]");
+            to_block = $("div[data-idex=\"" + to + "\"]");
+        }else{
+            from = med_idexs[med_index];
+            if (right) {
+                to = med_idexs[med_index + 1];
+            } else {
+                to = med_idexs[med_index - 1];
+            }
+            from_block = $("div[data-iddex=\"" + from + "\"]");
+            to_block = $("div[data-iddex=\"" + to + "\"]");
+        }
+
+        let animIn, animOut;
+
         if (right){
             animIn = "right";
             animOut = "left";
@@ -133,17 +232,26 @@ $(document).ready(function(){
         from_block.promise().done(function(){
             sp_ANIMATION=false;
         });
-        to_block.toggle("slide", {direction: animIn}, "slow");
+            to_block.toggle("slide", {direction: animIn}, "slow");
         to_block.promise().done(function(){
             sp_ANIMATION=false;
         });
 
         if(!deleted){
-            if(right){
-                me_index++;
+            if(algs){
+                if(right){
+                    me_index++;
+                }else{
+                    me_index--;
+                }
             }else{
-                me_index--;
+                if(right){
+                    med_index++;
+                }else{
+                    med_index--;
+                }
             }
+
         }
 
     }
@@ -153,6 +261,16 @@ $(document).ready(function(){
             sp_ANIMATION=true;
             me_delete_alg();
             if(me_idexs.length == 1){
+                $(this).addClass("disabled");
+            }
+        }
+    });
+
+    $("#delete_data").click(function(){
+        if(!sp_ANIMATION){
+            sp_ANIMATION=true;
+            me_delete_alg(false);
+            if(med_idexs.length == 1){
                 $(this).addClass("disabled");
             }
         }
@@ -172,6 +290,24 @@ $(document).ready(function(){
             }
             if(me_index < me_idexs.length-1){
                 $("#after_button").children(":first").text("arrow_forward_ios");
+            }
+        }
+    });
+
+    $("#before_d_button").click(function(){
+        if(!sp_ANIMATION){
+            sp_ANIMATION=true;
+            if(med_index != 0){
+                me_move(false, false, false);
+            }
+            if(med_index == 0){
+                $(this).addClass("disabled");
+            }
+            if(med_idexs.length > 1){
+                $("#delete_data").removeClass("disabled");
+            }
+            if(med_index < med_idexs.length-1){
+                $("#after_d_button").children(":first").text("arrow_forward_ios");
             }
         }
     });
@@ -196,6 +332,24 @@ $(document).ready(function(){
                 $(this).children(":first").text("add");
             }
             $("#before_button").removeClass("disabled");
+        }
+    });
+
+    $("#after_d_button").click(function(){
+        if(!sp_ANIMATION){
+            sp_ANIMATION=true;
+            if(med_index == med_idexs.length-1){
+                me_new_alg(false);
+                $("#delete_data").removeClass("disabled");
+            }else{
+                me_move(true, false, false);
+            }
+            if(med_index < med_idexs.length-1){
+                $(this).children(":first").text("arrow_forward_ios");
+            }else{
+                $(this).children(":first").text("add");
+            }
+            $("#before_d_button").removeClass("disabled");
         }
     });
 });
