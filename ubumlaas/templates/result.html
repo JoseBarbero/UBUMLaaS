@@ -172,7 +172,7 @@ html {
             
         </div>
         <div id='svg_container'>
-            <svg> </svg>
+            <svg id='chart_comparison'> </svg>
         </div>
     {% endif %}
 </div>
@@ -254,11 +254,11 @@ html {
 <script>
     {% if multi and (experiment.state == 1 or experiment.state == 2) %}
         $("document").ready(function(){
-            result = {{ multi_result|safe  }};
+            var result = {{ multi_result|safe  }};
             $("#multi_comparison").html("<h3 class=\"text-center\">Comparing Models</h3>");
             
-            exp_ok = get_exp_ok(result);
-            n_exp_ok = exp_ok.length;
+            var exp_ok = get_exp_ok(result);
+            var n_exp_ok = exp_ok.length;
             console.log(exp_ok);
 
             if ( n_exp_ok<2 ){ //1 or 0 experiment with result ok
@@ -329,10 +329,10 @@ html {
             const width = 1000 - 2 * margin;
             const height = 600 - 2 * margin;
 
-            const svg = d3.select('svg');
+            const svg = d3.select('#chart_comparison');
             svg.html("");
-            document.getElementsByTagName("svg")[0].setAttribute("width", "1000px");
-            document.getElementsByTagName("svg")[0].setAttribute("height", "600px");
+            $("#chart_comparison").css("width", "1000px");
+            $("#chart_comparison").css("height", "600px");
 
             const chart = svg.append('g').attr('transform', `translate(${margin}, ${margin})`);
 
