@@ -5,6 +5,9 @@
 <script src="{{ url_for('static', filename="js/validations.js") }}"></script>
 <script src="{{ url_for('static', filename="js/progress-bar.js") }}"></script>
 <script>
+    let dataset_columns = [[]];
+</script>
+<script>
     function reset_(reset, filter, all=false){     
         if (reset){
             //console.log("Reset");
@@ -117,9 +120,12 @@
     }
 
     function no_target(){
-        for (let i = 0; i<dataset_columns.length; i++){
-            if($("#col"+i+"_target").prop("checked")){
-                $("#col"+i+"_use_label").click();
+        for(let id = 0; id < med_idexs.length; id++){
+            for (let i = 0; i<dataset_columns[id].length; i++){
+                let idex = med_idexs[id];
+                if($("#col"+i+"_target_"+idex).prop("checked")){
+                    $("#col"+i+"_use_label_"+idex).click();
+                }
             }
         }
     }   
@@ -148,7 +154,20 @@
         e.preventDefault();
       
         // Dataset and experiment configuration
-        var data = $("#data").val();
+        var data = [];
+        for(let i = 0; i<med_idexs.length; i++){
+            data.push($("#data_"+med_idexs[i]).val());
+        }
+        if (med_idexs.length == 1){
+            data = data[0];
+        }else{
+            for (let i = 0; i < data.length; i++){
+                if(data[i] == ""){
+                    launch_danger_modal("Experiment error", "At least one dataset is not selected. Delete or select it.");
+                    return;
+                }
+            }
+        }
         var dataset_config = encodeURIComponent(JSON.stringify(get_dataset_config()));
 
         // Algorithm and filters configuration
@@ -197,6 +216,10 @@
                 window.location.replace("{{ url_for('users.profile') }}")
             },
             error: function (result) {
+                console.log(encodeURIComponent(alg_name))
+                console.log(alg_configs)
+                console.log(encodeURIComponent(data))
+                console.log(dataset_config)
                 launch_danger_modal("Experiment launch error", "Check your configuration, something is wrong.")
             }
         });
@@ -278,7 +301,10 @@
                 no_target();
             }else if(MULTITARGET.includes(before) && !MULTITARGET.includes(current)){
                 no_target();
-                $("#col"+(dataset_columns.length-1)+"_target_label").click();
+                for(let i = 0; i< med_idexs.length; i++){
+                    let idex = med_idexs[i];
+                    $("#col"+(dataset_columns[i].length-1)+"_target_label_"+idex).click();
+                }
             }
         });
 

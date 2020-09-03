@@ -8,6 +8,7 @@ const MULTITARGET = ["MultiClassification"];
  */
 const UNSUPERVISED = ["Clustering"]
 
+
 /**
  * It guarantees only one target if algorithms is not MULTITARGET 
  * And not target allowed in UNSUPERVISED
@@ -23,7 +24,7 @@ function only_one_target(target, iddex){
                             "Algorithms of the type "+typ+" are unsupervised, therefore, they not allow targets");
     }
     else if (!MULTITARGET.includes(typ)){
-        let target_candidates = $(".col_target");
+        let target_candidates = $(".col_target[id$='"+iddex+"']");
         target_candidates.each(function(){
             if($(this).attr("id")!=target){
                 $(this).prop("checked",false);
@@ -91,24 +92,31 @@ function get_dataset_config(){
             dataset_config.train_partition = parseInt($("#train_slider").val());
             break;
     }
-    let selected_columns = [];
-    let columns = $(".column-dataset");
-    
+
+    dataset_config.columns = [];
     dataset_config.target = [];
-    
-    for(var i=0; i<columns.length; i++){
-        var current_column = dataset_columns[i];
-        var use = $("#col"+i+"_use");
-        var target = $("#col"+i+"_target");
-        if (target.is(":checked")){
-            dataset_config.target.push(current_column);
-        }else if(use.is(":checked")){
-            selected_columns.push(current_column);
+    for (let iddex = 0; iddex < med_idexs.length; iddex++){
+        let idex = med_idexs[iddex];
+        let tget = [];
+        let scolumn = [];
+        for(let i=0; i<dataset_columns[iddex].length; i++){
+            var current_column = dataset_columns[iddex][i];
+            var use = $("#col"+i+"_use_"+idex);
+            var target = $("#col"+i+"_target_"+idex);
+            if (target.is(":checked")){
+                tget.push(current_column);
+            }else if(use.is(":checked")){
+                scolumn.push(current_column);
+            }
         }
+        dataset_config.columns.push(scolumn);
+        dataset_config.target.push(tget);
+    }
+    if (med_idexs.length == 1){
+        dataset_config.columns = dataset_config.columns[0];
+        dataset_config.target = dataset_config.target[0];
     }
 
-    dataset_config.columns = selected_columns;
-    
     let r_s = $("input[type=radio][name=seed_or_repetition]:checked").val();
     switch(r_s){
         case "part_seed":

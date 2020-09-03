@@ -21,9 +21,14 @@
             </div>
         </div>
         <script>
+        function correctH(){
+            if ((window.chrome || (window.Intl && Intl.v8BreakIterator)) && 'CSS' in window) {
+                let a = $("#0_opt_{{ iddex }}").height() * (parseInt($("#sel_{{ iddex }}").attr("size")) + 2);
+                $("#sel_{{ iddex }}").height(a);
+            }
+        }
         $(document).ready(function(){
-            let a = $("#0_opt_{{ iddex }}").height()*(parseInt($("#sel_{{ iddex }}").attr("size"))+2);
-            $("#sel_{{ iddex }}").height(a);
+            correctH();
         });
 
         </script>

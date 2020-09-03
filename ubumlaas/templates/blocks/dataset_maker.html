@@ -20,7 +20,7 @@
                     <a data-toggle="tab" href="#normal_tab_{{ iddex }}" class="nav-link active" id="normal_tab_link_{{ iddex }}" aria-controls="normal_tab_{{ iddex }}" aria-selected="true">Normal</a>
                 </li>
                 <li>
-                    <a data-toggle="tab" href="#reduced_tab_{{ iddex }}" class="nav-link" id="reduced_tab_link_{{ iddex }}" aria-controls="reduced_tab_{{ iddex }}">Reduced</a>
+                    <a data-toggle="tab" href="#reduced_tab_{{ iddex }}" class="nav-link" id="reduced_tab_link_{{ iddex }}" onclick="correctHDelayed();" aria-controls="reduced_tab_{{ iddex }}">Reduced</a>
                 </li>
             </ul>
             <div class="tab-content">
@@ -53,3 +53,11 @@
         </div>
     </div>
 </div>
+
+<script>
+    function correctHDelayed(){
+        setTimeout(function (){
+            correctH();
+        }, 200);
+    }
+</script>

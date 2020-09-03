@@ -24,6 +24,8 @@ import json
 import os
 from ubumlaas.util import string_is_array
 
+from copy import deepcopy
+
 import weka.core.jvm as jvm
 from ubumlaas.util import get_dataframe_from_file
 from ubumlaas.experiments.execute_algorithm._weka import Execute_weka
@@ -62,18 +64,18 @@ def task_skeleton(experiment, current_user):
     for j in range(len(data)):
         res_global = []
         state_global=[]
-        for _ in range(rep):
+        for _i in range(rep):
             if exp_manager.is_multi:
                 res=[]
                 state=[]
                 #Seed for no seed experiments, multi experiments should execute with the same data
                 rand = random.randint(1,1000000000)        
                 for i in range(len(exp)):
-                    aux_exp = exp[i]
+                    aux_exp = deepcopy(exp[i])
                     if len(data)>1:
                         aux_exp["exp_config"]["target"]=aux_exp["exp_config"]["target"][j]
                         aux_exp["exp_config"]["columns"]=aux_exp["exp_config"]["columns"][j]
-                    r,s = execute_model(exp[i]["alg"]["lib"],data[i],aux_exp,current_user,rand)
+                    r,s = execute_model(exp[i]["alg"]["lib"],data[j],aux_exp,current_user,rand)
                     if s == 1:
                         res.append(json.loads(r))
                     else:
@@ -85,11 +87,12 @@ def task_skeleton(experiment, current_user):
                     state = 1
                 res_global.append(res)
             else:
-                aux_exp = exp
+                aux_exp = deepcopy(exp)
                 if len(data)>1:
                         aux_exp["exp_config"]["target"]=aux_exp["exp_config"]["target"][j]
                         aux_exp["exp_config"]["columns"]=aux_exp["exp_config"]["columns"][j]
-                res,state=execute_model(exp["alg"]["lib"],data[i],aux_exp,current_user)
+                res,state=execute_model(exp["alg"]["lib"],data[j],aux_exp,current_user)
+                
                 res_global.append(json.loads(res))
                 
             state_global.append(state)
@@ -119,9 +122,13 @@ def task_skeleton(experiment, current_user):
                     res_mean.append(r_mean)            
             else:
                 res_mean=calc_res_mean(res[k], rep)
+        else:
+            res_mean=res
         res_data.append(res_mean)
     res=res_data
     if len(data)==1:
+        res = res[0]
+    if not exp_manager.is_multi:
         res = res[0]
     elif 2 not in state_global_data:
         state = 1
@@ -151,7 +158,7 @@ def calc_res_mean(res, rep):
     for i in res[0].keys():
         aux=[]
         for j in range(rep):
-            aux.append(res[j][i])
+            aux.append(res[j][i][0])
         if isinstance(res[0][i],list):
             res_mean[i]= np.array(aux).mean(0).tolist()
         else:

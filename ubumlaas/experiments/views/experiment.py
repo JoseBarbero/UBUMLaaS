@@ -74,12 +74,15 @@ def launch_experiment():
         if filter_name is not None:
             filter_name = "["+filter_name+"]"
             filter_config = "["+filter_config+"]"
+    data = request.form.get("data")
+    if "," in data:
+        data = "["+data+"]"
         
     exp = Experiment(user.id, alg_name,
                      unquote(alg_config),
                      json.dumps(exp_config),
                      filter_name, filter_config,
-                     request.form.get("data"),
+                     data,
                      None, time.time(), None, 0)
     v.app.logger.info("%d - Create experiment", current_user.id)    
     v.db.session.add(exp)

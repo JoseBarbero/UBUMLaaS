@@ -5,7 +5,7 @@ $("document").ready(function(){
 
 function load_verify_elements(){
     //Blocks
-    select_dataset = $("#data");
+    select_dataset = $("#data_0");
     train_slider = $("#train_slider");
     alg_typ = $("#alg_typ");
     alg_name = $("#alg_name_0");
@@ -31,7 +31,7 @@ function verify_all(element=null){
     let validate = [];
     let show = [];
     let hide = [];
-    select_dataset = $("#data"); //Is necesary reload it
+    select_dataset = $("#data_0"); //Is necesary reload it
     let elements = [select_dataset, train_slider, alg_typ, alg_name];
     let elements_feedback = [select_dataset_feedback, train_slider_feedback, alg_typ_feedback, alg_name_feedback];
     for(let i=0; i<elements.length; i++){

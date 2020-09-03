@@ -41,5 +41,9 @@
     {% endif %}
 </div>
 <script>
-    dataset_columns = [{% for i in data %}'{{ i }}'{% if not loop.last %}, {% endif %} {% endfor %}];
+    {% if data | length > 0 %}
+        var quasi_columns = [{% for i in data %}'{{ i }}'{% if not loop.last %}, {% endif %} {% endfor %}];
+        dataset_columns[med_index] = quasi_columns;
+
+    {% endif %}
 </script>

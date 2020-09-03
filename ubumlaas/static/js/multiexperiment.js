@@ -7,7 +7,9 @@ let med_idexs = [0]; // List of identifier of datasets
 let me_sub_clasifiers_count = [0];
 let me_sub_filter_count = [0];
 
-let sp_ANIMATION = false;
+const sp_ANIMATION = false;
+
+
 
 function me_cidex(){
     return me_idexs[me_index];
@@ -56,7 +58,7 @@ function onClickButton(idb, iddex){
 /**
  * Reset the multiexperiment.
  */
-function me_reset(){
+    function me_reset(){
 
     let makers = $("#makers");
     let block = $("<div></div>").addClass("maker").attr("data-idex", 0);
@@ -122,6 +124,7 @@ $(document).ready(function(){
                     me_sub_filter_count.push(0);
                 }else{
                     med_idexs.push(nidex);
+                    dataset_columns.push([]);
                 }
 
                 me_move(true, false, algs);
@@ -149,7 +152,7 @@ $(document).ready(function(){
         }
 
         if(idexs.length == 1){
-            sp_ANIMATION = false;
+            //sp_ANIMATION = false;
             launch_danger_modal("Delete error","You can't delete an "+deletion+" if only have one");
         }else{
             if(index == idexs.length-1){
@@ -163,6 +166,8 @@ $(document).ready(function(){
                 if(algs){
                     me_sub_clasifiers_count.splice(index,1);
                     me_sub_filter_count.splice(index,1);
+                }else{
+                    dataset_columns = removeItemOnce(dataset_columns, dataset_columns[index]);
                 }
 
                 // If remove the last algorithm
@@ -230,11 +235,11 @@ $(document).ready(function(){
         
         from_block.toggle("slide", {direction: animOut}, "slow");
         from_block.promise().done(function(){
-            sp_ANIMATION=false;
+            //sp_ANIMATION=false;
         });
             to_block.toggle("slide", {direction: animIn}, "slow");
         to_block.promise().done(function(){
-            sp_ANIMATION=false;
+            //sp_ANIMATION=false;
         });
 
         if(!deleted){
@@ -258,7 +263,7 @@ $(document).ready(function(){
 
     $("#delete_alg").click(function(){
         if(!sp_ANIMATION){
-            sp_ANIMATION=true;
+            //sp_ANIMATION=true;
             me_delete_alg();
             if(me_idexs.length == 1){
                 $(this).addClass("disabled");
@@ -268,7 +273,7 @@ $(document).ready(function(){
 
     $("#delete_data").click(function(){
         if(!sp_ANIMATION){
-            sp_ANIMATION=true;
+            //sp_ANIMATION=true;
             me_delete_alg(false);
             if(med_idexs.length == 1){
                 $(this).addClass("disabled");
@@ -278,7 +283,7 @@ $(document).ready(function(){
 
     $("#before_button").click(function(){
         if(!sp_ANIMATION){
-            sp_ANIMATION=true;
+            //sp_ANIMATION=true;
             if(me_index != 0){
                 me_move(false);
             }
@@ -296,7 +301,7 @@ $(document).ready(function(){
 
     $("#before_d_button").click(function(){
         if(!sp_ANIMATION){
-            sp_ANIMATION=true;
+            //sp_ANIMATION=true;
             if(med_index != 0){
                 me_move(false, false, false);
             }
@@ -314,14 +319,14 @@ $(document).ready(function(){
 
     $("#after_button").click(function(){
         if(!sp_ANIMATION){
-            sp_ANIMATION=true;
+            //sp_ANIMATION=true;
             if(me_index == me_idexs.length-1){
                 if($("#alg_typ").val()!=""){
                     me_new_alg();
                     $("#delete_alg").removeClass("disabled");
                 }else{
                     launch_warning_modal("Add a new algorithm is not allowed","Select a algorithm type before add a new algorithm");
-                    sp_ANIMATION=false;
+                    //sp_ANIMATION=false;
                 }
             }else{
                 me_move();
@@ -337,7 +342,7 @@ $(document).ready(function(){
 
     $("#after_d_button").click(function(){
         if(!sp_ANIMATION){
-            sp_ANIMATION=true;
+            //sp_ANIMATION=true;
             if(med_index == med_idexs.length-1){
                 me_new_alg(false);
                 $("#delete_data").removeClass("disabled");
