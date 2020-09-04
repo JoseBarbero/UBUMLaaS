@@ -91,9 +91,11 @@ def task_skeleton(experiment, current_user):
                 if len(data)>1:
                         aux_exp["exp_config"]["target"]=aux_exp["exp_config"]["target"][j]
                         aux_exp["exp_config"]["columns"]=aux_exp["exp_config"]["columns"][j]
-                res,state=execute_model(exp["alg"]["lib"],data[j],aux_exp,current_user)
-                
-                res_global.append(json.loads(res))
+                res,state=execute_model(exp["alg"]["lib"],data[j],aux_exp,current_user)               
+                if state == 1:
+                    res_global.append(json.loads(res))
+                else:
+                    res_global.append(res)
                 
             state_global.append(state)
         if 2 in state_global:
@@ -110,6 +112,7 @@ def task_skeleton(experiment, current_user):
     res = res_global_data
     res_data=[]
     for k in range(len(data)):
+        print(data[k])
         if rep>1 and 2 not in state_global_data:
             state=1        
             if exp_manager.is_multi:
@@ -127,8 +130,6 @@ def task_skeleton(experiment, current_user):
         res_data.append(res_mean)
     res=res_data
     if len(data)==1:
-        res = res[0]
-    if not exp_manager.is_multi:
         res = res[0]
     elif 2 not in state_global_data:
         state = 1
@@ -154,18 +155,20 @@ def calc_res_mean(res, rep):
     Returns:
         dict: Results mean
     """
+    print(res)
     res_mean={}
     for i in res[0].keys():
-        aux=[]
-        for j in range(rep):
-            aux.append(res[j][i][0])
-        if isinstance(res[0][i],list):
-            res_mean[i]= np.array(aux).mean(0).tolist()
-        else:
-            res_mean[i]=np.array(aux).mean().tolist()
+        if i != "ROC": # ROC array incorrect over mean, represent points in space, not value. Use AUC to know the mean.
+            aux=[]
+            for j in range(rep):
+                aux.append(res[j][i][0])
+            if isinstance(res[0][i],list):
+                res_mean[i]= np.array(aux).mean(0).tolist()
+            else:
+                res_mean[i]=np.array(aux).mean().tolist()
     return res_mean
 
-def execute_model(alg_lib,data, exp, current_user,seed_multi=None):
+def execute_model(alg_lib, data, exp, current_user,seed_multi=None):
     type_app = alg_lib
     execution_lib = None
     try:
@@ -194,7 +197,13 @@ def execute_model(alg_lib,data, exp, current_user,seed_multi=None):
         y_score_list = []
         y_test_list = []
         X_test_list = []
-        if exp_config.get("mode") == "split" and exp_config["train_partition"] < 100:
+
+        if execution_lib.algorithm_type == "Clustering":
+            y_pred, y_score = execution_lib.predict(model, X)
+            y_pred_list.append(y_pred)
+            y_score_list.append(y_score)
+
+        elif exp_config.get("mode") == "split" and exp_config["train_partition"] < 100:
             X_train, X_test, y_train, y_test = execution_lib\
                 .generate_train_test_split(X, y, exp_config["train_partition"],random_state=seed_multi)
             model = execution_lib.create_model()
@@ -218,10 +227,7 @@ def execute_model(alg_lib,data, exp, current_user,seed_multi=None):
                 y_test_list.append(y_test)
                 X_test_list.append(X_test)
 
-        elif execution_lib.algorithm_type == "Clustering":
-            y_pred, y_score = execution_lib.predict(model, X)
-            y_pred_list.append(y_pred)
-            y_score_list.append(y_score)
+        
             
         score = {}
         if exp_config["mode"] == "cross" or exp_config["train_partition"] < 100 or execution_lib.algorithm_type == "Clustering":

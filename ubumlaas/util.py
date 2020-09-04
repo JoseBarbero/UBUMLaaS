@@ -144,7 +144,10 @@ def value_to_bool(y_test, y_pred):
         [pandas,pandas] -- test output boolean, model output boolean
     """
     un = y_test.unique()
-    d = {un[0]: True, un[1]: False}
+    try:
+        d = {un[0]: True, un[1]: False}
+    except:
+        d = {un[0]: True}
     return y_test.map(d), pd.Series(y_pred).map(d)
 
 

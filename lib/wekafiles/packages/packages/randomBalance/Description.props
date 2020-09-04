@@ -5,28 +5,35 @@ PackageName=randomBalance
 Version=1.0.0
 
 #Date (year-month-day)
-Date=2019-10-18
+Date=2020-08-20
 
 # Title (required)
-Title=Random Balance
+Title=ADMIRABLE Algorithms
 
 # Author (required)
-Author=José Francisco Diez Pastor <jfdpastor@ubu.es>
+Author=Juan José Rodríguez <jjrodriguez@ubu.es>
+Author=Jesús Maudes <jmaudes@ubu.es>
+Author=César García-Osorio <cgosorio@ubu.es>
 
 # Maintainer (required)
-Maintainer=José Francisco Diez Pastor <jfdpastor@ubu.es>
+Maintainer=Adrián Arnaiz-González <adrianar@ubu.es>
+Maintainer=José Luis Garrido-Labrador <jlgarrido@ubu.es>
+Maintainer=José Miguel Ramírez-Sanz <jmrsanz@ubu.es>
+
 
 # License (required)
-License=Custom
+License=GPLv2
 
 # Description (required)
-Description=Proportions of the classes for each ensemble member are chosen randomly.Member training data: sub-sample and over-sample through SMOTE.RB-Boost combines Random Balance with AdaBoost.M2.Experiments with 86 data sets demonstrate the advantage of Random Balance. In Machine Learning, a data set is imbalanced when the class proportions are highly skewed. Imbalanced data sets arise routinely in many application domains and pose a challenge to traditional classifiers. We propose a new approach to building ensembles of classifiers for two-class imbalanced data sets, called Random Balance. Each member of the Random Balance ensemble is trained with data sampled from the training set and augmented by artificial instances obtained using SMOTE. The novelty in the approach is that the proportions of the classes for each ensemble member are chosen randomly. The intuition behind the method is that the proposed diversity heuristic will ensure that the ensemble contains classifiers that are specialized for different operating points on the ROC space, thereby leading to larger AUC compared to other ensembles of classifiers. Experiments have been carried out to test the Random Balance approach by itself, and also in combination with standard ensemble methods. As a result, we propose a new ensemble creation method called RB-Boost which combines Random Balance with AdaBoost.M2. This combination involves enforcing random class proportions in addition to instance re-weighting. Experiments with 86 imbalanced data sets from two well known repositories demonstrate the advantage of the Random Balance approach.
+Description=Disturbing Neighbors, Linear Oracle and Spherical Oracle
 
 # Package URL for obtaining the package archive (required)
-PackageURL=http://example.com
+PackageURL=http://github.com/admirable-ubu/UBUMLaaS
 
 # URL for further information
-URL=https://dl.acm.org/citation.cfm?id=2824739
+URL=https://link.springer.com/chapter/10.1007%2F978-3-540-72523-7_45
+URL=https://link.springer.com/chapter/10.1007/978-3-642-03999-7_7
+URL=https://ieeexplore.ieee.org/abstract/document/4118707
 
 # Dependencies (format: packageName (equality/inequality version_number)
 Depends=weka (>=3.7.10)
