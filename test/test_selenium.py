@@ -171,7 +171,7 @@ class TestDefaultSuite():
         self.driver.find_element(By.ID, "reduced_tab_link_0").click()
         self.driver.execute_script('$("#sel_0 option[value=\'Id\']").prop("selected",true)')
         self.driver.execute_script('$("#nuse_0").click()')
-        self.driver.find_element(By.ID, "normal_tab_link").click()
+        self.driver.find_element(By.ID, "normal_tab_link_0").click()
         elements = self.driver.find_elements(By.CSS_SELECTOR, "#col0_use_0:checked")
         assert len(elements) == 0
         self.logout()
