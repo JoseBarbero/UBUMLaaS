@@ -55,10 +55,13 @@ def task_skeleton(experiment, current_user):
     data = string_is_array(data)
     if not isinstance(data,list):
         data = [data]
+    v.app.logger.debug("%d - %d - Data list know is a list - %s", current_user['id'], experiment['id'], data)
+    # From here data will be a list
     if exp_manager.is_multi:
         rep = exp[0]["exp_config"]["repetition"]
     else:
         rep = exp["exp_config"]["repetition"]
+    v.app.logger.debug("%d - %d - Repetitions: %d", current_user['id'], experiment['id'], rep)
     res_global_data = []
     state_global_data=[]
     for j in range(len(data)):
@@ -112,7 +115,6 @@ def task_skeleton(experiment, current_user):
     res = res_global_data
     res_data=[]
     for k in range(len(data)):
-        print(data[k])
         if rep>1 and 2 not in state_global_data:
             state=1        
             if exp_manager.is_multi:
@@ -126,7 +128,7 @@ def task_skeleton(experiment, current_user):
             else:
                 res_mean=calc_res_mean(res[k], rep)
         else:
-            res_mean=res
+            res_mean=res[k]
         res_data.append(res_mean)
     res=res_data
     if len(data)==1:
@@ -165,7 +167,8 @@ def calc_res_mean(res, rep):
             if isinstance(res[0][i],list):
                 res_mean[i]= np.array(aux).mean(0).tolist()
             else:
-                res_mean[i]=np.array(aux).mean().tolist()
+                res_mean[i] = np.array(aux).mean().tolist()
+            res_mean[i] = [res_mean[i]]
     return res_mean
 
 def execute_model(alg_lib, data, exp, current_user,seed_multi=None):
