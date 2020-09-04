@@ -29,7 +29,7 @@ def new_experiment():
         str -- HTTP response with rendered page.
     """
 
-    form_e = ExperimentForm(0)
+    form_e = ExperimentForm(0, 0)
     form_e.dataset_list()
 
     form_d = DatasetForm()
@@ -45,7 +45,7 @@ def new_experiment():
 
     return render_template("experiment_form.html", form_e=form_e,
                            form_d=form_d, form_p=form_p,
-                           title="New experiment", experiment=experiment, idex=0)
+                           title="New experiment", experiment=experiment, idex=0, iddex=0)
 
 
 @login_required
@@ -74,12 +74,15 @@ def launch_experiment():
         if filter_name is not None:
             filter_name = "["+filter_name+"]"
             filter_config = "["+filter_config+"]"
+    data = request.form.get("data")
+    if "," in data:
+        data = "["+data+"]"
         
     exp = Experiment(user.id, alg_name,
                      unquote(alg_config),
                      json.dumps(exp_config),
                      filter_name, filter_config,
-                     request.form.get("data"),
+                     data,
                      None, time.time(), None, 0)
     v.app.logger.info("%d - Create experiment", current_user.id)    
     v.db.session.add(exp)
@@ -144,13 +147,14 @@ def change_column_list():
     Returns:
         str -- HTTP response with JSON
     """
-    form_e = ExperimentForm()
+    iddex = request.form.get("iddex",0)
+    form_e = ExperimentForm(iddex)
     filename = form_e.data.data
     upload_folder = "ubumlaas/datasets/"+current_user.username+"/"
     df, target_columns = get_dataframe_from_file(upload_folder, filename, target_column=True)
-    to_return = {"html": render_template("blocks/show_columns.html", data=df),
+    to_return = {"html": render_template("blocks/show_columns.html", data=df, iddex=iddex),
                  "html2": render_template("blocks/show_columns_reduced.html",
-                                          data=df.columns),
+                                          data=df.columns, iddex=iddex),
                  "df": generate_df_html(df),
                  "config": target_columns}
     v.app.logger.info("%d - Get dataset information - %s%s%s", current_user.id, upload_folder,"/",filename)

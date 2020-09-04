@@ -209,3 +209,13 @@ footer .main-footer {
     -o-transition: all 250ms ease-in-out 0s;
     transition: all 250ms ease-in-out 0s;
   }
+
+.custom-select[multiple],
+.custom-select[size]:not([size="1"])
+{
+    height: auto;
+    -webkit-appearance: menulist-textfield;
+    background-image: none;
+    /* Fix for excess right padding */
+    padding-right: 0.75rem;
+}

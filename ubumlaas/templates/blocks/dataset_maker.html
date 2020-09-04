@@ -1,0 +1,63 @@
+<div class="data-maker" data-iddex="{{ iddex }}">
+    <div class="row mt-4" id="upload_dataset_block_{{iddex}}">
+        <div class="col-md-6">
+            {% include "blocks/generic_data_uploaded.html" %}
+        </div>
+        <div class="col-md-6">
+            <fieldset>
+                <form class="col-md-8 offset-md-2" id="form_dataset2_{{ iddex }}">
+                    <div id="select_dataset_{{iddex}}" class="select_dataset">
+                        {% include 'blocks/select_dataset.html' %}
+                    </div>
+                </form>
+            </fieldset>
+        </div>
+    </div>
+    <div class="row" id="config_dataset_block_{{ iddex }}">
+        <div class="tabs-container col-12">
+            <ul class="nav nav-tabs">
+                <li>
+                    <a data-toggle="tab" href="#normal_tab_{{ iddex }}" class="nav-link active" id="normal_tab_link_{{ iddex }}" aria-controls="normal_tab_{{ iddex }}" aria-selected="true">Normal</a>
+                </li>
+                <li>
+                    <a data-toggle="tab" href="#reduced_tab_{{ iddex }}" class="nav-link" id="reduced_tab_link_{{ iddex }}" onclick="correctHDelayed();" aria-controls="reduced_tab_{{ iddex }}">Reduced</a>
+                </li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane fade active show" id="normal_tab_{{ iddex }}" role="tabpanel" aria-labelledby="normal_tab_link">
+                    <div class="container-fluid">    
+                        <fieldset>
+                            <form class="col-12 table-responsive" id="form_dataset_configuration_{{ iddex }}">
+                                <div id="dataset_parameters_{{ iddex }}" class="form-group">
+                                    {% include 'blocks/show_columns.html' %}
+                                </div>
+                                <div id="show_dataset_{{ iddex }}" class="form-group">
+                                    {% include 'blocks/show_dataset.html' %}
+                                </div>
+                            </form>
+                        </fieldset>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="reduced_tab_{{ iddex }}" role="tabpanel" aria-labelledby="reduced_tab_link">
+                    <div class="container-fluid">    
+                        <fieldset>
+                            <form class="col-12 table-responsive" id="form_dataset_configuration_reduced_{{ iddex }}">
+                                <div id="reduced_parameters_{{ iddex }}" class="form-group">
+                                    {% include 'blocks/show_columns_reduced.html' %}
+                                </div>
+                            <form>
+                        </fieldset>    
+                    </div>    
+                </div>
+            </div>    
+        </div>
+    </div>
+</div>
+
+<script>
+    function correctHDelayed(){
+        setTimeout(function (){
+            correctH();
+        }, 200);
+    }
+</script>

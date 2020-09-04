@@ -22,6 +22,9 @@ from ubumlaas.util import send_experiment_result_email
 from time import time
 import json
 import os
+from ubumlaas.util import string_is_array
+
+from copy import deepcopy
 
 import weka.core.jvm as jvm
 from ubumlaas.util import get_dataframe_from_file
@@ -49,55 +52,88 @@ def task_skeleton(experiment, current_user):
     # Diference sklearn executor and weka executor
     # Get algorithm type
     data = experiment["data"]
+    data = string_is_array(data)
+    if not isinstance(data,list):
+        data = [data]
+    v.app.logger.debug("%d - %d - Data list know is a list - %s", current_user['id'], experiment['id'], data)
+    # From here data will be a list
     if exp_manager.is_multi:
         rep = exp[0]["exp_config"]["repetition"]
     else:
         rep = exp["exp_config"]["repetition"]
-    res_global = []
-    state_global=[]
-    for i in range(rep):
-        if exp_manager.is_multi:
-            res=[]
-            state=[]
-            #Seed for no seed experiments, multi experiments should execute with the same data
-            rand = random.randint(1,1000000000)        
-            for i in range(len(exp)):
-                r,s = execute_model(exp[i]["alg"]["lib"],data,exp[i],current_user,rand)
-                if s == 1:
-                    res.append(json.loads(r))
+    v.app.logger.debug("%d - %d - Repetitions: %d", current_user['id'], experiment['id'], rep)
+    res_global_data = []
+    state_global_data=[]
+    for j in range(len(data)):
+        res_global = []
+        state_global=[]
+        for _i in range(rep):
+            if exp_manager.is_multi:
+                res=[]
+                state=[]
+                #Seed for no seed experiments, multi experiments should execute with the same data
+                rand = random.randint(1,1000000000)        
+                for i in range(len(exp)):
+                    aux_exp = deepcopy(exp[i])
+                    if len(data)>1:
+                        aux_exp["exp_config"]["target"]=aux_exp["exp_config"]["target"][j]
+                        aux_exp["exp_config"]["columns"]=aux_exp["exp_config"]["columns"][j]
+                    r,s = execute_model(exp[i]["alg"]["lib"],data[j],aux_exp,current_user,rand)
+                    if s == 1:
+                        res.append(json.loads(r))
+                    else:
+                        res.append(r)
+                    state.append(s)
+                if 2 in state:
+                    state = 2
                 else:
-                    res.append(r)
-                state.append(s)
-            if 2 in state:
-                state = 2
+                    state = 1
+                res_global.append(res)
             else:
-                state = 1
-            res_global.append(res)
+                aux_exp = deepcopy(exp)
+                if len(data)>1:
+                        aux_exp["exp_config"]["target"]=aux_exp["exp_config"]["target"][j]
+                        aux_exp["exp_config"]["columns"]=aux_exp["exp_config"]["columns"][j]
+                res,state=execute_model(exp["alg"]["lib"],data[j],aux_exp,current_user)               
+                if state == 1:
+                    res_global.append(json.loads(res))
+                else:
+                    res_global.append(res)
+                
+            state_global.append(state)
+        if 2 in state_global:
+            state_global = 2
         else:
-            res,state=execute_model(exp["alg"]["lib"],data,exp,current_user)
-            res_global.append(json.loads(res))
-            
-        state_global.append(state)
-    if rep == 1:
-        res_global = res_global[0]
+            state_global = 1
+        if rep == 1:
+            res_global = res_global[0]
+        
+        res_global_data.append(res_global)
+        state_global_data.append(state_global)
 
     #Calculate result means
-    res = res_global
-    if rep>1 and 2 not in state_global:
-        state=1        
-        if exp_manager.is_multi:
-            res_mean = []
-            for i in range(len(res[0])):
-                res_aux = []
-                for j in range(len(res)):
-                    res_aux.append(res[j][i])
-                r_mean = calc_res_mean(res_aux, rep)
-                res_mean.append(r_mean)            
+    res = res_global_data
+    res_data=[]
+    for k in range(len(data)):
+        if rep>1 and 2 not in state_global_data:
+            state=1        
+            if exp_manager.is_multi:
+                res_mean = []
+                for i in range(len(res[k][0])):
+                    res_aux = []
+                    for j in range(len(res[k])):
+                        res_aux.append(res[k][j][i])
+                    r_mean = calc_res_mean(res_aux, rep)
+                    res_mean.append(r_mean)            
+            else:
+                res_mean=calc_res_mean(res[k], rep)
         else:
-            res_mean=calc_res_mean(res, rep)
-
-        res=res_mean
-    elif 2 not in state_global:
+            res_mean=res[k]
+        res_data.append(res_mean)
+    res=res_data
+    if len(data)==1:
+        res = res[0]
+    elif 2 not in state_global_data:
         state = 1
     else:
         state = 2
@@ -121,18 +157,21 @@ def calc_res_mean(res, rep):
     Returns:
         dict: Results mean
     """
+    print(res)
     res_mean={}
     for i in res[0].keys():
-        aux=[]
-        for j in range(rep):
-            aux.append(res[j][i])
-        if isinstance(res[0][i],list):
-            res_mean[i]= np.array(aux).mean(0).tolist()
-        else:
-            res_mean[i]=np.array(aux).mean().tolist()
+        if i != "ROC": # ROC array incorrect over mean, represent points in space, not value. Use AUC to know the mean.
+            aux=[]
+            for j in range(rep):
+                aux.append(res[j][i][0])
+            if isinstance(res[0][i],list):
+                res_mean[i]= np.array(aux).mean(0).tolist()
+            else:
+                res_mean[i] = np.array(aux).mean().tolist()
+            res_mean[i] = [res_mean[i]]
     return res_mean
 
-def execute_model(alg_lib,data, exp, current_user,seed_multi=None):
+def execute_model(alg_lib, data, exp, current_user,seed_multi=None):
     type_app = alg_lib
     execution_lib = None
     try:
@@ -161,7 +200,13 @@ def execute_model(alg_lib,data, exp, current_user,seed_multi=None):
         y_score_list = []
         y_test_list = []
         X_test_list = []
-        if exp_config.get("mode") == "split" and exp_config["train_partition"] < 100:
+
+        if execution_lib.algorithm_type == "Clustering":
+            y_pred, y_score = execution_lib.predict(model, X)
+            y_pred_list.append(y_pred)
+            y_score_list.append(y_score)
+
+        elif exp_config.get("mode") == "split" and exp_config["train_partition"] < 100:
             X_train, X_test, y_train, y_test = execution_lib\
                 .generate_train_test_split(X, y, exp_config["train_partition"],random_state=seed_multi)
             model = execution_lib.create_model()
@@ -185,10 +230,7 @@ def execute_model(alg_lib,data, exp, current_user,seed_multi=None):
                 y_test_list.append(y_test)
                 X_test_list.append(X_test)
 
-        elif execution_lib.algorithm_type == "Clustering":
-            y_pred, y_score = execution_lib.predict(model, X)
-            y_pred_list.append(y_pred)
-            y_score_list.append(y_score)
+        
             
         score = {}
         if exp_config["mode"] == "cross" or exp_config["train_partition"] < 100 or execution_lib.algorithm_type == "Clustering":

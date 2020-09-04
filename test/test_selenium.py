@@ -109,22 +109,22 @@ class TestDefaultSuite():
         self.login("ubumlaas@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
         assert self.driver.find_element(By.CSS_SELECTOR, ".jumbotron > .text-center").text == "Configure experiment"
-        self.driver.execute_script("$('#data').val('breastCancer.csv');")
-        self.driver.execute_script("$('#data').change();")
+        self.driver.execute_script("$('#data_0').val('breastCancer.csv');")
+        self.driver.execute_script("$('#data_0').change();")
         time.sleep(self.wait)
-        assert self.driver.find_element(By.CSS_SELECTOR, "th:nth-child(3)").text == "Cl.thickness"
-        self.driver.execute_script("$('#data').val('iris.csv');")
-        self.driver.execute_script("$('#data').change();")
+        assert self.driver.find_element(By.CSS_SELECTOR, "#dataset_parameters_0 > div > table > thead > tr > th:nth-child(3)").text == "Cl.thickness"
+        self.driver.execute_script("$('#data_0').val('iris.csv');")
+        self.driver.execute_script("$('#data_0').change();")
         time.sleep(self.wait)
-        assert self.driver.find_element(By.CSS_SELECTOR, "th:nth-child(2)").text == "sepal length (cm)"
-        self.driver.execute_script("$('#data').val('music.csv');")
-        self.driver.execute_script("$('#data').change();")
+        assert self.driver.find_element(By.CSS_SELECTOR, "#dataset_parameters_0 > div > table > thead > tr > th:nth-child(2)").text == "sepal length (cm)"
+        self.driver.execute_script("$('#data_0').val('music.csv');")
+        self.driver.execute_script("$('#data_0').change();")
         time.sleep(self.wait)
-        assert self.driver.find_element(By.CSS_SELECTOR, "th:nth-child(2)").text == "amazed-suprised"
-        self.driver.execute_script("$('#data').val('weatherHistory.csv');")
-        self.driver.execute_script("$('#data').change();")
+        assert self.driver.find_element(By.CSS_SELECTOR, "#dataset_parameters_0 > div > table > thead > tr > th:nth-child(2)").text == "amazed-suprised"
+        self.driver.execute_script("$('#data_0').val('weatherHistory.csv');")
+        self.driver.execute_script("$('#data_0').change();")
         time.sleep(self.wait)
-        assert self.driver.find_element(By.CSS_SELECTOR, "th:nth-child(2)").text == "Temperature (C)"
+        assert self.driver.find_element(By.CSS_SELECTOR, "#dataset_parameters_0 > div > table > thead > tr > th:nth-child(2)").text == "Temperature (C)"
         self.logout()  
 
     def test_321DatasetUseNormal(self):
@@ -140,13 +140,13 @@ class TestDefaultSuite():
         """
         self.login("ubumlaas@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
-        self.driver.execute_script("$('#data').val('breastCancer.csv');")
-        self.driver.execute_script("$('#data').change();")
+        self.driver.execute_script("$('#data_0').val('breastCancer.csv');")
+        self.driver.execute_script("$('#data_0').change();")
         time.sleep(self.wait)
-        self.driver.execute_script("$('#col0_use_label').click();")
-        self.driver.find_element(By.ID, "reduced_tab_link").click()
-        WebDriverWait(self.driver, 30000).until(expected_conditions.visibility_of_element_located((By.ID, "0_opt")))
-        element = self.driver.find_element(By.ID, "0_opt")
+        self.driver.execute_script("$('#col0_use_label_0').click();")
+        self.driver.find_element(By.ID, "reduced_tab_link_0").click()
+        WebDriverWait(self.driver, 30000).until(expected_conditions.visibility_of_element_located((By.ID, "0_opt_0")))
+        element = self.driver.find_element(By.ID, "0_opt_0")
         assert "list-group-item-secondary" in element.get_attribute('class').split(" ")
         self.logout()
 
@@ -165,14 +165,14 @@ class TestDefaultSuite():
         """
         self.login("ubumlaas@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
-        self.driver.execute_script("$('#data').val('breastCancer.csv');")
-        self.driver.execute_script("$('#data').change();")
+        self.driver.execute_script("$('#data_0').val('breastCancer.csv');")
+        self.driver.execute_script("$('#data_0').change();")
         time.sleep(self.wait)
-        self.driver.find_element(By.ID, "reduced_tab_link").click()
-        self.driver.execute_script('$("#sel option[value=\'Id\']").prop("selected",true)')
-        self.driver.execute_script('$("#nuse").click()')
-        self.driver.find_element(By.ID, "normal_tab_link").click()
-        elements = self.driver.find_elements(By.CSS_SELECTOR, "#col0_use:checked")
+        self.driver.find_element(By.ID, "reduced_tab_link_0").click()
+        self.driver.execute_script('$("#sel_0 option[value=\'Id\']").prop("selected",true)')
+        self.driver.execute_script('$("#nuse_0").click()')
+        self.driver.find_element(By.ID, "normal_tab_link_0").click()
+        elements = self.driver.find_elements(By.CSS_SELECTOR, "#col0_use_0:checked")
         assert len(elements) == 0
         self.logout()
 
@@ -190,13 +190,13 @@ class TestDefaultSuite():
         """
         self.login("ubumlaas@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
-        self.driver.execute_script("$('#data').val('breastCancer.csv');")
-        self.driver.execute_script("$('#data').change();")
+        self.driver.execute_script("$('#data_0').val('breastCancer.csv');")
+        self.driver.execute_script("$('#data_0').change();")
         time.sleep(self.wait)
-        self.driver.execute_script("$('#col0_use_label').click();")
-        self.driver.execute_script("$('#col0_use_label').click();")
-        self.driver.find_element(By.ID, "reduced_tab_link").click()
-        element = self.driver.find_element(By.ID, "0_opt")
+        self.driver.execute_script("$('#col0_use_label_0').click();")
+        self.driver.execute_script("$('#col0_use_label_0').click();")
+        self.driver.find_element(By.ID, "reduced_tab_link_0").click()
+        element = self.driver.find_element(By.ID, "0_opt_0")
         assert "list-group-item-primary" in element.get_attribute('class').split(" ")
         self.logout()
 
@@ -215,16 +215,16 @@ class TestDefaultSuite():
         """
         self.login("ubumlaas@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
-        self.driver.execute_script("$('#data').val('breastCancer.csv');")
-        self.driver.execute_script("$('#data').change();")
+        self.driver.execute_script("$('#data_0').val('breastCancer.csv');")
+        self.driver.execute_script("$('#data_0').change();")
         time.sleep(self.wait)
-        self.driver.find_element(By.ID, "reduced_tab_link").click()
-        self.driver.execute_script('$("#sel option[value=\'Id\']").prop("selected",true)')
-        self.driver.execute_script('$("#nuse").click()')
-        self.driver.execute_script('$("#sel option[value=\'Id\']").prop("selected",true)')
-        self.driver.execute_script('$("#use").click()')
-        self.driver.find_element(By.ID, "normal_tab_link").click()
-        elements = self.driver.find_elements(By.CSS_SELECTOR, "#col0_use:checked")
+        self.driver.find_element(By.ID, "reduced_tab_link_0").click()
+        self.driver.execute_script('$("#sel_0 option[value=\'Id\']").prop("selected",true)')
+        self.driver.execute_script('$("#nuse_0").click()')
+        self.driver.execute_script('$("#sel_0 option[value=\'Id\']").prop("selected",true)')
+        self.driver.execute_script('$("#use_0").click()')
+        self.driver.find_element(By.ID, "normal_tab_link_0").click()
+        elements = self.driver.find_elements(By.CSS_SELECTOR, "#col0_use_0:checked")
         assert len(elements) > 0
         self.logout()
 
@@ -243,16 +243,16 @@ class TestDefaultSuite():
         """
         self.login("ubumlaas@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
-        self.driver.execute_script("$('#data').val('breastCancer.csv');")
-        self.driver.execute_script("$('#data').change();")
+        self.driver.execute_script("$('#data_0').val('breastCancer.csv');")
+        self.driver.execute_script("$('#data_0').change();")
         time.sleep(self.wait)
-        self.driver.execute_script("$('#col10_target_label').click();")
-        elements = self.driver.find_elements(By.CSS_SELECTOR, "#col10_use:checked")
+        self.driver.execute_script("$('#col10_target_label_0').click();")
+        elements = self.driver.find_elements(By.CSS_SELECTOR, "#col10_use_0:checked")
         assert len(elements) == 0
-        elements = self.driver.find_elements(By.CSS_SELECTOR, "#col10_target:checked")
+        elements = self.driver.find_elements(By.CSS_SELECTOR, "#col10_target_0:checked")
         assert len(elements) == 0
-        self.driver.find_element(By.ID, "reduced_tab_link").click()
-        element = self.driver.find_element(By.ID, "10_opt")
+        self.driver.find_element(By.ID, "reduced_tab_link_0").click()
+        element = self.driver.find_element(By.ID, "10_opt_0")
         assert "list-group-item-secondary" in element.get_attribute('class').split(" ")
         self.logout()
 
@@ -272,16 +272,16 @@ class TestDefaultSuite():
         """
         self.login("ubumlaas@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
-        self.driver.execute_script("$('#data').val('breastCancer.csv');")
-        self.driver.execute_script("$('#data').change();")
+        self.driver.execute_script("$('#data_0').val('breastCancer.csv');")
+        self.driver.execute_script("$('#data_0').change();")
         time.sleep(self.wait)
-        self.driver.find_element(By.ID, "reduced_tab_link").click()
-        self.driver.execute_script('$("#sel option[value=\'Class\']").prop("selected",true)')
-        self.driver.execute_script('$("#nuse").click()')
-        element = self.driver.find_element(By.ID, "10_opt")
+        self.driver.find_element(By.ID, "reduced_tab_link_0").click()
+        self.driver.execute_script('$("#sel_0 option[value=\'Class\']").prop("selected",true)')
+        self.driver.execute_script('$("#nuse_0").click()')
+        element = self.driver.find_element(By.ID, "10_opt_0")
         assert "list-group-item-secondary" in element.get_attribute('class').split(" ")
-        self.driver.find_element(By.ID, "normal_tab_link").click()
-        elements = self.driver.find_elements(By.CSS_SELECTOR, "#col10_use:checked")
+        self.driver.find_element(By.ID, "normal_tab_link_0").click()
+        elements = self.driver.find_elements(By.CSS_SELECTOR, "#col10_use_0:checked")
         assert len(elements) == 0
         self.logout()
 
@@ -300,16 +300,16 @@ class TestDefaultSuite():
         """
         self.login("ubumlaas@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
-        self.driver.execute_script("$('#data').val('breastCancer.csv');")
-        self.driver.execute_script("$('#data').change();")
+        self.driver.execute_script("$('#data_0').val('breastCancer.csv');")
+        self.driver.execute_script("$('#data_0').change();")
         time.sleep(self.wait)
-        self.driver.execute_script("$('#col10_use_label').click();")
-        elements = self.driver.find_elements(By.CSS_SELECTOR, "#col10_use:checked")
+        self.driver.execute_script("$('#col10_use_label_0').click();")
+        elements = self.driver.find_elements(By.CSS_SELECTOR, "#col10_use_0:checked")
         assert len(elements) > 0
-        elements = self.driver.find_elements(By.CSS_SELECTOR, "#col10_target:checked")
+        elements = self.driver.find_elements(By.CSS_SELECTOR, "#col10_target_0:checked")
         assert len(elements) == 0
-        self.driver.find_element(By.ID, "reduced_tab_link").click()
-        element = self.driver.find_element(By.ID, "10_opt")
+        self.driver.find_element(By.ID, "reduced_tab_link_0").click()
+        element = self.driver.find_element(By.ID, "10_opt_0")
         assert "list-group-item-primary" in element.get_attribute('class').split(" ")
         self.logout()
 
@@ -328,18 +328,18 @@ class TestDefaultSuite():
         """
         self.login("ubumlaas@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
-        self.driver.execute_script("$('#data').val('breastCancer.csv');")
-        self.driver.execute_script("$('#data').change();")
+        self.driver.execute_script("$('#data_0').val('breastCancer.csv');")
+        self.driver.execute_script("$('#data_0').change();")
         time.sleep(self.wait)
-        self.driver.find_element(By.ID, "reduced_tab_link").click()
-        self.driver.execute_script('$("#sel option[value=\'Class\']").prop("selected",true)')
-        self.driver.execute_script('$("#use").click()')
-        element = self.driver.find_element(By.ID, "10_opt")
+        self.driver.find_element(By.ID, "reduced_tab_link_0").click()
+        self.driver.execute_script('$("#sel_0 option[value=\'Class\']").prop("selected",true)')
+        self.driver.execute_script('$("#use_0").click()')
+        element = self.driver.find_element(By.ID, "10_opt_0")
         assert "list-group-item-primary" in element.get_attribute('class').split(" ")
-        self.driver.find_element(By.ID, "normal_tab_link").click()
-        elements = self.driver.find_elements(By.CSS_SELECTOR, "#col10_use:checked")
+        self.driver.find_element(By.ID, "normal_tab_link_0").click()
+        elements = self.driver.find_elements(By.CSS_SELECTOR, "#col10_use_0:checked")
         assert len(elements) > 0
-        elements = self.driver.find_elements(By.CSS_SELECTOR, "#col10_target:checked")
+        elements = self.driver.find_elements(By.CSS_SELECTOR, "#col10_target_0:checked")
         assert len(elements) == 0
         self.logout()
 
@@ -358,22 +358,22 @@ class TestDefaultSuite():
         """
         self.login("ubumlaas@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
-        self.driver.execute_script("$('#data').val('breastCancer.csv');")
-        self.driver.execute_script("$('#data').change();")
+        self.driver.execute_script("$('#data_0').val('breastCancer.csv');")
+        self.driver.execute_script("$('#data_0').change();")
         time.sleep(self.wait)
-        self.driver.execute_script("$('#col9_target_label').click();")
-        elements = self.driver.find_elements(By.CSS_SELECTOR, "#col10_use:checked")
+        self.driver.execute_script("$('#col9_target_label_0').click();")
+        elements = self.driver.find_elements(By.CSS_SELECTOR, "#col10_use_0:checked")
         assert len(elements) == 0
-        elements = self.driver.find_elements(By.CSS_SELECTOR, "#col10_target:checked")
+        elements = self.driver.find_elements(By.CSS_SELECTOR, "#col10_target_0:checked")
         assert len(elements) == 0
-        elements = self.driver.find_elements(By.CSS_SELECTOR, "#col9_use:checked")
+        elements = self.driver.find_elements(By.CSS_SELECTOR, "#col9_use_0:checked")
         assert len(elements) == 0
-        elements = self.driver.find_elements(By.CSS_SELECTOR, "#col9_target:checked")
+        elements = self.driver.find_elements(By.CSS_SELECTOR, "#col9_target_0:checked")
         assert len(elements) > 0
-        self.driver.find_element(By.ID, "reduced_tab_link").click()
-        element = self.driver.find_element(By.ID, "10_opt")
+        self.driver.find_element(By.ID, "reduced_tab_link_0").click()
+        element = self.driver.find_element(By.ID, "10_opt_0")
         assert "list-group-item-secondary" in element.get_attribute('class').split(" ")
-        element = self.driver.find_element(By.ID, "9_opt")
+        element = self.driver.find_element(By.ID, "9_opt_0")
         assert "list-group-item-success" in element.get_attribute('class').split(" ")
         self.logout()
 
@@ -393,24 +393,24 @@ class TestDefaultSuite():
         """
         self.login("ubumlaas@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
-        self.driver.execute_script("$('#data').val('breastCancer.csv');")
-        self.driver.execute_script("$('#data').change();")
+        self.driver.execute_script("$('#data_0').val('breastCancer.csv');")
+        self.driver.execute_script("$('#data_0').change();")
         time.sleep(self.wait)
-        self.driver.find_element(By.ID, "reduced_tab_link").click()
-        self.driver.execute_script("$('#sel option[value=\"Mitoses\"]').prop('selected',true);")
-        self.driver.execute_script("$('#target').click();")
-        element = self.driver.find_element(By.ID, "10_opt")
+        self.driver.find_element(By.ID, "reduced_tab_link_0").click()
+        self.driver.execute_script("$('#sel_0 option[value=\"Mitoses\"]').prop('selected',true);")
+        self.driver.execute_script("$('#target_0').click();")
+        element = self.driver.find_element(By.ID, "10_opt_0")
         assert "list-group-item-secondary" in element.get_attribute('class').split(" ")
-        element = self.driver.find_element(By.ID, "9_opt")
+        element = self.driver.find_element(By.ID, "9_opt_0")
         assert "list-group-item-success" in element.get_attribute('class').split(" ")
-        self.driver.find_element(By.ID, "normal_tab_link").click()
-        elements = self.driver.find_elements(By.CSS_SELECTOR, "#col10_use:checked")
+        self.driver.find_element(By.ID, "normal_tab_link_0").click()
+        elements = self.driver.find_elements(By.CSS_SELECTOR, "#col10_use_0:checked")
         assert len(elements) == 0
-        elements = self.driver.find_elements(By.CSS_SELECTOR, "#col10_target:checked")
+        elements = self.driver.find_elements(By.CSS_SELECTOR, "#col10_target_0:checked")
         assert len(elements) == 0
-        elements = self.driver.find_elements(By.CSS_SELECTOR, "#col9_use:checked")
+        elements = self.driver.find_elements(By.CSS_SELECTOR, "#col9_use_0:checked")
         assert len(elements) == 0
-        elements = self.driver.find_elements(By.CSS_SELECTOR, "#col9_target:checked")
+        elements = self.driver.find_elements(By.CSS_SELECTOR, "#col9_target_0:checked")
         assert len(elements) > 0
         self.logout()
 
@@ -428,15 +428,15 @@ class TestDefaultSuite():
         """
         self.login("ubumlaas@gmail.com")
         self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
-        self.driver.execute_script("$('#data').val('breastCancer.csv');")
-        self.driver.execute_script("$('#data').change();")
+        self.driver.execute_script("$('#data_0').val('breastCancer.csv');")
+        self.driver.execute_script("$('#data_0').change();")
         time.sleep(self.wait)
-        self.driver.find_element(By.ID, "reduced_tab_link").click()
-        self.driver.execute_script("$('#sel option[value=\"Cell.shape\"]').prop('selected',true);")
-        self.driver.execute_script("$('#sel option[value=\"Marg.adhesion\"]').prop('selected',true);")
-        self.driver.execute_script("$('#sel option[value=\"Epith.c.size\"]').prop('selected',true);")
-        self.driver.execute_script("$('#sel option[value=\"Bare.nuclei\"]').prop('selected',true);")
-        self.driver.execute_script('$("#target").click()')
+        self.driver.find_element(By.ID, "reduced_tab_link_0").click()
+        self.driver.execute_script("$('#sel_0 option[value=\"Cell.shape\"]').prop('selected',true);")
+        self.driver.execute_script("$('#sel_0 option[value=\"Marg.adhesion\"]').prop('selected',true);")
+        self.driver.execute_script("$('#sel_0 option[value=\"Epith.c.size\"]').prop('selected',true);")
+        self.driver.execute_script("$('#sel_0 option[value=\"Bare.nuclei\"]').prop('selected',true);")
+        self.driver.execute_script('$("#target_0").click()')
         time.sleep(self.wait*2)
         assert self.driver.find_element(By.CSS_SELECTOR, "#alert_modal_body > p:nth-child(1)").text == "You can't select more than 1 target in no multilabel algorithms."
         time.sleep(self.wait)
@@ -462,25 +462,25 @@ class TestDefaultSuite():
         self.driver.find_element(By.LINK_TEXT, "New Experiment").click()
         self.driver.execute_script("$('#alg_typ').val(\"MultiClassification\")")
         self.driver.execute_script("$('#alg_typ').change();")
-        self.driver.execute_script("$('#data').val('music.csv');")
-        self.driver.execute_script("$('#data').change();")
+        self.driver.execute_script("$('#data_0').val('music.csv');")
+        self.driver.execute_script("$('#data_0').change();")
         time.sleep(self.wait)
         elm = list(range(6))
         for e in elm:
-            self.driver.execute_script("$('#col"+str(e)+"_target_label').click();")
-            elements = self.driver.find_elements(By.CSS_SELECTOR, "#col"+str(e)+"_use:checked")
+            self.driver.execute_script("$('#col"+str(e)+"_target_label_0').click();")
+            elements = self.driver.find_elements(By.CSS_SELECTOR, "#col"+str(e)+"_use_0:checked")
             assert len(elements) == 0
-            elements = self.driver.find_elements(By.CSS_SELECTOR, "#col"+str(e)+"_target:checked")
+            elements = self.driver.find_elements(By.CSS_SELECTOR, "#col"+str(e)+"_target_0:checked")
             assert len(elements) > 0
-        self.driver.execute_script("$('#col76_use_label').click();")
+        self.driver.execute_script("$('#col76_use_label_0').click();")
 
-        self.driver.find_element(By.ID, "reduced_tab_link").click()
+        self.driver.find_element(By.ID, "reduced_tab_link_0").click()
 
-        element = self.driver.find_element(By.ID, "76_opt")
+        element = self.driver.find_element(By.ID, "76_opt_0")
         assert "list-group-item-primary" in element.get_attribute("class").split(" ")
 
         for e in elm:
-            element = self.driver.find_element(By.ID, str(e)+"_opt")
+            element = self.driver.find_element(By.ID, str(e)+"_opt_0")
             assert "list-group-item-success" in element.get_attribute("class").split(" ")
         self.logout()
 
@@ -504,27 +504,27 @@ class TestDefaultSuite():
 
         self.driver.execute_script("$('#alg_typ').val(\"MultiClassification\")")
         self.driver.execute_script("$('#alg_typ').change();")
-        self.driver.execute_script("$('#data').val('music.csv');")
-        self.driver.execute_script("$('#data').change();")
+        self.driver.execute_script("$('#data_0').val('music.csv');")
+        self.driver.execute_script("$('#data_0').change();")
         time.sleep(self.wait)
-        self.driver.find_element(By.ID, "reduced_tab_link").click()
-        self.driver.execute_script("$('#sel option[value=\"BHSUM3\"]').prop('selected', true);")
-        self.driver.execute_script("$('#use').click();")
+        self.driver.find_element(By.ID, "reduced_tab_link_0").click()
+        self.driver.execute_script("$('#sel_0 option[value=\"BHSUM3\"]').prop('selected', true);")
+        self.driver.execute_script("$('#use_0').click();")
 
-        assert "list-group-item-primary" in self.driver.find_element(By.ID, "76_opt").get_attribute("class").split(" ")
+        assert "list-group-item-primary" in self.driver.find_element(By.ID, "76_opt_0").get_attribute("class").split(" ")
 
         elm = ['amazed-suprised', 'happy-pleased', 'relaxing-clam', 'quiet-still', 'sad-lonely', 'angry-aggresive']
         for e in elm:
-            self.driver.execute_script("$('#sel option[value=\""+e+"\"]').prop('selected', true);")
-        self.driver.execute_script("$('#target').click();")
+            self.driver.execute_script("$('#sel_0 option[value=\""+e+"\"]').prop('selected', true);")
+        self.driver.execute_script("$('#target_0').click();")
         for e in range(6):
-            assert "list-group-item-success" in self.driver.find_element(By.ID, str(e)+"_opt").get_attribute("class").split(" ")
+            assert "list-group-item-success" in self.driver.find_element(By.ID, str(e)+"_opt_0").get_attribute("class").split(" ")
 
-        self.driver.find_element(By.ID, "normal_tab_link").click()
+        self.driver.find_element(By.ID, "normal_tab_link_0").click()
         for e in range(6):
-            elements = self.driver.find_elements(By.CSS_SELECTOR, "#col"+str(e)+"_use:checked")
+            elements = self.driver.find_elements(By.CSS_SELECTOR, "#col"+str(e)+"_use_0:checked")
             assert len(elements) == 0
-            elements = self.driver.find_elements(By.CSS_SELECTOR, "#col"+str(e)+"_target:checked")
+            elements = self.driver.find_elements(By.CSS_SELECTOR, "#col"+str(e)+"_target_0:checked")
             assert len(elements) > 0
         self.logout()
 
@@ -550,35 +550,35 @@ class TestDefaultSuite():
 
         self.driver.execute_script("$('#alg_typ').val(\"MultiClassification\")")
         self.driver.execute_script("$('#alg_typ').change();")
-        self.driver.execute_script("$('#data').val('music.csv');")
-        self.driver.execute_script("$('#data').change();")
+        self.driver.execute_script("$('#data_0').val('music.csv');")
+        self.driver.execute_script("$('#data_0').change();")
         time.sleep(self.wait)
-        self.driver.find_element(By.ID, "reduced_tab_link").click()
-        self.driver.execute_script("$('#sel option[value=\"BHSUM3\"]').prop('selected', true);")
-        self.driver.execute_script("$('#use').click();")
+        self.driver.find_element(By.ID, "reduced_tab_link_0").click()
+        self.driver.execute_script("$('#sel_0 option[value=\"BHSUM3\"]').prop('selected', true);")
+        self.driver.execute_script("$('#use_0').click();")
 
         elm = ['amazed-suprised', 'happy-pleased', 'relaxing-clam', 'quiet-still', 'sad-lonely', 'angry-aggresive']
         for e in elm:
-            self.driver.execute_script("$('#sel option[value=\""+e+"\"]').prop('selected', true);")
-        self.driver.execute_script("$('#target').click();")
+            self.driver.execute_script("$('#sel_0 option[value=\""+e+"\"]').prop('selected', true);")
+        self.driver.execute_script("$('#target_0').click();")
 
         self.driver.execute_script("$('#alg_typ').val(\"Classification\")")
         self.driver.execute_script("$('#alg_typ').change();")
 
         time.sleep(self.wait)
-        assert "list-group-item-success" in self.driver.find_element(By.ID, "76_opt").get_attribute("class").split(" ")
+        assert "list-group-item-success" in self.driver.find_element(By.ID, "76_opt_0").get_attribute("class").split(" ")
         for e in range(6):
-            assert "list-group-item-primary" in self.driver.find_element(By.ID, str(e)+"_opt").get_attribute("class").split(" ")
+            assert "list-group-item-primary" in self.driver.find_element(By.ID, str(e)+"_opt_0").get_attribute("class").split(" ")
 
-        self.driver.find_element(By.ID, "normal_tab_link").click()
+        self.driver.find_element(By.ID, "normal_tab_link_0").click()
         for e in range(6):
-            elements = self.driver.find_elements(By.CSS_SELECTOR, "#col"+str(e)+"_use:checked")
+            elements = self.driver.find_elements(By.CSS_SELECTOR, "#col"+str(e)+"_use_0:checked")
             assert len(elements) > 0
-            elements = self.driver.find_elements(By.CSS_SELECTOR, "#col"+str(e)+"_target:checked")
+            elements = self.driver.find_elements(By.CSS_SELECTOR, "#col"+str(e)+"_target_0:checked")
             assert len(elements) == 0
-        elements = self.driver.find_elements(By.CSS_SELECTOR, "#col76_use:checked")
+        elements = self.driver.find_elements(By.CSS_SELECTOR, "#col76_use_0:checked")
         assert len(elements) == 0
-        elements = self.driver.find_elements(By.CSS_SELECTOR, "#col76_target:checked")
+        elements = self.driver.find_elements(By.CSS_SELECTOR, "#col76_target_0:checked")
         assert len(elements) > 0
         self.logout()
 
