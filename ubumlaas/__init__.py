@@ -15,7 +15,7 @@ import logging.config
 
 
 def create_app(config_name):
-    """ Creata application.
+    """ Creat an application.
 
     Arguments:
         config_name {string} -- configuration.
