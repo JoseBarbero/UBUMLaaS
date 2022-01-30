@@ -10,6 +10,7 @@ import sklearn.neighbors
 import sklearn.model_selection
 import sklearn.preprocessing
 import sklearn.multiclass
+import sklearn.semi_supervised
 from ubumlaas.experiments.algorithm.metrics import calculate_metrics
 from ubumlaas import create_app
 import pandas as pd

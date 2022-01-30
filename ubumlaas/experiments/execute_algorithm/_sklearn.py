@@ -9,6 +9,8 @@ import sklearn.neighbors
 import sklearn.model_selection
 import sklearn.preprocessing
 import sklearn.multiclass
+import sklearn.semi_supervised
+import sklearn.svm
 import imblearn
 from imblearn.pipeline import make_pipeline
 import pickle
