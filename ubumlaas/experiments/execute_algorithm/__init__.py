@@ -205,5 +205,13 @@ class Abstract_execute(ABC):
         """
         return self.algorithm_type == "Classification"
 
+    def is_semi_supervised_calssification(self):
+        """Check if the algorithm type is Semi Supervised Classification
+        
+        Returns:
+            [bool] -- True if algorithm is Semi Supervised Classification
+        """
+        return self.algorithm_type == ["Semi Supervised Classification"]
+
     def has_filter(self):
         return self.filter_name is not None

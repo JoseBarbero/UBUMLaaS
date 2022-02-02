@@ -73,7 +73,29 @@ def task_skeleton(experiment, current_user):
         y_score_list = []
         y_test_list = []
         X_test_list = []
-        if exp_config.get("mode") == "split" and exp_config["train_partition"] < 100:
+        
+        if execution_lib.algorithm_type == "Semi Supervised Classification":
+            col = y.columns.tolist()[0]
+            X_labeled = X.loc[y[col] != -1]
+            y_labeled = y.loc[y[col] != -1]
+            X_unlabeled = X.loc[y[col] == -1]
+            y_unlabeled = y.loc[y[col] == -1]
+            
+            if exp_config.get("mode") == "split" and exp_config["train_partition"] < 100:
+                X_train, X_test, y_train, y_test = execution_lib\
+                    .generate_train_test_split(X_labeled, y_labeled, 
+                    exp_config["train_partition"])
+                model = execution_lib.create_model()
+                X_train = X_unlabeled.append(X_train, ignore_index = True)
+                y_train = y_unlabeled.append(y_train, ignore_index = True)
+                execution_lib.train(model, X_train, y_train)
+                y_pred, y_score = execution_lib.predict(model, X_test)
+                
+                y_pred_list.append(y_pred)
+                y_test_list.append(y_test)
+                X_test_list.append(X_test)
+        
+        elif exp_config.get("mode") == "split" and exp_config["train_partition"] < 100:
             X_train, X_test, y_train, y_test = execution_lib\
                 .generate_train_test_split(X, y, exp_config["train_partition"])
             model = execution_lib.create_model()
@@ -103,7 +125,8 @@ def task_skeleton(experiment, current_user):
             y_score_list.append(y_score)
             
         score = {}
-        if exp_config["mode"] == "cross" or exp_config["train_partition"] < 100 or execution_lib.algorithm_type == "Clustering":
+        if exp_config["mode"] == "cross" or exp_config["train_partition"] < 100 \
+                or execution_lib.algorithm_type == "Clustering" or execution_lib.algorithm_type == "Semi Supervised Classification":
 
             typ = execution_lib.algorithm_type
             score = calculate_metrics(typ, y_test_list, y_pred_list, y_score_list, X_test_list)

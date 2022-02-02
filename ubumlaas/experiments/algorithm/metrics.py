@@ -8,6 +8,7 @@ from flask_login import current_user
 
 def calculate_metrics(typ, y_test, y_pred, y_score, X = None):
     score = {}
+    v.app.logger.info("Calculating %s metrics", typ)
 
     if typ == "Regression" or typ == "MultiRegression":
         score = regression_metrics(y_test, y_pred)
@@ -19,7 +20,7 @@ def calculate_metrics(typ, y_test, y_pred, y_score, X = None):
         score = clustering_metrics(X, y_pred)
     elif typ == "Semi Supervised Classification":
         score = semi_supervised_classification_metrics(y_test, y_pred)
-    v.app.logger.info("Calculating %s metrics", typ)
+    
     v.app.logger.debug("Score of %s metrics: %s",typ, score)
     return score
 
@@ -45,9 +46,6 @@ def semi_supervised_classification_metrics(y_test_param, y_pred_param):
         score.setdefault("kappa", []).append(
             mtr.cohen_kappa_score(y_test, y_pred)
         )
-        score.setdefault("accuracy", []).append(
-            mtr.accuracy_score(y_test, y_pred)
-        )
 
     conf_matrix_final = np.array(score["confussion_matrix"])
     if len(conf_matrix_final) > 1:
@@ -69,7 +67,6 @@ def classification_metrics(y_test_param, y_pred_param, y_score_param):
         dict -- metrics with computed value
     """
     score = {}
-
     for y_test, y_pred, y_score in \
             zip(y_test_param, y_pred_param, y_score_param):
 
