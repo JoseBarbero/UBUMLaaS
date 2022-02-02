@@ -17,10 +17,45 @@ def calculate_metrics(typ, y_test, y_pred, y_score, X = None):
         score = multiclassication_metrics(y_test, y_pred)
     elif typ == "Clustering":
         score = clustering_metrics(X, y_pred)
+    elif typ == "Semi Supervised Classification":
+        score = semi_supervised_classification_metrics(y_test, y_pred)
     v.app.logger.info("Calculating %s metrics", typ)
     v.app.logger.debug("Score of %s metrics: %s",typ, score)
     return score
 
+
+def semi_supervised_classification_metrics(y_test_param, y_pred_param):
+    """Compute classification metrics for Semi Supervised models
+    
+    Arguments:
+        y_test {1d array} --- test output
+        y_pred {1d array} --- model output
+    """
+    score = {}
+
+    for y_test, y_pred in zip(y_test_param, y_pred_param):
+        conf_matrix = mtr.confusion_matrix(y_test, y_pred)
+        score.setdefault("confussion_matrix", []).append(conf_matrix.tolist())
+        score.setdefault("f1_score", []).append(
+            mtr.f1_score(y_test, y_pred, average="weighted")
+        )
+        score.setdefault("accuracy", []).append(
+            mtr.accuracy_score(y_test, y_pred)
+        )
+        score.setdefault("kappa", []).append(
+            mtr.cohen_kappa_score(y_test, y_pred)
+        )
+        score.setdefault("accuracy", []).append(
+            mtr.accuracy_score(y_test, y_pred)
+        )
+
+    conf_matrix_final = np.array(score["confussion_matrix"])
+    if len(conf_matrix_final) > 1:
+        conf_mean = [conf_matrix_final.mean(0)]
+        score["confussion_matrix"] = np.concatenate(
+            (conf_matrix_final, conf_mean), axis=0).tolist()
+
+    return score
 
 def classification_metrics(y_test_param, y_pred_param, y_score_param):
     """Compute classification metrics
