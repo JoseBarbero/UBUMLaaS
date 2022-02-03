@@ -4,7 +4,7 @@
 const MULTITARGET = ["MultiClassification"];
 
 /**
- * Possible values of Non-Supervised algorithmsç 
+ * Possible values of Non-Supervised algorithms 
  */
 const UNSUPERVISED = ["Clustering"]
 
