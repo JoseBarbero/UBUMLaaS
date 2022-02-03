@@ -122,7 +122,7 @@ node_modules/
 package-lock.json
 
 #DB
-*.sqlite
+#*.sqlite
 
 #local
 create_key.sh

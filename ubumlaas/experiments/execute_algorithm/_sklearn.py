@@ -9,6 +9,8 @@ import sklearn.neighbors
 import sklearn.model_selection
 import sklearn.preprocessing
 import sklearn.multiclass
+import sklearn.semi_supervised
+import sklearn.svm
 import imblearn
 from imblearn.pipeline import make_pipeline
 import pickle
@@ -107,6 +109,6 @@ class Execute_sklearn(Abstract_execute):
         """
         predictions = model.predict(X)
         y_score = None
-        if self.is_classification():
+        if self.is_classification() or self.is_semi_supervised_calssification():
             y_score = model.predict_proba(X)
         return predictions, y_score
