@@ -1,6 +1,16 @@
 <!DOCTYPE html>
 <html>
-
+<script src="../static/js/translate.js"></script>
+<script src="../static/js/cookies.js"></script>
+<script>
+    function load() {
+        var translate = new Translate();
+        var currentLng = checkCookieLanguage();
+        var attributeName = 'data-tag';
+        translate.init(attributeName, currentLng);
+        translate.process("{{ url_for('static', filename='languages/') }}")
+    }
+</script>
 <head>
     <link rel="stylesheet" href="https://necolas.github.io/normalize.css/8.0.1/normalize.css" />
     <!-- <link rel="stylesheet" href="{{ url_for('static', filename="css/bootstrap-reboot.css") }}" /> -->
@@ -43,7 +53,7 @@
     {% block css %}{% endblock %}
 </head>
 
-<body>
+<body onload="load();">
 
     {% block before_anyelse %}
     {% endblock %}
@@ -53,7 +63,7 @@
             <a href="http://www.admirable-ubu.es/" target="_blank" rel="noopener noreferrer"><img
                     class="navbar-brand mr-3" src={{ url_for("static",filename="img/onlyA-32x32.svg") }}></a>
         </div>
-        <a class="navbar-brand" href="{{ url_for('core.index') }}"> UBUMLaaS</a>
+        <a class="navbar-brand" href="{{ url_for('core.index') }}"> <label data-tag="HEADING"></a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup"
             aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -61,22 +71,22 @@
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
             <div class="navbar-nav">
                 <a class="nav-item nav-link {% if title=="UBUMLaaS" %}active{% endif %}"
-                    href="{{ url_for('core.index') }}">Home</a>
+                    href="{{ url_for('core.index') }}"><label data-tag="HOME"></a>
                 <a class="nav-item nav-link {% if title=="Info" %}active{% endif %}"
-                    href="{{ url_for('core.info') }}">About</a>
+                    href="{{ url_for('core.info') }}"></a>
             </div>
             <div class="navbar-nav ml-auto">
                 {% if current_user.is_authenticated %}
                 <a class="nav-item nav-link {% if "Profile" in title %}active{% endif %}"
-                    href="{{ url_for('users.profile') }}">My launched experiments</a>
+                    href="{{ url_for('users.profile') }}"><label data-tag="LAUNCHED_EXPERIMENTS"></a>
                 <a class="nav-item nav-link {% if title=="New experiment" %}active{% endif %}"
-                    href="{{ url_for('experiments.new_experiment') }}">New Experiment</a>
-                <a class="nav-item nav-link " href="{{ url_for('users.logout') }}">Logout</a>
+                    href="{{ url_for('experiments.new_experiment') }}"<label data-tag="NEW_EXPERIMENT"></a>
+                <a class="nav-item nav-link " href="{{ url_for('users.logout') }}"><label data-tag="LOGOUT"></a>
                 {% else %}
                 <a class="nav-item nav-link {% if title=="Log in" %}active{% endif %}"
-                    href="{{ url_for('users.login') }}">Login</a>
+                    href="{{ url_for('users.login') }}"><label data-tag="LOGIN"></a>
                 <a class="nav-item nav-link {% if title=="Register" %}active{% endif %}"
-                    href="{{ url_for('users.register') }}">Register</a>
+                    href="{{ url_for('users.register') }}"><label data-tag="REGISTER"></a>
                 {% endif %}
             </div>
         </div>
@@ -89,13 +99,14 @@
 
     {% block footer %}
     <footer id="footer">
+        <script>load();</script>
         <div class="main-footer widgets-dark typo-light d-flex">
             <div class="container">
                 <div class="row">
 
                     <div class="col-xs-12 col-sm-6 col-md-3">
                         <div class="widget subscribe no-box">
-                            <h5 class="widget-title">Location<span></span></h5>
+                            <h5 class="widget-title"><label data-tag="LOCATION"></label><span></span></h5>
                             <ul class="thumbnail-widget">
                                 <li><a target="_blank" rel="noopener noreferrer"
                                         href="https://www.ubu.es/escuela-politecnica-superior/escuela-politecnica-superior">Escuela
@@ -103,17 +114,17 @@
                                 <li>Río Vena Campus</li>
                                 <li>Avda. Cantabria s/n 09006</li>
                                 <li>Burgos (Burgos)</li>
-                                <li>Spain</li>
-                                <li><i class="material-icons">phone</i> <a href="tel:+34947258900">+34 947 25 89 00</a>
+                                <li><label data-tag="SPAIN"></label></li>
+                                <li><i class="material-icons"><label data-tag="PHONE"></label></i> <a href="tel:+34947258900">+34 947 25 89 00</a>
                                 </li>
-                                <li><i class="material-icons">email</i> <a href="mailto:eps@ubu.es">eps@ubu.es</a></li>
+                                <li><i class="material-icons"><label data-tag="EMAIL"></label></i> <a href="mailto:eps@ubu.es">eps@ubu.es</a></li>
                             </ul>
                         </div>
                     </div>
 
                     <div class="col-xs-12 col-sm-6 col-md-3">
                         <div class="widget no-box">
-                            <h5 class="widget-title">Quick Links<span></span></h5>
+                            <h5 class="widget-title"><label data-tag="QUICK_LINKS"></label><span></span></h5>
                             <ul class="thumbnail-widget">
                                 <li>
                                     <div class="thumb-content"><a target="_blank" rel="noopener noreferrer"
@@ -121,10 +132,10 @@
                                 </li>
                                 <li>
                                     <div class="thumb-content"><a target="_blank" rel="noopener noreferrer"
-                                            href="https://www.ubu.es/">University of Burgos</a></div>
+                                            href="https://www.ubu.es/"><label data-tag="UBU"></label></a></div>
                                 </li>
                                 <li>
-                                    <div class="thumb-content"><a href="{{ url_for('core.info') }}">About</a></div>
+                                    <div class="thumb-content"><a href="{{ url_for('core.info') }}"><label data-tag="ABOUT"></label></a></div>
                                 </li>
                             </ul>
                         </div>
@@ -132,24 +143,24 @@
 
                     <div class="col-xs-12 col-sm-6 col-md-3">
                         <div class="widget no-box">
-                            <h5 class="widget-title">Register<span></span></h5>
-                            <h6>Do you need an account?</h6>
-                            <a class="btn btn-ubu-maroon" href="{{ url_for('users.register') }}">Register Now</a>
+                            <h5 class="widget-title"><label data-tag="REGISTER_TITLE"></label><span></span></h5>
+                            <h6><label data-tag="NEED_ACCOUNT"></label></h6>
+                            <a class="btn btn-ubu-maroon" href="{{ url_for('users.register') }}"><label data-tag="REGISTER_NOW"></label></a>
                         </div>
                     </div>
 
                     <div class="col-xs-12 col-sm-6 col-md-3">
 
                         <div class="widget no-box">
-                            <h5 class="widget-title">Contact Us<span></span></h5>
+                            <h5 class="widget-title"><label data-tag="CONTACT_US"></label><span></span></h5>
                             <ul class="thumbnail-widget">
                                 <li>
-                                    <div class="thumb-content"> <i class="material-icons">email</i> <a
+                                    <div class="thumb-content"> <i class="material-icons"><label data-tag="EMAIL"></label></i> <a
                                             href="mailto:ADMIRABLE_rg@oficina.ubu.es">ADMIRABLE_rg@oficina.ubu.es</a>
                                     </div>
                                 </li>
                                 <li>
-                                    <div class="thumb-content"> <i class="material-icons">phone</i> <a
+                                    <div class="thumb-content"> <i class="material-icons"><label data-tag="PHONE"></label></i> <a
                                             href="tel:+34947259358">+34 947 25 93 58</a></div>
                                 </li>
                             </ul>
@@ -193,7 +204,7 @@
             <div class="container">
                 <div class="row">
                     <div class="col-md-12 text-center">
-                        <p>UBUMLaaS. © <script>document.write(new Date().getFullYear());</script>. All rights reserved.</p>
+                        <p>UBUMLaaS. © <script>document.write(new Date().getFullYear());</script>. <label data-tag="COPYRIGHT"></label></p>
                     </div>
                 </div>
             </div>
