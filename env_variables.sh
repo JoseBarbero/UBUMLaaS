@@ -8,6 +8,7 @@ export FLASK_ENV=development #development or production
 LIBFOLDER=/absolute/path/to/UBUMLaaS
 
 export WEKA_HOME=$LIBFOLDER/lib/wekafiles/packages/
+export IS_SSL=$LIBFOLDER/lib/is_ssl/
 
 ruta="$WEKA_HOME/packages/"
 packages=$(ls -l $ruta)
