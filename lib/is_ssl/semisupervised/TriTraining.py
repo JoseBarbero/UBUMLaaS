@@ -16,6 +16,8 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.utils import Bunch
 
+from .utils import split
+
 
 def measure_error(classifier_j, classifier_k, labeled_data):
     pred_j = classifier_j.predict(labeled_data)
@@ -26,12 +28,6 @@ def measure_error(classifier_j, classifier_k, labeled_data):
 
 class TriTraining:
     def __init__(self, learn, random_state=None):
-        if learn is None or learn not in [*range(5)]:
-            raise ValueError(
-                'The learn algorithm must be passed to the constructor.\n'
-                '\t 1 for 3-NN \n\t 2 for Decision Tree \n\t 3 for Random '
-                'Forest \n\t 4 for Gaussian NB'
-            )
         if learn == '3-NN':
             self.hj = KNeighborsClassifier(n_neighbors=3, n_jobs=-1, p=2)
             self.hk = KNeighborsClassifier(n_neighbors=3, n_jobs=-1, p=2)
@@ -62,7 +58,9 @@ class TriTraining:
         targets = target[samples_index]
         return Bunch(data=samples, target=targets)
 
-    def fit(self, L, U, y):
+    def fit(self, X, y):
+        L, U, y = split(X, y)
+
         if len(L) != len(y):
             raise ValueError(
                 f'The dimension of the labeled data must be the same as the '

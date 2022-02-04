@@ -10,7 +10,7 @@ from math import ceil, floor
 import numpy as np
 from sklearn.naive_bayes import GaussianNB
 from sklearn.preprocessing import LabelEncoder
-
+from .utils import split
 
 class CoTraining:
 
@@ -24,7 +24,9 @@ class CoTraining:
         self.h1 = GaussianNB()
         self.h2 = GaussianNB()
 
-    def fit(self, L, U, y):
+    def fit(self, X, y):
+        L, U, y = split(X, y)
+
         if len(L) != len(y):
             raise ValueError(
                 f'The dimension of the labeled data must be the same as the '

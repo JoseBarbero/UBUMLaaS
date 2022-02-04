@@ -14,6 +14,8 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.preprocessing import LabelEncoder
 from sklearn.tree import DecisionTreeClassifier
 
+from .utils import split
+
 
 def check_bounds(wi):
     """Check upper and lower bounds. The left minimum value can be 0, and the
@@ -51,7 +53,9 @@ class DemocraticCoLearning:
         self.h2 = KNeighborsClassifier(n_neighbors=n_neighbors, n_jobs=-1, p=2)
         self.h3 = DecisionTreeClassifier(random_state=self.random_state)
 
-    def fit(self, L, U, y):
+    def fit(self, X, y):
+        L, U, y = split(X, y)
+
         if len(L) != len(y):
             raise ValueError(
                 f'The dimension of the labeled data must be the same as the '
