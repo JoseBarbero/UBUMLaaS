@@ -93,11 +93,26 @@ def task_skeleton(experiment, current_user):
                 X_train = X_unlabeled.append(X_train, ignore_index = True)
                 y_train = y_unlabeled.append(y_train, ignore_index = True)
                 execution_lib.train(model, X_train, y_train)
+                execution_lib.serialize(model, "{}{}.model"
+                                        .format(models_dir, experiment['id']))
                 y_pred, y_score = execution_lib.predict(model, X_test)
                 
                 y_pred_list.append(y_pred)
                 y_test_list.append(y_test)
                 X_test_list.append(X_test)
+            elif exp_config.get("mode") == "cross":
+                kfolds = execution_lib.generate_KFolds(
+                    X, y, exp_config["k_folds"])
+                for X_train, X_test, y_train, y_test in kfolds:
+                    model = execution_lib.create_model()
+                    execution_lib.train(model, X_train, y_train)
+                    y_pred, y_score = execution_lib.predict(model, X_test)
+                    y_pred_list.append(y_pred)
+                    y_score_list.append(y_score)
+                    y_test_list.append(y_test)
+                    X_test_list.append(X_test)
+                execution_lib.serialize(model, "{}{}.model"
+                                        .format(models_dir, experiment['id']))
         
         elif exp_config.get("mode") == "split" and exp_config["train_partition"] < 100:
             X_train, X_test, y_train, y_test = execution_lib\

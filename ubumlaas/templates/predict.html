@@ -130,7 +130,7 @@
 
         function delete_file(){
                 $.ajax({
-                        url:"{{ url_for("experiments.delete_file")}}",
+                        url:"{{ url_for("experiments.delete_file") }}",
                         type: 'DELETE'
                 });
         }

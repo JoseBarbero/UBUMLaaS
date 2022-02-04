@@ -66,7 +66,7 @@ def start_predict():
     alg = get_algorithm_by_name(exp.alg_name)
     path = "ubumlaas/models/{}/{}.model".format(current_user.username, exp_id)
     exp = exp.to_dict()
-    if alg.lib == "sklearn" or alg.lib == "meka":
+    if alg.lib == "sklearn" or alg.lib == "meka" or alg.lib == "is_ssl":
         # Open experiment configuration
         execute = v.apps_functions[alg.lib](exp)
 
