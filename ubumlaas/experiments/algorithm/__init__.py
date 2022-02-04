@@ -11,6 +11,7 @@ import sklearn.model_selection
 import sklearn.preprocessing
 import sklearn.multiclass
 import sklearn.semi_supervised
+import lib.is_ssl.semisupervised
 from ubumlaas.experiments.algorithm.metrics import calculate_metrics
 from ubumlaas import create_app
 import pandas as pd
@@ -62,9 +63,12 @@ def task_skeleton(experiment, current_user):
         models_dir = "ubumlaas/models/{}/".format(current_user["username"])
         if not os.path.exists(models_dir):
             os.makedirs(models_dir)
+        
+        
         model = execution_lib.create_model()
         v.app.logger.info("%d - Training model",current_user['id'])
-        execution_lib.train(model, X, y)
+        if execution_lib.algorithm_type != "Semi Supervised Classification":
+            execution_lib.train(model, X, y)
         execution_lib.serialize(model, "{}{}.model"
                                        .format(models_dir, experiment['id']))
 
