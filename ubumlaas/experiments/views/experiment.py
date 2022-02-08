@@ -2,6 +2,7 @@ from flask import \
     (render_template, url_for, redirect, request, jsonify,
      abort)
 import variables as v
+import numpy as np
 from ubumlaas.models import \
     (Experiment, load_experiment,
      get_algorithm_by_name, get_filter_by_name, delete_experiment)
@@ -107,11 +108,14 @@ def change_column_list():
     filename = form_e.data.data
     upload_folder = "ubumlaas/datasets/"+current_user.username+"/"
     df, target_columns = get_dataframe_from_file(upload_folder, filename, target_column=True)
+    df.fillna(-1)
+    cols_unlabeled = np.unique(np.where(df.eq(-1))[1]).tolist()
     to_return = {"html": render_template("blocks/show_columns.html", data=df),
                  "html2": render_template("blocks/show_columns_reduced.html",
                                           data=df.columns),
                  "df": generate_df_html(df),
-                 "config": target_columns}
+                 "config": target_columns,
+                 "cols_unlabeled": cols_unlabeled}
     v.app.logger.info("%d - Get dataset information - %s%s%s", current_user.id, upload_folder,"/",filename)
     return jsonify(to_return)
 

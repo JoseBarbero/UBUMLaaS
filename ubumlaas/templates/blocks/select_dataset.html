@@ -18,6 +18,8 @@
                         if(result.config == null){
                             if(UNSUPERVISED.includes($("#alg_typ").val())){
                                 no_target();
+                            }else{
+                                SEMISUPERVISED = SEMISUPERVISED.concat(result.cols_unlabeled);
                             }
                         }else{
                             if(Math.abs(result.config) != 1){
