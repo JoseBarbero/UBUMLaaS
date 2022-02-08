@@ -11,7 +11,7 @@ const UNSUPERVISED = ["Clustering"]
 /**
  * Columns with missing data for Semi Supervised Classification.
  */
-var SEMISUPERVISED = ["Semi Supervised Classification"]
+const SEMISUPERVISED = ["Semi Supervised Classification"]
 
 /**
  * It guarantees only one target if algorithms is not MULTITARGET 
@@ -86,8 +86,8 @@ function target_or_use(identifier, mode){
  */
 function target_with_unlabeled(column){
     let typ = $("#alg_typ").val();
-    if (SEMISUPERVISED.includes(typ)) {
-        if (!SEMISUPERVISED.includes(parseInt(column))){
+    if (SEMISUPERVISED.flat().includes(typ)) {
+        if (!SEMISUPERVISED.flat().includes(parseInt(column))){
             launch_danger_modal("Target not allowed",
                 "Semi Supervised Classification needs a target with missing or '-1' values.");
             $("#col" + column + '_target').prop("checked", true);
