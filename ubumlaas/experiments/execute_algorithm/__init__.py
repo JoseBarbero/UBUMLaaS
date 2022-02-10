@@ -23,7 +23,7 @@ class Abstract_execute(ABC):
 
         v.app.logger.info("New execution - %d - %s - %s", self.id, self.algorithm_name, self.algorithm_type)
 
-        if experiment.get("filter") is not None:            
+        if experiment.get("filter") is not None:
             self.filter_name = experiment["filter"]["filter_name"]
             self.filter_config = Abstract_execute.__convert_to_dict(experiment["filter_config"])
             v.app.logger.info("Filtered - %d - %s - %s", self.id, self.algorithm_name, self.filter_name)

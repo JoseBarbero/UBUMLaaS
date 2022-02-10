@@ -14,3 +14,7 @@ in the literature.
 
 __version__ = "0.1.3"
 __author__ = 'Daniel Puente Ramírez'
+
+from .ENN import ENN
+
+__all__ = ["ENN"]
