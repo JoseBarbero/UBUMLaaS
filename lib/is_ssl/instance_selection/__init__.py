@@ -15,12 +15,16 @@ in the literature.
 __version__ = "0.1.3"
 __author__ = 'Daniel Puente Ramírez'
 
-from .ENN import ENN
-from .CNN import CNN
-# from .RNN import RNN
-# from .MSS import MSS
-# from .ICF import ICF
-# from .DROP3 import DROP3
+from ._ENN import ENN
+from ._CNN import CNN
+from ._RNN import RNN
+from ._MSS import MSS
+from ._ICF import ICF
+from ._DROP3 import DROP3
 
 __all__ = ["ENN",
-           "CNN"]
+           "CNN",
+           "RNN",
+           "MSS",
+           "ICF",
+           "DROP3"]

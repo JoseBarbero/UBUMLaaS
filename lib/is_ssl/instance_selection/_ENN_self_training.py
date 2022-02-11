@@ -8,7 +8,7 @@ import copy
 import numpy as np
 from sklearn.neighbors import NearestNeighbors
 
-from instance_selection.ENN import ENN
+from .ENN import ENN
 
 
 def ENN_self_training(original, complete, k=3, without=True):
