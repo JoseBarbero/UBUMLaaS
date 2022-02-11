@@ -15,6 +15,7 @@ import lib.is_ssl.semisupervised
 from ubumlaas.experiments.algorithm.metrics import calculate_metrics
 from ubumlaas import create_app
 import pandas as pd
+import numpy as np
 import variables as v
 import traceback
 
@@ -64,7 +65,6 @@ def task_skeleton(experiment, current_user):
         if not os.path.exists(models_dir):
             os.makedirs(models_dir)
         
-        
         model = execution_lib.create_model()
         v.app.logger.info("%d - Training model",current_user['id'])
         if execution_lib.algorithm_type != "Semi Supervised Classification":
@@ -77,13 +77,33 @@ def task_skeleton(experiment, current_user):
         y_score_list = []
         y_test_list = []
         X_test_list = []
+
+        if execution_lib.has_filter() and \
+            'is_ssl' in execution_lib.filter_name and \
+            execution_lib.algorithm_type in \
+                ["Classification", "Semi Supervised Classification"]:
+            v.app.logger.info("%d - Filtering dataset", current_user['id'])
+            col = y.columns.tolist()[0]
+            col_name = y.keys()[0]
+            labeled_cols = np.where((y[col] != -1) == True)[0]
+            X_labeled = X.loc[labeled_cols]
+            y_labeled = y.loc[labeled_cols]
+            X = X.drop(axis=0, index=labeled_cols)
+            y = y.drop(axis=0, index=labeled_cols)
+            filter = eval("lib."+execution_lib.filter_name +
+                          "(**execution_lib.filter_config)")
+            X_labeled, y_labeled = filter.filter(X_labeled, y_labeled)
+            X = X.append(X_labeled, ignore_index=True)
+            y = pd.concat([y, y_labeled], ignore_index=True).fillna(1)
+            y = y[y.keys()[0]]*y[y.keys()[1]]
+            y = y.to_frame().rename(columns= {0: col_name})
         
         if execution_lib.algorithm_type == "Semi Supervised Classification":
             col = y.columns.tolist()[0]
             X_labeled = X.loc[y[col] != -1]
             y_labeled = y.loc[y[col] != -1]
             X_unlabeled = X.loc[y[col] == -1]
-            y_unlabeled = y.loc[y[col] == -1]
+            y_unlabeled = y.loc[y[col] == -1]            
             
             if exp_config.get("mode") == "split" and exp_config["train_partition"] < 100:
                 X_train, X_test, y_train, y_test = execution_lib\
@@ -221,4 +241,4 @@ def execute_weka_predict(username, experiment, tmp_filename, model_path, fil_nam
         return False
     finally:
         executor.close()
-    return True
+    return True 

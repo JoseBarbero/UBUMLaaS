@@ -11,6 +11,7 @@ import pickle
 from imblearn.pipeline import make_pipeline
 from ubumlaas.experiments.execute_algorithm import Abstract_execute
 import lib.is_ssl.semisupervised
+import lib.is_ssl.instance_selection
 
 class Execute_ssl(Abstract_execute):
     
@@ -21,7 +22,7 @@ class Execute_ssl(Abstract_execute):
             experiment {dict} -- experiment dictionary
         """
         Abstract_execute.__init__(self, experiment)
-        v.app.logger.info("Execution library - %d - IS_SLL", self.id)
+        v.app.logger.info("Execution library - %d - is_ssl", self.id)
 
     @staticmethod
     def __create_model(alg_name, alg_config):
@@ -48,10 +49,6 @@ class Execute_ssl(Abstract_execute):
         """
         model = Execute_ssl.__create_model(
             self.algorithm_name, self.algorithm_configuration)
-
-        if self.has_filter():
-            filter = eval(self.filter_name+"(**self.filter_config)")
-            return make_pipeline(filter, model)
         return model
 
     def serialize(self, model, path):

@@ -130,7 +130,7 @@ def get_compatible_filters(lib, typ=None):
     """Get an filter by .
 
     Arguments:
-        lib {string} -- name of the library sklearn or weka.
+        lib {string} -- name of the library sklearn, weka or is_ssl.
 
     Returns:
         Algorithm -- Algorithm with that name.
@@ -272,7 +272,7 @@ class Filter(v.db.Model):
             web_name {str} -- filter web name.
             filter_typ {str} -- filter type
             config {str} -- json with filter configuration.
-            lib {str} -- sklearn or weka.
+            lib {str} -- sklearn, weka or is_ssl.
         """
 
         self.filter_name = filter_name
