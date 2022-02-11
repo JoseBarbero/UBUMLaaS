@@ -49,10 +49,6 @@ class Execute_ssl(Abstract_execute):
         """
         model = Execute_ssl.__create_model(
             self.algorithm_name, self.algorithm_configuration)
-
-        if self.has_filter():
-            filter = eval("lib."+self.filter_name+"(**self.filter_config)")
-            return make_pipeline(filter, model)
         return model
 
     def serialize(self, model, path):

@@ -12,16 +12,16 @@ import pandas as pd
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.neighbors import NearestNeighbors
 from sklearn.utils import Bunch
-from .utils import transform as tr
+from .utils import transform
 
 
-class ENN(BaseEstimator, TransformerMixin):
+class ENN:
     def __init__(self, nearest_neighbors=3, power_parameter=2):
       self.nearest_neighbors = nearest_neighbors
       self.power_parameter = power_parameter
       self.x_attr = None
 
-    def fit(self, X, fit_params):
+    def filter(self, X, y):
         """
         Implementation of the Wilson Editing algorithm.
 
@@ -33,9 +33,8 @@ class ENN(BaseEstimator, TransformerMixin):
         :param k: int: number of neighbors to evaluate.
         :return: the input dataset with the remaining samples.
         """
-        print('....................................................\n\n\n')
         self.x_attr = X.keys()
-        X = tr(X, fit_params)
+        X = transform(X, y)
         S = copy.deepcopy(X)
         size = len(X['data'])
         s_samples = list(X['data'])
@@ -53,7 +52,7 @@ class ENN(BaseEstimator, TransformerMixin):
                                                         index - removed + 1:]
             knn.fit(samples_not_x)
             _, neigh_ind = knn.kneighbors([x_sample])
-            y_targets = [targets_not_x[x] for x in neigh_ind[0]]
+            y_targets = np.ravel(np.array([targets_not_x[x] for x in neigh_ind[0]])).astype(int)
             count = np.bincount(y_targets)
             max_class = np.where(count == np.amax(count))[0][0]
             if max_class != x_target:
