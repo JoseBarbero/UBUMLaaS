@@ -126,11 +126,12 @@ def get_filter_by_name(name):
         .filter(Filter.filter_name == name).first()
 
 
-def get_compatible_filters(lib, typ=None):
+def get_compatible_filters(lib, typ=None, alg_typ=None):
     """Get an filter by .
 
     Arguments:
         lib {string} -- name of the library sklearn, weka or is_ssl.
+        alg_typ {string} -- algorithm type Classification, Regression, etc.
 
     Returns:
         Algorithm -- Algorithm with that name.
@@ -138,6 +139,14 @@ def get_compatible_filters(lib, typ=None):
     cond = Filter.lib == lib
     if typ is not None:
         cond = and_(cond, Filter.typ == typ)
+    if alg_typ in ['Classification', 'Semi Supervised Classification', 'Mixed']:
+        filters = []
+        if lib != 'is_ssl':
+            cond1 = Filter.lib == 'is_ssl'
+            filters = Filter.query.filter(cond1).all()
+            v.app.logger.info("Getting filter for is_ssl")
+        [filters.append(x) for x in Filter.query.filter(cond).all()]
+        return filters
     v.app.logger.info("Getting filter for %s", lib)
     return Filter.query\
         .filter(cond).all()

@@ -65,23 +65,10 @@ def task_skeleton(experiment, current_user):
         if not os.path.exists(models_dir):
             os.makedirs(models_dir)
         
-        model = execution_lib.create_model()
-        v.app.logger.info("%d - Training model",current_user['id'])
-        if execution_lib.algorithm_type != "Semi Supervised Classification":
-            execution_lib.train(model, X, y)
-        execution_lib.serialize(model, "{}{}.model"
-                                       .format(models_dir, experiment['id']))
-
-        exp_config = execution_lib.experiment_configuration
-        y_pred_list = []
-        y_score_list = []
-        y_test_list = []
-        X_test_list = []
-
         if execution_lib.has_filter() and \
             'is_ssl' in execution_lib.filter_name and \
             execution_lib.algorithm_type in \
-                ["Classification", "Semi Supervised Classification"]:
+                ["Classification", "Semi Supervised Classification", "Mixed"]:
             v.app.logger.info("%d - Filtering dataset", current_user['id'])
             col = y.columns.tolist()[0]
             col_name = y.keys()[0]
@@ -96,8 +83,22 @@ def task_skeleton(experiment, current_user):
             X = X.append(X_labeled, ignore_index=True)
             y = pd.concat([y, y_labeled], ignore_index=True).fillna(1)
             y = y[y.keys()[0]]*y[y.keys()[1]]
-            y = y.to_frame().rename(columns= {0: col_name})
+            y = y.to_frame().rename(columns={0: col_name})
+            execution_lib.filter_name = None
+
+        model = execution_lib.create_model()
+        v.app.logger.info("%d - Training model",current_user['id'])
+        if execution_lib.algorithm_type != "Semi Supervised Classification":
+            execution_lib.train(model, X, y)
+        execution_lib.serialize(model, "{}{}.model"
+                                       .format(models_dir, experiment['id']))
+
+        exp_config = execution_lib.experiment_configuration
         
+        y_pred_list = []
+        y_score_list = []
+        y_test_list = []
+        X_test_list = []
         if execution_lib.algorithm_type == "Semi Supervised Classification":
             col = y.columns.tolist()[0]
             X_labeled = X.loc[y[col] != -1]
@@ -135,11 +136,19 @@ def task_skeleton(experiment, current_user):
                                         .format(models_dir, experiment['id']))
         
         elif exp_config.get("mode") == "split" and exp_config["train_partition"] < 100:
+            print('\n\n\n\n...............................................')
+            
             X_train, X_test, y_train, y_test = execution_lib\
                 .generate_train_test_split(X, y, exp_config["train_partition"])
             model = execution_lib.create_model()
+            print('\n\n\n\n...............................................')
             execution_lib.train(model, X_train, y_train)
+            print(X_train.shape)
+            print(y_train.shape)
+            print(X_test.shape)
+            print(y_test.shape)
             y_pred, y_score = execution_lib.predict(model, X_test)
+            print('\n\n\n\n...............................................')
 
             y_pred_list.append(y_pred)
             y_score_list.append(y_score)
@@ -205,6 +214,8 @@ def execute_weka_predict(username, experiment, tmp_filename, model_path, fil_nam
         # Open experiment configuration
         model_df = get_dataframe_from_file("ubumlaas/datasets/"+username +
                                            "/", experiment["data"])
+        print('\n\n\n--------------------------------------')
+        print(model_df)
         executor.find_y_uniques(model_df[class_attribute_name])
 
         predict_columns = predict_df.columns
@@ -236,6 +247,7 @@ def execute_weka_predict(username, experiment, tmp_filename, model_path, fil_nam
         dataframes.to_csv(upload_folder + fil_name, index=None)
     except Exception as ex:
         # If algoritm failed it save traceback as result
+        print('\n\n\nHa fallado\n\n\n')
         result = str(ex)
         v.app.logger.exception(result)
         return False
