@@ -65,7 +65,8 @@ class ExperimentForm(FlaskForm):
             else:
                 filter_typ = get_filter_by_name(filter_name).filter_typ
             self.filter_name.choices = [("", "---")]+[(x.filter_name, x.web_name)
-                                                      for x in get_compatible_filters(alg_lib, filter_typ)]
+                                                      for x in get_compatible_filters(
+                                                          alg_lib, filter_typ, alg.alg_typ)]
 
     submit = SubmitField("Create")
 

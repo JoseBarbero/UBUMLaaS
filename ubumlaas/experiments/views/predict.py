@@ -115,7 +115,7 @@ def start_predict():
         pred_df=prediction_df.iloc[:, -1].to_frame()
 
     else:
-        v.app.logger.warn("%d - code 400 alg.lib neither weka nor sklear nor meka", current_user.id)
+        v.app.logger.warn("%d - code 400 alg.lib neither weka nor sklear nor meka nor is_ssl", current_user.id)
         v.app.logger.debug("%d - alg.lib - %s", current_user.id, alg.lib)
         return "", 400
 
