@@ -33,7 +33,6 @@ def semi_supervised_classification_metrics(y_test_param, y_pred_param):
         y_pred {1d array} --- model output
     """
     score = {}
-
     for y_test, y_pred in zip(y_test_param, y_pred_param):
         conf_matrix = mtr.confusion_matrix(y_test, y_pred)
         score.setdefault("confussion_matrix", []).append(conf_matrix.tolist())
@@ -66,6 +65,9 @@ def classification_metrics(y_test_param, y_pred_param, y_score_param):
     Returns:
         dict -- metrics with computed value
     """
+    y_test_param = np.array(y_test_param).astype(float).astype(int)
+    y_pred_param = np.array(y_pred_param).astype(float).astype(int)
+    y_score_param = np.array(y_score_param).astype(float).astype(int)
     score = {}
     for y_test, y_pred, y_score in \
             zip(y_test_param, y_pred_param, y_score_param):
