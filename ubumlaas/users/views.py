@@ -190,3 +190,8 @@ def reset_with_token(token):
         return redirect(url_for('users.login'))
 
     return render_template('reset_with_token.html', form=form, token=token)
+
+
+@users.route('/administration', methods=["GET", "POST"])
+def administration():
+    return render_template('administration.html', title="Administration")

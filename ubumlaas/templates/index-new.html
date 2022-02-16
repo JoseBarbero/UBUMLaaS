@@ -120,6 +120,9 @@
                     {% if current_user.is_authenticated %}
                     <a class="nav-item nav-link {% if "Profile" in title %}active{% endif %}" href="{{ url_for('users.profile') }}"><label data-tag="LAUNCHED_EXPERIMENTS"></label></a>
                     <a class="nav-item nav-link {% if title=="New experiment" %}active{% endif %}" href="{{ url_for('experiments.new_experiment') }}"><label data-tag="NEW_EXPERIMENT"></label></a>
+                    {% if current_user.user_type == 0 %}
+                    <a class="nav-item nav-link {% if title==" Administration" %}active{% endif %}" href="{{ url_for('users.administration') }}"><label data-tag="ADMIN"></a>
+                    {% endif %}
                     <a class="nav-item nav-link " href="{{ url_for('users.logout') }}"><label data-tag="LOGOUT"></label></a>
                     {% else %}
                     <a class="nav-item nav-link {% if title=="Log in" %}active{% endif %}" href="{{ url_for('users.login') }}"><label data-tag="LOGIN"></label></a>
