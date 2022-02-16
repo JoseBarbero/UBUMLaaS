@@ -1,12 +1,22 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField
-from wtforms.validators import DataRequired, Email, EqualTo, Length, Regexp
+from wtforms import StringField, PasswordField, SubmitField, SelectField
+from wtforms.validators import DataRequired, Email, EqualTo, Length, Regexp, AnyOf
 from ubumlaas.models import User
+import pycountry
+
+class CountrySelectField(SelectField):
+    def __init__(self, *args, **kwargs):
+        super(CountrySelectField, self).__init__(*args, **kwargs)
+        self.choices = [(country.alpha_2, country.name)
+                        for country in pycountry.countries]
 
 password_msg_global = "Password requirements: Minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character => @$!%*?&().="
 email_field =  StringField("Email", validators=[DataRequired(), Email()])
 password_field = PasswordField("Password", validators=[Length(min=4), DataRequired(), EqualTo("confirm_password", message="Passwords must match"), Regexp(regex=r"(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&\(\)=\.\,])([A-Za-z\d$@$!%*?&\(\)=\.\,]|[^ ]){8,}$", message=password_msg_global)])
 confirm_password_field = PasswordField("Confirm Password", validators=[DataRequired()])
+country_field = CountrySelectField()
+desired_use_filed = SelectField("Desired use", choices=["Education", "Professional Work", "Research"],
+    validators=[AnyOf(values=["Education", "Professional Work", "Research"])])
 
 class LoginForm(FlaskForm):
     """Form for the log in.
@@ -30,6 +40,8 @@ class RegistrationForm(FlaskForm):
     username = StringField("Username", validators=[DataRequired()])
     password = password_field
     confirm_password = confirm_password_field
+    country = country_field
+    desired_use = desired_use_filed
     submit = SubmitField("Register")
 
     def email_exists(self, field):

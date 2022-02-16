@@ -164,19 +164,26 @@ class User(v.db.Model, UserMixin):
     email = v.db.Column(v.db.String(64), unique=True, index=True)
     username = v.db.Column(v.db.String(64), unique=True, index=True)
     password_hash = v.db.Column(v.db.String(128))
-    activated = v.db.Column(v.db.Boolean, nullable=False, default = False)
+    activated = v.db.Column(v.db.Boolean, nullable=False, default=False)
+    desired_use = v.db.Column(v.db.String(64))
+    country = v.db.Column(v.db.String(64))
+    user_type = v.db.Column(v.db.Integer, nullable=False, default=1)
 
-    def __init__(self, email, username, password):
+    def __init__(self, email, username, password, desired_use, country):
         """User constructor
 
         Arguments:
             email {string} -- User's email
             username {string} -- User name identifer
             password {string} -- User's password
+            desired_use {string} -- User's intended use
+            country {string} -- User's country
         """
         self.email = email
         self.username = username
         self.password_hash = generate_password_hash(password)
+        self.desired_use = desired_use
+        self.country = country
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -217,7 +224,8 @@ class User(v.db.Model, UserMixin):
         return {"id": self.id,
                 "email": self.email,
                 "username": self.username,
-                "password": self.password_hash}
+                "password": self.password_hash,
+                "admin": is_admin}
 
 
 class Algorithm(v.db.Model):
