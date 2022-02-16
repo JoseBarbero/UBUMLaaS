@@ -62,7 +62,9 @@ def register():
         else:
             user = User(email=form.email.data,
                         username=form.username.data,
-                        password=form.password.data)
+                        password=form.password.data,
+                        desired_use=form.desired_use.data,
+                        country=form.country.data)
             v.db.session.add(user)
             
             default_datasets(form.username.data)
