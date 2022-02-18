@@ -26,7 +26,7 @@ pipeline {
                 echo 'Run only crucial integration tests from the source code' 
             }
         }
-        tage('Publish Artifacts') {
+        stage('Publish Artifacts') {
             steps {
                 echo 'Save the assemblies generated from the compilation' 
             }
