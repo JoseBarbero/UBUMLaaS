@@ -169,7 +169,7 @@ class User(v.db.Model, UserMixin):
     country = v.db.Column(v.db.String(64))
     user_type = v.db.Column(v.db.Integer, nullable=False, default=1)
 
-    def __init__(self, email, username, password, desired_use, country):
+    def __init__(self, email, username, password, desired_use, country, activated, user_type):
         """User constructor
 
         Arguments:
@@ -184,6 +184,8 @@ class User(v.db.Model, UserMixin):
         self.password_hash = generate_password_hash(password)
         self.desired_use = desired_use
         self.country = country
+        self.activated = activated
+        self.user_type = user_type
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -198,6 +200,9 @@ class User(v.db.Model, UserMixin):
             boolean -- True if both password match, instead False
         """
         return check_password_hash(self.password_hash, password)
+
+    def is_admin(self):
+        return True if self.user_type == 0 else False
 
     def __repr__(self):
         """Representation
@@ -224,8 +229,24 @@ class User(v.db.Model, UserMixin):
         return {"id": self.id,
                 "email": self.email,
                 "username": self.username,
-                "password": self.password_hash,
-                "admin": is_admin}
+                "password": self.password_hash
+                }
+    
+    def to_dict_all(self):
+        """Object to dict
+
+        Returns:
+            dict -- dict with all atributes except password.
+        """
+        return {
+            "id": self.id,
+            "email": self.email,
+            "username": self.username,
+            "desired_use": self.desired_use,
+            "country": self.country,
+            "activated": self.activated,
+            "user_type": self.user_type
+        }
 
 
 class Algorithm(v.db.Model):

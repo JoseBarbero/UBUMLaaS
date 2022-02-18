@@ -1,0 +1,84 @@
+{% extends "admin/admin_base.html" %}
+
+{% block content%}
+<div class="container">
+    <h3 class="text-center">Users</h3>
+    <div class="table-responsive">
+        <table id="dataTable" style="width:100%" data-pagination="true" data-search="true" data-filter-control="true" data-show-search-clear-button="true">
+            <thead>
+                <tr>
+                    <th data-sortable="true">#</th>
+                    <th data-sortable="true">Username</th>
+                    <th data-sortable="true">Email</th>
+                    <th data-sortable="true">Desired use</th>
+                    <th data-sortable="true">Country</th>
+                    <th data-sortable="true">Activated</th>
+                    <th data-sortable="true">Admin</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for user in all_users %}
+                <tr>
+                    <td >{{ user.id }}</td>
+                    <td >{{ user.username }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.desired_use }}</td>
+                    <td>{{ user.country }}</td>
+                    <td><a class="btn btn-primary btn-block" id="activated" role="button" 
+                        onclick="mod_user('{{ user.id }}', '{{ user.activated }}', 'active')">
+                        {% if user.activated == 1 %} DeActivate {% else %} Activate {% endif %}</a></td>
+                    <td><a class="btn btn-secondary btn-block" id="admin" role="button"
+                        onclick="mod_user('{{ user.id }}', '{{ user.user_type}}', 'admin')">
+                        {% if user.user_type == 0 %} Remove Admin {% else %} Make Admin {% endif %}</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+</div>
+
+
+
+{% endblock content%}
+
+{% block js %}
+<script>
+    $(function () {
+            $('#dataTable').bootstrapTable()
+        })
+
+    function mod_user(id, current, option) {
+            // if option is True it must be deactivated, otherwise it will be activated
+            if (option == 'active'){
+                url_to_use = '{{ url_for("admin.activate_user") }}'
+            }
+            if (option == 'admin'){
+                url_to_use = '{{ url_for("admin.user_to_admin") }}'
+            }
+            $.ajax({
+                url: url_to_use,
+                type: 'GET',
+                data: {
+                    'id': id,
+                    'option': current
+                },
+                success: function () {
+                    alert('User updated correctly');
+                    window.location.reload(true)
+                    // <div class="alert alert-success" role="alert">
+                    //     User updated correctly!
+                    // </div>
+                },
+                fail: function () {
+                    alert('NOK');
+                    // <div class="alert alert-danger" role="alert">
+                    //     Unable to update user status at the moment. Retry later or if the error persists contact with an adminstrator.
+                    // </div>
+                }
+            });
+
+        }
+</script>
+{% endblock js %}

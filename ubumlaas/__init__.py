@@ -99,10 +99,12 @@ def create_app(config_name):
     from ubumlaas.users.views import users
     from ubumlaas.error_pages.handlers import error_pages
     from ubumlaas.experiments.views import experiments
+    from ubumlaas.admin.views import admin
     app.register_blueprint(core)
     app.register_blueprint(users)
     app.register_blueprint(error_pages)
     app.register_blueprint(experiments)
+    app.register_blueprint(admin)
 
     v.app.logger.debug("Registering BluePrints")
 

@@ -82,7 +82,7 @@
                 <a class="nav-item nav-link {% if title=="New experiment" %}active{% endif %}"
                     href="{{ url_for('experiments.new_experiment') }}"><label data-tag="NEW_EXPERIMENT"></a>
                 {% if current_user.user_type == 0 %}
-                    <a class="nav-item nav-link {% if title=="Administration" %}active{% endif %}" href=""><label data-tag="ADMIN"></a>
+                    <a class="nav-item nav-link {% if title=="Administration" %}active{% endif %}" href="{{ url_for('admin.administration') }}"><label data-tag="ADMIN"></a>
                 {% endif %}
                 <a class="nav-item nav-link " href="{{ url_for('users.logout') }}"><label data-tag="LOGOUT"></a>
                 {% else %}

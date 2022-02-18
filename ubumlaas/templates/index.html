@@ -60,6 +60,10 @@
                                 <div class="col-md-8 offset-md-2 mb-3">
                                     <a class="mt-3 btn btn-ubu-maroon font-weight-bold text-monospace text-uppercase btn-lg btn-block" href="{{ url_for('experiments.new_experiment') }}">Create a new experiment</a>
                                 </div>
+                                {% if current_user.user_type == 0 %}
+                                <a class="nav-item nav-link {% if title==" Administration" %}active{% endif %}"
+                                    href="{{ url_for('admin.administration') }}"><label data-tag="ADMIN"></a>
+                                {% endif %}
                             </div>
                         {% else %}
                             <div class="row">
