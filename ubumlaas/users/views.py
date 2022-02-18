@@ -64,7 +64,9 @@ def register():
                         username=form.username.data,
                         password=form.password.data,
                         desired_use=form.desired_use.data,
-                        country=form.country.data)
+                        country=form.country.data,
+                        activated=0,
+                        user_type=1)
             v.db.session.add(user)
             
             default_datasets(form.username.data)
@@ -190,8 +192,3 @@ def reset_with_token(token):
         return redirect(url_for('users.login'))
 
     return render_template('reset_with_token.html', form=form, token=token)
-
-
-@users.route('/administration', methods=["GET", "POST"])
-def administration():
-    return render_template('administration.html', title="Administration")
