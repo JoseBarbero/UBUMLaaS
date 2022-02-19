@@ -54,7 +54,7 @@
         <nav id="sidebar">
             <div class="sidebar-header">
                 <h3><a href="{{ url_for('core.index') }}">UBUMLaaS</a></h3>
-                User: {{ user.username }}<br>
+                User: {{ current_user.username }}<br>
                 Current IP: {{ ip }}
             </div>
 
