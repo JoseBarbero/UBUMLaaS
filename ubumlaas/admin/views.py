@@ -2,14 +2,15 @@ from flask import render_template, Blueprint, send_from_directory, request, json
 from flask_wtf import FlaskForm
 from flask_login import login_required, current_user
 from wtforms import SelectField
-from ubumlaas.models import User
+from ubumlaas.models import User, Country, Experiment
 from ubumlaas.users.forms import RegistrationForm
 from ubumlaas.util import generate_confirmation_token, confirm_token, send_email, get_ngrok_url
-from ._utils import is_admin
-from sqlalchemy import text
+from ._utils import is_admin, get_users_info, geolocate
+from sqlalchemy import text, select
 import os
 import variables as v
 import uuid
+import folium
 
 admin = Blueprint('admin', __name__)
 
@@ -27,9 +28,7 @@ def administration():
 @login_required
 def admin_users():
     is_admin()
-    users_info = []
-    for user in v.db.session.query(User).all():
-        users_info.append(user.to_dict_all())
+    users_info = get_users_info()
 
     admin_form = RegistrationForm()
     admin_form.password.data = "!1HoLaGg"
@@ -174,3 +173,32 @@ def default_datasets(username):
             os.link(_from+d, _dest+d)
     except OSError:
         pass
+
+@admin.route('/administration/dashboard')
+@login_required
+def dashboard():
+    is_admin()
+    unique = {}
+    map = folium.Map(zoom_level=0, tiles='CartoDB positron')
+    
+    users_info = get_users_info()
+    countries_alpha_2 = [user['country'] for user in users_info]
+    unique_alpha_2 = set(countries_alpha_2)
+    
+    for u in unique_alpha_2:
+        try:
+            unique[u] = Country.query.filter_by(alpha_2=u).first().to_dict()
+            folium.Marker([unique[u]['latitude'], unique[u]['longitude']]).add_to(map)
+        except Exception:
+            v.app.logger.info("%d - Country not found in db: %s", current_user.id, u)
+    
+    unique_datasets = set([f for dp, dn, fn in os.walk(
+        os.path.expanduser("ubumlaas/datasets/")) for f in fn])
+    cards_data = {
+        "experiments": len(Experiment.query.all()),
+        "users": len(users_info),
+        "datasets": len(unique_datasets),
+        "countries": len(unique.keys())
+    }
+    
+    return render_template('admin/admin_dashboard.html', title="Dashboard", map=map._repr_html_(), cards_data=cards_data)
