@@ -183,12 +183,19 @@ def dashboard():
     
     users_info = get_users_info()
     countries_alpha_2 = [user['country'] for user in users_info]
-    unique_alpha_2 = set(countries_alpha_2)
-    
-    for u in unique_alpha_2:
+    unique_alpha_2 = {}
+    for country in countries_alpha_2:
+        try:
+            unique_alpha_2[country] += 1
+        except KeyError:
+            unique_alpha_2[country] = 1
+
+    for u, t in unique_alpha_2.items():
         try:
             unique[u] = Country.query.filter_by(alpha_2=u).first().to_dict()
-            folium.Marker([unique[u]['latitude'], unique[u]['longitude']]).add_to(map)
+            popup = '{}\n{} user/s'.format(unique[u]['name'], t)
+            folium.Marker([unique[u]['latitude'], unique[u]['longitude']], 
+                popup=popup).add_to(map)
         except Exception:
             v.app.logger.info("%d - Country not found in db: %s", current_user.id, u)
     
