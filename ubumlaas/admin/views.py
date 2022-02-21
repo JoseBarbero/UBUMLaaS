@@ -193,7 +193,7 @@ def dashboard():
     for u, t in unique_alpha_2.items():
         try:
             unique[u] = Country.query.filter_by(alpha_2=u).first().to_dict()
-            popup = '{}\n{} user/s'.format(unique[u]['name'], t)
+            popup = folium.Popup('{}: {} user/s'.format(unique[u]['name'], t), max_width=450)
             folium.Marker([unique[u]['latitude'], unique[u]['longitude']], 
                 popup=popup).add_to(map)
         except Exception:
