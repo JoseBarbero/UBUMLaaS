@@ -68,7 +68,7 @@ def admin_users():
                                   ip=request.environ.get(
                                       'HTTP_X_REAL_IP', request.remote_addr),
                                   current_user=current_user,
-                                  all_users=users_info,
+                                   all_users=get_users_info(),
                                    form=admin_form,
                                   title="Users Administration")
 
