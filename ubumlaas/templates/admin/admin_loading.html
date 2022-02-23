@@ -1,0 +1,14 @@
+{% extends "admin/admin_base.html" %}
+
+{% block content %}
+<div class="parent container d-flex justify-content-center align-items-center h-100">
+    <div class="child">
+        <div class="loading-container">
+            <div class="loading"></div>
+            <div id="loading-text">Fetching data</div>
+        </div>
+    </div>
+</div>
+
+<script> window.location.replace('/administration/dashboard'); </script>
+{% endblock content %}

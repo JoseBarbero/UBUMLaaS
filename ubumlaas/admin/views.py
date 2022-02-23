@@ -209,3 +209,6 @@ def dashboard():
     }
     
     return render_template('admin/admin_dashboard.html', title="Dashboard", map=map._repr_html_(), cards_data=cards_data)
+@admin.route("/administration/loading")
+def processing():
+    return render_template('admin/admin_loading.html')
