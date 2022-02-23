@@ -7,10 +7,14 @@ from ubumlaas.users.forms import RegistrationForm
 from ubumlaas.util import generate_confirmation_token, confirm_token, send_email, get_ngrok_url
 from ._utils import is_admin, get_users_info, geolocate
 from sqlalchemy import text, select
+from datetime import datetime, date
+import time
 import os
 import variables as v
 import uuid
 import folium
+import pandas as pd
+import numpy as np
 
 admin = Blueprint('admin', __name__)
 
@@ -201,14 +205,51 @@ def dashboard():
     
     unique_datasets = set([f for dp, dn, fn in os.walk(
         os.path.expanduser("ubumlaas/datasets/")) for f in fn])
+    
+    all_experiments = Experiment.query.all()
+    dict_experiments = {}
+    exps_7d_df = pd.DataFrame([[f'I-{x}', 0] for x in range(7)],columns=['day', 'times'])
+    experiments_df = pd.DataFrame(columns=['dataset', 'times'])
+    today = time.localtime(time.time())[:3]
+
+    for e in all_experiments:
+        e = e.to_dict()
+        endtime = np.array([x for x in datetime.fromtimestamp(e['endtime']).strftime("%Y-%m-%d_%H:%M:%S").strip().split('_')[0].split('-')]).astype(int)
+        delta = date(*today) - date(*endtime)
+        print(today, endtime, delta.days)
+        if delta.days < 7:
+            exps_7d_df.at[delta.days, 'times'] += 1
+        try:
+            dict_experiments[e['data']]['n_times'] += 1
+            dict_experiments[e['data']]['exp_ids'].append(e['id'])
+        except KeyError:
+            dict_experiments[e['data']] = {'n_times': 1, 'exp_ids': [e['id']]}
+
+    for i, (dataset, info) in enumerate(dict_experiments.items()):
+        if i == 9:
+            break
+        experiments_df = experiments_df.append(
+            {'dataset': dataset, 'times':info['n_times']}, ignore_index=True)
+
+    if not os.path.exists('ubumlaas/static/tmp/'):
+        os.mkdir('ubumlaas/static/tmp/')
+    experiments_df.to_csv('ubumlaas/static/tmp/experiments.csv', index=False)
+    exps_7d_df = exps_7d_df.sort_values(by='day', ascending=False)
+    exps_7d_df.to_csv('ubumlaas/static/tmp/exp_7d.csv', index=False)
+
     cards_data = {
-        "experiments": len(Experiment.query.all()),
+        "experiments": len(all_experiments),
         "users": len(users_info),
         "datasets": len(unique_datasets),
         "countries": len(unique.keys())
     }
     
-    return render_template('admin/admin_dashboard.html', title="Dashboard", map=map._repr_html_(), cards_data=cards_data)
+    return render_template('admin/admin_dashboard.html', 
+                           title="Dashboard", 
+                           map=map._repr_html_(), 
+                           cards_data=cards_data,
+                           experiments=dict_experiments)
+
 @admin.route("/administration/loading")
 def processing():
     return render_template('admin/admin_loading.html')

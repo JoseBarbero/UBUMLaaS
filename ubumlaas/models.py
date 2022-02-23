@@ -408,3 +408,31 @@ class Experiment(v.db.Model):
 
     def web_name(self):
         return get_algorithm_by_name(self.alg_name).web_name
+
+
+class Country(v.db.Model):
+    __tablename__ = 'countries'
+    name = v.db.Column(v.db.String(64), nullable=False)
+    alpha_2 = v.db.Column(v.db.String(64), primary_key=True)
+    alpha_3 = v.db.Column(v.db.String(64), nullable=False)
+    numeric = v.db.Column(v.db.Integer, nullable=False)
+    longitude = v.db.Column(v.db.Float, nullable=False)
+    latitude = v.db.Column(v.db.Float, nullable=False)
+
+    def __init__(self, name, alpha_2, alpha_3, numeric, longitude, latitude):
+      self.name = name
+      self.alpha_2 = alpha_2
+      self.alpha_3 = alpha_3
+      self.numeric = numeric
+      self.longitude = longitude
+      self.latitude = latitude
+
+    def to_dict(self):
+        return {
+            "name": self.name,
+            "alpha_2": self.alpha_2,
+            "alpha_3": self.alpha_3,
+            "numeric": self.numeric,
+            "longitude": self.longitude,
+            "latitude": self.latitude
+        }
