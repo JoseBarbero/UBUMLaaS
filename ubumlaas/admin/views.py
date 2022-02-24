@@ -2,14 +2,18 @@ from flask import render_template, Blueprint, send_from_directory, request, json
 from flask_wtf import FlaskForm
 from flask_login import login_required, current_user
 from wtforms import SelectField
-from ubumlaas.models import User
+from ubumlaas.models import User, Country, Experiment
 from ubumlaas.users.forms import RegistrationForm
 from ubumlaas.util import generate_confirmation_token, confirm_token, send_email, get_ngrok_url
-from ._utils import is_admin
-from sqlalchemy import text
+from ._utils import is_admin, get_users_info, geolocate
+from sqlalchemy import text, select
+from datetime import datetime, date
+import time
 import os
 import variables as v
 import uuid
+import pandas as pd
+import numpy as np
 
 admin = Blueprint('admin', __name__)
 
@@ -27,9 +31,7 @@ def administration():
 @login_required
 def admin_users():
     is_admin()
-    users_info = []
-    for user in v.db.session.query(User).all():
-        users_info.append(user.to_dict_all())
+    users_info = get_users_info()
 
     admin_form = RegistrationForm()
     admin_form.password.data = "!1HoLaGg"
@@ -69,7 +71,7 @@ def admin_users():
                                   ip=request.environ.get(
                                       'HTTP_X_REAL_IP', request.remote_addr),
                                   current_user=current_user,
-                                  all_users=users_info,
+                                   all_users=get_users_info(),
                                    form=admin_form,
                                   title="Users Administration")
 
@@ -174,3 +176,114 @@ def default_datasets(username):
             os.link(_from+d, _dest+d)
     except OSError:
         pass
+
+@admin.route('/administration/dashboard')
+@login_required
+def dashboard():
+    is_admin()
+    unique = {}
+        
+    users_info = get_users_info()
+    countries_alpha_2 = [user['country'] for user in users_info]  
+    users_dict = {user['id'] : user['username'] for user in users_info}
+
+    desired_use = np.array([user['desired_use'] for user in users_info])
+    unique_use, counts_use = np.unique(desired_use, return_counts=True)
+    unique_use = dict(zip(unique_use, counts_use))
+    unique_use = {k: v for k, v in sorted(unique_use.items(), key=lambda item: item[1], reverse=True)}
+    unique_use_df = pd.DataFrame(zip(unique_use, counts_use), columns=['use', 'times'])
+
+    unique_alpha_2 = {}
+    for country in countries_alpha_2:
+        try:
+            unique_alpha_2[country] += 1
+        except KeyError:
+            unique_alpha_2[country] = 1
+
+    countries_list = []
+    for u, t in unique_alpha_2.items():
+        try:
+            unique[u] = Country.query.filter_by(alpha_2=u).first().to_dict()
+            countries_list.append([unique[u]['name'], unique[u]['latitude'], unique[u]['longitude'], t])
+        except Exception:
+            v.app.logger.info("%d - Country not found in db: %s", current_user.id, u)
+    
+    countries_df = pd.DataFrame(countries_list, columns=['name', 'latitude', 'longitude', 'users'])
+
+    unique_datasets = set([f for dp, dn, fn in os.walk(
+        os.path.expanduser("ubumlaas/datasets/")) for f in fn])
+    
+    all_experiments = Experiment.query.all()
+    dict_experiments = {}
+    exps_7d_df = pd.DataFrame([[f'I-{x}', 0] for x in range(7)],columns=['day', 'times'])
+    experiments_df = pd.DataFrame(columns=['dataset', 'times'])
+    today = time.localtime(time.time())[:3]
+
+    latest_10_exps = []
+    for e in all_experiments:
+        exp = {}
+        exp['name'] = e.to_dict()['alg']['web_name']
+        exp['starttime'] = datetime.fromtimestamp(
+            e.starttime).strftime("%d/%m/%Y - %H:%M:%S")
+        exp['state'] = e.state
+        try:
+            endtime = np.array([x for x in datetime.fromtimestamp(e.endtime).strftime("%Y-%m-%d_%H:%M:%S").strip().split('_')[0].split('-')]).astype(int)
+            delta = date(*today) - date(*endtime)
+            exp['endtime'] = datetime.fromtimestamp(
+                e.endtime).strftime("%d/%m/%Y - %H:%M:%S")
+            if delta.days < 7:
+                exps_7d_df.at[delta.days, 'times'] += 1
+            try:
+                dict_experiments[e.data]['n_times'] += 1
+                dict_experiments[e.data]['exp_ids'].append(e.id)
+            except KeyError:
+                dict_experiments[e.data] = {'n_times': 1, 'exp_ids': [e.id]}
+        except TypeError:
+            exp['endtime'] = '---'
+            exps_7d_df.at[0, 'times'] += 1
+        try:
+            exp['user'] = users_dict[e.idu]
+        except KeyError:
+            exp['user'] = 'User deleted'
+        
+        latest_10_exps.append(exp)
+
+
+    try:
+        latest_10_exps = latest_10_exps[-10:]
+    except:
+        pass
+    latest_10_exps.reverse()
+
+    for i, (dataset, info) in enumerate(dict_experiments.items()):
+        if i == 9:
+            break
+        experiments_df = experiments_df.append(
+            {'dataset': dataset, 'times':info['n_times']}, ignore_index=True)
+
+    if not os.path.exists('ubumlaas/static/tmp/'):
+        os.mkdir('ubumlaas/static/tmp/')
+    experiments_df.to_csv('ubumlaas/static/tmp/experiments.csv', index=False)
+    exps_7d_df = exps_7d_df.sort_values(by='day', ascending=False)
+    exps_7d_df.to_csv('ubumlaas/static/tmp/exp_7d.csv', index=False)
+    unique_use_df.to_csv('ubumlaas/static/tmp/unique_use.csv', index=False)
+    countries_df.to_csv('ubumlaas/static/tmp/countries.csv', index=False)
+
+    cards_data = {
+        "experiments": len(all_experiments),
+        "users": len(users_info),
+        "datasets": len(unique_datasets),
+        "countries": len(unique.keys())
+    }
+
+    return render_template('admin/admin_dashboard.html', 
+                           title="Dashboard",
+                           ip=request.environ.get(
+                               'HTTP_X_REAL_IP', request.remote_addr),
+                           cards_data=cards_data,
+                           experiments=latest_10_exps,
+                           desired_use=unique_use,ii=users_dict.items())
+
+@admin.route("/administration/loading")
+def processing():
+    return render_template('admin/admin_loading.html')

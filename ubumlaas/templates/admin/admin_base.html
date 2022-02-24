@@ -45,6 +45,13 @@
         integrity="sha384-6OIrr52G08NpOFSZdxxz1xdNSndlD4vdcf/q2myIUVO0VsqaGHJsB0RaBE01VTOY"
         crossorigin="anonymous"></script>
 
+    <!-- D3.js -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="../../static/js/jquery-jvectormap-2.0.5.min.js"></script>
+    <link rel="stylesheet" href="../../static/css/jquery-jvectormap-2.0.5.css" type="text/css" media="screen" />
+    <!--<script src="{{ url_for('static', filename="js/jsvectormap.js") }}"></script>-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+
 </head>
 
 <body>
@@ -62,6 +69,10 @@
                 <li><a href="{{ url_for('admin.administration') }}">
                     <i class="{%if title=="Administration" %}bi bi-clipboard-fill{% else %}bi bi-clipboard{% endif %}"></i>
                     Administration</a>
+                </li>
+                <li><a href="{{ url_for('admin.processing') }}">
+                    <i class=" {% if title=="Dashboard" %} bi bi-sliders2 {% else %} bi bi-sliders2-vertical {% endif %}%"></i>
+                    Dashboard</a>
                 </li>
                 <li>
                     <a href="{{ url_for('admin.admin_users') }}">
@@ -103,9 +114,17 @@
                     </button>
 
                     <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                        <ul class="nav navbar-nav ml-auto">
+                        <ul class="nav navbar-nav">
                             <li nav-item nav-link {% if title=="Home" %}active{% endif %}>
                                 <a class="nav-link" href="{{ url_for('core.index') }}"><i class="fas fa-home"></i> Home</a>
+                            </li>
+                        </ul>
+                        <ul class="nav navbar-nav ml-auto">
+                            <li nav-item nav-link>
+                                <a class="nav-link" href="{{ url_for('users.profile') }}"><i class="fa fa-list"></i> Launched Experiments</a>
+                            </li>
+                            <li nav-item nav-link>
+                                <a class="nav-link" href="{{ url_for('experiments.new_experiment') }}"><i class="fas fa-flask"></i> New Experiment</a>
                             </li>
                             <li nav-item nav-link {% if title=="Log out" %}active{% endif %}>
                                 <a class="nav-link" href="{{ url_for('users.logout') }}"><i class="bi bi-box-arrow-right"></i> Log out</a>
