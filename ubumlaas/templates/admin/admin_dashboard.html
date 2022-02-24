@@ -101,41 +101,35 @@
         </div>
 
         <div class="row">
-            <div class="col-12 col-md-6 col-xxl-3 d-flex order-2 order-xxl-3">
+            <div class="col-6 col-md-6 col-xxl-3 d-flex order-2 order-xxl-3">
                 <div class="card flex-fill w-100">
                     <div class="card-header">
 
-                        <h5 class="card-title mb-0">Browser Usage</h5>
+                        <h5 class="card-title mb-0">Desired Use</h5>
                     </div>
                     <div class="card-body d-flex">
                         <div class="align-self-center w-100">
                             <div class="py-3">
                                 <div class="chart chart-xs">
-                                    <canvas id="chartjs-dashboard-pie"></canvas>
+                                    <canvas id="desired_use"></canvas>
                                 </div>
                             </div>
 
                             <table class="table mb-0">
                                 <tbody>
-                                    <tr>
-                                        <td>Chrome</td>
-                                        <td class="text-end">4306</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Firefox</td>
-                                        <td class="text-end">3801</td>
-                                    </tr>
-                                    <tr>
-                                        <td>IE</td>
-                                        <td class="text-end">1689</td>
-                                    </tr>
+                                    {% for use in desired_use %}
+                                        <tr>
+                                            <td>{{ use }}</td>
+                                            <td class="text-end">{{ desired_use[use] }}</td>
+                                        </tr>
+                                    {% endfor %}
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-12 col-md-12 col-xxl-6 d-flex order-3 order-xxl-2">
+            <div class="col-6 col-md-6 col-xxl-6 d-flex order-3 order-xxl-2">
                 <div class="card flex-fill w-100">
                     <div class="card-header">
 
@@ -146,21 +140,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-12 col-md-6 col-xxl-3 d-flex order-1 order-xxl-1">
-                <div class="card flex-fill">
-                    <div class="card-header">
-
-                        <h5 class="card-title mb-0">Calendar</h5>
-                    </div>
-                    <div class="card-body d-flex">
-                        <div class="align-self-center w-100">
-                            <div class="chart">
-                                <div id="datetimepicker-dashboard"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            
         </div>
 
         <div class="row">
@@ -168,7 +148,7 @@
                 <div class="card flex-fill">
                     <div class="card-header">
 
-                        <h5 class="card-title mb-0">Latest Projects</h5>
+                        <h5 class="card-title mb-0">Latest Experiments</h5>
                     </div>
                     <table class="table table-hover my-0">
                         <thead>
@@ -245,11 +225,11 @@
                 <div class="card flex-fill w-100">
                     <div class="card-header">
 
-                        <h5 class="card-title mb-0">Monthly Sales</h5>
+                        <h5 class="card-title mb-0">All time datasets run</h5>
                     </div>
                     <div class="card-body d-flex w-100">
                         <div class="align-self-center chart chart-lg">
-                            <canvas id="chartjs-dashboard-bar"></canvas>
+                            <canvas id="exp_times"></canvas>
                         </div>
                     </div>
                 </div>
@@ -262,13 +242,21 @@
 {% endblock content %}
 
 {% block js %}
-<script src='{{ url_for("static", filename="js/admin.js")}}'></script>
+
 
 <script>
-    // d3.csv("{{ url_for('static', filename='tmp/experiments.csv') }}")
-    //         .then(makeChartExpTotal);
-
-
+    const CHART_COLORS = {
+        ubu: 'rgb(170,34,60)',
+        red: 'rgb(255, 99, 132)',
+        orange: 'rgb(255, 159, 64)',
+        yellow: 'rgb(255, 205, 86)',
+        green: 'rgb(75, 192, 192)',
+        blue: 'rgb(54, 162, 235)',
+        purple: 'rgb(153, 102, 255)',
+        grey: 'rgb(201, 203, 207)'            
+        };
+</script>
+<script>
     document.addEventListener("DOMContentLoaded", function () {
         d3.csv("{{ url_for('static', filename='tmp/exp_7d.csv') }}")
             .then(makeChartExp7d);
@@ -277,23 +265,24 @@
             var gradient = ctx.createLinearGradient(0, 0, 0, 225);
             gradient.addColorStop(0, "rgba(198, 40, 40, 1)");
             gradient.addColorStop(1, "rgba(198, 40, 40, 0)");
-            var dataset = data.map(function (d) { return d.dataset; });
+            var day = data.map(function (d) { return d.day; });
             var times = data.map(function (d) { return d.times; });
             maxValue = Math.max.apply(null, times);
             // Line chart
             new Chart(document.getElementById("exp_7d_times"), {
                 type: "line",
                 data: {
-                    labels: ["I-6", "I-5", "I-4", "I-3", "I-2", "I-1", "I-0"],
+                    labels: day,
                     datasets: [{
                         label: "Experiments performed",
                         fill: true,
                         backgroundColor: gradient,
-                        borderColor: "#aa223c",
+                        borderColor: CHART_COLORS.ubu,
                         data: times
                     }]
                 },
                 options: {
+                    responsive: !window.MSInputMethodContext,
                     maintainAspectRatio: false,
                     legend: {
                         display: false
@@ -318,7 +307,7 @@
                         }],
                         yAxes: [{
                             ticks: {
-                                stepSize:Math.ceil(maxValue*1.2)
+                                stepSize:Math.ceil(maxValue/2.5)
                             },
                             display: true,
                             borderDash: [3, 3],
@@ -334,153 +323,136 @@
 </script>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        // Pie chart
-        new Chart(document.getElementById("chartjs-dashboard-pie"), {
-            type: "pie",
-            data: {
-                labels: ["Chrome", "Firefox", "IE"],
-                datasets: [{
-                    data: [4306, 3801, 1689],
-                    backgroundColor: [
-                        window.theme.primary,
-                        window.theme.warning,
-                        window.theme.danger
-                    ],
-                    borderWidth: 5
-                }]
-            },
-            options: {
-                responsive: !window.MSInputMethodContext,
-                maintainAspectRatio: false,
-                legend: {
-                    display: false
-                },
-                cutoutPercentage: 75
-            }
-        });
-    });
-</script>
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        // Bar chart
-        new Chart(document.getElementById("chartjs-dashboard-bar"), {
-            type: "bar",
-            data: {
-                labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-                datasets: [{
-                    label: "This year",
-                    backgroundColor: window.theme.primary,
-                    borderColor: window.theme.primary,
-                    hoverBackgroundColor: window.theme.primary,
-                    hoverBorderColor: window.theme.primary,
-                    data: [54, 67, 41, 55, 62, 45, 55, 73, 60, 76, 48, 79],
-                    barPercentage: .75,
-                    categoryPercentage: .5
-                }]
-            },
-            options: {
-                maintainAspectRatio: false,
-                legend: {
-                    display: false
-                },
-                scales: {
-                    yAxes: [{
-                        gridLines: {
-                            display: false
-                        },
-                        stacked: false,
-                        ticks: {
-                            stepSize: 20
-                        }
-                    }],
-                    xAxes: [{
-                        stacked: false,
-                        gridLines: {
-                            color: "transparent"
-                        }
+        d3.csv("{{ url_for('static', filename='tmp/unique_use.csv') }}")
+        .then(makeUsePie)
+        function makeUsePie(data){
+            var use = data.map(function (d) { return d.use; });
+            var times = data.map(function (d) { return d.times; });
+            new Chart(document.getElementById("desired_use"), {
+                type: "pie",
+                data: {
+                    labels: use,
+                    datasets: [{
+                        data: times,
+                        backgroundColor: Object.values(CHART_COLORS),
+                        borderWidth: 5
                     }]
-                }
-            }
-        });
-    });
-</script>
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        var markers = [{
-            coords: [31.230391, 121.473701],
-            name: "Shanghai"
-        },
-        {
-            coords: [28.704060, 77.102493],
-            name: "Delhi"
-        },
-        {
-            coords: [6.524379, 3.379206],
-            name: "Lagos"
-        },
-        {
-            coords: [35.689487, 139.691711],
-            name: "Tokyo"
-        },
-        {
-            coords: [23.129110, 113.264381],
-            name: "Guangzhou"
-        },
-        {
-            coords: [40.7127837, -74.0059413],
-            name: "New York"
-        },
-        {
-            coords: [34.052235, -118.243683],
-            name: "Los Angeles"
-        },
-        {
-            coords: [41.878113, -87.629799],
-            name: "Chicago"
-        },
-        {
-            coords: [51.507351, -0.127758],
-            name: "London"
-        },
-        {
-            coords: [40.416775, -3.703790],
-            name: "Madrid "
-        }
-        ];
-        var map = new jsVectorMap({
-            map: "world",
-            selector: "#world_map",
-            zoomButtons: true,
-            markers: markers,
-            markerStyle: {
-                initial: {
-                    r: 9,
-                    strokeWidth: 7,
-                    stokeOpacity: .4,
-                    fill: window.theme.primary
                 },
-                hover: {
-                    fill: window.theme.primary,
-                    stroke: window.theme.primary
+                options: {
+                    responsive: !window.MSInputMethodContext,
+                    maintainAspectRatio: false,
+                    legend: {
+                        display: false
+                    },
+                    cutoutPercentage: 0
                 }
-            },
-            zoomOnScroll: false
-        });
-        window.addEventListener("resize", () => {
-            map.updateSize();
-        });
+            });
+        }
     });
 </script>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        var date = new Date(Date.now() - 5 * 24 * 60 * 60 * 1000);
-        var defaultDate = date.getUTCFullYear() + "-" + (date.getUTCMonth() + 1) + "-" + date.getUTCDate();
-        document.getElementById("datetimepicker-dashboard").flatpickr({
-            inline: true,
-            prevArrow: "<span title=\"Previous month\">&laquo;</span>",
-            nextArrow: "<span title=\"Next month\">&raquo;</span>",
-            defaultDate: defaultDate
-        });
+        d3.csv("{{ url_for('static', filename='tmp/experiments.csv') }}")
+             .then(makeChartExpTotal);
+        function makeChartExpTotal(data) {
+            var dataset = data.map(function (d) { return d.dataset; });
+            var times = data.map(function (d) { return d.times; });
+            
+
+            new Chart(document.getElementById("exp_times"), {
+                type: "bar",
+                data: {
+                    labels: dataset,
+                    datasets: [{
+                        label: "Total times used",
+                        backgroundColor: CHART_COLORS.ubu,
+                        borderColor: CHART_COLORS.ubu,
+                        hoverBackgroundColor: CHART_COLORS.ubu,
+                        hoverBorderColor: CHART_COLORS.ubu,
+                        data: times,
+                        barPercentage: .75,
+                        categoryPercentage: .5
+                    }]
+                },
+                options: {
+                    responsive: !window.MSInputMethodContext,
+                    maintainAspectRatio: false,
+                    legend: {
+                        display: false
+                    },
+                    scales: {
+                        yAxes: [{
+                            gridLines: {
+                                display: false
+                            },
+                            stacked: false,
+                            ticks: {
+                                stepSize: 20
+                            }
+                        }],
+                        xAxes: [{
+                            ticks: {
+                                color: 'red',
+                            },
+                            stacked: false,
+                            display: false,
+                            gridLines: {
+                                color: "transparent"
+                            }
+                        }]
+                    }
+                }
+            });
+        }
+    });
+</script>
+<script>
+    
+    document.addEventListener("DOMContentLoaded", function () {
+        d3.csv("{{ url_for('static', filename='tmp/countries.csv') }}")
+            .then(makeMap);
+        function makeMap(data) {   
+            var markers = [];
+            data.forEach(d => {
+                markers.push({
+                    coords:[d.latitude, d.longitude],
+                    name: d.name,
+                    user: d.users
+                });
+            });
+            
+            var map = new jsVectorMap({
+                map: "world",
+                selector: "#world_map",
+                normalizeFunction: 'polynomial',
+                draggable: true,
+                zoomButtons: true,
+                zoomOnScroll: true,
+                zoomOnScrollSpeed: 3,
+                zoomMax: 12,
+                zoomMin: 1,
+                zoomAnimate: true,
+                markers: markers,
+                markerStyle: {
+                    initial: {
+                        r: 9,
+                        strokeWidth: 7,
+                        stokeOpacity: .4,
+                        fill: CHART_COLORS.ubu
+                    },
+                    hover: {
+                        fill: CHART_COLORS.ubu,
+                        stroke: CHART_COLORS.ubu,
+                    }
+                },
+                onMarkerTooltipShow: function (tooltip,  index) {
+                    tooltip.selector.innerHTML = '<b>' + tooltip.text() + '<br>Users: ' + markers[index].user + '</b>';
+                }
+            });
+            window.addEventListener("resize", () => {
+                map.updateSize();
+            });
+        }
     });
 </script>
 {% endblock js%}

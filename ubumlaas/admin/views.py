@@ -12,7 +12,6 @@ import time
 import os
 import variables as v
 import uuid
-import folium
 import pandas as pd
 import numpy as np
 
@@ -183,10 +182,16 @@ def default_datasets(username):
 def dashboard():
     is_admin()
     unique = {}
-    map = folium.Map(zoom_level=0, tiles='CartoDB positron')
-    
+        
     users_info = get_users_info()
     countries_alpha_2 = [user['country'] for user in users_info]
+
+    desired_use = np.array([user['desired_use'] for user in users_info])
+    unique_use, counts_use = np.unique(desired_use, return_counts=True)
+    unique_use = dict(zip(unique_use, counts_use))
+    unique_use = {k: v for k, v in sorted(unique_use.items(), key=lambda item: item[1], reverse=True)}
+    unique_use_df = pd.DataFrame(zip(unique_use, counts_use), columns=['use', 'times'])
+
     unique_alpha_2 = {}
     for country in countries_alpha_2:
         try:
@@ -194,15 +199,16 @@ def dashboard():
         except KeyError:
             unique_alpha_2[country] = 1
 
+    countries_list = []
     for u, t in unique_alpha_2.items():
         try:
             unique[u] = Country.query.filter_by(alpha_2=u).first().to_dict()
-            popup = folium.Popup('{}: {} user/s'.format(unique[u]['name'], t), max_width=450)
-            folium.Marker([unique[u]['latitude'], unique[u]['longitude']], 
-                popup=popup).add_to(map)
+            countries_list.append([unique[u]['name'], unique[u]['latitude'], unique[u]['longitude'], t])
         except Exception:
             v.app.logger.info("%d - Country not found in db: %s", current_user.id, u)
     
+    countries_df = pd.DataFrame(countries_list, columns=['name', 'latitude', 'longitude', 'users'])
+
     unique_datasets = set([f for dp, dn, fn in os.walk(
         os.path.expanduser("ubumlaas/datasets/")) for f in fn])
     
@@ -214,16 +220,18 @@ def dashboard():
 
     for e in all_experiments:
         e = e.to_dict()
-        endtime = np.array([x for x in datetime.fromtimestamp(e['endtime']).strftime("%Y-%m-%d_%H:%M:%S").strip().split('_')[0].split('-')]).astype(int)
-        delta = date(*today) - date(*endtime)
-        print(today, endtime, delta.days)
-        if delta.days < 7:
-            exps_7d_df.at[delta.days, 'times'] += 1
         try:
-            dict_experiments[e['data']]['n_times'] += 1
-            dict_experiments[e['data']]['exp_ids'].append(e['id'])
-        except KeyError:
-            dict_experiments[e['data']] = {'n_times': 1, 'exp_ids': [e['id']]}
+            endtime = np.array([x for x in datetime.fromtimestamp(e['endtime']).strftime("%Y-%m-%d_%H:%M:%S").strip().split('_')[0].split('-')]).astype(int)
+            delta = date(*today) - date(*endtime)
+            if delta.days < 7:
+                exps_7d_df.at[delta.days, 'times'] += 1
+            try:
+                dict_experiments[e['data']]['n_times'] += 1
+                dict_experiments[e['data']]['exp_ids'].append(e['id'])
+            except KeyError:
+                dict_experiments[e['data']] = {'n_times': 1, 'exp_ids': [e['id']]}
+        except TypeError:
+            exps_7d_df.at[0, 'times'] += 1
 
     for i, (dataset, info) in enumerate(dict_experiments.items()):
         if i == 9:
@@ -236,6 +244,8 @@ def dashboard():
     experiments_df.to_csv('ubumlaas/static/tmp/experiments.csv', index=False)
     exps_7d_df = exps_7d_df.sort_values(by='day', ascending=False)
     exps_7d_df.to_csv('ubumlaas/static/tmp/exp_7d.csv', index=False)
+    unique_use_df.to_csv('ubumlaas/static/tmp/unique_use.csv', index=False)
+    countries_df.to_csv('ubumlaas/static/tmp/countries.csv', index=False)
 
     cards_data = {
         "experiments": len(all_experiments),
@@ -243,12 +253,14 @@ def dashboard():
         "datasets": len(unique_datasets),
         "countries": len(unique.keys())
     }
-    
+
     return render_template('admin/admin_dashboard.html', 
-                           title="Dashboard", 
-                           map=map._repr_html_(), 
+                           title="Dashboard",
+                           ip=request.environ.get(
+                               'HTTP_X_REAL_IP', request.remote_addr),
                            cards_data=cards_data,
-                           experiments=dict_experiments)
+                           experiments=dict_experiments,
+                           desired_use=unique_use)
 
 @admin.route("/administration/loading")
 def processing():

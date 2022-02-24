@@ -25,7 +25,6 @@ dependencies:
   - flask-mail=0.9.1
   - pycountry
   - pip
-  - folium
   - geopy
   - pip:
      - flask-migrate==2.5.2

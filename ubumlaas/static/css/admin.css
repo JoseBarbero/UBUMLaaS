@@ -602,3 +602,116 @@ input:checked + .slider:before {
 .chart canvas{
     max-width:100%
 }
+
+/* ---------------------------------------------------
+    jsVectorMap
+----------------------------------------------------- */
+
+svg{
+    touch-action:none
+}
+.jvm-zoomin,.jvm-zoomout,image,text{
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    user-select:none
+}
+.jvm-container{
+    height:100%;
+    overflow:hidden;
+    position:relative;
+    touch-action:none;
+    width:100%
+}
+.jvm-tooltip{
+    background-color:var(--ubu-maroon);
+    box-shadow:1px 2px 12px rgba(0,0,0,.2);
+    display:none;
+    font-family:sans-serif,Verdana;
+    font-size:smaller;
+    padding:3px 5px;
+    white-space:nowrap
+}
+.jvm-tooltip,.jvm-zoom-btn{
+    border-radius:3px;
+    color:#fff;
+    position:absolute
+}
+.jvm-zoom-btn{
+    background-color:#292929;
+    box-sizing:border-box;
+    cursor:pointer;
+    height:15px;
+    left:10px;
+    line-height:10px;
+    padding:3px;
+    width:15px
+}
+.jvm-zoom-btn.jvm-zoomout{
+    top:30px
+}
+.jvm-zoom-btn.jvm-zoomin{
+    top:10px
+}
+.jvm-series-container{
+    position:absolute;
+    right:15px
+}
+.jvm-series-container.jvm-series-h{
+    bottom:15px
+}
+.jvm-series-container.jvm-series-v{
+    top:15px
+}
+.jvm-series-container .jvm-legend{
+    background-color:#fff;
+    border:1px solid #e5e7eb;
+    border-radius:.25rem;
+    box-shadow:0 1px 2px 0 rgba(0,0,0,.05);
+    float:left;
+    margin-left:.75rem;
+    padding:.6rem
+}
+.jvm-series-container .jvm-legend .jvm-legend-title{
+    border-bottom:1px solid #e5e7eb;
+    line-height:1;
+    margin-bottom:.575rem;
+    padding-bottom:.5rem;
+    text-align:left
+}
+.jvm-series-container .jvm-legend .jvm-legend-inner{
+    overflow:hidden
+}
+.jvm-series-container .jvm-legend .jvm-legend-inner .jvm-legend-tick{
+    min-width:40px;
+    overflow:hidden
+}
+.jvm-series-container .jvm-legend .jvm-legend-inner .jvm-legend-tick:not(:first-child){
+    margin-top:.575rem
+}
+.jvm-series-container .jvm-legend .jvm-legend-inner .jvm-legend-tick .jvm-legend-tick-sample{
+    border-radius:4px;
+    float:left;
+    height:16px;
+    margin-right:.65rem;
+    width:16px
+}
+.jvm-series-container .jvm-legend .jvm-legend-inner .jvm-legend-tick .jvm-legend-tick-text{
+    float:left;
+    font-size:12px;
+    text-align:center
+}
+.jvm-line[animation=true]{
+    -webkit-animation:jvm-line-animation 10s linear infinite forwards;
+    animation:jvm-line-animation 10s linear infinite forwards
+}
+
+@-webkit-keyframes jvm-line-animation{
+    0%{
+        stroke-dashoffset:250
+    }
+}
+@keyframes jvm-line-animation{
+    0%{
+        stroke-dashoffset:250
+    }
+}
