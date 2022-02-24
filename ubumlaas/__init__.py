@@ -123,5 +123,6 @@ def create_app(config_name):
 
     app.jinja_env.filters["split"] = split_dict_key
     app.jinja_env.filters["user"] = hash_
+    app.jinja_env.cache = {}
 
     return app

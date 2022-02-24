@@ -184,7 +184,8 @@ def dashboard():
     unique = {}
         
     users_info = get_users_info()
-    countries_alpha_2 = [user['country'] for user in users_info]
+    countries_alpha_2 = [user['country'] for user in users_info]  
+    users_dict = {user['id'] : user['username'] for user in users_info}
 
     desired_use = np.array([user['desired_use'] for user in users_info])
     unique_use, counts_use = np.unique(desired_use, return_counts=True)
@@ -218,20 +219,41 @@ def dashboard():
     experiments_df = pd.DataFrame(columns=['dataset', 'times'])
     today = time.localtime(time.time())[:3]
 
+    latest_10_exps = []
     for e in all_experiments:
-        e = e.to_dict()
+        exp = {}
+        exp['name'] = e.to_dict()['alg']['web_name']
+        exp['starttime'] = datetime.fromtimestamp(
+            e.starttime).strftime("%d/%m/%Y - %H:%M:%S")
+        exp['state'] = e.state
         try:
-            endtime = np.array([x for x in datetime.fromtimestamp(e['endtime']).strftime("%Y-%m-%d_%H:%M:%S").strip().split('_')[0].split('-')]).astype(int)
+            endtime = np.array([x for x in datetime.fromtimestamp(e.endtime).strftime("%Y-%m-%d_%H:%M:%S").strip().split('_')[0].split('-')]).astype(int)
             delta = date(*today) - date(*endtime)
+            exp['endtime'] = datetime.fromtimestamp(
+                e.endtime).strftime("%d/%m/%Y - %H:%M:%S")
             if delta.days < 7:
                 exps_7d_df.at[delta.days, 'times'] += 1
             try:
-                dict_experiments[e['data']]['n_times'] += 1
-                dict_experiments[e['data']]['exp_ids'].append(e['id'])
+                dict_experiments[e.data]['n_times'] += 1
+                dict_experiments[e.data]['exp_ids'].append(e.id)
             except KeyError:
-                dict_experiments[e['data']] = {'n_times': 1, 'exp_ids': [e['id']]}
+                dict_experiments[e.data] = {'n_times': 1, 'exp_ids': [e.id]}
         except TypeError:
+            exp['endtime'] = '---'
             exps_7d_df.at[0, 'times'] += 1
+        try:
+            exp['user'] = users_dict[e.idu]
+        except KeyError:
+            exp['user'] = 'User deleted'
+        
+        latest_10_exps.append(exp)
+
+
+    try:
+        latest_10_exps = latest_10_exps[-10:]
+    except:
+        pass
+    latest_10_exps.reverse()
 
     for i, (dataset, info) in enumerate(dict_experiments.items()):
         if i == 9:
@@ -259,8 +281,8 @@ def dashboard():
                            ip=request.environ.get(
                                'HTTP_X_REAL_IP', request.remote_addr),
                            cards_data=cards_data,
-                           experiments=dict_experiments,
-                           desired_use=unique_use)
+                           experiments=latest_10_exps,
+                           desired_use=unique_use,ii=users_dict.items())
 
 @admin.route("/administration/loading")
 def processing():
