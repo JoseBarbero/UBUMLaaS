@@ -1,9 +1,10 @@
 from flask import abort
 from flask_login import current_user
 import variables as v
-from ubumlaas.models import User
+from ubumlaas.models import User, Experiment, Algorithm
 from geopy.geocoders import Nominatim
 import numpy as np
+from datetime import datetime
 
 def is_admin():
     if current_user.user_type != 0:
@@ -23,3 +24,32 @@ def geolocate(country):
         return (loc.latitude, loc.longitude)
     except:
         return np.nan
+
+def exps_type(exps):
+    types = {}
+    type_time = {}
+    algorithms = {}
+    for a in Algorithm.query.all():
+        a = a.to_dict()
+        algorithms[a['alg_name']] = a['alg_typ']
+        #algorithms[a['alg_name']] = a['web_name']
+        types[a['alg_typ']] = 0
+        type_time[a['alg_typ']] = 0
+        #types[a['web_name']] = 0
+
+    for e in exps:
+        e = e.to_dict()
+        types[algorithms[e['alg']['alg_name']]] += 1
+        try:
+            end_time = datetime.fromtimestamp(e['endtime'])
+            start_time = datetime.fromtimestamp(e['starttime'])
+            diff_time = end_time - start_time
+            type_time[algorithms[e['alg']['alg_name']]] += diff_time.total_seconds()
+        except:
+            pass
+
+        # types[algorithms[e['alg']['alg_name']]] += 1 # To retrieve all the exps names and its usage
+    
+    return types, type_time
+
+

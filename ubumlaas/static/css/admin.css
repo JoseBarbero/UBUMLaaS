@@ -22,6 +22,11 @@ p {
     color: #999;
 }
 
+.py-3{
+    padding-bottom:1rem!important;
+    padding-top:1rem!important
+}
+
 a, a:hover, a:focus {
     color: inherit;
     text-decoration: none;
@@ -737,4 +742,129 @@ svg{
 .btn .badge{
     position:relative;
     top:-1px
+}
+
+/* ---------------------------------------------------
+    Forms
+----------------------------------------------------- */
+
+.form-check{
+    display:block;
+    margin-bottom:.125rem;
+    min-height:1.3125rem;
+    padding-left:1.5em
+}
+.form-check .form-check-input{
+    float:left;
+    margin-left:-1.5em
+}
+.form-check-input{
+    -webkit-print-color-adjust:exact;
+    -webkit-appearance:none;
+    -moz-appearance:none;
+    appearance:none;
+    background-color:#fff;
+    background-position:50%;
+    background-repeat:no-repeat;
+    background-size:contain;
+    border:1px solid rgba(0,0,0,.25);
+    color-adjust:exact;
+    height:1em;
+    margin-top:.25em;
+    vertical-align:top;
+    width:1em
+}
+.form-check-input[type=checkbox]{
+    border-radius:.25em
+}
+.form-check-input[type=radio]{
+    border-radius:50%
+}
+.form-check-input:active{
+    filter:brightness(90%)
+}
+.form-check-input:focus{
+    border-color:#9dbeee;
+    box-shadow:0 0 0 .2rem rgba(59,125,221,.25);
+    outline:0
+}
+.form-check-input:checked{
+    background-color:#3b7ddd;
+    border-color:#3b7ddd
+}
+.form-check-input:checked[type=checkbox]{
+    background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='m6 10 3 3 6-6'/%3E%3C/svg%3E")
+}
+.form-check-input:checked[type=radio]{
+    background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3E%3Ccircle r='2' fill='%23fff'/%3E%3C/svg%3E")
+}
+.form-check-input[type=checkbox]:indeterminate{
+    background-color:#3b7ddd;
+    background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='M6 10h8'/%3E%3C/svg%3E");
+    border-color:#3b7ddd
+}
+.form-check-input:disabled{
+    filter:none;
+    opacity:.5;
+    pointer-events:none
+}
+.form-check-input:disabled~.form-check-label,.form-check-input[disabled]~.form-check-label{
+    opacity:.5
+}
+.form-switch{
+    padding-left:2.5em
+}
+.form-switch .form-check-input{
+    background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3E%3Ccircle r='3' fill='rgba(0, 0, 0, 0.25)'/%3E%3C/svg%3E");
+    background-position:0;
+    border-radius:2em;
+    margin-left:-2.5em;
+    transition:background-position .15s ease-in-out;
+    width:2em
+}
+@media(prefers-reduced-motion:reduce){
+    .form-switch .form-check-input{
+        transition:none
+    }
+}
+.form-switch .form-check-input:focus{
+    background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3E%3Ccircle r='3' fill='%239dbeee'/%3E%3C/svg%3E")
+}
+.form-switch .form-check-input:checked{
+    background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3E%3Ccircle r='3' fill='%23fff'/%3E%3C/svg%3E");
+    background-position:100%
+}
+.form-check-inline{
+    display:inline-block;
+    margin-right:1rem
+}
+.form-check-input.is-valid,.was-validated .form-check-input:valid{
+    border-color:#1cbb8c
+}
+.form-check-input.is-valid:checked,.was-validated .form-check-input:valid:checked{
+    background-color:#1cbb8c
+}
+.form-check-input.is-valid:focus,.was-validated .form-check-input:valid:focus{
+    box-shadow:0 0 0 .2rem rgba(28,187,140,.25)
+}
+.form-check-input.is-valid~.form-check-label,.was-validated .form-check-input:valid~.form-check-label{
+    color:#1cbb8c
+}
+.form-check-inline .form-check-input~.valid-feedback{
+    margin-left:.5em
+}
+.form-check-input.is-invalid,.was-validated .form-check-input:invalid{
+    border-color:#dc3545
+}
+.form-check-input.is-invalid:checked,.was-validated .form-check-input:invalid:checked{
+    background-color:#dc3545
+}
+.form-check-input.is-invalid:focus,.was-validated .form-check-input:invalid:focus{
+    box-shadow:0 0 0 .2rem rgba(220,53,69,.25)
+}
+.form-check-input.is-invalid~.form-check-label,.was-validated .form-check-input:invalid~.form-check-label{
+    color:#dc3545
+}
+.form-check-inline .form-check-input~.invalid-feedback{
+    margin-left:.5em
 }

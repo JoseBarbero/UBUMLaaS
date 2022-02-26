@@ -97,24 +97,89 @@
                         </div>
                     </div>
                 </div>
+            </div> 
+        </div>
+        <div class="row">
+            <div class="col-6 col-lg-6 col-xxl-6 d-flex">
+                <div class="card flex-fill w-100">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Algorithm Type Usage Distribution</h5>
+                    </div>
+                    <div class="card-body align-self-center w-100">
+                        <div class="chart chart-xs">
+                            <canvas id="alg_type_dist"></canvas>
+                        </div>
+                        <table class="table mb-0">
+                            <tbody>
+                                {% for name, times in exps_alg_type.items() %}
+                                    {% if loop.index | int < 5 %}
+                                        <tr>
+                                            <td>{{ name }}</td>
+                                            <td class="text-end">{{ times }}</td>
+                                        </tr>
+                                    {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-lg-6 col-xxl-6 d-flex">
+                <div class="card flex-fill w-100">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Algorithm Type Time Used</h5>
+                    </div>
+                    <div class="card-body align-self-center w-100">
+                        <div style="text-align:center">
+                            <label class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="alg_typ_time_used" value="seconds" checked
+                                onclick="preUpdateChart()">
+                                <span class="form-check-label">
+                                    Seconds
+                                </span>
+                            </label>
+                            <label class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="alg_typ_time_used" value="minutes"
+                                onclick="preUpdateChart()">
+                                <span class="form-check-label">
+                                    Minutes
+                                </span>
+                            </label>
+                            <label class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="alg_typ_time_used" value="hours"
+                                onclick="preUpdateChart()">
+                                <span class="form-check-label">
+                                    Hours
+                                </span>
+                            </label>
+                            <label class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="alg_typ_time_used" value="days"
+                                onclick="preUpdateChart()">
+                                <span class="form-check-label">
+                                    Days
+                                </span>
+                            </label>
+                        </div>
+                        <span></span><span></span>
+                        <div class="chart align-self-center chart-xl">
+                            <canvas id="exps_type_time"></canvas>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="row">
+        <div class="row d-flex">
             <div class="col-6 col-md-6 col-xxl-3 d-flex order-2 order-xxl-3">
                 <div class="card flex-fill w-100">
                     <div class="card-header">
-
                         <h5 class="card-title mb-0">Desired Use</h5>
                     </div>
                     <div class="card-body d-flex">
                         <div class="align-self-center w-100">
-                            <div class="py-3">
-                                <div class="chart chart-xs">
-                                    <canvas id="desired_use"></canvas>
-                                </div>
+                            <div class="chart chart-xs">
+                                <canvas id="desired_use"></canvas>
                             </div>
-
                             <table class="table mb-0">
                                 <tbody>
                                     {% for use in desired_use %}
@@ -133,7 +198,7 @@
                 <div class="card flex-fill w-100">
                     <div class="card-header">
 
-                        <h5 class="card-title mb-0">Real-Time</h5>
+                        <h5 class="card-title mb-0">Country Distribution</h5>
                     </div>
                     <div class="card-body px-4">
                         <div id="world_map" style="height:350px;"></div>
@@ -188,7 +253,7 @@
                         <h5 class="card-title mb-0">All time datasets run</h5>
                     </div>
                     <div class="card-body d-flex w-100">
-                        <div class="align-self-center chart chart-lg">
+                        <div class="align-self-center chart chart-xl">
                             <canvas id="exp_times"></canvas>
                         </div>
                     </div>
@@ -228,7 +293,7 @@
             var day = data.map(function (d) { return d.day; });
             var times = data.map(function (d) { return d.times; });
             maxValue = Math.max.apply(null, times);
-            // Line chart
+            
             new Chart(document.getElementById("exp_7d_times"), {
                 type: "line",
                 data: {
@@ -244,8 +309,10 @@
                 options: {
                     responsive: !window.MSInputMethodContext,
                     maintainAspectRatio: false,
-                    legend: {
-                        display: false
+                    elements: {
+                        line: {
+                            cubicInterpolationMode: 'monotone'
+                        }
                     },
                     tooltips: {
                         intersect: false
@@ -259,27 +326,172 @@
                         }
                     },
                     scales: {
-                        xAxes: [{
-                            reverse: true,
-                            gridLines: {
-                                color: "rgba(0,0,0,0.0)"
+                        x: {
+                            grid: {
+                                display: false
                             }
-                        }],
-                        yAxes: [{
-                            ticks: {
-                                stepSize:Math.ceil(maxValue/2.5)
-                            },
-                            display: true,
-                            borderDash: [3, 3],
-                            gridLines: {
-                                color: "rgba(0,0,0,0.0)"
+                        },
+                        y: {
+                            grid: {
+                                display: false
                             }
-                        }]
+                        }
+                    },
+                    plugins: {
+                        legend: false,
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'top',
+                            formatter: Math.round,
+                            font: {
+                                weight: 'bold',
+                                size: 16
+                            }
+                        }
                     }
                 }
             });
         }
     });
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        d3.csv("{{ url_for('static', filename='tmp/exps_alg_type.csv') }}")
+            .then(makeUsePie)
+        function makeUsePie(data) {
+            var type = data.map(function (d) { return d.type; });
+            var times = data.map(function (d) { return d.times; });
+            new Chart(document.getElementById("alg_type_dist"), {
+                type: "pie",
+                data: {
+                    labels: type,
+                    datasets: [{
+                        data: times,
+                        backgroundColor: Object.values(CHART_COLORS),
+                        borderWidth: 5
+                    }]
+                },
+                options: {
+                    responsive: !window.MSInputMethodContext,
+                    maintainAspectRatio: false,
+                    legend: {
+                        display: false
+                    },
+                    cutoutPercentage: 0
+                }
+            });
+        }
+    });
+</script>
+<script>
+    var chartExpsTypeTime;
+    const url = "{{ url_for('static', filename='tmp/exps_type_times.csv') }}";
+    document.addEventListener("DOMContentLoaded", function () {
+        preChartExpTotalTime();
+    });
+    
+    function preChartExpTotalTime() {
+        d3.csv(url).then(makeChartExpTotalTime);
+    }
+    
+    function preUpdateChart() {
+        d3.csv(url).then(updateChart);
+    }
+
+    function updateChart(data) {
+        const time = $("input[type='radio'][name='alg_typ_time_used']:checked").val();
+        var type = data.map(function (d) { return d.type; });
+        var time_data = data.map(function (d) { return d.seconds; });
+        const divisor = getDivisor(time);
+
+        for (var i = 0; i < time_data.length; i++) {
+            time_data[i] /= divisor;
+        }
+        chart = chartExpsTypeTime;
+        chart.data.labels = type;
+        chart.data.datasets.forEach((dataset) => {
+            dataset.data = time_data;
+        });
+        chart.update();
+    }
+
+    function getDivisor(time) {
+        var divisor = 1;
+
+        switch (time) {
+            case 'seconds':
+                break;
+            case 'minutes':
+                divisor = 60;
+                break;
+            case 'hours':
+                divisor = 3600;
+                break;
+            case 'days':
+                divisor = 86400;
+                break;
+        }
+        return divisor;
+    }
+
+    function makeChartExpTotalTime(data) {
+        const time = $("input[type='radio'][name='alg_typ_time_used']:checked").val();
+        var type = data.map(function (d) { return d.type; });
+        var time_data = data.map(function (d) { return d.seconds; });
+        const divisor = getDivisor(time);
+
+        for(var i = 0; i < time_data.length; i++){
+            time_data[i] /= divisor;
+        }
+
+        chartExpsTypeTime = new Chart(document.getElementById("exps_type_time").getContext("2d"), {
+            type: "bar",
+            data: {
+                labels: type,
+                datasets: [{
+                    label: "Total time",
+                    backgroundColor: CHART_COLORS.ubu,
+                    borderColor: CHART_COLORS.ubu,
+                    hoverBackgroundColor: CHART_COLORS.ubu,
+                    hoverBorderColor: CHART_COLORS.ubu,
+                    data: time_data,
+                    barPercentage: .75,
+                    categoryPercentage: .5
+                }]
+            },
+            options: {
+                responsive: !window.MSInputMethodContext,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                    },
+                    y: {
+                        grid: {
+                            display: false
+                        },
+                        callback: function (value, index, ticks) {
+                            return '$' + value;
+                        }
+                    }
+                },
+                plugins: {
+                    legend: false,
+                    datalabels: { 
+                        anchor: 'end',
+                        align: 'top',
+                        formatter: Math.round,
+                        font: {
+                            weight: 'bold',
+                            size: 16
+                        }
+                    }
+                }
+            }
+        });
+    }
 </script>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
@@ -314,15 +526,21 @@
     document.addEventListener("DOMContentLoaded", function () {
         d3.csv("{{ url_for('static', filename='tmp/experiments.csv') }}")
              .then(makeChartExpTotal);
+        var ctx = document.getElementById("exp_times").getContext("2d");
         function makeChartExpTotal(data) {
             var dataset = data.map(function (d) { return d.dataset; });
             var times = data.map(function (d) { return d.times; });
+            datasetRed = []
+            dataset.forEach(element => {
+                element = element.replace(/\.[^/.]+$/, '');
+                datasetRed.push(element.replace(/[\W_0-9]+/g, ''));
+            });
             
 
-            new Chart(document.getElementById("exp_times"), {
+            new Chart(document.getElementById("exp_times").getContext("2d"), {
                 type: "bar",
                 data: {
-                    labels: dataset,
+                    labels: datasetRed,
                     datasets: [{
                         label: "Total times used",
                         backgroundColor: CHART_COLORS.ubu,
@@ -337,37 +555,36 @@
                 options: {
                     responsive: !window.MSInputMethodContext,
                     maintainAspectRatio: false,
-                    legend: {
-                        display: false
-                    },
                     scales: {
-                        yAxes: [{
-                            gridLines: {
+                        x: {
+                            grid: {
                                 display: false
                             },
-                            stacked: false,
-                            ticks: {
-                                stepSize: 20
-                            }
-                        }],
-                        xAxes: [{
-                            ticks: {
-                                color: 'red',
+                        },
+                        y: {
+                            grid: {
+                                display: false
                             },
-                            stacked: false,
-                            display: false,
-                            gridLines: {
-                                color: "transparent"
+                        }
+                    },
+                    plugins: {
+                        legend: false,
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'top',
+                            formatter: Math.round,
+                            font: {
+                                weight: 'bold',
+                                size: 16
                             }
-                        }]
+                        }
                     }
                 }
             });
         }
     });
 </script>
-<script>
-    
+<script>   
     document.addEventListener("DOMContentLoaded", function () {
         d3.csv("{{ url_for('static', filename='tmp/countries.csv') }}")
             .then(makeMap);
@@ -387,7 +604,7 @@
                 normalizeFunction: 'polynomial',
                 draggable: true,
                 zoomButtons: true,
-                zoomOnScroll: true,
+                zoomOnScroll: false,
                 zoomOnScrollSpeed: 3,
                 zoomMax: 12,
                 zoomMin: 1,
@@ -412,7 +629,10 @@
             window.addEventListener("resize", () => {
                 map.updateSize();
             });
-        }
+        };
+        window.addEventListener('afterprint', () => {
+            myChart.resize();
+        });
     });
 </script>
 {% endblock js%}
