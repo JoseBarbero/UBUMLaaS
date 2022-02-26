@@ -168,6 +168,12 @@ class User(v.db.Model, UserMixin):
     desired_use = v.db.Column(v.db.String(64))
     country = v.db.Column(v.db.String(64))
     user_type = v.db.Column(v.db.Integer, nullable=False, default=1)
+    website = v.db.Column(v.db.String(128))
+    twitter = v.db.Column(v.db.String(64))
+    github = v.db.Column(v.db.String(64))
+    institution = v.db.Column(v.db.String(128))
+    linkedin = v.db.Column(v.db.String(64))
+    google_scholar = v.db.Column(v.db.String(64))
 
     def __init__(self, email, username, password, desired_use, country, activated, user_type):
         """User constructor
@@ -186,6 +192,12 @@ class User(v.db.Model, UserMixin):
         self.country = country
         self.activated = activated
         self.user_type = user_type
+        self.website = None
+        self.twitter = None
+        self.github = None
+        self.institution = None
+        self.linkedin = None
+        self.google_scholar = None
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -245,7 +257,13 @@ class User(v.db.Model, UserMixin):
             "desired_use": self.desired_use,
             "country": self.country,
             "activated": self.activated,
-            "user_type": self.user_type
+            "user_type": self.user_type,
+            "webpage": self.website,
+            "twitter": self.twitter,
+            "github": self.github,
+            "institution": self.institution,
+            "linkedin": self.linkedin,
+            "google_scholar": self.google_scholar
         }
 
 

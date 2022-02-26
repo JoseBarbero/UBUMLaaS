@@ -2,7 +2,7 @@ from flask import render_template, url_for, flash, redirect, request, Blueprint,
 from flask_login import login_user, current_user, logout_user, login_required
 import variables as v
 from ubumlaas.users.forms import RegistrationForm, LoginForm, PasswordForm, EmailForm
-from ubumlaas.models import User, get_experiments
+from ubumlaas.models import User, get_experiments, Country
 import os
 from ubumlaas.util import generate_confirmation_token, confirm_token, send_email, get_ngrok_url
 import json
@@ -121,12 +121,17 @@ def profile():
     datasets = [x for x in
                 os.listdir("ubumlaas/datasets/"+current_user.username)]
     experiments = get_experiments(current_user.id)
+    user = current_user.to_dict_all()
+    country = Country.query.filter_by(alpha_2=user['country']).first()
+    user['country'] = country.to_dict()['name']
     v.app.logger.info("%d - User enter to profile, %d datasets and %d experiments", current_user.id,len(datasets),len(experiments))
     return render_template("profile.html",
                            title=current_user.username + " Profile",
-                           user=current_user,
+                           user=user,
                            datasets=datasets,
-                           experiments=experiments)
+                           experiments=experiments,
+                           ip=request.environ.get(
+                               'HTTP_X_REAL_IP', request.remote_addr))
 
 @users.route('/confirm/<token>')
 def confirm_email(token):
