@@ -5,7 +5,7 @@ from wtforms import SelectField
 from ubumlaas.models import User, Country, Experiment
 from ubumlaas.users.forms import RegistrationForm
 from ubumlaas.util import generate_confirmation_token, confirm_token, send_email, get_ngrok_url
-from ._utils import is_admin, get_users_info, geolocate
+from ._utils import is_admin, get_users_info, exps_type
 from sqlalchemy import text, select
 from datetime import datetime, date
 import time
@@ -117,6 +117,7 @@ def activate_user():
 @login_required
 def user_to_admin():
     is_admin()
+    
     if request.method == "GET":
         id = request.args.get('id')
         if str(id) == str(current_user.id):
@@ -214,15 +215,24 @@ def dashboard():
         os.path.expanduser("ubumlaas/datasets/")) for f in fn])
     
     all_experiments = Experiment.query.all()
+
+    exps_type_dict, exps_type_times = exps_type(all_experiments)
+    exps_alg_type_dict = dict(
+        sorted(exps_type_dict.items(), key=lambda item: item[1], reverse=True))
+        
+    exps_alg_type = pd.DataFrame(list(exps_type_dict.items()), columns=['type', 'times'])
+    exps_type_times = pd.DataFrame(list(exps_type_times.items()), columns=['type', 'seconds'])
+
     dict_experiments = {}
     exps_7d_df = pd.DataFrame([[f'I-{x}', 0] for x in range(7)],columns=['day', 'times'])
     experiments_df = pd.DataFrame(columns=['dataset', 'times'])
     today = time.localtime(time.time())[:3]
 
     latest_10_exps = []
+    exps_algs = {}
     for e in all_experiments:
         exp = {}
-        exp['name'] = e.to_dict()['alg']['web_name']
+        exp['name'] = e.web_name()
         exp['starttime'] = datetime.fromtimestamp(
             e.starttime).strftime("%d/%m/%Y - %H:%M:%S")
         exp['state'] = e.state
@@ -245,10 +255,14 @@ def dashboard():
             exp['user'] = users_dict[e.idu]
         except KeyError:
             exp['user'] = 'User deleted'
+        try:
+            exps_algs[exp['name']] += 1
+        except KeyError:
+            exps_algs[exp['name']] = 1
         
         latest_10_exps.append(exp)
 
-
+    exps_algs = pd.DataFrame(list(exps_algs.items()), columns=['name', 'times'])
     try:
         latest_10_exps = latest_10_exps[-10:]
     except:
@@ -268,6 +282,10 @@ def dashboard():
     exps_7d_df.to_csv('ubumlaas/static/tmp/exp_7d.csv', index=False)
     unique_use_df.to_csv('ubumlaas/static/tmp/unique_use.csv', index=False)
     countries_df.to_csv('ubumlaas/static/tmp/countries.csv', index=False)
+    exps_algs.to_csv('ubumlaas/static/tmp/exps_algs.csv', index=False)
+    exps_alg_type.to_csv('ubumlaas/static/tmp/exps_alg_type.csv', index=False)
+    exps_type_times.to_csv('ubumlaas/static/tmp/exps_type_times.csv', index=False)
+    
 
     cards_data = {
         "experiments": len(all_experiments),
@@ -282,7 +300,8 @@ def dashboard():
                                'HTTP_X_REAL_IP', request.remote_addr),
                            cards_data=cards_data,
                            experiments=latest_10_exps,
-                           desired_use=unique_use,ii=users_dict.items())
+                           desired_use=unique_use,
+                           exps_alg_type=exps_alg_type_dict, e=exps_type_times)
 
 @admin.route("/administration/loading")
 def processing():
