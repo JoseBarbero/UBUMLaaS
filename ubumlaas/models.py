@@ -265,7 +265,7 @@ class User(v.db.Model, UserMixin):
             "country": self.country,
             "activated": self.activated,
             "user_type": self.user_type,
-            "webpage": self.website,
+            "website": self.website,
             "twitter": self.twitter,
             "github": self.github,
             "institution": self.institution,

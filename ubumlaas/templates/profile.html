@@ -15,6 +15,13 @@
                         <h5 class="card-title mb-0">Profile Details</h5>
                     </div>
                     <div class="card-body text-center">
+                        {% for category, message in get_flashed_messages(with_categories=True) %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">{{ message }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        {% endfor %}
                         <img src="avatar.jpg" alt="{{ user.username }}" class="img-fluid rounded-circle mb-2"
                             width="128" height="128" />
                         <h5 class="card-title mb-0">{{ user.username }}</h5>
@@ -33,7 +40,7 @@
                             {% if user.institution %}
                             <li class="mb-1"><span data-feather="briefcase" class="feather-sm me-1"></span> Works at <a>{{ user.institution }}</a></li>
                             {% endif %}
-                            {% if user.webpage %}
+                            {% if user.website %}
                             <li class="mb-1"><span data-feather="bookmark" class="feather-sm me-1"></span><a href="{{ user.webpage }}">Personal blog</a></li>
                             {% endif %}
                         </ul>
@@ -60,11 +67,16 @@
                     {% endif %}
                     <hr class="my-0" />
                     <div class="text-center">
-                        <a href="#" class="badge bg-warning me-1 my-1">Edit Profile</a>
+                        <a id="editProfile" class="badge bg-warning me-1 my-1" type="button" data-toggle="modal" data-target="#formEditProfile">Edit Profile</a>
                     </div>
                 </div>
             </div>
             <div class="col-md-8 col-xl-9">
+                <!-- <div class="row flex-fill collapse">
+                    <div class="card flex-fill">
+                        hola
+                    </div>
+                </div> -->
                 <div class="card flex-fill">
                     <div class="card-header" data-toggle="collapse" data-target="#datasets_table">
                         <i class="fa fa-chevron-down pull-right"></i>
@@ -127,7 +139,7 @@
                                             {% for e in experiments %}
                                             <tr>
                                                 <td class="d-none d-xl-table-cell">{{ e.id }}</td>
-                                                <td class="d-none d-xl-table-cell">{{ e.web_name() }}</td>
+                                                <td class="d-none d-xl-table-cell">{{ e.web_name }}</td>
                                                 <td class="d-none d-xl-table-cell">{{ e.data }}</td>
                                                 <td class="d-none d-xl-table-cell">{{ e.starttime }}</td>
                                                 <td class="d-none d-xl-table-cell">
@@ -170,7 +182,196 @@
                 </div>
             </div>
         </div>
-
+        <div class="modal fade" id="formEditProfile" tabindex="-1" role="dialog" aria-labelledby="formModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title" id="formModalLabel">Edit your data, {{ user.username }}</h3>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form id="formUserData" method="POST">
+                        {{form.hidden_tag()}}
+                        <div class="modal-body">
+                            <div class="form-group row">
+                                <label for="password" class="col-sm-6 col-form-label">
+                                    {{form.update_checkbox.label(class="form-group")}}
+                                </label>
+                                <div class="col-sm-6">
+                                    {{form.update_checkbox(onchange="allowForm('update_checkbox')")}}
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="username" class="col-sm-6 col-form-label">
+                                    {{form.username.label(class="form-group")}}
+                                </label>
+                                <div class="col-sm-6">
+                                    {{form.username(class="form-control", value=user.username) }}<br>
+                                    {% for error in form.username.errors %}
+                                    <div class="alert alert-warning alert-dismissible fade show" role="alert">{{ error }}
+                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="email" class="col-sm-6 col-form-label">
+                                    {{form.email.label(class="control")}}
+                                </label>
+                                <div class="col-sm-6">
+                                    {{form.email(type="email", class="form-control", value=user.email)}}<br>
+                                    {% for error in form.email.errors %}
+                                    <div class="alert alert-warning alert-dismissible fade show" role="alert">{{ error }}
+                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="country" class="col-sm-6 col-form-label">
+                                    {{form.country.label(class="form-group")}}
+                                </label>
+                                <div class="col-sm-6">
+                                    {{form.country(type="country", class="form-control", value=user.country)}}
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="desired_use" class="col-sm-6 col-form-label">
+                                    {{form.desired_use.label(class="form-group")}}
+                                </label>
+                                <div class="col-sm-6">
+                                    {{form.desired_use(type="desired_use", class="form-control", value=user.desired_use)}}
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="website" class="col-sm-6 col-form-label">
+                                    {{form.website.label(class="form-group")}}
+                                </label>
+                                <div class="col-sm-6">
+                                    {% if user.website %}
+                                        {{form.website(type="website", class="form-control", value=user.website)}}
+                                    {% else %}
+                                        {{form.website(type="website", class="form-control")}}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="twitter" class="col-sm-6 col-form-label">
+                                    {{form.twitter.label(class="form-group")}}
+                                </label>
+                                <div class="col-sm-6">
+                                    {% if user.twitter %}
+                                    {{form.twitter(type="twitter", class="form-control", value=user.twitter)}}
+                                    {% else %}
+                                    {{form.twitter(type="twitter", class="form-control")}}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="github" class="col-sm-6 col-form-label">
+                                    {{form.github.label(class="form-group")}}
+                                </label>
+                                <div class="col-sm-6">
+                                    {% if user.github %}
+                                    {{form.github(type="github", class="form-control", value=user.github)}}
+                                    {% else %}
+                                    {{form.github(type="github", class="form-control")}}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="institution" class="col-sm-6 col-form-label">
+                                    {{form.institution.label(class="form-group")}}
+                                </label>
+                                <div class="col-sm-6">
+                                    {% if user.institution %}
+                                    {{form.institution(type="institution", class="form-control", value=user.institution)}}
+                                    {% else %}
+                                    {{form.institution(type="institution", class="form-control")}}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="linkedin" class="col-sm-6 col-form-label">
+                                    {{form.linkedin.label(class="form-group")}}
+                                </label>
+                                <div class="col-sm-6">
+                                    {% if user.linkedin %}
+                                    {{form.linkedin(type="linkedin", class="form-control", value=user.linkedin)}}
+                                    {% else %}
+                                    {{form.linkedin(type="linkedin", class="form-control")}}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="google_scholar" class="col-sm-6 col-form-label">
+                                    {{form.google_scholar.label(class="form-group")}}
+                                </label>
+                                <div class="col-sm-6">
+                                    {% if user.google_scholar %}
+                                    {{form.google_scholar(type="google_scholar", class="form-control", value=user.google_scholar)}}
+                                    {% else %}
+                                    {{form.google_scholar(type="google_scholar", class="form-control")}}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <h6 class="text-muted">
+                                Keep in mind that submiting this form will update ALL your data with the data on each field.
+                            </h6>
+                            {{form.submit(class="btn btn-primary", value="Update my data")}}
+                        </div>
+                    </form>
+                    <div class="modal-footer"></div>
+                    <form id="formUserPasswd" method="POST">
+                        {{pass_form.hidden_tag()}}
+                        <div class="modal-body">
+                            <div class="form-group row">
+                                <label for="password" class="col-sm-6 col-form-label">
+                                    {{pass_form.pass_checkbox.label(class="form-group")}}
+                                </label>
+                                <div class="col-sm-6">
+                                    {{pass_form.pass_checkbox(onchange="allowForm('pass_checkbox')")}}
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="password" class="col-sm-6 col-form-label">
+                                    {{pass_form.password.label(class="form-group")}}
+                                </label>
+                                <div class="col-sm-6">
+                                    {{pass_form.password(type="password", class="form-control")}}<br>
+                                    {% for error in pass_form.password.errors %}
+                                    <div class="alert alert-warning alert-dismissible fade show" role="alert">{{ error }}
+                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="confirm_password" class="col-sm-6 col-form-label">
+                                    {{pass_form.confirm_password.label(class="form-group")}}
+                                </label>
+                                <div class="col-sm-6">
+                                    {{pass_form.confirm_password(type="password", class="form-control")}}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            {{pass_form.submit(class="btn btn-primary", value="Update my password")}}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 </main>
 
@@ -178,6 +379,11 @@
 
 {% block js %}
 <script>
+    const pass_fields = ['password', 'confirm_password'];
+    const data_fields = ['username', 'email', 'desired_use', 'country',
+                         'website', 'twitter', 'github', 'institution', 
+                         'linkedin', 'google_scholar'];
+    $('#formEditProfile').appendTo("body") 
     $(function () {
         $('#datasetsTable').bootstrapTable({
             silentSort: false,
@@ -188,6 +394,24 @@
             undefinedText: 'N/A'
         });
     })
+
+    function allowForm(type, def=false) {
+        var checked = document.getElementById(type).checked;
+        if (type == 'update_checkbox') 
+            fields = data_fields;
+        else
+            fields = pass_fields;
+        
+        fields.forEach(element => {
+            if (checked || def)
+                document.getElementById(element).disabled = false;
+            else
+                document.getElementById(element).disabled = true;
+        });
+    }
+    allowForm('update_checkbox');
+    allowForm('pass_checkbox');
+
 
     function delete_experiment(id) {
         $.ajax({
