@@ -46,13 +46,20 @@ def get_experiments(idu):
     Returns:
         experiments list -- all experiments from user with that id.
     """
-    listexp = Experiment.query.filter(Experiment.idu == idu).all()
-    for i in listexp:
-        i.starttime = datetime.fromtimestamp(i.starttime)\
+    listexp_db = Experiment.query.filter(Experiment.idu == idu).all()
+    listexp = []
+    for i in listexp_db:
+        d = i.to_dict()
+        d['starttime'] = datetime.fromtimestamp(i.starttime)\
             .strftime("%d/%m/%Y - %H:%M:%S")
         if i.endtime is not None:
-            i.endtime = datetime.fromtimestamp(i.endtime)\
+            d['endtime'] = datetime.fromtimestamp(i.endtime)\
                 .strftime("%d/%m/%Y - %H:%M:%S")
+        else:
+            d['endtime'] = None
+        d['web_name'] = i.web_name()
+        d['state'] = i.state
+        listexp.append(d)
     v.app.logger.info("Getting experiments from user with id %d, %d experiments found", idu, len(listexp))
     return listexp
 
