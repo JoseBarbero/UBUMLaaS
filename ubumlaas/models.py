@@ -46,13 +46,20 @@ def get_experiments(idu):
     Returns:
         experiments list -- all experiments from user with that id.
     """
-    listexp = Experiment.query.filter(Experiment.idu == idu).all()
-    for i in listexp:
-        i.starttime = datetime.fromtimestamp(i.starttime)\
+    listexp_db = Experiment.query.filter(Experiment.idu == idu).all()
+    listexp = []
+    for i in listexp_db:
+        d = i.to_dict()
+        d['starttime'] = datetime.fromtimestamp(i.starttime)\
             .strftime("%d/%m/%Y - %H:%M:%S")
         if i.endtime is not None:
-            i.endtime = datetime.fromtimestamp(i.endtime)\
+            d['endtime'] = datetime.fromtimestamp(i.endtime)\
                 .strftime("%d/%m/%Y - %H:%M:%S")
+        else:
+            d['endtime'] = None
+        d['web_name'] = i.web_name()
+        d['state'] = i.state
+        listexp.append(d)
     v.app.logger.info("Getting experiments from user with id %d, %d experiments found", idu, len(listexp))
     return listexp
 
@@ -168,6 +175,12 @@ class User(v.db.Model, UserMixin):
     desired_use = v.db.Column(v.db.String(64))
     country = v.db.Column(v.db.String(64))
     user_type = v.db.Column(v.db.Integer, nullable=False, default=1)
+    website = v.db.Column(v.db.String(128))
+    twitter = v.db.Column(v.db.String(64))
+    github = v.db.Column(v.db.String(64))
+    institution = v.db.Column(v.db.String(128))
+    linkedin = v.db.Column(v.db.String(64))
+    google_scholar = v.db.Column(v.db.String(64))
 
     def __init__(self, email, username, password, desired_use, country, activated, user_type):
         """User constructor
@@ -186,6 +199,12 @@ class User(v.db.Model, UserMixin):
         self.country = country
         self.activated = activated
         self.user_type = user_type
+        self.website = None
+        self.twitter = None
+        self.github = None
+        self.institution = None
+        self.linkedin = None
+        self.google_scholar = None
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -245,7 +264,13 @@ class User(v.db.Model, UserMixin):
             "desired_use": self.desired_use,
             "country": self.country,
             "activated": self.activated,
-            "user_type": self.user_type
+            "user_type": self.user_type,
+            "website": self.website,
+            "twitter": self.twitter,
+            "github": self.github,
+            "institution": self.institution,
+            "linkedin": self.linkedin,
+            "google_scholar": self.google_scholar
         }
 
 

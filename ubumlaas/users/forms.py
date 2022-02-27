@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, SelectField
+from wtforms import StringField, PasswordField, SubmitField, SelectField, BooleanField
 from wtforms.validators import DataRequired, Email, EqualTo, Length, Regexp, AnyOf
 from ubumlaas.models import User
 import pycountry
@@ -42,6 +42,14 @@ class RegistrationForm(FlaskForm):
     confirm_password = confirm_password_field
     country = country_field
     desired_use = desired_use_filed
+    website = StringField('Personal Website')
+    twitter = StringField('Twitter username')
+    github = StringField('GitHub username')
+    institution = StringField('Institution')
+    linkedin = StringField('LinkedIn username')
+    google_scholar = StringField('Google Scholar URL')
+    update_checkbox = BooleanField('Update user data')
+
     submit = SubmitField("Register")
 
     def email_exists(self, field):
@@ -75,6 +83,7 @@ class EmailForm(FlaskForm):
     submit = SubmitField("Send")
 
 class PasswordForm(FlaskForm):
+    pass_checkbox = BooleanField('Update Password')
     password_msg = password_msg_global
     password = password_field
     confirm_password = confirm_password_field

@@ -2,7 +2,7 @@ from flask import render_template, url_for, flash, redirect, request, Blueprint,
 from flask_login import login_user, current_user, logout_user, login_required
 import variables as v
 from ubumlaas.users.forms import RegistrationForm, LoginForm, PasswordForm, EmailForm
-from ubumlaas.models import User, get_experiments
+from ubumlaas.models import User, get_experiments, Country
 import os
 from ubumlaas.util import generate_confirmation_token, confirm_token, send_email, get_ngrok_url
 import json
@@ -109,8 +109,7 @@ def logout():
     return redirect(url_for("core.index"))
 
 
-
-@users.route("/profile")
+@users.route("/profile", methods=['POST', 'GET'])
 @login_required
 def profile():
     """User profile load.
@@ -118,15 +117,71 @@ def profile():
     Returns:
         string -- render profile page.
     """
+    update_data_form = RegistrationForm()
+    del update_data_form.password
+    del update_data_form.confirm_password
+
+    update_passwd_form = PasswordForm()
+
     datasets = [x for x in
                 os.listdir("ubumlaas/datasets/"+current_user.username)]
     experiments = get_experiments(current_user.id)
+    user = current_user.to_dict_all()
+    country = Country.query.filter_by(alpha_2=user['country']).first()
+    user['country'] = country.to_dict()['name']
     v.app.logger.info("%d - User enter to profile, %d datasets and %d experiments", current_user.id,len(datasets),len(experiments))
-    return render_template("profile.html",
-                           title=current_user.username + " Profile",
-                           user=current_user,
-                           datasets=datasets,
-                           experiments=experiments)
+    if request.method == 'POST' and update_data_form.update_checkbox.data:
+        if update_data_form.validate_on_submit():
+            try:
+                v.app.logger.info("%d - User updated its information", user['id'])
+
+                user_update = User.query.filter_by(
+                    email=current_user.email).first_or_404()
+                old_username = user_update.username
+                user_update.username = update_data_form.username.data
+                user_update.email = update_data_form.email.data
+                user_update.desired_use = update_data_form.desired_use.data
+                user_update.country = update_data_form.country.data
+                user_update.website = update_data_form.website.data
+                user_update.twitter = update_data_form.twitter.data
+                user_update.github = update_data_form.github.data
+                user_update.institution = update_data_form.username.data
+                user_update.linkedin = update_data_form.linkedin.data
+                user_update.google_scholar = update_data_form.google_scholar.data
+                
+                os.chdir(os.path.join('ubumlaas', 'models'))
+                os.rename(src=old_username,
+                        dst=user_update.username)
+                os.chdir(os.path.join('..', 'datasets'))
+                os.rename(src=old_username,
+                        dst=user_update.username)
+                v.db.session.add(user_update)
+                v.db.session.commit()
+                flash('User updated', 'success')
+            except Exception as e:
+                v.app.logger.exception(e)
+                v.db.session.rollback()
+                flash('Error ocurred', 'danger')
+        else:
+            flash('Some fields do not meet the required criteria.', 'warning')
+        
+    if request.method == 'POST' and update_passwd_form.pass_checkbox.data:
+        if update_passwd_form.validate_on_submit():
+            if current_user.check_password(update_passwd_form.password.data):
+                flash('The new password can not be the same as the current password', 'danger')
+            else:
+                v.app.logger.info("%d - User password changed", user['id'])
+
+                user_update = User.query.filter_by(email=current_user.email).first_or_404()
+                user_update.set_password(update_passwd_form.password.data)
+
+                v.db.session.add(user_update)
+                v.db.session.commit()
+                flash("Password changed", "success")
+        else:
+            flash('Password do not meet the required criteria.', 'warning')
+
+    return render_profile(user, datasets, experiments, update_data_form, update_passwd_form)
 
 @users.route('/confirm/<token>')
 def confirm_email(token):
@@ -192,3 +247,15 @@ def reset_with_token(token):
         return redirect(url_for('users.login'))
 
     return render_template('reset_with_token.html', form=form, token=token)
+
+
+def render_profile(user, datasets, experiments, update_data_form, update_passwd_form):
+    return render_template("profile.html",
+                           title=current_user.username + " Profile",
+                           user=user,
+                           datasets=datasets,
+                           experiments=experiments,
+                           form=update_data_form,
+                           pass_form=update_passwd_form,
+                           ip=request.environ.get(
+                               'HTTP_X_REAL_IP', request.remote_addr))
