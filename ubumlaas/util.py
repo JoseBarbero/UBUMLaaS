@@ -10,6 +10,9 @@ from itsdangerous import URLSafeTimedSerializer
 from flask_mail import Message
 from flask import url_for
 from flask_login import current_user
+import asyncio
+from threading import Thread
+import time
 
 def get_dataframe_from_file(path, filename, target_column=False):
     extension = filename.split(".")[-1]
@@ -172,3 +175,29 @@ def find_y_uniques(y):
     uniques = np.unique(y.values)
     uniques.sort()
     return uniques
+
+def os_execute(command):
+    os.system(command)
+
+def os_monitor(command, message=""):
+    time.sleep(10)
+    v.app.logger.info(message)
+    try:
+        os.system(command)
+    except Exception as e:
+        v.app.logger.exception('Monitor failded.')
+
+def run_loop(loop):
+    asyncio.set_event_loop(loop)
+    loop.run_forever()
+
+def monitor_clean_csv(path):
+    time.sleep(35)
+    v.app.logger.info('Starting Monitor Cleaner')
+    try:
+        csv_df = pd.read_csv(path)
+        csv_clean = csv_df.drop_duplicates(subset=['timestamp'])
+        csv_clean.to_csv(path, index=False)
+        v.app.logger.debug('Monitor Cleaner done.')
+    except Exception as e:
+        v.app.logger.exception('Monitor Cleaner failed.')
