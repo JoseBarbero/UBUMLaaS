@@ -2,11 +2,17 @@ from flask import render_template, url_for, flash, redirect, request, Blueprint,
 from flask_login import login_user, current_user, logout_user, login_required
 import variables as v
 from ubumlaas.users.forms import RegistrationForm, LoginForm, PasswordForm, EmailForm
-from ubumlaas.models import User, get_experiments, Country
+from ubumlaas.models import User, get_experiments, Country, Experiment
 import os
 from ubumlaas.util import generate_confirmation_token, confirm_token, send_email, get_ngrok_url
 import json
 import variables as v
+import pandas as pd
+import time
+from datetime import datetime, date
+import numpy as np
+import multiprocessing as mp
+from ubumlaas.admin import clear_tmp_csvs, exps_type
 
 users = Blueprint("users", __name__)
 
@@ -117,6 +123,8 @@ def profile():
     Returns:
         string -- render profile page.
     """
+    tmp_dir = 'ubumlaas/static/tmp/'
+    cards_data = {}
     update_data_form = RegistrationForm()
     del update_data_form.password
     del update_data_form.confirm_password
@@ -125,11 +133,44 @@ def profile():
 
     datasets = [x for x in
                 os.listdir("ubumlaas/datasets/"+current_user.username)]
+    cards_data['datasets'] = len(datasets)
     experiments = get_experiments(current_user.id)
+    cards_data['experiments'] = len(experiments)
     user = current_user.to_dict_all()
     country = Country.query.filter_by(alpha_2=user['country']).first()
     user['country'] = country.to_dict()['name']
     v.app.logger.info("%d - User enter to profile, %d datasets and %d experiments", current_user.id,len(datasets),len(experiments))
+
+    exps_type_dict, exps_type_times = exps_type(Experiment.query.filter(Experiment.idu == current_user.id).all())
+    exps_alg_type_dict = dict(
+        sorted(exps_type_dict.items(), key=lambda item: item[1], reverse=True))
+
+    exps_alg_type = pd.DataFrame(
+        list(exps_type_dict.items()), columns=['type', 'times'])
+    exps_type_times = pd.DataFrame(
+        list(exps_type_times.items()), columns=['type', 'seconds'])
+    exps_7d_df = pd.DataFrame([[f'I-{x}', 0] for x in range(7)], columns=['day', 'times'])
+    experiments_df = pd.DataFrame(columns=['dataset', 'times'])
+    today = time.localtime(time.time())[:3]
+
+    for e in experiments:
+        try:
+            endtime = np.array(e['endtime'].strip().split('-')[0].split('/')).astype(int)[::-1]
+            delta = date(*today) - date(*endtime)
+            if delta.days < 7:
+                exps_7d_df.at[delta.days, 'times'] += 1
+        except TypeError as e:
+            exps_7d_df.at[0, 'times'] += 1
+
+    if not os.path.exists(tmp_dir):
+        os.mkdir(tmp_dir)
+    exps_7d_df = exps_7d_df.sort_values(by='day', ascending=False)
+    exps_7d_df.to_csv(f'ubumlaas/static/tmp/exp_{current_user.username}_7d.csv', index=False)
+    exps_alg_type.to_csv('ubumlaas/static/tmp/exps_alg_type_' +
+                         current_user.username+'.csv', index=False)
+    exps_type_times.to_csv(
+        'ubumlaas/static/tmp/exps_type_'+current_user.username+'_times.csv', index=False)
+
     if request.method == 'POST' and update_data_form.update_checkbox.data:
         if update_data_form.validate_on_submit():
             try:
@@ -181,7 +222,8 @@ def profile():
         else:
             flash('Password do not meet the required criteria.', 'warning')
 
-    return render_profile(user, datasets, experiments, update_data_form, update_passwd_form)
+    mp.Process(target=clear_tmp_csvs, args=(tmp_dir, )).start()
+    return render_profile(user, datasets, experiments, update_data_form, update_passwd_form, cards_data, exps_alg_type_dict)
 
 @users.route('/confirm/<token>')
 def confirm_email(token):
@@ -249,7 +291,7 @@ def reset_with_token(token):
     return render_template('reset_with_token.html', form=form, token=token)
 
 
-def render_profile(user, datasets, experiments, update_data_form, update_passwd_form):
+def render_profile(user, datasets, experiments, update_data_form, update_passwd_form, cards_data, exps_alg_type_dict):
     return render_template("profile.html",
                            title=current_user.username + " Profile",
                            user=user,
@@ -258,4 +300,6 @@ def render_profile(user, datasets, experiments, update_data_form, update_passwd_
                            form=update_data_form,
                            pass_form=update_passwd_form,
                            ip=request.environ.get(
-                               'HTTP_X_REAL_IP', request.remote_addr))
+                               'HTTP_X_REAL_IP', request.remote_addr),
+                            cards_data=cards_data,
+                           exps_alg_type=exps_alg_type_dict)

@@ -29,7 +29,10 @@
                         {% if user.user_type == 0 %}
                         <h5 class="card-title mb-0">Admin</h5>
                         {% endif %}
-                        <a href="#" class="badge bg-success me-1 my-1">Statistics</a>
+                        <a class="badge bg-success me-1 my-1y" data-toggle="collapse" href="#statistics" role="button" aria-expanded="false"
+                            aria-controls="statistics">
+                            Statistics
+                        </a>
                     </div>
                     <hr class="my-0" />
                     <div class="card-body">
@@ -72,11 +75,137 @@
                 </div>
             </div>
             <div class="col-md-8 col-xl-9">
-                <!-- <div class="row flex-fill collapse">
-                    <div class="card flex-fill">
-                        hola
+                <div class="card flex-fill collapse" id="statistics">
+                    <div class="card-header" data-toggle="collapse" data-target="#statistics">
+                        <i class="fa fa-chevron-down pull-right"></i>
+                        <h5 class="card-title mb-0">User Statistics</h5>
                     </div>
-                </div> -->
+                    <div class="card-body ">
+                        <div class="w-100">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col mt-0">
+                                                    <h5 class="card-title">Experiments</h5>
+                                                </div>
+                                                <div class="col-auto">
+                                                    <div class="stat text-primary">
+                                                        <i class="align-middle" data-feather="database"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <h1 class="mt-1 mb-3">{{ cards_data.experiments }}</h1>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col mt-0">
+                                                    <h5 class="card-title">Datasets</h5>
+                                                </div>
+                                
+                                                <div class="col-auto">
+                                                    <div class="stat text-primary">
+                                                        <i class="align-middle" data-feather="hard-drive"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <h1 class="mt-1 mb-3">{{ cards_data.datasets }}</h1>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5 class="card-title mb-0">Experiments performed in the last 7 days</h5>
+                                        </div>
+                                        <div class="card-body py-3">
+                                            <div class="chart chart-sm">
+                                                <canvas id="exp_7d_times"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 col-lg-6 col-xxl-6 d-flex">
+                                    <div class="card flex-fill w-100">
+                                        <div class="card-header">
+                                            <h5 class="card-title mb-0">Algorithm Type Usage Distribution</h5>
+                                        </div>
+                                        <div class="card-body align-self-center w-100">
+                                            <div class="chart chart-xm">
+                                                <canvas id="alg_type_dist"></canvas>
+                                            </div>
+                                            <table class="table mb-0">
+                                                <tbody>
+                                                    {% for name, times in exps_alg_type.items() %}
+                                                    {% if loop.index | int < 5 %} <tr>
+                                                        <td>{{ name }}</td>
+                                                        <td class="text-end">{{ times }}</td>
+                                                        </tr>
+                                                        {% endif %}
+                                                        {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-lg-6 col-xxl-6 d-flex">
+                                    <div class="card flex-fill w-100">
+                                        <div class="card-header">
+                                            <h5 class="card-title mb-0">Algorithm Type Time Used</h5>
+                                        </div>
+                                        <div class="card-body align-self-center w-100">
+                                            <div style="text-align:center">
+                                                <label class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="radio" name="alg_typ_time_used" value="seconds" checked
+                                                        onclick="preUpdateChart()">
+                                                    <span class="form-check-label">
+                                                        Seconds
+                                                    </span>
+                                                </label>
+                                                <label class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="radio" name="alg_typ_time_used" value="minutes"
+                                                        onclick="preUpdateChart()">
+                                                    <span class="form-check-label">
+                                                        Minutes
+                                                    </span>
+                                                </label>
+                                                <label class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="radio" name="alg_typ_time_used" value="hours"
+                                                        onclick="preUpdateChart()">
+                                                    <span class="form-check-label">
+                                                        Hours
+                                                    </span>
+                                                </label>
+                                                <label class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="radio" name="alg_typ_time_used" value="days"
+                                                        onclick="preUpdateChart()">
+                                                    <span class="form-check-label">
+                                                        Days
+                                                    </span>
+                                                </label>
+                                            </div>
+                                            <span></span><span></span>
+                                            <div class="chart align-self-center chart-xl">
+                                                <canvas id="exps_type_time"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="card flex-fill">
                     <div class="card-header" data-toggle="collapse" data-target="#datasets_table">
                         <i class="fa fa-chevron-down pull-right"></i>
@@ -125,14 +254,14 @@
                                         <thead>
                                             <tr>
                                                 <th data-sortable="true" class="d-none d-xl-table-cell" data-align="center" data-field="Id">Id</th>
-                                                <th data-sortable="true" class="d-none d-xl-table-cell" data-align="center">Algorithm</th>
-                                                <th data-sortable="true" class="d-none d-xl-table-cell" data-align="center">Dataset</th>
-                                                <th data-sortable="true" class="d-none d-xl-table-cell" data-align="center">Init Date</th>
-                                                <th data-sortable="true" class="d-none d-xl-table-cell" data-align="center">Finish Date</th>
-                                                <th data-sortable="true" class="d-none d-xl-table-cell" data-align="center">State</th>
-                                                <th data-sortable="false" class="d-none d-xl-table-cell" data-align="center">View Result</th>
-                                                <th data-sortable="false" class="d-none d-xl-table-cell" data-align="center">Reuse</th>
-                                                <th data-sortable="false" class="d-none d-xl-table-cell" data-align="center">Delete</th>
+                                                <th data-sortable="true" class="d-none d-xl-table-cell" data-align="center" data-field="Algorithm">Algorithm</th>
+                                                <th data-sortable="true" class="d-none d-xl-table-cell" data-align="center" data-field="Dataset">Dataset</th>
+                                                <th data-sortable="true" class="d-none d-xl-table-cell" data-align="center" data-field="Init Date">Init Date</th>
+                                                <th data-sortable="true" class="d-none d-xl-table-cell" data-align="center" data-field="Finish Date">Finish Date</th>
+                                                <th data-sortable="true" class="d-none d-xl-table-cell" data-align="center" data-field="State">State</th>
+                                                <th data-sortable="false" class="d-none d-xl-table-cell" data-align="center" data-field="View Result">View Result</th>
+                                                <th data-sortable="false" class="d-none d-xl-table-cell" data-align="center" data-field="Reuse">Reuse</th>
+                                                <th data-sortable="false" class="d-none d-xl-table-cell" data-align="center" data-field="Delete">Delete</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -379,6 +508,18 @@
 
 {% block js %}
 <script>
+    const CHART_COLORS = {
+        ubu: 'rgb(170,34,60)',
+        red: 'rgb(255, 99, 132)',
+        orange: 'rgb(255, 159, 64)',
+        yellow: 'rgb(255, 205, 86)',
+        green: 'rgb(75, 192, 192)',
+        blue: 'rgb(54, 162, 235)',
+        purple: 'rgb(153, 102, 255)',
+        grey: 'rgb(201, 203, 207)'
+    };
+</script>
+<script>
     const pass_fields = ['password', 'confirm_password'];
     const data_fields = ['username', 'email', 'desired_use', 'country',
                          'website', 'twitter', 'github', 'institution', 
@@ -393,6 +534,7 @@
             silentSort: false,
             undefinedText: 'N/A'
         });
+        $('#experimentsTable').bootstrapTable('hideColumn', 'Id');
     })
 
     function allowForm(type, def=false) {
@@ -427,5 +569,221 @@
             }
         });
     }
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        d3.csv("{{ url_for('static', filename='tmp/exp_'+current_user.username+'_7d.csv') }}")
+            .then(makeChartExp7d);
+        function makeChartExp7d(data) {
+            var ctx = document.getElementById("exp_7d_times").getContext("2d");
+            var gradient = ctx.createLinearGradient(0, 0, 0, 225);
+            gradient.addColorStop(0, "rgba(198, 40, 40, 1)");
+            gradient.addColorStop(1, "rgba(198, 40, 40, 0)");
+            var day = data.map(function (d) { return d.day; });
+            var times = data.map(function (d) { return d.times; });
+            maxValue = Math.max.apply(null, times);
+
+            new Chart(document.getElementById("exp_7d_times"), {
+                type: "line",
+                data: {
+                    labels: day,
+                    datasets: [{
+                        label: "Experiments performed",
+                        fill: true,
+                        backgroundColor: gradient,
+                        borderColor: CHART_COLORS.ubu,
+                        data: times
+                    }]
+                },
+                options: {
+                    responsive: !window.MSInputMethodContext,
+                    maintainAspectRatio: false,
+                    elements: {
+                        line: {
+                            cubicInterpolationMode: 'monotone'
+                        }
+                    },
+                    tooltips: {
+                        intersect: false
+                    },
+                    hover: {
+                        intersect: true
+                    },
+                    plugins: {
+                        filler: {
+                            propagate: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        },
+                        y: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                precision: 0
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: false,
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'top',
+                            formatter: Math.round,
+                            font: {
+                                weight: 'bold',
+                                size: 16
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    });
+</script>
+<script>
+    var chartExpsTypeTime;
+    const url = "{{ url_for('static', filename='tmp/exps_type_'+current_user.username+'_times.csv') }}";
+    document.addEventListener("DOMContentLoaded", function () {
+        preChartExpTotalTime();
+    });
+
+    function preChartExpTotalTime() {
+        d3.csv(url).then(makeChartExpTotalTime);
+    }
+
+    function preUpdateChart() {
+        d3.csv(url).then(updateChart);
+    }
+
+    function updateChart(data) {
+        const time = $("input[type='radio'][name='alg_typ_time_used']:checked").val();
+        var type = data.map(function (d) { return d.type; });
+        var time_data = data.map(function (d) { return d.seconds; });
+        const divisor = getDivisor(time);
+
+        for (var i = 0; i < time_data.length; i++) {
+            time_data[i] /= divisor;
+        }
+        chart = chartExpsTypeTime;
+        chart.data.labels = type;
+        chart.data.datasets.forEach((dataset) => {
+            dataset.data = time_data;
+        });
+        chart.update();
+    }
+
+    function getDivisor(time) {
+        var divisor = 1;
+
+        switch (time) {
+            case 'seconds':
+                break;
+            case 'minutes':
+                divisor = 60;
+                break;
+            case 'hours':
+                divisor = 3600;
+                break;
+            case 'days':
+                divisor = 86400;
+                break;
+        }
+        return divisor;
+    }
+
+    function makeChartExpTotalTime(data) {
+        const time = $("input[type='radio'][name='alg_typ_time_used']:checked").val();
+        var type = data.map(function (d) { return d.type; });
+        var time_data = data.map(function (d) { return d.seconds; });
+        const divisor = getDivisor(time);
+
+        for (var i = 0; i < time_data.length; i++) {
+            time_data[i] /= divisor;
+        }
+
+        chartExpsTypeTime = new Chart(document.getElementById("exps_type_time").getContext("2d"), {
+            type: "bar",
+            data: {
+                labels: type,
+                datasets: [{
+                    label: "Total time",
+                    backgroundColor: CHART_COLORS.ubu,
+                    borderColor: CHART_COLORS.ubu,
+                    hoverBackgroundColor: CHART_COLORS.ubu,
+                    hoverBorderColor: CHART_COLORS.ubu,
+                    data: time_data,
+                    barPercentage: .75,
+                    categoryPercentage: .5
+                }]
+            },
+            options: {
+                responsive: !window.MSInputMethodContext,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                    },
+                    y: {
+                        grid: {
+                            display: false
+                        },
+                        callback: function (value, index, ticks) {
+                            return '$' + value;
+                        }
+                    }
+                },
+                plugins: {
+                    legend: false,
+                    datalabels: {
+                        anchor: 'end',
+                        align: 'top',
+                        formatter: Math.round,
+                        font: {
+                            weight: 'bold',
+                            size: 16
+                        }
+                    }
+                }
+            }
+        });
+    }
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        d3.csv("{{ url_for('static', filename='tmp/exps_alg_type_'+current_user.username+'.csv') }}")
+            .then(makeUsePie)
+        function makeUsePie(data) {
+            var type = data.map(function (d) { return d.type; });
+            var times = data.map(function (d) { return d.times; });
+            new Chart(document.getElementById("alg_type_dist"), {
+                type: "pie",
+                data: {
+                    labels: type,
+                    datasets: [{
+                        data: times,
+                        backgroundColor: Object.values(CHART_COLORS),
+                        borderWidth: 5
+                    }]
+                },
+                options: {
+                    responsive: !window.MSInputMethodContext,
+                    maintainAspectRatio: false,
+                    legend: {
+                        display: false
+                    },
+                    cutoutPercentage: 0
+                }
+            });
+        }
+    });
 </script>
 {% endblock js %}
