@@ -12,6 +12,9 @@ from flask_mail import Mail
 import time
 import json
 import logging.config
+from .util import os_monitor, run_loop, monitor_clean_csv
+import asyncio
+import threading
 
 
 def create_app(config_name):
@@ -37,6 +40,22 @@ def create_app(config_name):
     v.app.logger.info("Creating and setting up application")
     v.app.logger.debug("basedir - %s", v.basedir)
     v.app.logger.debug("appdir - %s", v.appdir)
+
+    # Startup the live monitor system
+
+    v.monitor_event_loop = asyncio.new_event_loop()
+    v.monitor_clean_loop = asyncio.new_event_loop()
+    command = "glances --export csv --export-csv-file " + \
+        str(os.environ['LIBFOLDER']) + "/glances.csv --time 30 --quiet"
+    threading.Thread(target=lambda: run_loop(
+        v.monitor_event_loop)).start()
+    threading.Thread(target=lambda: run_loop(
+        v.monitor_clean_loop)).start()
+    v.monitor_event_loop.call_soon_threadsafe(
+        lambda: os_monitor(command, f"Executing {command}"))
+    v.monitor_clean_loop.call_soon_threadsafe(
+        lambda: monitor_clean_csv(str(os.environ['LIBFOLDER']) + "/glances.csv"))
+    
 
     ###########################################
     ############ CONFIGURATIONS ###############
@@ -126,3 +145,10 @@ def create_app(config_name):
     app.jinja_env.cache = {}
 
     return app
+
+def handler(signum, frame):
+    v.monitor_event_loop.call_soon_threadsafe(
+        v.monitor_event_loop.stop)
+    v.monitor_clean_loop.call_soon_threadsafe(
+        v.monitor_clean_loop.stop)
+    exit(0)

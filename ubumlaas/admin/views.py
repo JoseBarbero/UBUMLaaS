@@ -5,7 +5,7 @@ from wtforms import SelectField
 from ubumlaas.models import User, Country, Experiment
 from ubumlaas.users.forms import RegistrationForm
 from ubumlaas.util import generate_confirmation_token, confirm_token, send_email, get_ngrok_url
-from ._utils import is_admin, get_users_info, exps_type
+from ._utils import is_admin, get_users_info, exps_type, clear_tmp_csvs
 from sqlalchemy import text, select
 from datetime import datetime, date
 import time
@@ -14,6 +14,8 @@ import variables as v
 import uuid
 import pandas as pd
 import numpy as np
+import psutil as ps
+import multiprocessing as mp
 
 admin = Blueprint('admin', __name__)
 
@@ -182,6 +184,7 @@ def default_datasets(username):
 @login_required
 def dashboard():
     is_admin()
+    tmp_dir = 'ubumlaas/static/tmp/'
     unique = {}
         
     users_info = get_users_info()
@@ -275,8 +278,8 @@ def dashboard():
         experiments_df = experiments_df.append(
             {'dataset': dataset, 'times':info['n_times']}, ignore_index=True)
 
-    if not os.path.exists('ubumlaas/static/tmp/'):
-        os.mkdir('ubumlaas/static/tmp/')
+    if not os.path.exists(tmp_dir):
+        os.mkdir(tmp_dir)
     experiments_df.to_csv('ubumlaas/static/tmp/experiments.csv', index=False)
     exps_7d_df = exps_7d_df.sort_values(by='day', ascending=False)
     exps_7d_df.to_csv('ubumlaas/static/tmp/exp_7d.csv', index=False)
@@ -293,6 +296,7 @@ def dashboard():
         "datasets": len(unique_datasets),
         "countries": len(unique.keys())
     }
+    mp.Process(target=clear_tmp_csvs, args=(tmp_dir, )).start()
 
     return render_template('admin/admin_dashboard.html', 
                            title="Dashboard",
@@ -306,3 +310,14 @@ def dashboard():
 @admin.route("/administration/loading")
 def processing():
     return render_template('admin/admin_loading.html')
+
+@admin.route("/administration/live-monitor")
+def live_monitor():
+    os.system('clear')
+    print(ps.cpu_percent(interval=5))
+    print(ps.cpu_percent(interval=1))
+    print(ps.cpu_percent(interval=1))
+    return render_template('admin/admin_live_monitor.html',
+                           title="Live System Monitor",
+                           ip=request.environ.get(
+                               'HTTP_X_REAL_IP', request.remote_addr),)

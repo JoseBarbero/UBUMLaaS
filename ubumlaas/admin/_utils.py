@@ -1,3 +1,5 @@
+import time
+import shutil
 from flask import abort
 from flask_login import current_user
 import variables as v
@@ -53,3 +55,12 @@ def exps_type(exps):
     return types, type_time
 
 
+def clear_tmp_csvs(path):
+    time.sleep(5)
+    try:
+        shutil.rmtree(path)
+        v.app.logger.info(
+            "Directory '%s' has been removed successfully" % path)
+    except Exception:
+        v.app.logger.info(
+            "Directory '%s' could not be deleted" % path)

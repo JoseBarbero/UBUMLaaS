@@ -74,11 +74,15 @@
                     <i class=" {% if title=="Dashboard" %} bi bi-sliders2 {% else %} bi bi-sliders2-vertical {% endif %}%"></i>
                     Dashboard</a>
                 </li>
-                <li>
-                    <a href="{{ url_for('admin.admin_users') }}">
+                <li><a href="{{ url_for('admin.admin_users') }}">
                         <i class="{%if title=="Users Administration" %}bi bi-people-fill{% else %}bi bi-people{% endif %}"></i>
-                        Users
-                    </a>
+                        Users</a>
+                </li>
+                <li><a href="{{ url_for('admin.live_monitor') }}">
+                    <i class="{% if title=="Live System Monitor" %}bi bi-speedometer{% else %}bi bi-speedometer2{% endif %}"></i>
+                    Live System Monitor</a>
+                </li>
+                <li>
                     <a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false"
                         class="dropdown-toggle"><i class="bi bi-file-earmark-break"></i> Pages</a>
                     <ul class="collapse list-unstyled" id="pageSubmenu">

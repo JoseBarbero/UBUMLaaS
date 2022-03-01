@@ -1,7 +1,8 @@
-from ubumlaas import create_app
+from ubumlaas import create_app, handler
+import signal
 
 """
 Main, run application.
 """
 if __name__ == "__main__":
-    create_app("main_app").run()
+    signal.signal(signal.SIGINT, handler)
