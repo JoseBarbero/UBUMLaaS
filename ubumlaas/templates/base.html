@@ -1,252 +1,304 @@
 <!DOCTYPE html>
 <html>
-<script src="../static/js/translate.js"></script>
-<script src="../static/js/cookies.js"></script>
-<script>
-    function load() {
-        var translate = new Translate();
-        var currentLng = checkCookieLanguage();
-        var attributeName = 'data-tag';
-        translate.init(attributeName, currentLng);
-        translate.process("{{ url_for('static', filename='languages/') }}")
-    }
-</script>
+
 <head>
-    <link rel="stylesheet" href="{{ url_for('static', filename=" css/admin.css") }}">
-    <link rel="stylesheet" href="https://necolas.github.io/normalize.css/8.0.1/normalize.css" />
-    <!-- <link rel="stylesheet" href="{{ url_for('static', filename="css/bootstrap-reboot.css") }}" /> -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.5.2/litera/bootstrap.min.css" integrity="sha384-enpDwFISL6M3ZGZ50Tjo8m65q06uLVnyvkFO3rsoW0UC15ATBFz3QEhr3hmxpYsn" crossorigin="anonymous">
-    <!--<link rel="stylesheet" href="{{ url_for('static', filename="css/bootstrap.css") }}" />-->
-    <!-- <link rel="stylesheet" href="{{ url_for('static', filename="css/bootstrap-grid.css") }}" /> -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="{{ url_for('static', filename="img/logo.v3.3.svg") }}">
+
+    <!-- Bootstrap CSS CDN -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"
+        integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css"
+        integrity="sha384-ejwKkLla8gPP8t2u0eQyL0Q/4ItcnyveF505U0NIobD/SMsNyXrLti6CWaD0L52l" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"
+        integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+
+   <link href="https://unpkg.com/bootstrap-table@1.19.1/dist/bootstrap-table.min.css" rel="stylesheet">
+
+    <script src="https://unpkg.com/bootstrap-table@1.19.1/dist/bootstrap-table.min.js"></script>
+    <script src="https://unpkg.com/bootstrap-table@1.19.1/dist/extensions/filter-control/bootstrap-table-filter-control.min.js"></script>
+
+    <!-- Popper.JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"
+        integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ"
+        crossorigin="anonymous"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"
+        integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm"
+        crossorigin="anonymous"></script>
+
+    
+    <!-- Our Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename="css/bootstrap-append.css") }}" />
     <link rel="stylesheet" href="{{ url_for('static', filename="css/switch.css") }}" />
     <link rel="stylesheet" href="{{ url_for('static', filename="css/radio.css") }}" />
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css" />
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
     <link rel="stylesheet" href="{{ url_for('static', filename="css/spinner.css") }}" />
     <link rel="stylesheet" href="{{ url_for('static', filename="css/buttons.css") }}" />
     <link rel="stylesheet" href="{{ url_for('static', filename="css/custom.css") }}" />
-    <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.ico') }}" />
-    <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
-    <!-- Latest compiled and minified JavaScript -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0/dist/Chart.min.js"></script>
-    <script
-        src="https://code.jquery.com/jquery-3.5.1.min.js"
-        integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
-        crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-175635481-1"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-
-        gtag('config', 'UA-175635481-1');
-        gtag('set', {'user_id': '{{ title | user }}'}); // Establezca el ID de usuario mediante el user_id con el que haya iniciado sesión.
-        ga('set', 'userId', '{{ title | user }}'); // Establezca el ID de usuario mediante el user_id con el que haya iniciado sesión.
-    </script>
-    <meta charset="utf-8">
-    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/admin.css") }}">
     
 
-    <title>{{ title }}</title>
-    {% block css %}{% endblock %}
+    <!-- Font Awesome JS -->
+    <script src="https://kit.fontawesome.com/5c2c417d26.js" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/solid.js"
+        integrity="sha384-tzzSw1/Vo+0N5UhStP3bvwWPq+uvzCMfrN1fEFe+xBmv1C/AtVX5K0uZtmcHitFZ"
+        crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/fontawesome.js"
+        integrity="sha384-6OIrr52G08NpOFSZdxxz1xdNSndlD4vdcf/q2myIUVO0VsqaGHJsB0RaBE01VTOY"
+        crossorigin="anonymous"></script>
+
+    <!-- AdminKit -->
+    <script src="https://unpkg.com/@adminkit/core@latest/dist/js/app.js"></script>
+
+    <!-- D3.js -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="../../static/js/jquery-jvectormap-2.0.5.min.js"></script>
+    <link rel="stylesheet" href="../../static/css/jquery-jvectormap-2.0.5.css" type="text/css" media="screen" />
+    <!--<script src="{{ url_for('static', filename="js/jsvectormap.js") }}"></script>-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
+    <!--  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script> -->
+
 </head>
 
-<body onload="load();">
+<body>
 
-    {% block before_anyelse %}
-    {% endblock %}
+    <div class="wrapper">
+        <!-- Sidebar Holder -->
+        {% if current_user.is_authenticated %}
+            <nav id="sidebar">
+                <div class="sidebar-header">
+                    <h3><a href="{{ url_for('core.index') }}">UBUMLaaS</a></h3>
+                    User: {{ current_user.username }}<br>
+                    Current IP: {{ ip }}
+                </div>
 
-    <nav class="navbar sticky-top navbar-expand-lg navbar-dark" style="background-color: var(--ubu-maroon);">
-        <div class="rounded float-left">
-            <a href="http://www.admirable-ubu.es/" target="_blank" rel="noopener noreferrer"><img
-                    class="navbar-brand mr-3" src={{ url_for("static",filename="img/onlyA-32x32.svg") }}></a>
-        </div>
-        <a class="navbar-brand" href="{{ url_for('core.index') }}"> <label data-tag="HEADING"></a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup"
-            aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-            <div class="navbar-nav">
-                <a class="nav-item nav-link {% if title=="UBUMLaaS" %}active{% endif %}"
-                    href="{{ url_for('core.index') }}"><label data-tag="HOME"></a>
-                <a class="nav-item nav-link {% if title=="Info" %}active{% endif %}"
-                    href="{{ url_for('core.info') }}"></a>
-            </div>
-            <div class="navbar-nav ml-auto">
-                {% if current_user.is_authenticated %}
-                <a class="nav-item nav-link {% if "Profile" in title %}active{% endif %}"
-                    href="{{ url_for('users.profile') }}"><label data-tag="LAUNCHED_EXPERIMENTS"></a>
-                <a class="nav-item nav-link {% if title=="New experiment" %}active{% endif %}"
-                    href="{{ url_for('experiments.new_experiment') }}"><label data-tag="NEW_EXPERIMENT"></a>
-                {% if current_user.user_type == 0 %}
-                    <a class="nav-item nav-link {% if title=="Administration" %}active{% endif %}" href="{{ url_for('admin.administration') }}"><label data-tag="ADMIN"></a>
-                {% endif %}
-                <a class="nav-item nav-link " href="{{ url_for('users.logout') }}"><label data-tag="LOGOUT"></a>
-                {% else %}
-                <a class="nav-item nav-link {% if title=="Log in" %}active{% endif %}"
-                    href="{{ url_for('users.login') }}"><label data-tag="LOGIN"></a>
-                <a class="nav-item nav-link {% if title=="Register" %}active{% endif %}"
-                    href="{{ url_for('users.register') }}"><label data-tag="REGISTER"></a>
-                {% endif %}
-            </div>
-        </div>
-    </nav>
+                <ul class="list-unstyled components">
+                    <li><a href="{{ url_for('admin.administration') }}">
+                        <i class="{%if title=="Administration" %}bi bi-clipboard-fill{% else %}bi bi-clipboard{% endif %}"></i>
+                        Administration</a>
+                    </li>
+                    <li><a href="{{ url_for('admin.processing') }}">
+                        <i class=" {% if title=="Dashboard" %} bi bi-sliders2 {% else %} bi bi-sliders2-vertical {% endif %}%"></i>
+                        Dashboard</a>
+                    </li>
+                    <li><a href="{{ url_for('admin.admin_users') }}">
+                            <i class="{%if title=="Users Administration" %}bi bi-people-fill{% else %}bi bi-people{% endif %}"></i>
+                            Users</a>
+                    </li>
+                    <li><a href="{{ url_for('admin.live_monitor') }}">
+                        <i class="{% if title=="Live System Monitor" %}bi bi-speedometer{% else %}bi bi-speedometer2{% endif %}"></i>
+                        Live System Monitor</a>
+                    </li>
+                    <li>
+                        <a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false"
+                            class="dropdown-toggle"><i class="bi bi-file-earmark-break"></i> Pages</a>
+                        <ul class="collapse list-unstyled" id="pageSubmenu">
+                            <li>
+                                <a href="{{ url_for('core.index') }}">Home</a>
+                            </li>
+                            <li>
+                                <a href="{{ url_for('users.logout') }}">Log out</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('core.info') }}"><i class="bi bi-person-lines-fill"></i> Contact</a>
+                    </li>
+                </ul>
+            </nav>
+        {% endif %}
 
+        <!-- Page Content Holder -->
+        <div id="content">
 
-    {% block content %}
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <div class="container-fluid">
+                    {% if current_user.is_authenticated %}
+                    <button type="button" id="sidebarCollapse" class="navbar-btn">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+                    {% endif %}
+                    <button class="btn btn-dark d-inline-block d-lg-none ml-auto" type="button" data-toggle="collapse"
+                        data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                        <i class="fas fa-align-justify"></i>
+                    </button>
 
-    {% endblock %}
-
-    {% block footer %}
-    <footer id="footer">
-        <script>load();</script>
-        <div class="main-footer widgets-dark typo-light d-flex">
-            <div class="container">
-                <div class="row">
-
-                    <div class="col-xs-12 col-sm-6 col-md-3">
-                        <div class="widget subscribe no-box">
-                            <h5 class="widget-title"><label data-tag="LOCATION"></label><span></span></h5>
-                            <ul class="thumbnail-widget">
-                                <li><a target="_blank" rel="noopener noreferrer"
-                                        href="https://www.ubu.es/escuela-politecnica-superior/escuela-politecnica-superior">Escuela
-                                        politécnica superior</a></li>
-                                <li>Río Vena Campus</li>
-                                <li>Avda. Cantabria s/n 09006</li>
-                                <li>Burgos (Burgos)</li>
-                                <li><label data-tag="SPAIN"></label></li>
-                                <li><i class="material-icons"><label data-tag="PHONE"></label></i> <a href="tel:+34947258900">+34 947 25 89 00</a>
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <ul class="nav navbar-nav">
+                            <li nav-item nav-link {% if title=="Home" %}active{% endif %}>
+                                <a class="nav-link" href="{{ url_for('core.index') }}"><i class="fas fa-home"></i> Home</a>
+                            </li>
+                            <li nav-item nav-link {% if title=="About Us" %}active{% endif %}>
+                                <a class="nav-link" href="{{ url_for('core.info') }}"><i class="fas fa-book-open"></i> About Us</a>
+                            </li>
+                        </ul>
+                        <ul class="nav navbar-nav ml-auto">
+                            {% if current_user.is_authenticated %}
+                                <li nav-item nav-link>
+                                    <a class="nav-link" href="{{ url_for('users.profile') }}"><i class="fa fa-list"></i> Launched Experiments</a>
                                 </li>
-                                <li><i class="material-icons"><label data-tag="EMAIL"></label></i> <a href="mailto:eps@ubu.es">eps@ubu.es</a></li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div class="col-xs-12 col-sm-6 col-md-3">
-                        <div class="widget no-box">
-                            <h5 class="widget-title"><label data-tag="QUICK_LINKS"></label><span></span></h5>
-                            <ul class="thumbnail-widget">
-                                <li>
-                                    <div class="thumb-content"><a target="_blank" rel="noopener noreferrer"
-                                            href="http://www.admirable-ubu.es/">ADMIRABLE</a></div>
+                                <li nav-item nav-link>
+                                    <a class="nav-link" href="{{ url_for('experiments.new_experiment') }}"><i class="fas fa-flask"></i> New Experiment</a>
                                 </li>
-                                <li>
-                                    <div class="thumb-content"><a target="_blank" rel="noopener noreferrer"
-                                            href="https://www.ubu.es/"><label data-tag="UBU"></label></a></div>
+                                {% if current_user.user_type == 0 %}
+                                    <a class="nav-item nav-link {% if title==" Administration" %}active{% endif %}"
+                                        href="{{ url_for('admin.administration') }}"><i class="fa-solid fa-jet-fighter"></i> Administration</a>
+                                {% endif %}
+                                <li nav-item nav-link {% if title=="Log out" %}active{% endif %}>
+                                    <a class="nav-link" href="{{ url_for('users.logout') }}"><i class="fa-solid fa-user-minus"></i> Log out</a>
                                 </li>
-                                <li>
-                                    <div class="thumb-content"><a href="{{ url_for('core.info') }}"><label data-tag="ABOUT"></label></a></div>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div class="col-xs-12 col-sm-6 col-md-3">
-                        <div class="widget no-box">
-                            <h5 class="widget-title"><label data-tag="REGISTER_TITLE"></label><span></span></h5>
-                            <h6><label data-tag="NEED_ACCOUNT"></label></h6>
-                            <a class="btn btn-ubu-maroon" href="{{ url_for('users.register') }}"><label data-tag="REGISTER_NOW"></label></a>
-                        </div>
-                    </div>
-
-                    <div class="col-xs-12 col-sm-6 col-md-3">
-
-                        <div class="widget no-box">
-                            <h5 class="widget-title"><label data-tag="CONTACT_US"></label><span></span></h5>
-                            <ul class="thumbnail-widget">
-                                <li>
-                                    <div class="thumb-content"> <i class="material-icons"><label data-tag="EMAIL"></label></i> <a
-                                            href="mailto:ADMIRABLE_rg@oficina.ubu.es">ADMIRABLE_rg@oficina.ubu.es</a>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="thumb-content"> <i class="material-icons"><label data-tag="PHONE"></label></i> <a
-                                            href="tel:+34947259358">+34 947 25 93 58</a></div>
-                                </li>
-                            </ul>
-                        </div>
+                            {% else %}
+                                <a class="nav-item nav-link {% if title==" Log in" %}active{% endif %}" href="{{ url_for('users.login') }}"><i class="fa-solid fa-street-view"></i> Log In</a>
+                                <a class="nav-item nav-link {% if title==" Register" %}active{% endif %}" href="{{ url_for('users.register') }}"><i class="fa-solid fa-user-plus"></i> Register</a>
+                            {% endif %}
+                        </ul>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-12">
-                        <hr />
-                    </div>
-                </div>
-                <div class="row align-items-center" id="logos">
-                    <div class="col-xs-12 col-sm-6 col-md-3">
-                        <a target="_blank" rel="noopener noreferrer"
-                            href="https://ec.europa.eu/regional_policy/es/funding/erdf/">
-                            <img class="img-fluid" src={{ url_for("static",filename="img/FEDER.svg") }}>
-                        </a>
-                    </div>
-                    <div class="col-xs-12 col-sm-6 col-md-3">
-                        <a target="_blank" rel="noopener noreferrer"
-                            href="http://www.mineco.gob.es/es-es">
-                            <img class="img-fluid" src={{ url_for("static",filename="img/MEC.svg") }}>
-                        </a>
-                    </div>
-                    <div class="col-xs-12 col-sm-6 col-md-3">
-                        <a target="_blank" rel="noopener noreferrer" href="https://www.jcyl.es/">
-                            <img class="img-fluid" src={{ url_for("static",filename="img/JCYL.svg") }}>
-                        </a>
-                    </div>
-                    <div class="col-xs-12 col-sm-6 col-md-3">
-                        <a target="_blank" rel="noopener noreferrer"
-                            href="https://www.educa.jcyl.es/universidad/es/fondos-europeos/fondo-europeo-desarrollo-regional-feder/">
-                            <img class="img-fluid" src={{ url_for("static",filename="img/JCYL_impulsa.svg") }}>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
+            </nav>
 
-        <div class="footer-copyright">
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-12 text-center">
-                        <p>UBUMLaaS. © <script>document.write(new Date().getFullYear());</script>. <label data-tag="COPYRIGHT"></label></p>
-                    </div>
-                </div>
-            </div>
+            {% block content %}
+
+            {% endblock %}
         </div>
-    </footer>
-    {% endblock %}
-    {% include "./modals/alert_modal.html" %}
-    {% include "./modals/confirm_modal.html" %}
-    <script>
-        page_information = { version: "1.0.5", mode: { reuse: false, style: "litera" } }
-    </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>    
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js" integrity="sha384-LtrjvnR4Twt/qOuYxE721u19sVFLVSA4hf/rRt6PrZTmiPltdZcI7q7PXQBYTKyf" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/bootstrap-select.min.js"></script>
-    <script src="{{ url_for('static', filename="js/modals.js") }}"></script>
-    <script src="{{ url_for('static', filename="js/colors.js") }}"></script>
-    <script src="{{ url_for('static', filename="js/utils.js") }}"></script>
-    <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js"></script>
-    <script>
-        GLOBAL_STYLE = getComputedStyle(document.body);
-    </script>
-    <script>
-        $(function () {
-            $('[data-toggle="popover"]').popover();
+    </div>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#sidebarCollapse').on('click', function () {
+                $('#sidebar').toggleClass('active');
+                $(this).toggleClass('active');
+            });
         });
-        $(function () {
-            $('[data-toggle="tooltip"]').tooltip();
-        });
-        $('.popover-dismiss').popover({
-            trigger: 'focus'
-        });
-        $('.selectpicker').selectpicker();
-        firstClick();
     </script>
     {% block js %}
     {% endblock %}
 </body>
+
+{% if not current_user.is_authenticated %}
+<div class="row">
+    <div class="col-12">
+        <hr />
+    </div>
+</div>
+<footer id="footer">
+    <div class="main-footer widgets-dark typo-light d-flex">
+        <div class="container">
+            <div class="row">
+
+                <div class="col-xs-12 col-sm-6 col-md-3">
+                    <div class="widget subscribe no-box">
+                        <h5 class="widget-title">Location<span></span></h5>
+                        <ul class="thumbnail-widget">
+                            <li><a target="_blank" rel="noopener noreferrer"
+                                    href="https://www.ubu.es/escuela-politecnica-superior/escuela-politecnica-superior">Escuela
+                                    politécnica superior</a></li>
+                            <li>Río Vena Campus</li>
+                            <li>Avda. Cantabria s/n 09006</li>
+                            <li>Burgos (Burgos)</li>
+                            <li>Spain</li>
+                            <li><i class="material-icons">phone</i> <a href="tel:+34947258900">+34 947 25 89 00</a>
+                            </li>
+                            <li><i class="material-icons">email</i> <a href="mailto:eps@ubu.es">eps@ubu.es</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="col-xs-12 col-sm-6 col-md-3">
+                    <div class="widget no-box">
+                        <h5 class="widget-title">Quick Links<span></span></h5>
+                        <ul class="thumbnail-widget">
+                            <li>
+                                <div class="thumb-content"><a target="_blank" rel="noopener noreferrer"
+                                        href="http://www.admirable-ubu.es/">ADMIRABLE</a></div>
+                            </li>
+                            <li>
+                                <div class="thumb-content"><a target="_blank" rel="noopener noreferrer"
+                                        href="https://www.ubu.es/">University of Burgos</a></div>
+                            </li>
+                            <li>
+                                <div class="thumb-content"><a href="{{ url_for('core.info') }}">About</a></div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="col-xs-12 col-sm-6 col-md-3">
+                    <div class="widget no-box">
+                        <h5 class="widget-title">Register<span></span></h5>
+                        <h6>Do you need an account?</h6>
+                        <a class="btn btn-ubu-maroon" href="{{ url_for('users.register') }}">Register Now</a>
+                    </div>
+                </div>
+
+                <div class="col-xs-12 col-sm-6 col-md-3">
+
+                    <div class="widget no-box">
+                        <h5 class="widget-title">Contact Us<span></span></h5>
+                        <ul class="thumbnail-widget">
+                            <li>
+                                <div class="thumb-content"> <i class="material-icons">email</i> <a
+                                        href="mailto:ADMIRABLE_rg@oficina.ubu.es">ADMIRABLE_rg@oficina.ubu.es</a>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="thumb-content"> <i class="material-icons">phone</i> <a
+                                        href="tel:+34947259358">+34 947 25 93 58</a></div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <hr />
+                </div>
+            </div>
+            <div class="row align-items-center" id="logos">
+                <div class="col-xs-12 col-sm-6 col-md-3">
+                    <a target="_blank" rel="noopener noreferrer"
+                        href="https://ec.europa.eu/regional_policy/es/funding/erdf/">
+                        <img class="img-fluid" src={{ url_for("static",filename="img/FEDER.svg" ) }}>
+                    </a>
+                </div>
+                <div class="col-xs-12 col-sm-6 col-md-3">
+                    <a target="_blank" rel="noopener noreferrer" href="http://www.mineco.gob.es/portal/site/mineco/">
+                        <img class="img-fluid" src={{ url_for("static",filename="img/MEC.svg" ) }}>
+                    </a>
+                </div>
+                <div class="col-xs-12 col-sm-6 col-md-3">
+                    <a target="_blank" rel="noopener noreferrer" href="https://www.jcyl.es/">
+                        <img class="img-fluid" src={{ url_for("static",filename="img/JCYL.svg" ) }}>
+                    </a>
+                </div>
+                <div class="col-xs-12 col-sm-6 col-md-3">
+                    <a target="_blank" rel="noopener noreferrer"
+                        href="https://www.educa.jcyl.es/universidad/es/fondos-europeos/fondo-europeo-desarrollo-regional-feder/">
+                        <img class="img-fluid" src={{ url_for("static",filename="img/JCYL_impulsa.svg" ) }}>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-copyright">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <p>UBUMLaaS. ©
+                        <script>document.write(new Date().getFullYear());</script>. All rights reserved.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+{% endif %}
 
 </html>
