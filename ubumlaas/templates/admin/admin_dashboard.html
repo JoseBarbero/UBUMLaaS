@@ -282,6 +282,11 @@
         };
 </script>
 <script>
+    const weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    const d = new Date();
+    let today = weekday[d.getDay()];
+    var weekOrder = [];
+
     document.addEventListener("DOMContentLoaded", function () {
         d3.csv("{{ url_for('static', filename='tmp/exp_7d.csv') }}")
             .then(makeChartExp7d);
@@ -293,11 +298,24 @@
             var day = data.map(function (d) { return d.day; });
             var times = data.map(function (d) { return d.times; });
             maxValue = Math.max.apply(null, times);
+
+            daysAfter = [];
+            dayFound = false;
+            weekday.forEach(element => {
+                if (element == today) {
+                    dayFound = true;
+                } else if (dayFound) {
+                    daysAfter.push(element);
+                } else {
+                    weekOrder.push(element);
+                }
+            });
+            weekOrder = daysAfter.concat(weekOrder, [today])
             
             new Chart(document.getElementById("exp_7d_times"), {
                 type: "line",
                 data: {
-                    labels: day,
+                    labels: weekOrder,
                     datasets: [{
                         label: "Experiments performed",
                         fill: true,
