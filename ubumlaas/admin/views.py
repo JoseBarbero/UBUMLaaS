@@ -228,11 +228,12 @@ def dashboard():
 
     dict_experiments = {}
     exps_7d_df = pd.DataFrame([[f'I-{x}', 0] for x in range(7)],columns=['day', 'times'])
-    experiments_df = pd.DataFrame(columns=['dataset', 'times'])
+    experiments_df = pd.DataFrame(columns=['dataset', 'times', 'seconds'])
     today = time.localtime(time.time())[:3]
 
     latest_10_exps = []
     exps_algs = {}
+    datasets_time = {}
     for e in all_experiments:
         exp = {}
         exp['name'] = e.web_name()
@@ -246,6 +247,19 @@ def dashboard():
                 e.endtime).strftime("%d/%m/%Y - %H:%M:%S")
             if delta.days < 7:
                 exps_7d_df.at[delta.days, 'times'] += 1
+            try:
+                starttime = np.array([x for x in datetime.fromtimestamp(e.starttime).strftime(
+                        "%Y-%m-%d-%H-%M-%S").strip().split('-')]).astype(int)
+                endtime = np.array([x for x in datetime.fromtimestamp(e.endtime).strftime(
+                        "%Y-%m-%d-%H-%M-%S").strip().split('-')]).astype(int)
+                exp_time = datetime(*endtime) - datetime(*starttime)
+                try:
+                    datasets_time[e.data] += exp_time.seconds
+                except KeyError:
+                    datasets_time[e.data] = exp_time.seconds
+            except TypeError:
+                # In case the experiment is currently running and has not finished
+                pass
             try:
                 dict_experiments[e.data]['n_times'] += 1
                 dict_experiments[e.data]['exp_ids'].append(e.id)
@@ -272,14 +286,20 @@ def dashboard():
         pass
     latest_10_exps.reverse()
 
-    for i, (dataset, info) in enumerate(dict_experiments.items()):
-        if i == 9:
-            break
+    for ((dataset0, info0), (dataset1, info1)) in zip(dict_experiments.items(), datasets_time.items()):
         experiments_df = experiments_df.append(
-            {'dataset': dataset, 'times':info['n_times']}, ignore_index=True)
+            {'dataset': dataset0, 'times':info0['n_times'], 'seconds':info1}, ignore_index=True)
 
     if not os.path.exists(tmp_dir):
-        os.mkdir(tmp_dir)
+        try:
+            os.mkdir(tmp_dir)
+        except Exception():
+            try:
+                os.mkdir(tmp_dir)
+            except Exception():
+                # In case the folder has been created between the check and the creation
+                pass
+    
     experiments_df.to_csv('ubumlaas/static/tmp/experiments.csv', index=False)
     exps_7d_df = exps_7d_df.sort_values(by='day', ascending=False)
     exps_7d_df.to_csv('ubumlaas/static/tmp/exp_7d.csv', index=False)
