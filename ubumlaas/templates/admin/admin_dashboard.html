@@ -252,8 +252,39 @@
 
                         <h5 class="card-title mb-0">All time datasets run</h5>
                     </div>
-                    <div class="card-body d-flex w-100">
-                        <div class="align-self-center chart chart-xl">
+                    <div class="card-body align-self-center w-100">
+                        <div style="text-align:center">
+                            <label class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="dataset_time_times" value="seconds" checked
+                                    onclick="preUpdateDatasets()">
+                                <span class="form-check-label">
+                                    Seconds
+                                </span>
+                            </label>
+                            <label class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="dataset_time_times" value="minutes"
+                                    onclick="preUpdateDatasets()">
+                                <span class="form-check-label">
+                                    Minutes
+                                </span>
+                            </label>
+                            <label class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="dataset_time_times" value="hours"
+                                    onclick="preUpdateDatasets()">
+                                <span class="form-check-label">
+                                    Hours
+                                </span>
+                            </label>
+                            <label class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="dataset_time_times" value="days"
+                                    onclick="preUpdateDatasets()">
+                                <span class="form-check-label">
+                                    Days
+                                </span>
+                            </label>
+                        </div>
+                        <span></span><span></span>
+                        <div class="chart align-self-center chart-xl">
                             <canvas id="exp_times"></canvas>
                         </div>
                     </div>
@@ -282,6 +313,11 @@
         };
 </script>
 <script>
+    const weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    const d = new Date();
+    let today = weekday[d.getDay()];
+    var weekOrder = [];
+
     document.addEventListener("DOMContentLoaded", function () {
         d3.csv("{{ url_for('static', filename='tmp/exp_7d.csv') }}")
             .then(makeChartExp7d);
@@ -293,11 +329,24 @@
             var day = data.map(function (d) { return d.day; });
             var times = data.map(function (d) { return d.times; });
             maxValue = Math.max.apply(null, times);
+
+            daysAfter = [];
+            dayFound = false;
+            weekday.forEach(element => {
+                if (element == today) {
+                    dayFound = true;
+                } else if (dayFound) {
+                    daysAfter.push(element);
+                } else {
+                    weekOrder.push(element);
+                }
+            });
+            weekOrder = daysAfter.concat(weekOrder, [today])
             
             new Chart(document.getElementById("exp_7d_times"), {
                 type: "line",
                 data: {
-                    labels: day,
+                    labels: weekOrder,
                     datasets: [{
                         label: "Experiments performed",
                         fill: true,
@@ -523,66 +572,118 @@
     });
 </script>
 <script>
+    var chartDatasetsRun;
+    const url1 = "{{ url_for('static', filename='tmp/experiments.csv') }}";
     document.addEventListener("DOMContentLoaded", function () {
-        d3.csv("{{ url_for('static', filename='tmp/experiments.csv') }}")
-             .then(makeChartExpTotal);
-        var ctx = document.getElementById("exp_times").getContext("2d");
-        function makeChartExpTotal(data) {
-            var dataset = data.map(function (d) { return d.dataset; });
-            var times = data.map(function (d) { return d.times; });
-            datasetRed = []
-            dataset.forEach(element => {
-                element = element.replace(/\.[^/.]+$/, '');
-                datasetRed.push(element.replace(/[\W_0-9]+/g, ''));
-            });
-            
+        preChartDatasetsRun();
+    });
 
-            new Chart(document.getElementById("exp_times").getContext("2d"), {
-                type: "bar",
-                data: {
-                    labels: datasetRed,
-                    datasets: [{
-                        label: "Total times used",
-                        backgroundColor: CHART_COLORS.ubu,
-                        borderColor: CHART_COLORS.ubu,
-                        hoverBackgroundColor: CHART_COLORS.ubu,
-                        hoverBorderColor: CHART_COLORS.ubu,
-                        data: times,
-                        barPercentage: .75,
-                        categoryPercentage: .5
-                    }]
+    function preChartDatasetsRun() {
+        d3.csv(url1).then(makeChartDatasetsRun);
+    }
+
+    function preUpdateDatasets() {
+        d3.csv(url1).then(updateChartDatasets);
+    }
+
+    function updateChartDatasets(data) {
+        const time = $("input[type='radio'][name='dataset_time_times']:checked").val();
+        var time_data = data.map(function (d) { return d.seconds; });
+        const divisor = getDivisor(time);
+
+        for (var i = 0; i < time_data.length; i++) {
+            time_data[i] /= divisor;
+        }
+        chart = chartDatasetsRun;
+        chart.data.datasets.forEach((dataset) => {
+            if (dataset.yAxisID == 'y'){
+                dataset.data = time_data;
+                dataset.label = time.charAt(0).toUpperCase() + time.slice(1) + ' of use';
+            }
+        });
+        chart.update();
+    }
+    
+    function makeChartDatasetsRun(data) {
+        var dataset = data.map(function (d) { return d.dataset; });
+        var times = data.map(function (d) { return d.times; });
+        var seconds = data.map(function (d) { return d.seconds});
+        datasetRed = []
+        dataset.forEach(element => {
+            element = element.replace(/\.[^/.]+$/, '');
+            datasetRed.push(element.replace(/[\W_0-9]+/g, ''));
+        });
+        
+
+        chartDatasetsRun = new Chart(document.getElementById("exp_times").getContext("2d"), {
+            type: "bar",
+            data: {
+                labels: datasetRed,
+                datasets: [{
+                    label: "Seconds of use",
+                    borderColor: CHART_COLORS.blue,
+                    backgroundColor: CHART_COLORS.blue,
+                    type: 'line',
+                    order: 0,
+                    data: seconds,
+                    yAxisID: 'y',
+                }, {
+                    label: "Total times used",
+                    backgroundColor: CHART_COLORS.ubu,
+                    borderColor: CHART_COLORS.ubu,
+                    hoverBackgroundColor: CHART_COLORS.ubu,
+                    hoverBorderColor: CHART_COLORS.ubu,
+                    data: times,
+                    barPercentage: .75,
+                    categoryPercentage: .5,
+                    yAxisID: 'y1',
+                }]
+            },
+            options: {
+                responsive: !window.MSInputMethodContext,
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
                 },
-                options: {
-                    responsive: !window.MSInputMethodContext,
-                    maintainAspectRatio: false,
-                    scales: {
-                        x: {
-                            grid: {
-                                display: false
-                            },
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        grid: {
+                            display: false
                         },
-                        y: {
-                            grid: {
-                                display: false
-                            },
+                    },
+                    y: {
+                        type: 'linear',
+                        position: 'right',
+                        grid: {
+                            display: false
                         }
                     },
-                    plugins: {
-                        legend: false,
-                        datalabels: {
-                            anchor: 'end',
-                            align: 'top',
-                            formatter: Math.round,
-                            font: {
-                                weight: 'bold',
-                                size: 16
-                            }
+                    y1: {
+                        type: 'linear',
+                        position: 'left',
+                        grid: {
+                            display: false
+                        }
+                    }
+
+                },
+                plugins: {
+                    legend: true,
+                    datalabels: {
+                        anchor: 'end',
+                        align: 'top',
+                        formatter: Math.round,
+                        font: {
+                            weight: 'bold',
+                            size: 16
                         }
                     }
                 }
-            });
-        }
-    });
+            }
+        });
+    }
+
 </script>
 <script>   
     document.addEventListener("DOMContentLoaded", function () {

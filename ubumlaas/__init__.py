@@ -36,7 +36,7 @@ def create_app(config_name):
 
     v.app.logger.info("Creating and setting up application")
     v.app.logger.debug("basedir - %s", v.basedir)
-    v.app.logger.debug("appdir - %s", v.appdir)
+    v.app.logger.debug("appdir - %s", v.appdir)  
 
     ###########################################
     ############ CONFIGURATIONS ###############
@@ -126,3 +126,4 @@ def create_app(config_name):
     app.jinja_env.cache = {}
 
     return app
+
