@@ -7,136 +7,176 @@ html {
 </style>
 {% endblock %}
 {% block content %}
-<div class="container">
-    <div class="jumbotron">
-        <h3 class="text-center">Experiment Result</h3>
-        <div class="row">
-            <div class="col-md-6">
-                <h3 class="text-center">Experiment Info</h3>
-                <div class="container">
-                    <div class="row">
-                        <p class="col-md-3 font-weight-bold">Id</p>
-                        <p class="col-md-9">{{ experiment.id }} </p>
-                    </div>
-                    <div class="row">
-                        <p class="col-md-3 font-weight-bold">Dataset</p>
-                        <p class="col-md-9">{{ experiment.data }} </p>
-                    </div>
-                    <div class="row">
-                        <p class="col-md-3 font-weight-bold">Algorithm</p>
-                        <p class="col-md-9">{{ name | safe}} </p>
-                    </div>
-                    <div class="container-fluid mb-2">
-                        <h5 class="text-center">Algorithm Parameters</h5>
-                        {% for c in dict_config %}
-                        <div class="row">
-                            <div class="col-12 {% if loop.index%2 == 1 %}row-odd{% endif %}">
-                                <label for="{{ loop.index0 }}_estimator_value">{{ c | split }}</label>
-                                <a onclick="toggle_estimator('{{ loop.index0 }}_estimator_value')" href="#a" id="{{ c }}_open">
-                                    <i class="material-icons float-right">arrow_drop_down_circle</i>
-                                </a>
-                            </div>
-                            <div class="container-fluid" id="{{ loop.index0 }}_estimator_value" style="display:none;">
-                            {% for i in dict_config[c] %}
-                                <div class="row {% if loop.index %2 == 0 %}row-odd{% endif %} ml-2 pt-2 pb-2 d-flex align-items-center">
-                                    <p class="col-md-7 font-weight-bold m-0 text-wrap alg_param">{{ i }}</p>
-                                    <p class="col-md-5 text-left m-0 text-wrap">{{ dict_config[c][i] }} </p>
-                                </div>
-                            {% endfor %}
+<main class="d-flex w-100">
+    <div class="container flex-column">
+        <div class="row row-flex">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-10 col-md-8 col-lg-6 mx-auto d-table h-100">
+                        <div class="d-table-cell align-middle">
+                            <div class="text-center mt-4">
+                                <h1 class="h2 font-weight-bold">Experiment Result</h1>
                             </div>
                         </div>
-                        {% endfor %}
                     </div>
-                    
-                    <div class="row">
-                        <div class="col-md-3">
-                                <a class="btn btn-primary btn-block" role="button" href={{ url_for("experiments.new_experiment") }}?exp={{experiment.id}} >Reuse</a>
-                        </div>
-                    {% if experiment.state == 1 %}
-                        <div class="col-md-6">
-                            <a class="btn btn-primary btn-block" role="button" href={{url_for("experiments.download_model",id=experiment.id)}} >Download model</a>
-                        </div>
-                        <div class="col-md-3">
-                            <a class="btn btn-primary btn-block" role="button" href={{url_for("experiments.predict",id=experiment.id)}}>Predict</a>
-                        </div>
-                    {% endif %}
-                    </div>    
                 </div>
-            </div>
-            <div class="col-md-6">
-                {% if experiment.state == 0 %}
-                    <h3 class="text-center">In Progress</h3>
-                    <p>Go for a coffee, when training is finished we will send you an email.</p>
-                    <div class="col-12">
-                        <div class="center coffee-container">
-                            <div class="steam-container">
-                            <div class="squiggle-container squiggle-container-1">
-                            <div class="squiggle">
-                                <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-                                    viewBox="0 0 28.1 80.6" style="enable-background:new 0 0 28.1 80.6;" xml:space="preserve">
-                                <path class="" fill="none" stroke-width="11" stroke-linecap="round" stroke-miterlimit="10" d="M22.6,75.1c-8-5.6-15.2-10.5-15.2-19.9c0-12.1,14.1-17.2,14.1-29.6c0-9.1-6.7-15.7-16-20.1"/>
-                                </svg>
-                            </div> <!-- end .squiggle-->
+                <div class="row">
+                    <div class="col-md-6 col-xl-6">
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0 font-weight-bold">Experiment Info</h5>
                             </div>
-                            <div class="squiggle-container squiggle-container-2">
-                            <div class="squiggle">
-                                <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-                                    viewBox="0 0 28.1 80.6" style="enable-background:new 0 0 28.1 80.6;" xml:space="preserve">
-                                <path class="" fill="none" stroke="#fff" stroke-width="11" stroke-linecap="round" stroke-miterlimit="10" d="M22.6,75.1c-8-5.6-15.2-10.5-15.2-19.9c0-12.1,14.1-17.2,14.1-29.6c0-9.1-6.7-15.7-16-20.1"/>
-                                </svg>
-                            </div> <!-- end .squiggle-->
+                            <div class="card-body">
+                                <div class="row">
+                                    <p class="col-md-3 font-weight-bold">Id</p>
+                                    <p class="col-md-9">{{ experiment.id }} </p>
+                                </div>
+                                <div class="row">
+                                    <p class="col-md-3 font-weight-bold">Dataset</p>
+                                    <p class="col-md-9">{{ experiment.data }} </p>
+                                </div>
+                                <div class="row">
+                                    <p class="col-md-3 font-weight-bold">Algorithm</p>
+                                    <p class="col-md-9">{{ name | safe}} </p>
+                                </div>
+                                <div class="container-fluid mb-2">
+                                    <h5 class="text-center font-weight-bold">Algorithm Parameters</h5>
+                                    {% for c in dict_config %}
+                                    <div class="row">
+                                        <div class="col-12 {% if loop.index%2 == 1 %}row-odd{% endif %}">
+                                            <label for="{{ loop.index0 }}_estimator_value">{{ c | split }}</label>
+                                            <a onclick="toggle_estimator('{{ loop.index0 }}_estimator_value')" href="#a" id="{{ c }}_open">
+                                                <i class="fa fa-chevron-down pull-right\" style="float: right;\">
+                                                </i>
+                                            </a>
+                                        </div>
+                                        <div class="container-fluid" id="{{ loop.index0 }}_estimator_value" style="display:none;">
+                                            {% for i in dict_config[c] %}
+                                            <div class="row {% if loop.index %2 == 0 %}row-odd{% endif %} ml-2 pt-2 pb-2 d-flex align-items-center">
+                                                <p class="col-md-5 font-weight-bold m-0 text-wrap alg_param">{{ i }}</p>
+                                                <p class="col-md-7 text-left m-0 text-wrap">{{ dict_config[c][i] }} </p>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <a class="btn btn-primary btn-block" role="button" href={{ url_for("experiments.new_experiment")
+                                            }}?exp={{experiment.id}}>Reuse</a>
+                                    </div>
+                                    {% if experiment.state == 1 %}
+                                    <div class="col-md-6">
+                                        <a class="btn btn-primary btn-block" role="button"
+                                            href={{url_for("experiments.download_model",id=experiment.id)}}>Download model</a>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <a class="btn btn-primary btn-block" role="button"
+                                            href={{url_for("experiments.predict",id=experiment.id)}}>Predict</a>
+                                    </div>
+                                    {% endif %}
+                                </div>
                             </div>
-                            <div class="squiggle-container squiggle-container-3">
-                            <div class="squiggle">
-                                <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-                                    viewBox="0 0 28.1 80.6" style="enable-background:new 0 0 28.1 80.6;" xml:space="preserve">
-                                <path class="" fill="none" stroke="#fff" stroke-width="11" stroke-linecap="round" stroke-miterlimit="10" d="M22.6,75.1c-8-5.6-15.2-10.5-15.2-19.9c0-12.1,14.1-17.2,14.1-29.6c0-9.1-6.7-15.7-16-20.1"/>
-                                </svg>
-                            </div> <!-- end .squiggle-->
-                            </div>
-                            </div>
-                            <div class="coffee-cup-container">
-                            <svg class="coffee-cup" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 42.15 31">
-                                <defs>
-                                <style>
-                                    .a {
-                                    fill: #e9ecef;
-                                    }
-                        
-                                    .b {
-                                    fill: var(--ubu-maroon);;
-                                    }
-                                </style>
-                                </defs>
-                                <path class="a" d="M30.06,2V23.75c0,2.63-.87,5.13-5.12,5.13H7.06A4.86,4.86,0,0,1,2,23.81V2H30.06Z" transform="translate(0 -0.06)"/>
-                                <path class="b" d="M40.64,9.52a10.2,10.2,0,0,0-8.64-5V0.06H0V23.81a7,7,0,0,0,7.06,7.24H24.94c2.34,0,6.06-.81,6.93-5.18a10.6,10.6,0,0,0,8.89-5.29A11.29,11.29,0,0,0,40.64,9.52ZM28,23.75c0,2.07-.42,3.31-3.06,3.31H7.06A3,3,0,0,1,4,23.81V4.06H28V23.75Zm9.26-5.17A7.13,7.13,0,0,1,32,21.78V8.45a7,7,0,0,1,5.18,3.1A7.24,7.24,0,0,1,37.26,18.58Z" transform="translate(0 -0.06)"/>
-                            </svg>
-                        
-                            </div>
-                        </div><!-- end coffee-container -->
-                    </div>
-                    <script>
-                        setTimeout(check_if_finished, 1000);
-                    </script>
-                {% else %}
-
-                    {% if experiment.state == 2  %}
-                        <h3 class="text-center">Error</h3>
-                        <p class="text-danger" ><i class="material-icons" >
-                            error
-                            </i>{{ experiment.result }}</p>
-                    {% elif experiment.state == 1 %}
-                        <h3 class="text-center">Finished</h3>
-                        <div class="container-fluid" id="success_result">
-                        
                         </div>
-                    {% endif %}                
-
-                {% endif %}
+                    </div>
+                    <div class="col-md-6 col-xl-6">
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Experiment Execution State</h5>
+                            </div>
+                            <div class="card-body">
+                                {% if experiment.state == 0 %}
+                                <h3 class="text-center font-weight-bold">In Progress</h3>
+                                <p class="text-center">Go for a coffee, when training is finished we will send you an email.</p>
+                                <div class="col-12">
+                                    <div class="center coffee-container">
+                                        <div class="steam-container">
+                                            <div class="squiggle-container squiggle-container-1">
+                                                <div class="squiggle">
+                                                    <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"
+                                                        xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 28.1 80.6"
+                                                        style="enable-background:new 0 0 28.1 80.6;" xml:space="preserve">
+                                                        <path class="" fill="none" stroke-width="11" stroke-linecap="round" stroke-miterlimit="10"
+                                                            d="M22.6,75.1c-8-5.6-15.2-10.5-15.2-19.9c0-12.1,14.1-17.2,14.1-29.6c0-9.1-6.7-15.7-16-20.1" />
+                                                    </svg>
+                                                </div> <!-- end .squiggle-->
+                                            </div>
+                                            <div class="squiggle-container squiggle-container-2">
+                                                <div class="squiggle">
+                                                    <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"
+                                                        xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 28.1 80.6"
+                                                        style="enable-background:new 0 0 28.1 80.6;" xml:space="preserve">
+                                                        <path class="" fill="none" stroke="#fff" stroke-width="11" stroke-linecap="round"
+                                                            stroke-miterlimit="10"
+                                                            d="M22.6,75.1c-8-5.6-15.2-10.5-15.2-19.9c0-12.1,14.1-17.2,14.1-29.6c0-9.1-6.7-15.7-16-20.1" />
+                                                    </svg>
+                                                </div> <!-- end .squiggle-->
+                                            </div>
+                                            <div class="squiggle-container squiggle-container-3">
+                                                <div class="squiggle">
+                                                    <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"
+                                                        xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 28.1 80.6"
+                                                        style="enable-background:new 0 0 28.1 80.6;" xml:space="preserve">
+                                                        <path class="" fill="none" stroke="#fff" stroke-width="11" stroke-linecap="round"
+                                                            stroke-miterlimit="10"
+                                                            d="M22.6,75.1c-8-5.6-15.2-10.5-15.2-19.9c0-12.1,14.1-17.2,14.1-29.6c0-9.1-6.7-15.7-16-20.1" />
+                                                    </svg>
+                                                </div> <!-- end .squiggle-->
+                                            </div>
+                                        </div>
+                                        <div class="coffee-cup-container">
+                                            <svg class="coffee-cup" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 42.15 31">
+                                                <defs>
+                                                    <style>
+                                                        .a {
+                                                            fill: #e9ecef;
+                                                        }
+                                
+                                                        .b {
+                                                            fill: var(--ubu-maroon);
+                                                            ;
+                                                        }
+                                                    </style>
+                                                </defs>
+                                                <path class="a" d="M30.06,2V23.75c0,2.63-.87,5.13-5.12,5.13H7.06A4.86,4.86,0,0,1,2,23.81V2H30.06Z"
+                                                    transform="translate(0 -0.06)" />
+                                                <path class="b"
+                                                    d="M40.64,9.52a10.2,10.2,0,0,0-8.64-5V0.06H0V23.81a7,7,0,0,0,7.06,7.24H24.94c2.34,0,6.06-.81,6.93-5.18a10.6,10.6,0,0,0,8.89-5.29A11.29,11.29,0,0,0,40.64,9.52ZM28,23.75c0,2.07-.42,3.31-3.06,3.31H7.06A3,3,0,0,1,4,23.81V4.06H28V23.75Zm9.26-5.17A7.13,7.13,0,0,1,32,21.78V8.45a7,7,0,0,1,5.18,3.1A7.24,7.24,0,0,1,37.26,18.58Z"
+                                                    transform="translate(0 -0.06)" />
+                                            </svg>
+                                
+                                        </div>
+                                    </div><!-- end coffee-container -->
+                                </div>
+                                <br>
+                                <script>
+                                    setTimeout(check_if_finished, 1000);
+                                </script>
+                                {% else %}
+                                
+                                {% if experiment.state == 2 %}
+                                <h3 class="text-center font-weight-bold">Error</h3>
+                                <p class="text-danger">
+                                    <i class="fa-solid fa-circle-exclamation"></i>
+                                    {{ experiment.result }}
+                                </p>
+                                {% elif experiment.state == 1 %}
+                                <h3 class="text-center font-weight-bold">Finished</h3>
+                                <div class="container-fluid" id="success_result">
+                                
+                                </div>
+                                {% endif %}
+                                
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-</div>
+</main>
 
 {% endblock %}
 {% block js %}
@@ -167,8 +207,7 @@ html {
                             titleCase(i)+
                             "</label>");
                 block.append($("<a onClick=\"toggle_click('"+i+"_chart"+"','"+i+"_not_exists"+"')\" href=\"#a\" id=\""+i+"_open"+"\">"+
-                                    "<i class=\"material-icons\" style=\"float: right;\">"+
-                                        "arrow_drop_down_circle"+
+                                    "<i class=\"fa fa-chevron-down pull-right\" style=\"float: right;\">"+
                                     "</i>"+
                             "</a>"));
 

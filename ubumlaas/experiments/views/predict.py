@@ -35,6 +35,7 @@ def predict(id):
     v.app.logger.info("%d - Predict experiment %s", current_user.id, id)
     v.app.logger.debug("%d - id_experiment - %s", current_user.id, id)
     return render_template("predict.html", form_pr=form_pr,
+                           ip=request.environ.get('HTTP_X_REAL_IP', request.remote_addr),
                            id=id, title="Predict")
 
 

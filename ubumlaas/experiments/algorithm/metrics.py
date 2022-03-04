@@ -65,9 +65,10 @@ def classification_metrics(y_test_param, y_pred_param, y_score_param):
     Returns:
         dict -- metrics with computed value
     """
-    y_test_param = np.array(y_test_param).astype(float).astype(int)
-    y_pred_param = np.array(y_pred_param).astype(float).astype(int)
-    y_score_param = np.array(y_score_param).astype(float).astype(int)
+    y_test_param = [np.array(x).astype(float).astype(int) for x in y_test_param]
+    y_pred_param = [np.array(x).astype(float).astype(int)
+                    for x in y_pred_param]
+    y_score_param = [np.array(x).astype(float).astype(int) for x in y_score_param]
     score = {}
     for y_test, y_pred, y_score in \
             zip(y_test_param, y_pred_param, y_score_param):

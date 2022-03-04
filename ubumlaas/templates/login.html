@@ -1,35 +1,56 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container">
-    <div class="jumbotron">
-        <fieldset>
-            <form class="form-horizontal" method="POST">
-                <h3 class="text-center">Login</h3>
-                {{form.hidden_tag()}}
-                {% for category, message in get_flashed_messages(with_categories=True) %}
-                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">{{ message }}
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
+<main class="d-flex w-100">
+    <div class="container d-flex flex-column">
+        <div class="col-sm-10 col-md-8 col-lg-6 mx-auto d-table h-100">
+            <div class="d-table-cell align-middle">
+
+                <div class="text-center mt-4">
+                    {% if current_user.is_authenticated %}
+                        <h1 class="h2">Welcome back, {{ current_user.username }}</h1>
+                    {% else %}
+                        <h1 class="h2">It is good to see you back here</h1>
+                    {% endif %}
+                    <p class="lead">
+                        Sign in to your account to continue
+                    </p>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="m-sm-4">
+                            <form class="form-horizontal" method="POST">
+                                <h3 class="text-center">Login</h3>
+                                {{form.hidden_tag()}}
+                                {% for category, message in get_flashed_messages(with_categories=True) %}
+                                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">{{ message }}
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                {% endfor %}
+                                <div class="control-group">
+                                    {{form.email.label(class="control")}}
+                                    {{form.email(class="form-control", placeholder="e.g. tchalla@wakanda.gov")}}<br>
+                                </div>
+                                <div class="control-group">
+                                    {{form.password.label(class="form-group")}}
+                                    {{form.password(class="form-control")}}
+                                </div>
+                                <div class="control-group">
+                                    <small>
+                                        <a class="font-weight-light" href="{{ url_for("users.reset") }}">Forgot your password?</a>
+                                    </small>
+                                </div>
+                                <div class="control-group">
+                                    <br>{{form.submit(class="btn btn-primary")}}
+                                </div>
+                            </form>
+                        </div>
                     </div>
-                {% endfor %}
-                <div class="control-group">
-                    {{form.email.label(class="control")}}
-                    {{form.email(class="form-control")}}<br>
                 </div>
-                <div class="control-group">
-                    {{form.password.label(class="form-group")}}
-                    {{form.password(class="form-control")}}
-                </div>
-                <div class="control-group">
-                    <a class="font-weight-light" href="{{ url_for("users.reset") }}">Forgot your password?</a>
-                </div>
-                <div class="control-group">
-                    <br>{{form.submit(class="btn btn-primary")}}
-                </div>
-            </form>
-        </fieldset>
+            </div>
+        </div>
     </div>
-</div>
+</main>
 {% endblock %}
