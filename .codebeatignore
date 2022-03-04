@@ -2,7 +2,7 @@
 lib/**
 logs/**
 test/**
-static/js/bootstrap*
+*bootstrap*
 
 *.pyc
 *.model
