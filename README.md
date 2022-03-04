@@ -5,6 +5,7 @@
 [![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability/JoseBarbero/UBUMLaaS?logo=code-climate&style=for-the-badge)](https://codeclimate.com/github/JoseBarbero/UBUMLaaS)
 [![GitHub repo size](https://img.shields.io/github/repo-size/JoseBarbero/UBUMLaaS?color=yellowgreen&logo=github&style=for-the-badge)](https://github.com/JoseBarbero/UBUMLaaS/archive/master.zip)
 [![GitHub](https://img.shields.io/github/license/JoseBarbero/UBUMLaaS?logo=gnu&logoColor=white&style=for-the-badge)](https://github.com/JoseBarbero/UBUMLaaS/blob/master/LICENSE)
+<a href="https://codebeat.co/projects/github-com-dpr1005-ubumlaas-development"><img alt="codebeat badge" src="https://codebeat.co/badges/a018c590-b994-4650-9d10-ebfcfe6d34f3" /></a>
 
 Machine Learning as a Service (MLaaS) platform based on [ADMIRABLE](http://admirable-ubu.es/) and [BEST-AI](https://www.ubu.es/best-ai-biologia-educacion-y-salud-con-tecnologias-avanzadas-informaticas-best-ai) research groups methods.
 
@@ -23,7 +24,7 @@ Project "***Minería de datos para la mejora del mantenimiento y disponibilidad 
 
 1. Clone this repository
     ```bash
-    $ git clone https://github.com/JoseBarbero/UBUMLaaS.git
+    $ git clone https://github.com/dpr1005/UBUMLaaS.git
     ```
 2. Go to UBUMLaaS repository's folder
     ```bash
@@ -71,8 +72,9 @@ Project "***Minería de datos para la mejora del mantenimiento y disponibilidad 
     ```
 2.  Execute to run the server
     ```bash
-    python app.py
+    ./run.sh
     ```
+    Remember to give the required permissions in case ther are needed.
 ## Update database
 1. Execute migrate.py
    ```bash
