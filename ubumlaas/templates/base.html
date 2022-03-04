@@ -176,6 +176,19 @@
             });
         });
     </script>
+    <script>
+        $(function () {
+            $('[data-toggle="popover"]').popover();
+        });
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+        $('.popover-dismiss').popover({
+            trigger: 'focus'
+        });
+        $('.selectpicker').selectpicker();
+        firstClick();
+    </script>
     {% block js %}
     {% endblock %}
 </body>
@@ -202,9 +215,9 @@
                             <li>Avda. Cantabria s/n 09006</li>
                             <li>Burgos (Burgos)</li>
                             <li>Spain</li>
-                            <li><i class="material-icons">phone</i> <a href="tel:+34947258900">+34 947 25 89 00</a>
+                            <li><i class="fa-solid fa-phone"></i> <a href="tel:+34947258900">+34 947 25 89 00</a>
                             </li>
-                            <li><i class="material-icons">email</i> <a href="mailto:eps@ubu.es">eps@ubu.es</a></li>
+                            <li><i class="fa-solid fa-at"></i> <a href="mailto:eps@ubu.es">eps@ubu.es</a></li>
                         </ul>
                     </div>
                 </div>
@@ -242,12 +255,12 @@
                         <h5 class="widget-title">Contact Us<span></span></h5>
                         <ul class="thumbnail-widget">
                             <li>
-                                <div class="thumb-content"> <i class="material-icons">email</i> <a
+                                <div class="thumb-content"> <i class="fa-solid fa-at"></i> <a
                                         href="mailto:ADMIRABLE_rg@oficina.ubu.es">ADMIRABLE_rg@oficina.ubu.es</a>
                                 </div>
                             </li>
                             <li>
-                                <div class="thumb-content"> <i class="material-icons">phone</i> <a
+                                <div class="thumb-content"> <i class="fa-solid fa-phone"></i> <a
                                         href="tel:+34947259358">+34 947 25 93 58</a></div>
                             </li>
                         </ul>
