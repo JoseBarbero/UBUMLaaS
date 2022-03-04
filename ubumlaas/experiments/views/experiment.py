@@ -46,7 +46,7 @@ def new_experiment():
 
     return render_template("experiment_form.html", form_e=form_e,
                            form_d=form_d, form_p=form_p,
-                           title="New experiment", experiment=experiment)
+                           title="New experiment", experiment=experiment, ip=request.environ.get('HTTP_X_REAL_IP', request.remote_addr))
 
 
 @login_required
@@ -93,7 +93,7 @@ def change_alg():
     form_e = ExperimentForm()
     form_e.alg_list(alg_typ=request.form.get("alg_typ"))
     v.app.logger.info("%d - Select algorithms from type - %s", current_user.id, request.form.get("alg_typ"))    
-    return render_template("blocks/show_algorithms.html", form_e=form_e)
+    return render_template("blocks/show_algorithms.html", ip=request.environ.get('HTTP_X_REAL_IP', request.remote_addr), form_e=form_e)
 
 
 @login_required
@@ -150,7 +150,10 @@ def result_experiment(id, admin=False):
                      "external_url": get_ngrok_url("experiments.result_experiment", id = exp.id)}
     if not admin:
         v.app.logger.info("%d - Get result of experiment - %d", current_user.id, exp.id)
-        return render_template("result.html", **template_info)
+        return render_template("result.html",
+                               ip=request.environ.get(
+                                   'HTTP_X_REAL_IP', request.remote_addr),
+                               **template_info)
     else:
         v.app.logger.info("Sending email with result - %d", exp.id)
         template = v.app.jinja_env.get_template('email.html')
@@ -176,7 +179,7 @@ def reuse_experiment(id):
     form_p = DatasetParametersForm()
     v.app.logger.info("%d - Reuse experiment - %d", current_user.id, exp.id)
     return render_template("experiment_form.html", form_e=form_e,
-                           form_d=form_d, form_p=form_p,
+                           form_d=form_d, form_p=form_p,ip=request.environ.get('HTTP_X_REAL_IP', request.remote_addr),
                            title="New experiment")
 
 
