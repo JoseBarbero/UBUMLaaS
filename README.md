@@ -24,7 +24,7 @@ Project "***Minería de datos para la mejora del mantenimiento y disponibilidad 
 
 1. Clone this repository
     ```bash
-    $ git clone https://github.com/JoseBarbero/UBUMLaaS.git
+    $ git clone https://github.com/dpr1005/UBUMLaaS.git
     ```
 2. Go to UBUMLaaS repository's folder
     ```bash
