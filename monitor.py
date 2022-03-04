@@ -57,7 +57,7 @@ def create_monitor():
     monitor_event_loop = asyncio.new_event_loop()
     monitor_clean_loop = asyncio.new_event_loop()
     command = "glances --export csv --export-csv-file " + \
-        str(os.environ['LIBFOLDER']) + "/glances.csv --time 60 --quiet"
+        str(os.environ['LIBFOLDER']) + "/logs/monitor/glances.csv --time 60 --quiet"
     threading.Thread(target=lambda: run_loop(
         monitor_event_loop)).start()
     threading.Thread(target=lambda: run_loop(
