@@ -123,6 +123,7 @@ def profile():
     Returns:
         string -- render profile page.
     """
+    os.chdir(os.environ['LIBFOLDER'])
     tmp_dir = 'ubumlaas/static/tmp/'
     cards_data = {}
     update_data_form = RegistrationForm()
@@ -159,7 +160,7 @@ def profile():
             delta = date(*today) - date(*endtime)
             if delta.days < 7:
                 exps_7d_df.at[delta.days, 'times'] += 1
-        except TypeError as e:
+        except Exception:
             exps_7d_df.at[0, 'times'] += 1
 
     if not os.path.exists(tmp_dir):
@@ -191,13 +192,21 @@ def profile():
                 user_update.google_scholar = update_data_form.google_scholar.data
                 
                 os.chdir(os.path.join('ubumlaas', 'models'))
-                os.rename(src=old_username,
+                try:
+                    os.rename(src=old_username,
                         dst=user_update.username)
+                except FileNotFoundError:
+                    v.app.logger.info(
+                        "%d - User has no models", user['id'])
                 os.chdir(os.path.join('..', 'datasets'))
                 os.rename(src=old_username,
                         dst=user_update.username)
                 v.db.session.add(user_update)
                 v.db.session.commit()
+                user = current_user.to_dict_all()
+                country = Country.query.filter_by(
+                    alpha_2=user['country']).first()
+                user['country'] = country.to_dict()['name']
                 flash('User updated', 'success')
             except Exception as e:
                 v.app.logger.exception(e)
@@ -244,6 +253,9 @@ def confirm_email(token):
 
 @users.route('/reset', methods=["GET", "POST"])
 def reset():
+    if current_user.is_authenticated:
+        return redirect(url_for('core.index'))
+    
     form = EmailForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
