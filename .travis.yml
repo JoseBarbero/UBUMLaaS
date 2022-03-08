@@ -1,3 +1,4 @@
+sudo: required
 os: linux
 dist: bionic
 language: python
@@ -19,14 +20,16 @@ git:
   depth: 3
 
 addons:
-  firefox: "49.0"
-  apt:
-    packages:
-      - chromium-chromedriver
+  firefox: "60.0"
 
 services:
   - redis
   - xvfb
+
+before_install:
+  - wget https://github.com/mozilla/geckodriver/releases/download/v0.20.1/geckodriver-v0.20.1-linux64.tar.gz
+  - tar -xzf geckodriver-v0.20.1-linux64.tar.gz
+  - sudo cp geckodriver /usr/bin
 
 install:
   - cd $TRAVIS_BUILD_DIR
@@ -46,8 +49,8 @@ before_script:
   - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x16"
   - sleep 3
   - python app.py &
-  - sleep 20  
+  - sleep 5
 
 script:
   - python -m pytest test/test_selenium.py --verbose
-  - python -m test.tests
+  #- python -m test.tests
