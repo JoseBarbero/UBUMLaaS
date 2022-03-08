@@ -1,0 +1,33 @@
+#!/bin/bash
+
+export SECRET_KEY=dev
+export EMAIL_AC=fakemail
+export EMAIL_PASS=fakepass
+export FLASK_ENV=development #development or production 
+export EMAIL_URL=fakeemail.com
+LIBFOLDER=.
+export WEKA_HOME=$LIBFOLDER/lib/wekafiles/packages/
+export IS_SSL=$LIBFOLDER/lib/is_ssl/
+export TESTING=1
+
+ruta="$WEKA_HOME/packages/"
+packages=$(ls -l $ruta)
+
+pack=()
+IFS=$'\n'       # make newlines the only separator
+#rev |cut -d" " -f1 | rev
+for p in $packages; do
+    
+    first=$(echo $p | cut -f1 -d" " | head -c 1)
+    if [ $first == "d" ]; then
+        pack=("${pack[@]}" $(echo $p | rev |cut -d" " -f1 | rev))
+    fi
+done
+
+____res=""
+for (( i=0; i<${#pack[@]}; i++ ))
+do
+    ____res="$ruta${pack[$i]}/${pack[$i]}.jar:$____res"
+done
+
+export MEKA_CLASSPATH="$____res$LIBFOLDER/lib/scikit_ml_learn_data/meka/meka-release-1.9.2/lib/"
