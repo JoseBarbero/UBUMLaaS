@@ -36,6 +36,7 @@ class ExecuteLibsTest(ParametrizedTestCase):
                 self.assertTrue("MEKA_CLASSPATH" in environ, "MEKA_CLASSPATH enviroment variable not found")
                 self.assertTrue("JAVA_HOME" in environ, "JAVA_HOME enviroment variable not found")
                 self.assertTrue("WEKA_HOME" in environ, "WEKA_HOME enviroment variable not found")
+                self.assertTrue("IS_SSL" in environ, "IS_SSL enviroment variable not found")
                 items = packages.installed_packages()
                 for item in items:
                         self.assertTrue(item.name in environ["MEKA_CLASSPATH"], item.name +" not in MEKA_CLASSPATH")
