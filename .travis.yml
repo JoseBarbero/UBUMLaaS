@@ -19,7 +19,7 @@ git:
   depth: 3
 
 addons:
-  chrome: stable
+  firefox: "49.0"
   apt:
     packages:
       - chromium-chromedriver
@@ -31,8 +31,8 @@ services:
 install:
   - cd $TRAVIS_BUILD_DIR
   - pip install -r requirements.txt
-  - wget https://github.com/dpr1005/UBUMLaaS/raw/CICD/test/testDB.sqlite -O $TRAVIS_BUILD_DIR/ubumlaas/data.sqlite --no-check-certificate
-  - wget https://github.com/dpr1005/UBUMLaaS/raw/CICD/test/ubumlaas.tar -O /tmp/ubumlaas.tar --no-check-certificate
+  - wget https://github.com/dpr1005/UBUMLaaS/raw/CICD/test/utils/testDB.sqlite -O $TRAVIS_BUILD_DIR/ubumlaas/data.sqlite --no-check-certificate
+  - wget https://github.com/dpr1005/UBUMLaaS/raw/CICD/test/utils/ubumlaas.tar -O /tmp/ubumlaas.tar --no-check-certificate
   - mkdir -p $TRAVIS_BUILD_DIR/ubumlaas/datasets/{ubumlaas,ubumlaas2}
   - mkdir -p $TRAVIS_BUILD_DIR/test/datasets
   - tar -xvf /tmp/ubumlaas.tar -C $TRAVIS_BUILD_DIR/ubumlaas/datasets/ubumlaas
@@ -40,7 +40,7 @@ install:
   - cp $TRAVIS_BUILD_DIR/ubumlaas/datasets/ubumlaas/* $TRAVIS_BUILD_DIR/ubumlaas/datasets/ubumlaas2
   
 before_script:
-  - wget http://mirror.jkanetwork.com/Datasets/env_variables.sh -O env_variables.sh --no-check-certificate
+  - wget https://raw.githubusercontent.com/dpr1005/UBUMLaaS/CICD/test/utils/env_variables -O env_variables.sh --no-check-certificate
   - source env_variables.sh
   - python migrate.py
   - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x16"
