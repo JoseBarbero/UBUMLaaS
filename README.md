@@ -1,11 +1,12 @@
 # UBUMLaaS [![admirable-logo](ubumlaas/static/img/onlyA-32x32.svg)](http://admirable-ubu.es/)
 
-
-[![Travis (.org)](https://img.shields.io/travis/JoseBarbero/UBUMLaaS/master.svg?label=Travis%20CI&logo=travis-ci&logoColor=white&style=for-the-badge)](https://travis-ci.org/JoseBarbero/UBUMLaaS)
+[![Build Status](https://app.travis-ci.com/dpr1005/UBUMLaaS.svg?branch=master)](https://app.travis-ci.com/dpr1005/UBUMLaaS)
+[![codebeat badge](https://codebeat.co/badges/a018c590-b994-4650-9d10-ebfcfe6d34f3)](https://codebeat.co/projects/github-com-dpr1005-ubumlaas-development)
+<!--
 [![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability/JoseBarbero/UBUMLaaS?logo=code-climate&style=for-the-badge)](https://codeclimate.com/github/JoseBarbero/UBUMLaaS)
 [![GitHub repo size](https://img.shields.io/github/repo-size/JoseBarbero/UBUMLaaS?color=yellowgreen&logo=github&style=for-the-badge)](https://github.com/JoseBarbero/UBUMLaaS/archive/master.zip)
 [![GitHub](https://img.shields.io/github/license/JoseBarbero/UBUMLaaS?logo=gnu&logoColor=white&style=for-the-badge)](https://github.com/JoseBarbero/UBUMLaaS/blob/master/LICENSE)
-[![codebeat badge](https://codebeat.co/badges/a018c590-b994-4650-9d10-ebfcfe6d34f3)](https://codebeat.co/projects/github-com-dpr1005-ubumlaas-development)
+-->
 
 Machine Learning as a Service (MLaaS) platform based on [ADMIRABLE](http://admirable-ubu.es/) and [BEST-AI](https://www.ubu.es/best-ai-biologia-educacion-y-salud-con-tecnologias-avanzadas-informaticas-best-ai) research groups methods.
 
