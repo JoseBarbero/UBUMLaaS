@@ -64,10 +64,6 @@ class TestDefaultSuite():
     self.driver.find_element(By.ID, "password").send_keys("!1Qwerty")
     self.driver.find_element(By.ID, "submit").click()
     self.driver.find_element(By.LINK_TEXT, "Log out").click()
-    element = self.driver.find_element(By.ID, "register_base_button")
-    actions = ActionChains(self.driver)
-    actions.move_to_element(element).perform()
-    element = self.driver.find_element(By.CSS_SELECTOR, "body")
-    actions = ActionChains(self.driver)
-    actions.move_to_element(element, 0, 0).perform()
+    assert self.driver.find_element(
+        By.ID, "register_base_button").text == "Register"
     self.driver.close()
