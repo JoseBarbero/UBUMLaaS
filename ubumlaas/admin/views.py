@@ -333,10 +333,7 @@ def processing():
 
 @admin.route("/administration/live-monitor")
 def live_monitor():
-    os.system('clear')
-    print(ps.cpu_percent(interval=5))
-    print(ps.cpu_percent(interval=1))
-    print(ps.cpu_percent(interval=1))
+    p = 2
     return render_template('admin/admin_live_monitor.html',
                            title="Live System Monitor",
                            ip=request.environ.get(

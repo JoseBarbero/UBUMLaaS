@@ -138,6 +138,14 @@ def profile():
     experiments = get_experiments(current_user.id)
     cards_data['experiments'] = len(experiments)
     user = current_user.to_dict_all()
+
+    if not os.path.exists(f'ubumlaas/static/avatars/{current_user.username}.png'):
+        user['avatar_exists'] = 'Not'
+        user['avatar'] = 'static/avatars/default.png'
+    else:
+        user['avatar_exists'] = 'Exits'
+        user['avatar'] = 'static/avatars/'+current_user.username+'.png'
+
     country = Country.query.filter_by(alpha_2=user['country']).first()
     user['country'] = country.to_dict()['name']
     v.app.logger.info("%d - User enter to profile, %d datasets and %d experiments", current_user.id,len(datasets),len(experiments))
@@ -201,6 +209,13 @@ def profile():
                 os.chdir(os.path.join('..', 'datasets'))
                 os.rename(src=old_username,
                         dst=user_update.username)
+                try:
+                    os.chdir(os.path.join('..', 'static', 'avatars'))
+                    os.rename(src=old_username+'.png',
+                          dst=user_update.username+'.png')
+                except FileNotFoundError:
+                    v.app.logger.info(
+                        "%d - User has no profile picture", user['id'])
                 v.db.session.add(user_update)
                 v.db.session.commit()
                 user = current_user.to_dict_all()
