@@ -43,3 +43,25 @@ class TestDefaultSuite():
         """
       self.driver.find_element(By.LINK_TEXT, "Logout").click()
       assert self.driver.find_element(By.LINK_TEXT, "Login").text == "Login"
+
+  def test_loginLogout(self):
+    """Test to correct login and logout in the page.
+
+            Steps:
+                1. Click Log in
+                2. Complete user credentials
+                3. Submit
+                4. Click Log Out
+                5. Wait to be sure the page is rendered correctly
+                6. Close
+        """
+    self.driver.get("http://localhost:5000/")
+    self.driver.find_element(By.ID, "content").click()
+    self.driver.find_element(By.LINK_TEXT, "Log In").click()
+    self.driver.find_element(By.ID, "email").click()
+    self.driver.find_element(By.ID, "email").send_keys("p@p.es")
+    self.driver.find_element(By.ID, "password").send_keys("!1Qwerty")
+    self.driver.find_element(By.ID, "submit").click()
+    self.driver.find_element(By.LINK_TEXT, "Log out").click()
+    time.sleep(1)
+    self.driver.close()
