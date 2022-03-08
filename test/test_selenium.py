@@ -32,10 +32,10 @@ class TestDefaultSuite():
         """
       self.driver.get("http://localhost:5000/")
       self.driver.set_window_size(1536, 824)
-      self.driver.find_element(By.LINK_TEXT, "Login").click()
+      self.driver.find_element(By.ID, "login_base_button").click()
       self.driver.find_element(By.ID, "email").click()
       self.driver.find_element(By.ID, "email").send_keys(usermail)
-      self.driver.find_element(By.ID, "password").send_keys("thisIsATest1!")
+      self.driver.find_element(By.ID, "password").send_keys("!1Qwerty")
       self.driver.find_element(By.ID, "password").send_keys(Keys.ENTER)
 
   def logout(self):
@@ -57,7 +57,7 @@ class TestDefaultSuite():
         """
     self.driver.get("http://localhost:5000/")
     self.driver.find_element(By.ID, "content").click()
-    self.driver.find_element(By.LINK_TEXT, "Log In").click()
+    self.driver.find_element(By.ID, "login_base_button").click()
     self.driver.find_element(By.ID, "email").click()
     self.driver.find_element(By.ID, "email").send_keys("p@p.es")
     self.driver.find_element(By.ID, "password").send_keys("!1Qwerty")
