@@ -48,8 +48,8 @@ before_script:
   - python migrate.py
   - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x16"
   - sleep 3
-  - python app.py
-  - sleep 20
+  - python app.py &
+  - sleep 10
 
 script:
   - python -m pytest test/test_selenium.py --verbose
