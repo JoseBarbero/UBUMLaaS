@@ -32,10 +32,10 @@ class TestDefaultSuite():
         """
       self.driver.get("http://localhost:5000/")
       self.driver.set_window_size(1536, 824)
-      self.driver.find_element(By.LINK_TEXT, "Login").click()
+      self.driver.find_element(By.ID, "login_base_button").click()
       self.driver.find_element(By.ID, "email").click()
       self.driver.find_element(By.ID, "email").send_keys(usermail)
-      self.driver.find_element(By.ID, "password").send_keys("thisIsATest1!")
+      self.driver.find_element(By.ID, "password").send_keys("!1Qwerty")
       self.driver.find_element(By.ID, "password").send_keys(Keys.ENTER)
 
   def logout(self):
@@ -43,3 +43,27 @@ class TestDefaultSuite():
         """
       self.driver.find_element(By.LINK_TEXT, "Logout").click()
       assert self.driver.find_element(By.LINK_TEXT, "Login").text == "Login"
+
+  def test_loginLogout(self):
+    """Test to correct login and logout in the page.
+
+            Steps:
+                1. Click Log in
+                2. Complete user credentials
+                3. Submit
+                4. Click Log Out
+                5. Wait to be sure the page is rendered correctly
+                6. Close
+        """
+    self.driver.get("http://localhost:5000/")
+    self.driver.set_window_size(1050, 781)
+    self.driver.find_element(By.ID, "login_base_button").click()
+    self.driver.find_element(By.ID, "email").click()
+    self.driver.find_element(By.ID, "email").send_keys("p@p.es")
+    self.driver.find_element(By.ID, "password").click()
+    self.driver.find_element(By.ID, "password").send_keys("!1Qwerty")
+    self.driver.find_element(By.ID, "submit").click()
+    self.driver.find_element(By.LINK_TEXT, "Log out").click()
+    assert self.driver.find_element(
+        By.ID, "register_base_button").text == "Register"
+    self.driver.close()

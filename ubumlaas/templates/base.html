@@ -177,8 +177,8 @@
                                     <a class="nav-link" href="{{ url_for('users.logout') }}"><i class="fa-solid fa-user-minus"></i> Log out</a>
                                 </li>
                             {% else %}
-                                <a class="nav-item nav-link {% if title==" Log in" %}active{% endif %}" href="{{ url_for('users.login') }}"><i class="fa-solid fa-street-view"></i> Log In</a>
-                                <a class="nav-item nav-link {% if title==" Register" %}active{% endif %}" href="{{ url_for('users.register') }}"><i class="fa-solid fa-user-plus"></i> Register</a>
+                                <a id="login_base_button" class="nav-item nav-link {% if title==" Log in" %}active{% endif %}" href="{{ url_for('users.login') }}"><i class="fa-solid fa-street-view"></i> Log In</a>
+                                <a id="register_base_button" class="nav-item nav-link {% if title==" Register" %}active{% endif %}" href="{{ url_for('users.register') }}"><i class="fa-solid fa-user-plus"></i> Register</a>
                             {% endif %}
                         </ul>
                     </div>
