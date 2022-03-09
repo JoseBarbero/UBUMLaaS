@@ -1,5 +1,5 @@
 import os
-from flask import Flask, url_for
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
@@ -9,13 +9,15 @@ from rq import Queue
 from ubumlaas.jobs import WorkerBuilder
 import ubumlaas.weka.weka_packages as weka_packages
 from flask_mail import Mail
-import time
 import json
 import logging.config
 
+"""UBUMLaaS main module."""
+
 
 def create_app(config_name):
-    """ Creat an application.
+    """
+    Creat an application.
 
     Arguments:
         config_name {string} -- configuration.
@@ -25,18 +27,19 @@ def create_app(config_name):
     """
     v.start()
     v.basedir = os.path.abspath(os.path.dirname(__file__))
-    v.appdir = os.path.join(v.basedir,"..")
+    v.appdir = os.path.join(v.basedir, "..")
     # loggin setup
     import ubumlaas.logger
     ubumlaas.logger.create_folders_if_needed()
-    logging.config.dictConfig(json.load(open(os.getenv("LOGGING_CONFIG") or "logging_config.json")))
+    logging.config.dictConfig(
+        json.load(open(os.getenv("LOGGING_CONFIG") or "logging_config.json")))
     app = Flask(__name__)
     v.app = app
-    app.config.from_pyfile('../config.py') # from config.py
+    app.config.from_pyfile('../config.py')  # from config.py
 
     v.app.logger.info("Creating and setting up application")
     v.app.logger.debug("basedir - %s", v.basedir)
-    v.app.logger.debug("appdir - %s", v.appdir)  
+    v.app.logger.debug("appdir - %s", v.appdir)
 
     ###########################################
     ############ CONFIGURATIONS ###############
@@ -66,19 +69,19 @@ def create_app(config_name):
 
         # Redis
         v.r = redis.Redis()
-        #v.qm = Queue("medium-ubumlaas", connection=v.r, default_timeout=-1)
+        # v.qm = Queue("medium-ubumlaas", connection=v.r, default_timeout=-1)
         v.qh = Queue("high-ubumlaas", connection=v.r, default_timeout=-1)
-        BASE_WORKERS = 2
+        # BASE_WORKERS = 2
         HIGH_PRIORITIES_WORKERS = 5
         v.workers = 0
-        #for _ in range(BASE_WORKERS):
+        # for _ in range(BASE_WORKERS):
         #    WorkerBuilder().set_queue(v.qm).create().start()
         for _ in range(HIGH_PRIORITIES_WORKERS):
             WorkerBuilder().set_queue(v.qh).create().start()
 
         #  Startup weka unofficial packages
         v.qh.enqueue(weka_packages.start_up_weka,
-                    "ubumlaas/weka/weka_packages.json")
+                     "ubumlaas/weka/weka_packages.json")
 
     ######################
     ###  LOGIN CONFIG  ###
@@ -120,10 +123,8 @@ def create_app(config_name):
             v.app.logger.info("%d - Getting user hash", current_user.id)
             return hash(current_user.id)
 
-
     app.jinja_env.filters["split"] = split_dict_key
     app.jinja_env.filters["user"] = hash_
     app.jinja_env.cache = {}
 
     return app
-

@@ -1,5 +1,6 @@
-"""Module with functions to execute training algorithms ready to enqueue.
-"""
+"""Module with functions to execute training algorithms ready to enqueue."""
+import ast
+
 import sklearn
 import sklearn.base
 import sklearn.cluster
@@ -32,7 +33,8 @@ import shutil
 
 
 def task_skeleton(experiment, current_user):
-    """Base skeleton to execute an experiment.
+    """
+    Base skeleton to execute an experiment.
 
     Arguments:
         experiment {dict} -- experiment information
@@ -40,8 +42,10 @@ def task_skeleton(experiment, current_user):
         current_user {dict} -- user information (see model.User.to_dict)
     """
 
-    v.app.logger.info("%d - Building task skeleton for %s and experiment %s",current_user['id'], current_user['id'], experiment['id'])
-    v.app.logger.debug("%d - experiment['id'] - %d", current_user['id'], experiment['id'])
+    v.app.logger.info("%d - Building task skeleton for %s and experiment %s",
+                      current_user['id'], current_user['id'], experiment['id'])
+    v.app.logger.debug("%d - experiment['id'] - %d", current_user['id'],
+                       experiment['id'])
 
     # Task need app environment
     create_app('subprocess')  # No generate new workers
@@ -52,22 +56,25 @@ def task_skeleton(experiment, current_user):
     try:
         execution_lib = v.apps_functions[type_app](experiment)
 
-        X, y = execution_lib.open_dataset("ubumlaas/datasets/"+current_user["username"] +"/",
-                                          experiment['data'])
+        X, y = execution_lib.open_dataset(
+            "ubumlaas/datasets/" + current_user["username"] + "/",
+            experiment['data'])
 
-        v.app.logger.info("%d - Dataset %s opened",current_user['id'], experiment['data'])
+        v.app.logger.info("%d - Dataset %s opened", current_user['id'],
+                          experiment['data'])
 
-        #Training and serialize with all dataset
+        # Training and serialize with all dataset
         models_dir = "ubumlaas/models/{}/".format(current_user["username"])
         if not os.path.exists(models_dir):
             os.makedirs(models_dir)
-        
+
         if execution_lib.has_filter() and \
-            'is_ssl' in execution_lib.filter_name and \
-            execution_lib.algorithm_type in \
+                'is_ssl' in execution_lib.filter_name and \
+                execution_lib.algorithm_type in \
                 ["Classification", "Semi Supervised Classification", "Mixed"]:
             v.app.logger.info(
-                "%d - Filtering dataset is_ssl - initial samples %d", current_user['id'], X.shape[0])
+                "%d - Filtering dataset is_ssl - initial samples %d",
+                current_user['id'], X.shape[0])
             col = y.columns.tolist()[0]
             col_name = y.keys()[0]
             labeled_cols = np.where((y[col] != -1) == True)[0]
@@ -75,29 +82,30 @@ def task_skeleton(experiment, current_user):
             y_labeled = y.loc[labeled_cols]
             X = X.drop(axis=0, index=labeled_cols)
             y = y.drop(axis=0, index=labeled_cols)
-            filter = eval("lib."+execution_lib.filter_name +
-                          "(**execution_lib.filter_config)")
-            X_labeled, y_labeled = filter.filter(X_labeled, y_labeled)
+            alg_filter = ast.literal_eval("lib." + execution_lib.filter_name +
+                                          "(**execution_lib.filter_config)")
+            X_labeled, y_labeled = alg_filter.filter(X_labeled, y_labeled)
             X = X.append(X_labeled, ignore_index=True)
             y = pd.concat([y, y_labeled], ignore_index=True).fillna(1)
-            y = y[y.keys()[0]]*y[y.keys()[1]]
+            y = y[y.keys()[0]] * y[y.keys()[1]]
             y = y.to_frame().rename(columns={0: col_name})
             execution_lib.filter_name = None
             v.app.logger.info(
-                "%d - Filtered dataset is_ssl - working samples %d", current_user['id'], X.shape[0])
-        
-        #Find uniques values in weka and is classification
+                "%d - Filtered dataset is_ssl - working samples %d",
+                current_user['id'], X.shape[0])
+
+        # Find uniques values in weka and is classification
         execution_lib.find_y_uniques(y)
 
         model = execution_lib.create_model()
-        v.app.logger.info("%d - Training model",current_user['id'])
+        v.app.logger.info("%d - Training model", current_user['id'])
         if execution_lib.algorithm_type != "Semi Supervised Classification":
             execution_lib.train(model, X, y)
         execution_lib.serialize(model, "{}{}.model"
-                                       .format(models_dir, experiment['id']))
+                                .format(models_dir, experiment['id']))
 
         exp_config = execution_lib.experiment_configuration
-        
+
         y_pred_list = []
         y_score_list = []
         y_test_list = []
@@ -107,20 +115,21 @@ def task_skeleton(experiment, current_user):
             X_labeled = X.loc[y[col] != -1]
             y_labeled = y.loc[y[col] != -1]
             X_unlabeled = X.loc[y[col] == -1]
-            y_unlabeled = y.loc[y[col] == -1]            
-            
-            if exp_config.get("mode") == "split" and exp_config["train_partition"] < 100:
-                X_train, X_test, y_train, y_test = execution_lib\
-                    .generate_train_test_split(X_labeled, y_labeled, 
-                    exp_config["train_partition"])
+            y_unlabeled = y.loc[y[col] == -1]
+
+            if exp_config.get("mode") == "split" and exp_config[
+                "train_partition"] < 100:
+                X_train, X_test, y_train, y_test = execution_lib \
+                    .generate_train_test_split(X_labeled, y_labeled,
+                                               exp_config["train_partition"])
                 model = execution_lib.create_model()
-                X_train = X_unlabeled.append(X_train, ignore_index = True)
-                y_train = y_unlabeled.append(y_train, ignore_index = True)
+                X_train = X_unlabeled.append(X_train, ignore_index=True)
+                y_train = y_unlabeled.append(y_train, ignore_index=True)
                 execution_lib.train(model, X_train, y_train)
                 execution_lib.serialize(model, "{}{}.model"
                                         .format(models_dir, experiment['id']))
                 y_pred, y_score = execution_lib.predict(model, X_test)
-                
+
                 y_pred_list.append(y_pred)
                 y_test_list.append(y_test)
                 X_test_list.append(X_test)
@@ -137,10 +146,11 @@ def task_skeleton(experiment, current_user):
                     X_test_list.append(X_test)
                 execution_lib.serialize(model, "{}{}.model"
                                         .format(models_dir, experiment['id']))
-        
-        elif exp_config.get("mode") == "split" and exp_config["train_partition"] < 100:
-            
-            X_train, X_test, y_train, y_test = execution_lib\
+
+        elif exp_config.get("mode") == "split" and exp_config[
+            "train_partition"] < 100:
+
+            X_train, X_test, y_train, y_test = execution_lib \
                 .generate_train_test_split(X, y, exp_config["train_partition"])
             model = execution_lib.create_model()
             execution_lib.train(model, X_train, y_train)
@@ -167,13 +177,13 @@ def task_skeleton(experiment, current_user):
             y_pred, y_score = execution_lib.predict(model, X)
             y_pred_list.append(y_pred)
             y_score_list.append(y_score)
-            
+
         score = {}
         if exp_config["mode"] == "cross" or exp_config["train_partition"] < 100 \
                 or execution_lib.algorithm_type == "Clustering" or execution_lib.algorithm_type == "Semi Supervised Classification":
-
             typ = execution_lib.algorithm_type
-            score = calculate_metrics(typ, y_test_list, y_pred_list, y_score_list, X_test_list)
+            score = calculate_metrics(typ, y_test_list, y_pred_list,
+                                      y_score_list, X_test_list)
         result = json.dumps(score)
         state = 1
 
@@ -193,14 +203,16 @@ def task_skeleton(experiment, current_user):
     exp.endtime = time()
     v.db.session.commit()
 
-    send_experiment_result_email(current_user["username"], current_user["email"], experiment["id"], str(exp.result))
+    send_experiment_result_email(current_user["username"],
+                                 current_user["email"], experiment["id"],
+                                 str(exp.result))
 
 
-def execute_weka_predict(username, experiment, tmp_filename, model_path, fil_name):
-
+def execute_weka_predict(username, experiment, tmp_filename, model_path,
+                         fil_name):
     try:
         create_app('subprocess')  # No generate new workers
-        upload_folder = "/tmp/"+username+"/"
+        upload_folder = "/tmp/" + username + "/"
 
         predict_df = get_dataframe_from_file(upload_folder, tmp_filename)
 
@@ -208,7 +220,7 @@ def execute_weka_predict(username, experiment, tmp_filename, model_path, fil_nam
         class_attribute_name = executor.experiment_configuration["target"]
 
         # Open experiment configuration
-        model_df = get_dataframe_from_file("ubumlaas/datasets/"+username +
+        model_df = get_dataframe_from_file("ubumlaas/datasets/" + username +
                                            "/", experiment["data"])
         executor.find_y_uniques(model_df[class_attribute_name])
 
@@ -218,12 +230,12 @@ def execute_weka_predict(username, experiment, tmp_filename, model_path, fil_nam
             y = predict_df[class_attribute_name]
             predict_has_target = True
         else:
-            y = ["?"]*len(predict_df.index)
+            y = ["?"] * len(predict_df.index)
             predict_has_target = False
 
         model = executor.deserialize(model_path)
 
-        y_pred, y_score = executor.predict(model, X)
+        y_pred, _ = executor.predict(model, X)
 
         dataframes_final = [X]
         #  remove "?" column if not exist original target
@@ -231,7 +243,8 @@ def execute_weka_predict(username, experiment, tmp_filename, model_path, fil_nam
             dataframes_final.append(y)
 
         y_pred_df = pd.DataFrame(y_pred,
-                                 columns=["prediction_" + name for name in class_attribute_name])
+                                 columns=["prediction_" + name for name in
+                                          class_attribute_name])
         dataframes_final.append(y_pred_df)
         dataframes = pd.concat(dataframes_final, axis=1)
         shutil.rmtree(upload_folder)
@@ -246,4 +259,4 @@ def execute_weka_predict(username, experiment, tmp_filename, model_path, fil_nam
         return False
     finally:
         executor.close()
-    return True 
+    return True

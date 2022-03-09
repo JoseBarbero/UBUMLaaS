@@ -972,6 +972,34 @@ svg{
     width:100%
 }
 
+
+/* ---------------------------------------------------
+    Modal
+----------------------------------------------------- */
+
+.modal-header>.modal-title {
+    font-size: 14px
+}
+
+.modal-body>.body-desc {
+    font-size: 14px
+}
+
+.modal-footer>.footer-title {
+    font-size: 12px
+}
+
+#loadFile {
+    display: none
+}
+
+.modal-header>.modal-title,
+.modal-body>.body-desc,
+.modal-body>.photo-input,
+.modal-footer>.footer-title {
+    text-align: center
+}
+
 /* ---------------------------------------------------
     Extras
 ----------------------------------------------------- */

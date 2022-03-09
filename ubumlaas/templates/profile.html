@@ -22,7 +22,8 @@
                             </button>
                         </div>
                         {% endfor %}
-                        <img src="{{user.avatar}}" alt="{{ user.username }}" class="img-fluid rounded-circle mb-2" width="128" height="128" />
+                        <img src="{{user.avatar}}" alt="{{ user.username }}" class="img-fluid rounded-circle mb-2" width="128" height="128" 
+                             id="profile_pic" role="button" data-toggle="modal" data-target="#uploadPic"/>
                         <h5 class="card-title mb-0">{{ user.username }}</h5>
                         <div class="text-muted mb-2">{{ user.email }}</div>
                         {% if user.user_type == 0 %}
@@ -255,7 +256,7 @@
                                                 <th data-sortable="true" class="d-none d-xl-table-cell" data-align="center" data-field="Id">Id</th>
                                                 <th data-sortable="true" class="d-none d-xl-table-cell" data-align="center" data-field="Algorithm">Algorithm</th>
                                                 <th data-sortable="true" class="d-none d-xl-table-cell" data-align="center" data-field="Dataset">Dataset</th>
-                                                <th data-sortable="true" class="d-none d-xl-table-cell" data-align="center" data-field="Init Date">Init Date</th>
+                                                <th data-sortable="true" class="d-none d-xl-table-cell" data-align="center" data-field="Start Date">Start Date</th>
                                                 <th data-sortable="true" class="d-none d-xl-table-cell" data-align="center" data-field="Finish Date">Finish Date</th>
                                                 <th data-sortable="true" class="d-none d-xl-table-cell" data-align="center" data-field="State">State</th>
                                                 <th data-sortable="false" class="d-none d-xl-table-cell" data-align="center" data-field="View Result">View Result</th>
@@ -306,6 +307,34 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="uploadPic" tabindex="-1" role="dialog" aria-labelledby="formModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">
+                            Uploading a new photo</h5> 
+                            <button type="button" class="close" data-dismiss="modal" aria-label="close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                    </div>
+                    <div class="modal-body">
+                        
+                        <p class="body-desc">
+                            Now you can change your picture. </p>
+                        <p id="msg"></p>
+                        <div class="photo-input"> <input type="file" id="loadFile" name="file[]"/> 
+                            <button class="btn btn-sm btn-primary" onclick="document.getElementById('loadFile').click()"> 
+                                Select a file 
+                            </button> 
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <p class="footer-title">
+                            If you're having problems uploading, try choosing a smaller photo.</p>
                     </div>
                 </div>
             </div>
@@ -523,7 +552,8 @@
     const data_fields = ['username', 'email', 'desired_use', 'country',
                          'website', 'twitter', 'github', 'institution', 
                          'linkedin', 'google_scholar'];
-    $('#formEditProfile').appendTo("body") 
+    $('#formEditProfile').appendTo("body");
+    $('#uploadPic').appendTo("body");
     $(function () {
         $('#datasetsTable').bootstrapTable({
             silentSort: false,
@@ -569,8 +599,11 @@
         });
     }
 </script>
-
 <script>
+    const weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    const d = new Date();
+    let today = weekday[d.getDay()];
+    var weekOrder = [];
     document.addEventListener("DOMContentLoaded", function () {
         d3.csv("{{ url_for('static', filename='tmp/exp_'+current_user.username+'_7d.csv') }}")
             .then(makeChartExp7d);
@@ -583,10 +616,23 @@
             var times = data.map(function (d) { return d.times; });
             maxValue = Math.max.apply(null, times);
 
+            daysAfter = [];
+            dayFound = false;
+            weekday.forEach(element => {
+                if (element == today) {
+                    dayFound = true;
+                } else if (dayFound) {
+                    daysAfter.push(element);
+                } else {
+                    weekOrder.push(element);
+                }
+            });
+            weekOrder = daysAfter.concat(weekOrder, [today])
+
             new Chart(document.getElementById("exp_7d_times"), {
                 type: "line",
                 data: {
-                    labels: day,
+                    labels: weekOrder,
                     datasets: [{
                         label: "Experiments performed",
                         fill: true,
@@ -784,5 +830,52 @@
             });
         }
     });
+</script>
+<script>
+    $(document).ready(function (e) {
+            $('#loadFile').on('change', function () {
+                var form_data = new FormData();
+                var ins = document.getElementById('loadFile').files.length;
+
+                if (ins == 0) {
+                    $('#msg').html('<span style="color:red">Select one picture. </span>');
+                    return;
+                }
+                if (ins > 1) {
+                    $('#msg').html('<span style="color:red">You can only upload one picture. </span>');
+                    return;
+                }
+
+                for (var x = 0; x < ins; x++) {
+                    form_data.append("file[]", document.getElementById('loadFile').files[x]);
+                }
+
+                $.ajax({
+                    url: '{{ url_for("users.change_picture")}}',
+                    dataType: 'json', 
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    data: form_data,
+                    type: 'post',
+                    success: function (response) { 
+                        $('#msg').html('');
+                        $.each(response, function (key, data) {
+                            if (key !== 'message') {
+                                $('#msg').append(key + ' -> ' + data + '<br/>');
+                            } else {
+                                $('#msg').append(data + '<br/>');
+                            }
+                        })
+                    },
+                    error: function (response) {
+                        $('#msg').html(response.message); 
+                    },
+                    complete: function(response) {
+                        window.location.reload(true);
+                    }
+                });
+            });
+        });
 </script>
 {% endblock js %}

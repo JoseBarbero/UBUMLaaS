@@ -1,13 +1,10 @@
 import threading
 import asyncio
-import time
 from datetime import datetime, date
-import variables as v
 import pandas as pd
 import os
 import numpy as np
 import logging
-import sys
 
 def os_execute(command):
     os.system(command)
@@ -17,8 +14,8 @@ def os_monitor(command, message=""):
     logging.info(message)
     try:
         os.system(command)
-    except Exception as e:
-        pass
+    except Exception:
+        logging.exception(command)
 
 def run_loop(loop):
     asyncio.set_event_loop(loop)
@@ -47,13 +44,12 @@ def monitor_clean_csv(path):
             csv_clean = csv_clean[last_row+1:]
 
         csv_clean.to_csv(path, index=False)
-    except Exception as e:
-        pass
+    except Exception:
+        logging.exception('Failed to clean csv')
 
 
 def create_monitor():
-    """ Start the server monitor threads.
-    """
+    """Start the server monitor threads."""
     monitor_event_loop = asyncio.new_event_loop()
     monitor_clean_loop = asyncio.new_event_loop()
     command = "glances --export csv --export-csv-file " + \

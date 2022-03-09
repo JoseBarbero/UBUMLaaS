@@ -4,6 +4,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 SECRET_KEY = os.getenv("SECRET_KEY", "dev")
 SECURITY_PASSWORD_SALT = os.getenv("SECURITY_PASSWORD_SALT", "password_salt")
 TESTING = os.getenv("TESTING", "0") == "1"
+MAX_CONTENT_LENGTH=16*1920*1080
 
 
 # sqlalchemy configuration
