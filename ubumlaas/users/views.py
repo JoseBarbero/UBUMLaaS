@@ -5,11 +5,9 @@ from ubumlaas.users.forms import RegistrationForm, LoginForm, PasswordForm, Emai
 from ubumlaas.models import User, get_experiments, Country, Experiment
 import os
 from ubumlaas.util import generate_confirmation_token, confirm_token, send_email, get_ngrok_url
-import json
-import variables as v
 import pandas as pd
 import time
-from datetime import datetime, date
+from datetime import date
 import numpy as np
 import multiprocessing as mp
 from ubumlaas.admin import clear_tmp_csvs, exps_type
@@ -19,7 +17,8 @@ users = Blueprint("users", __name__)
 
 @users.route("/login", methods=["GET", "POST"])
 def login():
-    """User login.
+    """
+    User login.
 
     Returns:
         string -- redirect new page
@@ -49,7 +48,8 @@ def login():
 
 @users.route("/register", methods=["GET", "POST"])
 def register():
-    """User registry.
+    """
+    User registry.
 
     Returns:
         string -- render register or redirect log in.
@@ -75,7 +75,7 @@ def register():
                         activated=0,
                         user_type=1)
             v.db.session.add(user)
-            
+
             default_datasets(form.username.data)
             flash("User registered.", "success")
             token = generate_confirmation_token(user.email)
@@ -101,12 +101,13 @@ def default_datasets(username):
         for d in os.listdir(_from):
             os.link(_from+d, _dest+d)
     except OSError:
-        pass   
+        pass
 
 
 @users.route("/logout")
 def logout():
-    """User log out.
+    """
+    User log out.
 
     Returns:
         string -- redirect to index.
@@ -153,7 +154,6 @@ def profile():
     exps_type_times = pd.DataFrame(
         list(exps_type_times.items()), columns=['type', 'seconds'])
     exps_7d_df = pd.DataFrame([[f'I-{x}', 0] for x in range(7)], columns=['day', 'times'])
-    experiments_df = pd.DataFrame(columns=['dataset', 'times'])
     today = time.localtime(time.time())[:3]
 
     for e in experiments:
@@ -217,8 +217,8 @@ def profile():
                     alpha_2=user['country']).first()
                 user['country'] = country.to_dict()['name']
                 flash('User updated', 'success')
-            except Exception as e:
-                v.app.logger.exception(e)
+            except Exception as exc:
+                v.app.logger.exception(exc)
                 v.db.session.rollback()
                 flash('Error ocurred', 'danger')
         else:
@@ -337,18 +337,17 @@ def render_profile(user, datasets, experiments, update_data_form, update_passwd_
 def change_picture():
     os.chdir(os.environ['LIBFOLDER'])
     files = request.files.getlist('file[]')
-    success = False
     file = files[0]
 
     if file and allowed_file(file.filename):
         try:
-            filename = secure_filename(file.filename)
+            secure_filename(file.filename)
             file.save(os.path.join('ubumlaas', 'static', 'avatars', str(current_user.id)+'.png'))
             flash('Profile picture successfully updated', 'success')
             resp = jsonify({'message': 'Profile picture successfully updated'})
             resp.status_code = 201
             return resp
-        except:
+        except Exception:
             flash('An error occured', 'warning')
             resp = jsonify()
             resp.status_code = 400
@@ -357,7 +356,7 @@ def change_picture():
         flash('File type is not supported', 'warning')
         resp = jsonify()
         resp.status_code = 400
-        return resp            
+        return resp
 
 def allowed_file(filename):
     allowed_extensions = set(['png', 'jpg', 'jpeg'])
