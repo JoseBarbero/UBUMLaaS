@@ -1,6 +1,4 @@
 from ubumlaas import create_app
-import signal
-import threading
 import sys
 
 """
@@ -10,7 +8,7 @@ if __name__ == "__main__":
     try:
         host = sys.argv[1] 
     except IndexError:
-        host='localhost'
+        host = 'localhost'
     try:
         port = sys.argv[2]
     except IndexError:

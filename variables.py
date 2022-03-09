@@ -1,6 +1,5 @@
 from ubumlaas.experiments.execute_algorithm import\
     (_meka, _weka, _sklearn, _is_ssl)
-import os
 
 
 def start():

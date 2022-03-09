@@ -1,25 +1,25 @@
 #!/bin/bash
 
 if [ ! -d "logs" ]; then
-    $(mkdir logs)
-    pushd logs 
+    mkdir logs
+    pushd logs || exit
 fi
-pushd logs
+pushd logs || exit
 if [ ! -d "monitor" ]; then
-        $(mkdir monitor)
+        mkdir monitor
 fi
-pushd monitor
+pushd monitor || exit
 
-numfiles=$(find . -maxdepth 1 -type f | wc -l)
-oldMainFile="./glances$numfiles.csv"
+numFiles="$(find . -maxdepth 1 -type f | wc -l)"
+oldMainFile="./glances$numFiles.csv"
 for file in ./*.csv; do
     file="${file:2}"
     if [[ "$file" == "glances.csv" ]]; then
-        $(mv $file $oldMainFile)
+        mv "$file" "$oldMainFile"
     fi
 done
-popd
-popd
+popd || exit
+popd || exit
 
 python3 monitor.py &
 python3 app.py
