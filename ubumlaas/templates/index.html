@@ -34,11 +34,6 @@
         opacity: 0.6;
         float: right;
     }
-    /* main {
-        background-repeat: no-repeat;
-        background-position: center;
-        background-image:  url("{{url_for('static', filename='img/mano-robotica.svg')}}");
-    } */
 </style>
 {% endblock %}
 {% block content %}
@@ -103,62 +98,6 @@
         </div>
     </div>
 </main>
-<!-- 
-<div class="container-fluid h-100 d-flex align-items-stretch p-0" style="z-index: 999;">
-    <div class="container-fluid h-100 d-flex align-items-stretch p-0">
-        <div class="row container-fluid p-0 m-0">        
-            <div class="col-md-6 col-12 pt-3 d-flex align-items-center" id="index-left">
-                <div class="container">
-                    <div class="col-md-9 col-sm-12">
-                        <blockquote class="blockquote text-center mt-2">
-                            <p class="mb-0" id="cite_text"><q>In God we trust, all others must bring data</q></p>
-                            <footer class="blockquote-footer"><cite title="W. Edwards Deming" id="cite_name">W. Edwards Deming</cite></footer>
-                        </blockquote>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6 col-12 index_background pt-3 d-flex align-items-center" id="index-right">
-                <div class="container">
-                    <div class="col-12">
-                        <h3 class="text-center text-monospace font-weight-bold">Welcome to UBUMLaaS</h3>
-                    </div>                
-                    <div class="col-12">
-                        <div class="container">
-                        {% if current_user.is_authenticated %}
-                            <div class="row">
-                                <div class="col-md-8 offset-md-2 mb-3">
-                                    <a class="mt-3 btn btn-ubu-maroon font-weight-bold text-monospace text-uppercase btn-lg btn-block" href="{{ url_for('experiments.new_experiment') }}">Create a new experiment</a>
-                                </div>
-                                {% if current_user.user_type == 0 %}
-                                <a class="nav-item nav-link {% if title==" Administration" %}active{% endif %}"
-                                    href="{{ url_for('admin.administration') }}"><label data-tag="ADMIN"></a>
-                                {% endif %}
-                            </div>
-                        {% else %}
-                            <div class="row">
-                                <div class="col-md-8 offset-md-2 mb-3">
-                                    <a class="mt-3 btn btn-ubu-maroon font-weight-bold text-monospace text-uppercase btn-lg btn-block" href="{{ url_for('users.register') }}">Register</a>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-8 offset-md-2 mb-3">
-                                    <a class="mt-3 btn btn-outline-ubu-maroon font-weight-bold text-monospace text-uppercase btn-lg btn-block" href="{{ url_for('users.login') }}" style="color: white;">Login</a>
-                                </div>
-                            </div>
-                        {% endif %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>    
-    </div>
-    <div class="container-fluid index d-md-flex align-items-stretch p-0 position-fixed d-sm-none" style="z-index: -100;">
-        <div class="container-fluid d-flex justify-content-center" style="min-height: fit-content;">
-            <img src="{{ url_for("static", filename="img/mano-robotica.svg")}}" class="pt-md-5 h-90"  />
-        </div>
-    </div>
-</div> -->
-
 {% endblock %}
 
 {% block footer %}
