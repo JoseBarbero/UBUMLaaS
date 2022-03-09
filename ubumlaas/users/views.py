@@ -1,4 +1,4 @@
-from flask import render_template, url_for, flash, redirect, request, Blueprint, abort
+from flask import render_template, url_for, flash, redirect, request, Blueprint, abort, jsonify
 from flask_login import login_user, current_user, logout_user, login_required
 import variables as v
 from ubumlaas.users.forms import RegistrationForm, LoginForm, PasswordForm, EmailForm
@@ -13,6 +13,7 @@ from datetime import datetime, date
 import numpy as np
 import multiprocessing as mp
 from ubumlaas.admin import clear_tmp_csvs, exps_type
+from werkzeug.utils import secure_filename
 
 users = Blueprint("users", __name__)
 
@@ -139,13 +140,6 @@ def profile():
     cards_data['experiments'] = len(experiments)
     user = current_user.to_dict_all()
 
-    if not os.path.exists(f'ubumlaas/static/avatars/{current_user.username}.png'):
-        user['avatar_exists'] = 'Not'
-        user['avatar'] = 'static/avatars/default.png'
-    else:
-        user['avatar_exists'] = 'Exits'
-        user['avatar'] = 'static/avatars/'+current_user.username+'.png'
-
     country = Country.query.filter_by(alpha_2=user['country']).first()
     user['country'] = country.to_dict()['name']
     v.app.logger.info("%d - User enter to profile, %d datasets and %d experiments", current_user.id,len(datasets),len(experiments))
@@ -246,6 +240,14 @@ def profile():
         else:
             flash('Password do not meet the required criteria.', 'warning')
 
+    os.chdir(os.environ['LIBFOLDER'])
+    if not os.path.exists(f'ubumlaas/static/avatars/{current_user.id}.png'):
+        user['avatar_exists'] = 'Not'
+        user['avatar'] = 'static/avatars/default.png'
+    else:
+        user['avatar_exists'] = 'Exits'
+        user['avatar'] = f'static/avatars/{current_user.id}.png'
+
     mp.Process(target=clear_tmp_csvs, args=(tmp_dir, )).start()
     return render_profile(user, datasets, experiments, update_data_form, update_passwd_form, cards_data, exps_alg_type_dict)
 
@@ -330,3 +332,33 @@ def render_profile(user, datasets, experiments, update_data_form, update_passwd_
                                'HTTP_X_REAL_IP', request.remote_addr),
                             cards_data=cards_data,
                            exps_alg_type=exps_alg_type_dict)
+
+@users.route('/change-picture', methods=['POST'])
+def change_picture():
+    os.chdir(os.environ['LIBFOLDER'])
+    files = request.files.getlist('file[]')
+    success = False
+    file = files[0]
+
+    if file and allowed_file(file.filename):
+        try:
+            filename = secure_filename(file.filename)
+            file.save(os.path.join('ubumlaas', 'static', 'avatars', str(current_user.id)+'.png'))
+            flash('Profile picture successfully updated', 'success')
+            resp = jsonify({'message': 'Profile picture successfully updated'})
+            resp.status_code = 201
+            return resp
+        except:
+            flash('An error occured', 'warning')
+            resp = jsonify()
+            resp.status_code = 400
+            return resp
+    else:
+        flash('File type is not supported', 'warning')
+        resp = jsonify()
+        resp.status_code = 400
+        return resp            
+
+def allowed_file(filename):
+    allowed_extensions = set(['png', 'jpg', 'jpeg'])
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions
