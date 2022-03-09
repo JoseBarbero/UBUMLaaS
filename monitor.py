@@ -49,7 +49,7 @@ def monitor_clean_csv(path):
 
 
 def create_monitor():
-    """ Start the server monitor threads. """
+    """Start the server monitor threads."""
     monitor_event_loop = asyncio.new_event_loop()
     monitor_clean_loop = asyncio.new_event_loop()
     command = "glances --export csv --export-csv-file " + \
