@@ -1,5 +1,5 @@
 from ._utils import is_admin, get_users_info, geolocate, exps_type, \
-    clear_tmp_csvs
+    clear_tmp_csvs, get_last_system_stats
 
 """Useful methods for admin."""
 
@@ -8,5 +8,6 @@ __all__ = [
     "get_users_info",
     "geolocate",
     "exps_type",
-    "clear_tmp_csvs"
+    "clear_tmp_csvs",
+    "get_last_system_stats"
 ]

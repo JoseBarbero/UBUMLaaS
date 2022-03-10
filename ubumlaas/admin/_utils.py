@@ -1,3 +1,4 @@
+import os
 import time
 import shutil
 from flask import abort
@@ -6,6 +7,7 @@ import variables as v
 from ubumlaas.models import User, Algorithm
 from geopy.geocoders import Nominatim
 import numpy as np
+import pandas as pd
 from datetime import datetime
 
 
@@ -50,8 +52,8 @@ def exps_type(exps):
             diff_time = end_time - start_time
             type_time[
                 algorithms[e['alg']['alg_name']]] += diff_time.total_seconds()
-        except Exception:
-            v.app.logger.exception()
+        except Exception as exc:
+            v.app.logger.exception(exc)
 
     return types, type_time
 
@@ -65,3 +67,12 @@ def clear_tmp_csvs(path):
     except Exception:
         v.app.logger.info(
             "Directory '%s' could not be deleted" % path)
+
+
+def get_last_system_stats():
+    os.chdir(os.environ['LIBFOLDER'])
+    data = {}
+    glances_df = pd.read_csv(os.path.join('logs', 'monitor', 'glances.csv'))
+    return glances_df.iloc[-1].to_dict()
+    
+        

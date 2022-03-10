@@ -1,9 +1,206 @@
 {% extends "base.html" %}
 
 {% block content%}
-HOLA, qué tal
+<main class="content">
+    <div class="container-fluid p-0">
+        <div class="row d-flex">
+            <div class="col-auto">
+                <h1 class="h3 mb-3"><strong>System Monitor</strong></h1>
+            </div>
+            <div class="col-auto">
+                <a style="color: var(--info);" href="#a" data-trigger="focus" title="" data-container="body" data-toggle="popover"
+                    data-placement="right" data-content="Data is updated once every minute. Some inconsistency might be possible.">
+                    <i class="fa-solid fa-circle-info"></i>
+                </a>
+            </div>
+        </div>
+        <div class="row d-flex">
+            <div class="col-xl-12 col-xxl-5 d-flex">
+                <div class="w-100">
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <div class="card" style="width: 18rem; height: 12rem;">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col mt-0">
+                                            <h5 class="card-title">CPU Total Usage</h5>
+                                        </div>
+                                        <div class="col-auto">
+                                            <div class="stat text-primary">
+                                                <i class="align-middle fa fa-server"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="canvas-holder" style="width:100%">
+                                        <canvas id="CPU_Total"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="card" style="width: 18rem; height: 12rem;">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col mt-0">
+                                            <h5 class="card-title">CPU Cores</h5>
+                                        </div>
+                                        <div class="col-auto">
+                                            <div class="stat text-primary">
+                                                <i class="align-middle fa fa-user"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <h1 class="h1 mt-5 mb-3 align-items-center d-flex justify-content-center">{{ cards_data.cpu_cpucore }}</h1>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="card" style="width: 18rem; height: 12rem;">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col mt-0">
+                                            <h5 class="card-title">Memory Usage</h5>
+                                        </div>
+                                        <div class="col-auto">
+                                            <div class="stat text-primary">
+                                                <i class="align-middle fa fa-microchip"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="canvas-holder" style="width:100%">
+                                        <canvas id="Mem_Total"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="vm"><p>[[greetings]]</p></div>
+        
+    </div>
+</main>
+<script src="https://unpkg.com/vue@3"></script>
+<!--<script src="{{ url_for('static', filename='js/live_monitor.js')}}"></script>-->
 {% endblock content %}
 
 {% block js %}
+<script>
+    $('[data-toggle="popover"]').popover(); 
+</script>
+<script>
+    const dSplit = [60, 80, 100];
+    var config = {
+        type: 'gauge',
+        data: {
+            labels: ['OK', 'Warning', 'Danger'],
+            datasets: [{
+                data: dSplit,
+                value: '{{ cards_data.cpu_total }}',
+                backgroundColor: ['green', 'orange', 'red'],
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            title: {
+                display: false,
+                
+            },
+            needle: {
+                // Needle circle radius as the percentage of the chart area width
+                radiusPercentage: 2,
+                // Needle width as the percentage of the chart area width
+                widthPercentage: 3.2,
+                // Needle length as the percentage of the interval between inner radius (0%) and outer radius (100%) of the arc
+                lengthPercentage: 80,
+                // The color of the needle
+                color: 'rgba(0, 0, 0, 1)'
+            },
+            valueLabel: {
+                display: true
+            },
+            plugins: {
+                datalabels: {
+                    display: true,
+                    formatter: function (value, context) {
+                        return context.chart.data.labels[context.dataIndex];
+                    },
+                    //color: 'rgba(0, 0, 0, 1.0)',
+                    color: 'rgba(255, 255, 255, 1.0)',
+                    backgroundColor: null,
+                    font: {
+                        size: 11,
+                        weight: 'bold'
+                    }
+                }
+            }
+        }
+    };
 
-{% endblock js%}
+    var config2 = {
+        type: 'gauge',
+        data: {
+            labels: ['OK', 'Warning', 'Danger'],
+            datasets: [{
+                data: dSplit,
+                value: '{{ cards_data.mem_percent }}',
+                backgroundColor: ['green', 'orange', 'red'],
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            title: {
+                display: false,
+
+            },
+            needle: {
+                // Needle circle radius as the percentage of the chart area width
+                radiusPercentage: 2,
+                // Needle width as the percentage of the chart area width
+                widthPercentage: 3.2,
+                // Needle length as the percentage of the interval between inner radius (0%) and outer radius (100%) of the arc
+                lengthPercentage: 80,
+                // The color of the needle
+                color: 'rgba(0, 0, 0, 1)'
+            },
+            valueLabel: {
+                display: true
+            },
+            plugins: {
+                datalabels: {
+                    display: true,
+                    formatter: function (value, context) {
+                        return context.chart.data.labels[context.dataIndex];
+                    },
+                    //color: 'rgba(0, 0, 0, 1.0)',
+                    color: 'rgba(255, 255, 255, 1.0)',
+                    backgroundColor: null,
+                    font: {
+                        size: 11,
+                        weight: 'bold'
+                    }
+                }
+            }
+        }
+    };
+
+    window.onload = function () {
+        console.log('{{ cards_data.cpu_total }}')
+        console.log('{{ cards_data.mem_percent }}')
+        var ctx = document.getElementById('CPU_Total').getContext('2d');
+        cpuTotal = new Chart(ctx, config);
+        var ctx2 = document.getElementById('Mem_Total').getContext('2d');
+        config2.data.datasets.forEach(function (dataset) {
+            dataset.value = '{{ cards_data.mem_percent }}';
+        });
+        memTotal = new Chart(ctx2, config2)
+    };
+</script>
+<!--<script type="module">
+    import MyComponent from '{{ url_for("static", filename="js/live_monitor.js") }}';
+    Vue.createApp(MyComponent).mount('#CPU_Total');
+</script>-->
+{% endblock js %}

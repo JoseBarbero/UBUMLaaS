@@ -3,7 +3,7 @@ from flask_login import login_required, current_user
 from ubumlaas.models import User, Country, Experiment
 from ubumlaas.users.forms import RegistrationForm
 from ubumlaas.util import generate_confirmation_token, send_email, get_ngrok_url
-from ._utils import is_admin, get_users_info, exps_type, clear_tmp_csvs
+from ._utils import is_admin, get_users_info, exps_type, clear_tmp_csvs, get_last_system_stats
 from datetime import datetime, date
 import time
 import os
@@ -357,7 +357,9 @@ def processing():
 
 @admin.route("/administration/live-monitor")
 def live_monitor():
+    cards_data = get_last_system_stats()
     return render_template('admin/admin_live_monitor.html',
                            title="Live System Monitor",
                            ip=request.environ.get(
-                               'HTTP_X_REAL_IP', request.remote_addr), )
+                               'HTTP_X_REAL_IP', request.remote_addr), 
+                           cards_data=cards_data)
