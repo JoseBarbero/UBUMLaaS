@@ -70,9 +70,41 @@ def clear_tmp_csvs(path):
 
 
 def get_last_system_stats():
+    byte_gib = 1 / 1073741824
+    byte_mib = 1 / 1048576
+    GiB = 'GiB'
+    MiB = 'MiB'
+
     os.chdir(os.environ['LIBFOLDER'])
-    data = {}
     glances_df = pd.read_csv(os.path.join('logs', 'monitor', 'glances.csv'))
-    return glances_df.iloc[-1].to_dict()
+    glances_dict = glances_df.iloc[-1].to_dict()
+
+    mem_gib = glances_dict['mem_used'] * byte_gib
+    if mem_gib > 1:
+        glances_dict['mem_in_use'] = round(mem_gib, 2)
+        glances_dict['mem_label'] = GiB
+    else:
+        glances_dict['mem_in_use'] = round(glances_dict['mem_used'] * byte_mib, 2)
+        glances_dict['mem_label'] = MiB
+    
+    storage_used = glances_dict['fs_/_used'] * byte_gib
+    if mem_gib > 1:
+        glances_dict['storage_in_use'] = round(storage_used, 2)
+        glances_dict['storage_label'] = GiB
+    else:
+        glances_dict['storage_in_use'] = round(
+            glances_dict['fs_/_used'] * byte_mib, 2)
+        glances_dict['storage_label'] = MiB
+    
+    max_storage = glances_dict['fs_/_size'] * byte_gib
+    if mem_gib > 1:
+        glances_dict['max_storage'] = round(max_storage, 2)
+        glances_dict['max_storage_label'] = GiB
+    else:
+        glances_dict['max_storage'] = round(
+            glances_dict['fs_/_size'] * byte_mib, 2)
+        glances_dict['max_storage_label'] = MiB
+    
+    return glances_dict
     
         

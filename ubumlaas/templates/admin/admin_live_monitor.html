@@ -18,12 +18,12 @@
             <div class="col-xl-12 col-xxl-5 d-flex">
                 <div class="w-100">
                     <div class="row">
-                        <div class="col-sm-3">
-                            <div class="card" style="width: 18rem; height: 12rem;">
+                        <div class="col-sm-2">
+                            <div class="card h-75">
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="col mt-0">
-                                            <h5 class="card-title">CPU Total Usage</h5>
+                                            <h5 class="card-title">CPU Load</h5>
                                         </div>
                                         <div class="col-auto">
                                             <div class="stat text-primary">
@@ -31,14 +31,14 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div id="canvas-holder" style="width:100%">
+                                    <div id="canvas-holder" style="height:100%">
                                         <canvas id="CPU_Total"></canvas>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-sm-3">
-                            <div class="card" style="width: 18rem; height: 12rem;">
+                        <div class="col-sm-2">
+                            <div class="card h-75">
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="col mt-0">
@@ -54,12 +54,12 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-sm-3">
-                            <div class="card" style="width: 18rem; height: 12rem;">
+                        <div class="col-sm-2">
+                            <div class="card h-75">
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="col mt-0">
-                                            <h5 class="card-title">Memory Usage</h5>
+                                            <h5 class="card-title">Memory Load</h5>
                                         </div>
                                         <div class="col-auto">
                                             <div class="stat text-primary">
@@ -73,11 +73,65 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="col-sm-2">
+                            <div class="card h-75">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col mt-0">
+                                            <h5 class="card-title">Used Memory</h5>
+                                        </div>
+                                        <div class="col-auto">
+                                            <div class="stat text-primary">
+                                                <i class="align-middle fa fa-user"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <h1 class="h1 mt-5 mb-3 align-items-center d-flex justify-content-center">{{ cards_data.mem_in_use }} {{ cards_data.mem_label }}</h1>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <div class="card h-75">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col mt-0">
+                                            <h5 class="card-title">Storage in use</h5>
+                                        </div>
+                                        <div class="col-auto">
+                                            <div class="stat text-primary">
+                                                <i class="align-middle fa fa-microchip"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="canvas-holder" style="width:100%">
+                                        <canvas id="Storage_in_Use"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <div class="card h-75">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col mt-0">
+                                            <h5 class="card-title">Storaged Used</h5>
+                                        </div>
+                                        <div class="col-auto">
+                                            <div class="stat text-primary">
+                                                <i class="align-middle fa fa-user"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <h1 class="h1 mt-5 mb-3 align-items-center d-flex justify-content-center">{{ cards_data.storage_in_use }} {{
+                                        cards_data.storage_label }}</h1>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div id="vm"><p>[[greetings]]</p></div>
+        
         
     </div>
 </main>
@@ -91,62 +145,15 @@
 </script>
 <script>
     const dSplit = [60, 80, 100];
-    var config = {
+    const lSplit = ['OK', 'Warning', 'Danger'];
+    const cSplit = ['green', 'orange', 'red']
+    const configBase = {
         type: 'gauge',
         data: {
-            labels: ['OK', 'Warning', 'Danger'],
+            labels: lSplit,
             datasets: [{
                 data: dSplit,
-                value: '{{ cards_data.cpu_total }}',
-                backgroundColor: ['green', 'orange', 'red'],
-                borderWidth: 2
-            }]
-        },
-        options: {
-            responsive: true,
-            title: {
-                display: false,
-                
-            },
-            needle: {
-                // Needle circle radius as the percentage of the chart area width
-                radiusPercentage: 2,
-                // Needle width as the percentage of the chart area width
-                widthPercentage: 3.2,
-                // Needle length as the percentage of the interval between inner radius (0%) and outer radius (100%) of the arc
-                lengthPercentage: 80,
-                // The color of the needle
-                color: 'rgba(0, 0, 0, 1)'
-            },
-            valueLabel: {
-                display: true
-            },
-            plugins: {
-                datalabels: {
-                    display: true,
-                    formatter: function (value, context) {
-                        return context.chart.data.labels[context.dataIndex];
-                    },
-                    //color: 'rgba(0, 0, 0, 1.0)',
-                    color: 'rgba(255, 255, 255, 1.0)',
-                    backgroundColor: null,
-                    font: {
-                        size: 11,
-                        weight: 'bold'
-                    }
-                }
-            }
-        }
-    };
-
-    var config2 = {
-        type: 'gauge',
-        data: {
-            labels: ['OK', 'Warning', 'Danger'],
-            datasets: [{
-                data: dSplit,
-                value: '{{ cards_data.mem_percent }}',
-                backgroundColor: ['green', 'orange', 'red'],
+                backgroundColor: cSplit,
                 borderWidth: 2
             }]
         },
@@ -157,13 +164,9 @@
 
             },
             needle: {
-                // Needle circle radius as the percentage of the chart area width
                 radiusPercentage: 2,
-                // Needle width as the percentage of the chart area width
                 widthPercentage: 3.2,
-                // Needle length as the percentage of the interval between inner radius (0%) and outer radius (100%) of the arc
                 lengthPercentage: 80,
-                // The color of the needle
                 color: 'rgba(0, 0, 0, 1)'
             },
             valueLabel: {
@@ -171,11 +174,10 @@
             },
             plugins: {
                 datalabels: {
-                    display: true,
+                    display: false,
                     formatter: function (value, context) {
                         return context.chart.data.labels[context.dataIndex];
                     },
-                    //color: 'rgba(0, 0, 0, 1.0)',
                     color: 'rgba(255, 255, 255, 1.0)',
                     backgroundColor: null,
                     font: {
@@ -184,19 +186,22 @@
                     }
                 }
             }
-        }
+        }   
     };
-
+    var config = JSON.parse(JSON.stringify(configBase));
+    var config2 = JSON.parse(JSON.stringify(configBase));
+    var config3 = JSON.parse(JSON.stringify(configBase));
+    config.data.datasets[0].value = '{{ cards_data.cpu_total }}';
+    config2.data.datasets[0].value = '{{ cards_data.mem_percent }}';
+    config3.data.datasets[0].value = '{{ cards_data.storage_in_use }}';
+   
     window.onload = function () {
-        console.log('{{ cards_data.cpu_total }}')
-        console.log('{{ cards_data.mem_percent }}')
         var ctx = document.getElementById('CPU_Total').getContext('2d');
         cpuTotal = new Chart(ctx, config);
         var ctx2 = document.getElementById('Mem_Total').getContext('2d');
-        config2.data.datasets.forEach(function (dataset) {
-            dataset.value = '{{ cards_data.mem_percent }}';
-        });
-        memTotal = new Chart(ctx2, config2)
+        memTotal = new Chart(ctx2, config2);
+        var ctx3 = document.getElementById('Storage_in_Use').getContext('2d');
+        storageInUse = new Chart(ctx3, config3);
     };
 </script>
 <!--<script type="module">

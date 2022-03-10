@@ -358,6 +358,7 @@ def processing():
 @admin.route("/administration/live-monitor")
 def live_monitor():
     cards_data = get_last_system_stats()
+    
     return render_template('admin/admin_live_monitor.html',
                            title="Live System Monitor",
                            ip=request.environ.get(
