@@ -62,6 +62,9 @@ def create_monitor():
         lambda: os_monitor(command, f"Executing {command}"))
     monitor_clean_loop.call_soon_threadsafe(
         lambda: monitor_clean_csv(str(os.environ['LIBFOLDER']) + "/glances.csv"))
+    
+    # Clean the history logs
+    monitor_clean_csv(str(os.environ['LIBFOLDER']) + "/glances_history.csv")
 
 
 if __name__ == '__main__':

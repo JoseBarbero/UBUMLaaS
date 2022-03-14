@@ -105,6 +105,31 @@ def get_last_system_stats():
             glances_dict['fs_/_size'] * byte_mib, 2)
         glances_dict['max_storage_label'] = MiB
     
+    glances_dict['storage_in_use_percent'] = round(glances_dict['fs_/_used']/glances_dict['fs_/_size']*100, 1)
+
     return glances_dict
     
-        
+def get_system_load():
+    os.chdir(os.environ['LIBFOLDER'])
+    path = os.path.join('logs','monitor')
+    data = {}
+
+    try:
+        current_df = pd.read_csv(path + "/glances.csv")
+    except Exception:
+        v.app.logger.exception('Logging file does not exist.')
+        return None
+    if current_df.shape[0] < 10:
+        history_df = pd.read_csv(path + "/glances_history.csv")
+        current_df = pd.concat([history_df, current_df], ignore_index=True)  
+
+    system_load_10_df = current_df.tail(10)
+
+    data['system_load_1'] = system_load_10_df['load_min1'].to_list()
+    data['system_load_5'] = system_load_10_df['load_min5'].to_list()
+    data['system_load_15'] = system_load_10_df['load_min15'].to_list()
+    data['timestamp'] = [x.split(' ')[1] for x in system_load_10_df['timestamp'].to_list()]
+
+
+
+    return data

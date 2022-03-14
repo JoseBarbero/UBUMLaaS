@@ -10,16 +10,19 @@ if [ ! -d "monitor" ]; then
 fi
 pushd monitor || exit
 
-numFiles="$(find . -maxdepth 1 -type f | wc -l)"
-oldMainFile="./glances$numFiles.csv"
-for file in ./*.csv; do
-    file="${file:2}"
-    if [[ "$file" == "glances.csv" ]]; then
-        mv "$file" "$oldMainFile"
-    fi
-done
+if [ -f "glances.csv" ];
+then
+    echo "An old glances file has been found. Refactoring..."
+    sed -i '1d' glances.csv
+    echo >> glances_history.csv
+    echo glances.csv | xargs cat >> glances_history.csv
+    rm glances.csv
+    sed -i '/^[[:space:]]*$/d' glances_history.csv
+fi
+
+
 popd || exit
 popd || exit
 
 python3 monitor.py &
-python3 app.py
+python3 app.py '0.0.0.0' 8081
