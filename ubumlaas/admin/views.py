@@ -1,9 +1,10 @@
-from flask import render_template, Blueprint, request, flash
+from flask import render_template, Blueprint, request, flash, jsonify
 from flask_login import login_required, current_user
 from ubumlaas.models import User, Country, Experiment
 from ubumlaas.users.forms import RegistrationForm
 from ubumlaas.util import generate_confirmation_token, send_email, get_ngrok_url
-from ._utils import is_admin, get_users_info, exps_type, clear_tmp_csvs
+from ._utils import is_admin, get_users_info, exps_type, clear_tmp_csvs, \
+    get_last_system_stats, get_system_load
 from datetime import datetime, date
 import time
 import os
@@ -11,6 +12,7 @@ import variables as v
 import uuid
 import pandas as pd
 import numpy as np
+from pandas.errors import EmptyDataError
 import multiprocessing as mp
 
 admin = Blueprint('admin', __name__)
@@ -351,13 +353,25 @@ def dashboard():
 
 
 @admin.route("/administration/loading")
+@login_required
 def processing():
+    is_admin()
     return render_template('admin/admin_loading.html')
 
 
 @admin.route("/administration/live-monitor")
+@login_required
 def live_monitor():
+    is_admin()
+    cards_data = get_last_system_stats()
+    # system_load = jsonify()
+    try:
+        system_load = get_system_load()
+    except pd.errors.EmptyDataError:
+        render_template('core.index')
+    
     return render_template('admin/admin_live_monitor.html',
                            title="Live System Monitor",
                            ip=request.environ.get(
-                               'HTTP_X_REAL_IP', request.remote_addr), )
+                               'HTTP_X_REAL_IP', request.remote_addr), 
+                           cards_data=cards_data, system_load=system_load)
