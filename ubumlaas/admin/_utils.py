@@ -107,6 +107,17 @@ def get_last_system_stats():
     
     glances_dict['storage_in_use_percent'] = round(glances_dict['fs_/_used']/glances_dict['fs_/_size']*100, 1)
 
+    time = glances_dict['uptime_seconds']
+    day = time // (24 * 3600)
+    time = time % (24 * 3600)
+    hour = time // 3600
+    time %= 3600
+    minutes = time // 60
+    time %= 60
+    seconds = time
+    glances_dict['uptime'] = "%d:%d:%d:%d" % (
+        day, hour, minutes, seconds)
+
     return glances_dict
     
 def get_system_load():
@@ -128,8 +139,35 @@ def get_system_load():
     data['system_load_1'] = system_load_10_df['load_min1'].to_list()
     data['system_load_5'] = system_load_10_df['load_min5'].to_list()
     data['system_load_15'] = system_load_10_df['load_min15'].to_list()
+    data['cpu_iowait'] = system_load_10_df['cpu_iowait'].to_list()
+    data['diskio_sda_read_count'] = system_load_10_df['diskio_sda_read_count'].to_list()
+    data['diskio_sda_write_count'] = system_load_10_df['diskio_sda_write_count'].to_list()
+    data['network_enp4s0_rx'], data['network_enp4s0_rx_label'] = get_network_usage(
+        system_load_10_df, 'network_enp4s0_rx')
+    data['network_enp4s0_tx'], data['network_enp4s0_tx_label'] = get_network_usage(
+        system_load_10_df, 'network_enp4s0_tx')
     data['timestamp'] = [x.split(' ')[1] for x in system_load_10_df['timestamp'].to_list()]
 
-
-
     return data
+
+def get_network_usage(system_load_10_df, item):
+    bitKiB = 1.220703e-4
+    bitMiB = 1.192093e-7
+    bitGiB = 1.16415332037e-10
+    
+    val = system_load_10_df[item].to_numpy()
+    val_max = max(val)
+    val_label = ''
+
+    if val_max * bitGiB < 1:
+        if val_max * bitMiB < 1:
+            val = val * bitKiB
+            val_label = 'KiB'
+        else:
+            val = val * bitMiB
+            val_label = 'MiB'
+    else:
+        val = val * bitGiB
+        val_label = 'GiB'
+    
+    return list(np.round(val, 2)), val_label

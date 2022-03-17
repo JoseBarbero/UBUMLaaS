@@ -134,7 +134,7 @@
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="col mt-0">
-                                            <h5 class="card-title">System Load</h5>
+                                            <h5 class="card-title">System Load 1</h5>
                                         </div>
                                         <div class="col-auto">
                                             <div class="stat text-primary">
@@ -168,10 +168,159 @@
                             </div>
                         </div>
                     </div>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col mt-0">
+                                            <h5 class="card-title">System Load 5 && 15</h5>
+                                        </div>
+                                        <div class="col-auto">
+                                            <div class="stat text-primary">
+                                                <i class="align-middle fa fa-server"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="canvas-holder" style="height:100%">
+                                        <canvas id="system_load_5_15"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col mt-0">
+                                            <h5 class="card-title">Network Usage</h5>
+                                        </div>
+                                        <div class="col-auto">
+                                            <div class="stat text-primary">
+                                                <i class="fa fa-bolt-lightning"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="canvas-holder" style="height:100%">
+                                        <canvas id="network_usage"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <div class="card h-75">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col mt-0">
+                                            <h5 class="card-title">Uptime</h5>
+                                        </div>
+                                        <div class="col-auto">
+                                            <div class="stat text-primary">
+                                                <i class="align-middle fa fa-server"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <h1 class="h2 mt-5 mb-3 align-items-center d-flex justify-content-center">{{ cards_data.uptime }}
+                                    </h1>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <div class="card h-75">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col mt-0">
+                                            <h5 class="card-title">IP Address</h5>
+                                        </div>
+                                        <div class="col-auto">
+                                            <div class="stat text-primary">
+                                                <i class="align-middle fa fa-user"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <h1 class="h2 mt-5 mb-3 align-items-center d-flex justify-content-center">{{ cards_data.ip_address }}
+                                    </h1>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <div class="card h-75">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col mt-0">
+                                            <h5 class="card-title">IP Public Address</h5>
+                                        </div>
+                                        <div class="col-auto">
+                                            <div class="stat text-primary">
+                                                <i class="align-middle fa fa-microchip"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <h1 class="h2 mt-5 mb-3 align-items-center d-flex justify-content-center">{{ cards_data.ip_public_address }}
+                                    </h1>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <div class="card h-75">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col mt-0">
+                                            <h5 class="card-title">IP Mask CIDR</h5>
+                                        </div>
+                                        <div class="col-auto">
+                                            <div class="stat text-primary">
+                                                <i class="align-middle fa fa-user"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <h1 class="h2 mt-5 mb-3 align-items-center d-flex justify-content-center">{{ cards_data.ip_mask_cidr }}
+                                    </h1>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <div class="card h-75">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col mt-0">
+                                            <h5 class="card-title">Total Processes</h5>
+                                        </div>
+                                        <div class="col-auto">
+                                            <div class="stat text-primary">
+                                                <i class="align-middle fa fa-microchip"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <h1 class="h2 mt-5 mb-3 align-items-center d-flex justify-content-center">{{ cards_data.processcount_total }}
+                                    </h1>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <div class="card h-75">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col mt-0">
+                                            <h5 class="card-title">Total Threads</h5>
+                                        </div>
+                                        <div class="col-auto">
+                                            <div class="stat text-primary">
+                                                <i class="align-middle fa fa-user"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <h1 class="h2 mt-5 mb-3 align-items-center d-flex justify-content-center">{{ cards_data.processcount_thread}}
+                                    </h1>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        
     </div>
 </main>
 {% endblock content %}
@@ -181,6 +330,14 @@
     $('[data-toggle="popover"]').popover(); 
 </script>
 <script>
+    function strToNum(str) {
+            str = str.replace('[', '');
+            str = str.replace(']', '');
+            str = str.split(',');
+            str = str.map(Number);
+            return str;
+        }
+
     // Gauges
     var config = JSON.parse(JSON.stringify(configBaseGauge));
     var config2 = JSON.parse(JSON.stringify(configBaseGauge));
@@ -197,10 +354,11 @@
     sysLoadTimestamp = sysLoadTimestamp.split(',');
 
     var sysLoad = '{{ system_load.system_load_1 }}';
-    sysLoad = sysLoad.replace('[', '');
-    sysLoad = sysLoad.replace(']', '');
-    sysLoad = sysLoad.split(',');
-    sysLoad = sysLoad.map(Number);
+    sysLoad = strToNum(sysLoad);
+    var sysLoad5 = '{{ system_load.system_load_5 }}';
+        sysLoad5 = strToNum(sysLoad5);
+    var sysLoad15 = '{{ system_load.system_load_15 }}';
+        sysLoad15 = strToNum(sysLoad15);
     var config4 = {
         type: "bar",
         data: {
@@ -238,7 +396,176 @@
     }
 
     // Line Chart
+    var sysIOCPU = '{{ system_load.cpu_iowait }}';
+    var diskReadIO = '{{ system_load.diskio_sda_read_count }}';
+    sysIOCPU = strToNum(sysIOCPU);
+    var diskReadIO = '{{ system_load.diskio_sda_read_count }}';
+    diskReadIO = strToNum(diskReadIO);
+    var diskReadIOStep = Math.ceil(Math.max.apply(Math, diskReadIO) / 2);
+    var diskWriteIO = '{{ system_load.diskio_sda_write_count }}';
+    diskWriteIO = strToNum(diskWriteIO);
+    var diskWriteIOStep = Math.ceil(Math.max.apply(Math, diskWriteIO) / 2);
+    var step5 = diskReadIOStep > diskWriteIOStep ? diskReadIOStep : diskWriteIOStep;
+    var config5 = {
+        type: 'line',
+        data : {
+            labels: sysLoadTimestamp,
+            datasets: [{
+                data: sysIOCPU,
+                label: 'CPU IOWait',
+                yAxisID: 'A',
+                borderColor: CHART_COLORS.ubu,
+                backgroundColor: CHART_COLORS.ubu,
+                fill: false,
+            }, {
+                data: diskReadIO,
+                label: 'Disk Read IO',
+                yAxisID: 'B',
+                borderColor: CHART_COLORS.red,
+                backgroundColor: CHART_COLORS.red,
+                fill: false,
+            }, {
+                data: diskWriteIO,
+                label: 'Disk Write IO',
+                yAxisID: 'B',
+                borderColor: CHART_COLORS.orange,
+                backgroundColor: CHART_COLORS.orange,
+                fill: false,
+            }]
+        },
+        options: {
+            responsive: !window.MSInputMethodContext,
+            maintainAspectRatio: false,
+            scales: {
+                yAxes: [{
+                    type: 'linear', 
+                    display: true,
+                    position: 'left',
+                    id: 'A',
+                    ticks: {
+                        stepSize: 0.5,
+                        suggestedMin: 0,
+                        suggestedMax: 1
+                    }
+                }, {
+                    type: 'linear', 
+                    display: true,
+                    position: 'right',
+                    id: 'B',
+                    ticks: {
+                        stepSize: step5,
+                        suggestedMin: 0,
+                    },
+                    gridLines: {
+                        drawOnChartArea: false,
+                    },
+                }],
+            },
+            plugins: {
+                legend: true,
+                datalabels: {
+                    display: false,
+                }
+            }
+        }
+    }
     
+    var config6 = {
+        type: "bar",
+        data: {
+            labels: sysLoadTimestamp,
+            datasets: [{
+                label: "System Load 5",
+                backgroundColor: CHART_COLORS.ubu,
+                borderColor: CHART_COLORS.ubu,
+                hoverBackgroundColor: CHART_COLORS.ubu,
+                hoverBorderColor: CHART_COLORS.ubu,
+                data: sysLoad5,
+                barPercentage: .75,
+                categoryPercentage: .5
+            }, {
+                label: "System Load 15",
+                backgroundColor: CHART_COLORS.red,
+                borderColor: CHART_COLORS.red,
+                hoverBackgroundColor: CHART_COLORS.red,
+                hoverBorderColor: CHART_COLORS.red,
+                data: sysLoad15,
+                barPercentage: .75,
+                categoryPercentage: .5
+            }]
+        },
+        options: {
+            responsive: !window.MSInputMethodContext,
+            maintainAspectRatio: false,
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        stepSize: 0.5,
+                        suggestedMin: 0,
+                        suggestedMax: 1
+                    }
+                }]
+            },
+            plugins: {
+                legend: true,
+                datalabels: {
+                    display: false,
+                }
+            }
+        }
+    }
+
+
+    var rx = '{{ system_load.network_enp4s0_rx }}';
+    var rx_label = '{{ system_load.network_enp4s0_rx_label }}';
+    rx = strToNum(rx);
+    var tx = '{{ system_load.network_enp4s0_tx }}';
+    var tx_label = '{{ system_load.network_enp4s0_tx_label }}';
+    tx = strToNum(tx);
+    var txStep = Math.ceil(Math.max.apply(Math, tx) / 2);
+    var rxStep = Math.ceil(Math.max.apply(Math, rx) / 2);
+    var step7 = txStep > rxStep ? txStep : rxStep;
+    var config7 = {
+        type: 'line',
+        data: {
+            labels: sysLoadTimestamp,
+            datasets: [{
+                data: tx,
+                label: 'Tx/s - ' + tx_label,
+                borderColor: CHART_COLORS.ubu,
+                backgroundColor: CHART_COLORS.ubu,
+                fill: false,
+            }, {
+                data: rx,
+                label: 'Rx/s - ' + rx_label,
+                borderColor: CHART_COLORS.red,
+                backgroundColor: CHART_COLORS.red,
+                fill: false,
+            }]
+        },
+        options: {
+            responsive: !window.MSInputMethodContext,
+            maintainAspectRatio: false,
+            scales: {
+                yAxes: [{
+                    type: 'linear',
+                    display: true,
+                    position: 'left',
+                    ticks: {
+                        stepSize: step7,
+                        suggestedMin: 0,
+                    }
+                }],
+            },
+            plugins: {
+                legend: true,
+                datalabels: {
+                    display: false,
+                }
+            }
+        }
+    }
+
 
     window.onload = function () {
         var ctx = document.getElementById('CPU_Total').getContext('2d');
@@ -251,6 +578,10 @@
         systemLoad = new Chart(ctx4, config4);
         var ctx5 = document.getElementById('io_usage').getContext('2d');
         ioUsage = new Chart(ctx5, config5);
+        var ctx6 = document.getElementById('system_load_5_15').getContext('2d');
+        ioUsage = new Chart(ctx6, config6);
+        var ctx7 = document.getElementById('network_usage').getContext('2d');
+        ioUsage = new Chart(ctx7, config7);
     };
 </script>
 <!--<script type="module">
