@@ -82,7 +82,7 @@ def get_similar_algorithms(alg_name, exp_typ):
     else:
         cond = Algorithm.lib == alg.lib
         subcond = Algorithm.alg_typ == exp_typ
-        if exp_typ in ["Classification", "Regression"]:
+        if exp_typ in ["Classification", "Regression", "Semi Supervised Classification"]:
             subcond = or_(subcond, Algorithm.alg_typ == "Mixed")
         cond = and_(cond, subcond)
     algorithms = Algorithm.query.filter(cond).all()
