@@ -364,7 +364,6 @@ def processing():
 def live_monitor():
     is_admin()
     cards_data = get_last_system_stats()
-    # system_load = jsonify()
     try:
         system_load = get_system_load()
     except pd.errors.EmptyDataError:

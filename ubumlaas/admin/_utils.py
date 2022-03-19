@@ -131,8 +131,11 @@ def get_system_load():
         v.app.logger.exception('Logging file does not exist.')
         return None
     if current_df.shape[0] < 10:
-        history_df = pd.read_csv(path + "/glances_history.csv")
-        current_df = pd.concat([history_df, current_df], ignore_index=True)  
+        try:
+            history_df = pd.read_csv(path + "/glances_history.csv")
+            current_df = pd.concat([history_df, current_df], ignore_index=True)  
+        except FileNotFoundError:
+            v.app.logger.info('Log history does not exist.')
 
     system_load_10_df = current_df.tail(10)
 
