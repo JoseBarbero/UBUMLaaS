@@ -27,7 +27,7 @@
                                         </div>
                                         <div class="col-auto">
                                             <div class="stat text-primary">
-                                                <i class="align-middle fa fa-server"></i>
+                                                <i class="align-middle fa fa-microchip"></i>
                                             </div>
                                         </div>
                                     </div>
@@ -46,7 +46,7 @@
                                         </div>
                                         <div class="col-auto">
                                             <div class="stat text-primary">
-                                                <i class="align-middle fa fa-user"></i>
+                                                <i class="align-middle fa fa-microchip"></i>
                                             </div>
                                         </div>
                                     </div>
@@ -63,7 +63,7 @@
                                         </div>
                                         <div class="col-auto">
                                             <div class="stat text-primary">
-                                                <i class="align-middle fa fa-microchip"></i>
+                                                <i class="fa-solid fa-memory"></i>
                                             </div>
                                         </div>
                                     </div>
@@ -82,7 +82,7 @@
                                         </div>
                                         <div class="col-auto">
                                             <div class="stat text-primary">
-                                                <i class="align-middle fa fa-user"></i>
+                                                <i class="fa-solid fa-memory"></i>
                                             </div>
                                         </div>
                                     </div>
@@ -99,7 +99,7 @@
                                         </div>
                                         <div class="col-auto">
                                             <div class="stat text-primary">
-                                                <i class="align-middle fa fa-microchip"></i>
+                                                <i class="fa-solid fa-hard-drive"></i>
                                             </div>
                                         </div>
                                     </div>
@@ -118,7 +118,7 @@
                                         </div>
                                         <div class="col-auto">
                                             <div class="stat text-primary">
-                                                <i class="align-middle fa fa-user"></i>
+                                                <i class="fa-solid fa-hard-drive"></i>
                                             </div>
                                         </div>
                                     </div>
@@ -197,7 +197,7 @@
                                         </div>
                                         <div class="col-auto">
                                             <div class="stat text-primary">
-                                                <i class="fa fa-bolt-lightning"></i>
+                                                <i class="fa-solid fa-ethernet"></i>
                                             </div>
                                         </div>
                                     </div>
@@ -218,7 +218,7 @@
                                         </div>
                                         <div class="col-auto">
                                             <div class="stat text-primary">
-                                                <i class="align-middle fa fa-server"></i>
+                                                <i class="fa-solid fa-clock"></i>
                                             </div>
                                         </div>
                                     </div>
@@ -236,7 +236,7 @@
                                         </div>
                                         <div class="col-auto">
                                             <div class="stat text-primary">
-                                                <i class="align-middle fa fa-user"></i>
+                                                <i class="fa-solid fa-circle-nodes"></i>
                                             </div>
                                         </div>
                                     </div>
@@ -254,7 +254,7 @@
                                         </div>
                                         <div class="col-auto">
                                             <div class="stat text-primary">
-                                                <i class="align-middle fa fa-microchip"></i>
+                                                <i class="fa-solid fa-globe"></i>
                                             </div>
                                         </div>
                                     </div>
@@ -272,7 +272,7 @@
                                         </div>
                                         <div class="col-auto">
                                             <div class="stat text-primary">
-                                                <i class="align-middle fa fa-user"></i>
+                                                <i class="fa-solid fa-network-wired"></i>
                                             </div>
                                         </div>
                                     </div>
@@ -308,7 +308,7 @@
                                         </div>
                                         <div class="col-auto">
                                             <div class="stat text-primary">
-                                                <i class="align-middle fa fa-user"></i>
+                                                <i class="fa-solid fa-arrow-trend-up"></i>
                                             </div>
                                         </div>
                                     </div>
@@ -524,7 +524,6 @@
     tx = strToNum(tx);
     var txStep = Math.ceil(Math.max.apply(Math, tx) / 2);
     var rxStep = Math.ceil(Math.max.apply(Math, rx) / 2);
-    var step7 = txStep > rxStep ? txStep : rxStep;
     var config7 = {
         type: 'line',
         data: {
@@ -532,12 +531,14 @@
             datasets: [{
                 data: tx,
                 label: 'Tx/s - ' + tx_label,
+                yAxisID: 'A',
                 borderColor: CHART_COLORS.ubu,
                 backgroundColor: CHART_COLORS.ubu,
                 fill: false,
             }, {
                 data: rx,
                 label: 'Rx/s - ' + rx_label,
+                yAxisID: 'B',
                 borderColor: CHART_COLORS.red,
                 backgroundColor: CHART_COLORS.red,
                 fill: false,
@@ -551,10 +552,23 @@
                     type: 'linear',
                     display: true,
                     position: 'left',
+                    id: 'A',
                     ticks: {
-                        stepSize: step7,
+                        stepSize: txStep,
                         suggestedMin: 0,
                     }
+                }, {
+                    type: 'linear',
+                    display: true,
+                    position: 'right',
+                    id: 'B',
+                    ticks: {
+                        stepSize: rxStep,
+                        suggestedMin: 0,
+                    },
+                    gridLines: {
+                        drawOnChartArea: false,
+                    },
                 }],
             },
             plugins: {
@@ -584,8 +598,4 @@
         ioUsage = new Chart(ctx7, config7);
     };
 </script>
-<!--<script type="module">
-    import MyComponent from '{{ url_for("static", filename="js/live_monitor.js") }}';
-    Vue.createApp(MyComponent).mount('#CPU_Total');
-</script>-->
 {% endblock js %}
