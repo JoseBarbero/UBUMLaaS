@@ -160,6 +160,9 @@
             error: function (result) {
                 launch_warning_modal("Upload failed", "The dataset upload failed, try again later or contact with the administratior.")
             },
+            complete: function(result) {
+                update_datasets();
+            },
             cache: false,
             contentType: false,
             processData: false

@@ -5,6 +5,7 @@ import variables as v
 import copy
 import arff
 import re
+import string
 import numpy as np
 from itsdangerous import URLSafeTimedSerializer
 from flask_mail import Message
@@ -46,6 +47,17 @@ def get_dataframe_from_file(path, filename, target_column=False):
         except AttributeError:
             raise Exception("Unknown user trying upload dataset")
         raise Exception("Invalid format for "+filename)
+
+    column_names = []
+    print(file_df.columns)
+    for index, column in enumerate(file_df.columns):
+        column = column.replace('.', '')
+        try:
+            int(column)
+            column_names.append(f'Attr-{index}')
+        except ValueError:
+            column_names.append(column)
+    file_df.columns = column_names
 
     if target_column:
         return file_df, targets_indexes

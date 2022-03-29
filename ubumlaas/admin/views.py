@@ -364,11 +364,18 @@ def processing():
 def live_monitor():
     is_admin()
     cards_data = get_last_system_stats()
-    # system_load = jsonify()
     try:
         system_load = get_system_load()
+        if system_load is None:
+            return render_template('index.html',
+                                   ip=request.environ.get(
+                                       'HTTP_X_REAL_IP', request.remote_addr),
+                                   title="UBUMLaaS")
     except pd.errors.EmptyDataError:
-        render_template('core.index')
+        return render_template('index.html',
+                               ip=request.environ.get(
+                                   'HTTP_X_REAL_IP', request.remote_addr),
+                               title="UBUMLaaS")
     
     return render_template('admin/admin_live_monitor.html',
                            title="Live System Monitor",

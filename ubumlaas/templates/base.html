@@ -56,9 +56,9 @@
 
     <!-- Font Awesome JS -->
     <script src="https://kit.fontawesome.com/5c2c417d26.js" crossorigin="anonymous"></script>
-    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.0/js/all.min.js"
         crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.0/css/all.min.css"/>
 
 
     <!-- AdminKit -->
@@ -114,18 +114,6 @@
                     <li><a href="{{ url_for('admin.live_monitor') }}">
                         <i class="{% if title=="Live System Monitor" %}bi bi-speedometer{% else %}bi bi-speedometer2{% endif %}"></i>
                         Live System Monitor</a>
-                    </li>
-                    <li>
-                        <a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false"
-                            class="dropdown-toggle"><i class="bi bi-file-earmark-break"></i> Pages</a>
-                        <ul class="collapse list-unstyled" id="pageSubmenu">
-                            <li>
-                                <a href="{{ url_for('core.index') }}">Home</a>
-                            </li>
-                            <li>
-                                <a href="{{ url_for('users.logout') }}">Log out</a>
-                            </li>
-                        </ul>
                     </li>
                     <li>
                         <a href="{{ url_for('core.info') }}"><i class="bi bi-person-lines-fill"></i> Contact</a>
