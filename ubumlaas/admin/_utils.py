@@ -76,7 +76,10 @@ def get_last_system_stats():
     MiB = 'MiB'
 
     os.chdir(os.environ['LIBFOLDER'])
-    glances_df = pd.read_csv(os.path.join('logs', 'monitor', 'glances.csv'))
+    glances_main = os.path.join('logs', 'monitor', 'glances.csv')
+    if os.stat(glances_main).st_size == 0:
+        return None
+    glances_df = pd.read_csv(glances_main)
     glances_dict = glances_df.iloc[-1].to_dict()
 
     mem_gib = glances_dict['mem_used'] * byte_gib
@@ -126,6 +129,8 @@ def get_system_load():
     data = {}
 
     try:
+        if os.stat(path + "/glances.csv").st_size == 0:
+            return None
         current_df = pd.read_csv(path + "/glances.csv")
     except Exception:
         v.app.logger.exception('Logging file does not exist.')
@@ -149,7 +154,7 @@ def get_system_load():
         system_load_10_df, 'network_enp4s0_rx')
     data['network_enp4s0_tx'], data['network_enp4s0_tx_label'] = get_network_usage(
         system_load_10_df, 'network_enp4s0_tx')
-    data['timestamp'] = [x.split(' ')[1] for x in system_load_10_df['timestamp'].to_list()]
+    data['timestamp'] = [x.split(' ')[1] for x in system_load_10_df['timestamp'].to_list() if isinstance(x, str)]
 
     return data
 
