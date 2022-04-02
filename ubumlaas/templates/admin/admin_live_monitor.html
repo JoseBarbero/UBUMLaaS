@@ -3,15 +3,28 @@
 {% block content%}
 <main class="content">
     <div class="container-fluid p-0">
-        <div class="row d-flex">
-            <div class="col-auto">
-                <h1 class="h3 mb-3"><strong>System Monitor</strong></h1>
-            </div>
-            <div class="col-auto">
-                <a style="color: var(--info);" href="#a" data-trigger="focus" title="" data-container="body" data-toggle="popover"
-                    data-placement="right" data-content="Data is updated once every minute. Some inconsistency might be possible.">
-                    <i class="fa-solid fa-circle-info"></i>
-                </a>
+        <div container>
+            <div class="row d-flex">
+                <div class="col-10">
+                    <div class="row d-flex">
+                        <div class="col-auto">
+                            <h1 class="h3 mb-3"><strong>System Monitor</strong></h1>
+                        </div>
+                        <div class="col-auto">
+                            <a style="color: var(--info);" href="#a" data-trigger="focus" title="" data-container="body"
+                                data-toggle="popover" data-placement="right"
+                                data-content="Data is updated once every minute. Some inconsistency might be possible.">
+                                <i class="fa-solid fa-circle-info"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-2">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="autoReloadSwitch" onchange="autoReload();"/>
+                        <label class="form-check-label" for="flexSwitchCheckDefault">Reload every 60 sec.</label>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="row d-flex">
@@ -327,7 +340,27 @@
 
 {% block js %}
 <script>
-    $('[data-toggle="popover"]').popover(); 
+    function reloadPage() {
+        if (sessionStorage.getItem('reloadState') == 'true')
+            window.location.reload();
+    }
+
+    setTimeout(reloadPage, 60090);
+
+</script>
+<script>
+    $('[data-toggle="popover"]').popover();
+    
+    function autoReload() {
+        if (sessionStorage.getItem('reloadState') == null) {
+            sessionStorage.setItem('reloadState', 'true');
+        } else if (sessionStorage.getItem('reloadState') == 'false') {
+            sessionStorage.setItem('reloadState', 'true');
+            setTimeout(reloadPage, 5000);
+        } else {
+            sessionStorage.setItem('reloadState', 'false');
+        }
+    }
 </script>
 <script>
     function strToNum(str) {
