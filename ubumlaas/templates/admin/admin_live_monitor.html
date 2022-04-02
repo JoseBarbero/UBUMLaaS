@@ -335,6 +335,9 @@
             str = str.replace(']', '');
             str = str.split(',');
             str = str.map(Number);
+            str = str.filter(function (value) {
+                return !Number.isNaN(value);
+            });
             return str;
         }
 
