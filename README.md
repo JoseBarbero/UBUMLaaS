@@ -78,7 +78,7 @@ Project "***Minería de datos para la mejora del mantenimiento y disponibilidad 
     ```bash
     ./run.sh
     ```
-    Remember to give the required permissions in case ther are needed.
+    Remember to give the required permissions in case they are needed.
 ## Update database
 1. Execute migrate.py
    ```bash
