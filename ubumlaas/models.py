@@ -159,7 +159,7 @@ def get_compatible_filters(lib, typ=None, alg_typ=None):
         .filter(cond).all()
 
 def delete_experiment(id):
-    v.app.logger.info("Deleting experiment with id %d", id)
+    v.app.logger.info("Deleting experiment with id %d", int(id))
     Experiment.query.filter_by(id=id).delete()
     v.db.session.commit()
 

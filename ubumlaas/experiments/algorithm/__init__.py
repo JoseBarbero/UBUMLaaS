@@ -203,7 +203,7 @@ def task_skeleton(experiment, current_user):
     exp.endtime = time()
     v.db.session.commit()
 
-    send_experiment_result_email(current_user["username"],
+    send_experiment_result_email(current_user,
                                  current_user["email"], experiment["id"],
                                  str(exp.result))
 
