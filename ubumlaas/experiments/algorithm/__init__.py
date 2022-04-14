@@ -13,6 +13,7 @@ import sklearn.preprocessing
 import sklearn.multiclass
 import sklearn.semi_supervised
 import lib.is_ssl.semisupervised
+from sklearn.preprocessing import LabelEncoder
 from ubumlaas.experiments.algorithm.metrics import calculate_metrics
 from ubumlaas import create_app
 import pandas as pd
@@ -59,6 +60,11 @@ def task_skeleton(experiment, current_user):
         X, y = execution_lib.open_dataset(
             "ubumlaas/datasets/" + current_user["username"] + "/",
             experiment['data'])
+
+        y_name = y.keys()
+        le = LabelEncoder()
+        y = le.fit_transform(y)
+        y = pd.DataFrame(y, columns=y_name)
 
         v.app.logger.info("%d - Dataset %s opened", current_user['id'],
                           experiment['data'])
