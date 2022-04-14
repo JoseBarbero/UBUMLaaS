@@ -207,7 +207,7 @@ def profile():
                 user_update.website = update_data_form.website.data
                 user_update.twitter = update_data_form.twitter.data
                 user_update.github = update_data_form.github.data
-                user_update.institution = update_data_form.username.data
+                user_update.institution = update_data_form.institution.data
                 user_update.linkedin = update_data_form.linkedin.data
                 user_update.google_scholar = update_data_form.google_scholar.data
 
