@@ -1,7 +1,6 @@
 # UBUMLaaS [![admirable-logo](ubumlaas/static/img/onlyA-32x32.svg)](http://admirable-ubu.es/)
 
 [![Build Status](https://app.travis-ci.com/dpr1005/UBUMLaaS.svg?branch=master)](https://app.travis-ci.com/dpr1005/UBUMLaaS)
-[![codebeat badge](https://codebeat.co/badges/a018c590-b994-4650-9d10-ebfcfe6d34f3)](https://codebeat.co/projects/github-com-dpr1005-ubumlaas-development)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/5380c6229bc5421ba4832902f9e359fa)](https://www.codacy.com/gh/dpr1005/UBUMLaaS/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=dpr1005/UBUMLaaS&amp;utm_campaign=Badge_Grade)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=dpr1005_UBUMLaaS&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=dpr1005_UBUMLaaS)
 <!--
