@@ -61,10 +61,11 @@ def task_skeleton(experiment, current_user):
             "ubumlaas/datasets/" + current_user["username"] + "/",
             experiment['data'])
 
-        y_name = y.keys()
-        le = LabelEncoder()
-        y = le.fit_transform(y)
-        y = pd.DataFrame(y, columns=y_name)
+        if y is not None:
+            y_name = y.keys()
+            le = LabelEncoder()
+            y = le.fit_transform(y)
+            y = pd.DataFrame(y, columns=y_name)
 
         v.app.logger.info("%d - Dataset %s opened", current_user['id'],
                           experiment['data'])
