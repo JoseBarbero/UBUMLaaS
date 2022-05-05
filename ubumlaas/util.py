@@ -68,7 +68,7 @@ def send_experiment_result_email(user, email, procid, result=None):
     """SEND an email with the result
 
     Arguments:
-        user {str} -- username
+        user {dict} -- username
         email {str} -- user's email
         procid {int} -- experiment identifier
 
@@ -84,7 +84,7 @@ def send_experiment_result_email(user, email, procid, result=None):
 
         send_email(subject, email, html=html)
     
-    v.app.logger.info("%d - Email send experiment %d has finished", user.id, procid)
+    v.app.logger.info(f"{user['id']} - Email send experiment {procid} has finished")
 
 
 def send_email(subject, to=None, body=None, html=None):

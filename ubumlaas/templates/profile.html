@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"
+    integrity="sha512-QSkVNOCYLtj73J4hbmVoOV6KVZuMluZlioC+trLpewV8qMjsWqlIQvkn1KGX2StWvPMdWGBqim1xlC8krl1EKQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <main class="content">
     <div class="container-fluid p-0">
 
@@ -536,18 +538,6 @@
 
 {% block js %}
 <script>
-    const CHART_COLORS = {
-        ubu: 'rgb(170,34,60)',
-        red: 'rgb(255, 99, 132)',
-        orange: 'rgb(255, 159, 64)',
-        yellow: 'rgb(255, 205, 86)',
-        green: 'rgb(75, 192, 192)',
-        blue: 'rgb(54, 162, 235)',
-        purple: 'rgb(153, 102, 255)',
-        grey: 'rgb(201, 203, 207)'
-    };
-</script>
-<script>
     const pass_fields = ['password', 'confirm_password'];
     const data_fields = ['username', 'email', 'desired_use', 'country',
                          'website', 'twitter', 'github', 'institution', 
@@ -600,7 +590,6 @@
     }
 </script>
 <script>
-    const weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     const d = new Date();
     let today = weekday[d.getDay()];
     var weekOrder = [];

@@ -122,12 +122,13 @@ node_modules/
 package-lock.json
 
 #DB
-#*.sqlite
+*.sqlite
 
 #local
 create_key.sh
 datasets
 models
+avatars
 
 env_variables.sh
 #Lib html and css

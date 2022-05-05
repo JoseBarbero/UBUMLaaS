@@ -29,13 +29,10 @@ License=GPL 3.0
 Description=Class implementing decision forest algorithm Forest PA, using bootstrap samples and penalized attributes. Uses an altered version of SimpleCart.<br/>For more information, see:<br/> Adnan, Md Nasim, Md Zahidul Islam (2017). Forest PA: Constructing a Decision Forest by Penalizing Attributes used in Previous Trees. Expert Systems with Applications.
 
 # Package URL for obtaining the package archive (required)
-PackageURL=http://csusap.csu.edu.au/~zislam/code/ForestPA.zip
+PackageURL=https://github.com/zislam/ForestPA/releases/download/1.0/ForestPA.1.0.zip
 
 # URL for further information
-URL=http://csusap.csu.edu.au/~zislam/
-
-# Enhances various other packages ?
-# Enhances=packageName1,packageName2,...
+URL=https://github.com/zislam/ForestPA/
 
 # Related to other packages?
 Related=simpleCART

@@ -29,7 +29,7 @@ Description=The IPCP plugin is a visualization that presents the Parallel Coordi
 Changes=Better usage of variables during rendering time, improving plotting performance.
 
 # Package URL for obtaining the package archive (required)
-PackageURL=https://github.com/glaubercini/ipcp/raw/master/packages/IPCP_1_0_1.zip
+PackageURL=https://github.com/glaubercini/ipcp/blob/main/packages/IPCP_1_0_1.zip?raw=true
 
 # URL for further information
 URL=https://github.com/glaubercini/ipcp/

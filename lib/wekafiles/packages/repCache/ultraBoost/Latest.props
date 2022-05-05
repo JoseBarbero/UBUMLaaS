@@ -1,0 +1,47 @@
+# Template Description file for a Weka package
+#
+# 
+
+# Package name (required)
+PackageName=ultraBoost
+
+# Version (required)
+Version=1.0.0
+
+#Date
+Date=2019-08-06
+
+# Title (required)
+Title= Class to adaptively boost heterogeneous classifiers
+
+Category=Classification
+
+# Author (required)
+Author=Ted Cary
+
+# Maintainer (required)
+Maintainer=Ultrasound Research Lab <ted.cary@pennmedicine.upenn.edu>
+
+# License (required)
+License=GPL 3.0
+
+# Description (required)
+Description=AdaBoosts heterogeneous learners (different learners at each stage).
+
+Changes=None.
+
+# Package URL for obtaining the package archive (required)
+PackageURL=https://github.com/tedcary/UltraBoost/releases/download/v1.0.0/ultraBoost1.0.0.zip
+
+# URL for further information
+URL=http://www.pennmedicine.org/departments-and-centers/department-of-radiology/radiology-research/labs-and-centers/quantitative/ultrasound-research-laboratory
+
+# Enhances various other packages ?
+# Enhances=packageName1,packageName2,...
+
+# Dependencies
+# Requires >= 3.8.4 due to bug in RemoveType filter
+# Easy workaround is to NOT set invert when using RemoveType filter,
+# Or else don't use RemoveType filter at all.
+
+Depends=weka (>=3.8.3)

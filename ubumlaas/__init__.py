@@ -1,5 +1,5 @@
 import os
-from flask import Flask
+from flask import Flask, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
@@ -9,15 +9,13 @@ from rq import Queue
 from ubumlaas.jobs import WorkerBuilder
 import ubumlaas.weka.weka_packages as weka_packages
 from flask_mail import Mail
+import time
 import json
 import logging.config
 
-"""UBUMLaaS main module."""
-
 
 def create_app(config_name):
-    """
-    Creat an application.
+    """ Creata application.
 
     Arguments:
         config_name {string} -- configuration.
@@ -69,12 +67,12 @@ def create_app(config_name):
 
         # Redis
         v.r = redis.Redis()
-        # v.qm = Queue("medium-ubumlaas", connection=v.r, default_timeout=-1)
+        #v.qm = Queue("medium-ubumlaas", connection=v.r, default_timeout=-1)
         v.qh = Queue("high-ubumlaas", connection=v.r, default_timeout=-1)
-        # BASE_WORKERS = 2
-        HIGH_PRIORITIES_WORKERS = 5
+        # BASE_WORKERS = 2
+        HIGH_PRIORITIES_WORKERS = 16
         v.workers = 0
-        # for _ in range(BASE_WORKERS):
+        #for _ in range(BASE_WORKERS):
         #    WorkerBuilder().set_queue(v.qm).create().start()
         for _ in range(HIGH_PRIORITIES_WORKERS):
             WorkerBuilder().set_queue(v.qh).create().start()
@@ -125,6 +123,5 @@ def create_app(config_name):
 
     app.jinja_env.filters["split"] = split_dict_key
     app.jinja_env.filters["user"] = hash_
-    app.jinja_env.cache = {}
 
     return app

@@ -3,15 +3,28 @@
 {% block content%}
 <main class="content">
     <div class="container-fluid p-0">
-        <div class="row d-flex">
-            <div class="col-auto">
-                <h1 class="h3 mb-3"><strong>System Monitor</strong></h1>
-            </div>
-            <div class="col-auto">
-                <a style="color: var(--info);" href="#a" data-trigger="focus" title="" data-container="body" data-toggle="popover"
-                    data-placement="right" data-content="Data is updated once every minute. Some inconsistency might be possible.">
-                    <i class="fa-solid fa-circle-info"></i>
-                </a>
+        <div container>
+            <div class="row d-flex">
+                <div class="col-10">
+                    <div class="row d-flex">
+                        <div class="col-auto">
+                            <h1 class="h3 mb-3"><strong>System Monitor</strong></h1>
+                        </div>
+                        <div class="col-auto">
+                            <a style="color: var(--info);" href="#a" data-trigger="focus" title="" data-container="body"
+                                data-toggle="popover" data-placement="right"
+                                data-content="Data is updated once every minute. Some inconsistency might be possible.">
+                                <em class="fa-solid fa-circle-info"></em>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-2">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="autoReloadSwitch" onchange="autoReload();"/>
+                        <label class="form-check-label" for="flexSwitchCheckDefault">Reload every 60 sec.</label>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="row d-flex">
@@ -27,7 +40,7 @@
                                         </div>
                                         <div class="col-auto">
                                             <div class="stat text-primary">
-                                                <i class="align-middle fa fa-microchip"></i>
+                                                <em class="align-middle fa fa-microchip"></em>
                                             </div>
                                         </div>
                                     </div>
@@ -46,7 +59,7 @@
                                         </div>
                                         <div class="col-auto">
                                             <div class="stat text-primary">
-                                                <i class="align-middle fa fa-microchip"></i>
+                                                <em class="align-middle fa fa-microchip"></em>
                                             </div>
                                         </div>
                                     </div>
@@ -82,7 +95,7 @@
                                         </div>
                                         <div class="col-auto">
                                             <div class="stat text-primary">
-                                                <i class="fa-solid fa-memory"></i>
+                                                <em class="fa-solid fa-memory"></em>
                                             </div>
                                         </div>
                                     </div>
@@ -118,7 +131,7 @@
                                         </div>
                                         <div class="col-auto">
                                             <div class="stat text-primary">
-                                                <i class="fa-solid fa-hard-drive"></i>
+                                                <em class="fa-solid fa-hard-drive"></em>
                                             </div>
                                         </div>
                                     </div>
@@ -134,11 +147,11 @@
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="col mt-0">
-                                            <h5 class="card-title">System Load 1</h5>
+                                            <h5 class="card-title" title="System Load Average calculated over a 1 minute period.">System Load 1</h5>
                                         </div>
                                         <div class="col-auto">
                                             <div class="stat text-primary">
-                                                <i class="align-middle fa fa-server"></i>
+                                                <em class="align-middle fa fa-server"></em>
                                             </div>
                                         </div>
                                     </div>
@@ -157,7 +170,7 @@
                                         </div>
                                         <div class="col-auto">
                                             <div class="stat text-primary">
-                                                <i class="fa fa-bolt-lightning"></i>
+                                                <em class="fa fa-bolt-lightning"></em>
                                             </div>
                                         </div>
                                     </div>
@@ -178,7 +191,7 @@
                                         </div>
                                         <div class="col-auto">
                                             <div class="stat text-primary">
-                                                <i class="align-middle fa fa-server"></i>
+                                                <em class="align-middle fa fa-server"></em>
                                             </div>
                                         </div>
                                     </div>
@@ -197,7 +210,7 @@
                                         </div>
                                         <div class="col-auto">
                                             <div class="stat text-primary">
-                                                <i class="fa-solid fa-ethernet"></i>
+                                                <em class="fa-solid fa-ethernet"></em>
                                             </div>
                                         </div>
                                     </div>
@@ -218,7 +231,7 @@
                                         </div>
                                         <div class="col-auto">
                                             <div class="stat text-primary">
-                                                <i class="fa-solid fa-clock"></i>
+                                                <em class="fa-solid fa-clock"></em>
                                             </div>
                                         </div>
                                     </div>
@@ -236,7 +249,7 @@
                                         </div>
                                         <div class="col-auto">
                                             <div class="stat text-primary">
-                                                <i class="fa-solid fa-circle-nodes"></i>
+                                                <em class="fa-solid fa-circle-nodes"></em>
                                             </div>
                                         </div>
                                     </div>
@@ -254,7 +267,7 @@
                                         </div>
                                         <div class="col-auto">
                                             <div class="stat text-primary">
-                                                <i class="fa-solid fa-globe"></i>
+                                                <em class="fa-solid fa-globe"></em>
                                             </div>
                                         </div>
                                     </div>
@@ -272,7 +285,7 @@
                                         </div>
                                         <div class="col-auto">
                                             <div class="stat text-primary">
-                                                <i class="fa-solid fa-network-wired"></i>
+                                                <em class="fa-solid fa-network-wired"></em>
                                             </div>
                                         </div>
                                     </div>
@@ -290,7 +303,7 @@
                                         </div>
                                         <div class="col-auto">
                                             <div class="stat text-primary">
-                                                <i class="align-middle fa fa-microchip"></i>
+                                                <em class="align-middle fa fa-microchip"></em>
                                             </div>
                                         </div>
                                     </div>
@@ -308,7 +321,7 @@
                                         </div>
                                         <div class="col-auto">
                                             <div class="stat text-primary">
-                                                <i class="fa-solid fa-arrow-trend-up"></i>
+                                                <em class="fa-solid fa-arrow-trend-up"></em>
                                             </div>
                                         </div>
                                     </div>
@@ -327,7 +340,27 @@
 
 {% block js %}
 <script>
-    $('[data-toggle="popover"]').popover(); 
+    function reloadPage() {
+        if (sessionStorage.getItem('reloadState') == 'true')
+            window.location.reload();
+    }
+
+    setTimeout(reloadPage, 60090);
+
+</script>
+<script>
+    $('[data-toggle="popover"]').popover();
+    
+    function autoReload() {
+        if (sessionStorage.getItem('reloadState') == null) {
+            sessionStorage.setItem('reloadState', 'true');
+        } else if (sessionStorage.getItem('reloadState') == 'false') {
+            sessionStorage.setItem('reloadState', 'true');
+            setTimeout(reloadPage, 5000);
+        } else {
+            sessionStorage.setItem('reloadState', 'false');
+        }
+    }
 </script>
 <script>
     function strToNum(str) {
@@ -335,6 +368,9 @@
             str = str.replace(']', '');
             str = str.split(',');
             str = str.map(Number);
+            str = str.filter(function (value) {
+                return !Number.isNaN(value);
+            });
             return str;
         }
 

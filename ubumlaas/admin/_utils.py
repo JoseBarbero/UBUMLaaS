@@ -47,7 +47,10 @@ def exps_type(exps):
         e = e.to_dict()
         types[algorithms[e['alg']['alg_name']]] += 1
         try:
-            end_time = datetime.fromtimestamp(e['endtime'])
+            try:
+                end_time = datetime.fromtimestamp(e['endtime'])
+            except TypeError:
+                continue
             start_time = datetime.fromtimestamp(e['starttime'])
             diff_time = end_time - start_time
             type_time[
