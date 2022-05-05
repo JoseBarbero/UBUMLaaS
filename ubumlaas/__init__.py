@@ -69,7 +69,7 @@ def create_app(config_name):
         v.r = redis.Redis()
         #v.qm = Queue("medium-ubumlaas", connection=v.r, default_timeout=-1)
         v.qh = Queue("high-ubumlaas", connection=v.r, default_timeout=-1)
-        BASE_WORKERS = 2
+        # BASE_WORKERS = 2
         HIGH_PRIORITIES_WORKERS = 16
         v.workers = 0
         #for _ in range(BASE_WORKERS):
