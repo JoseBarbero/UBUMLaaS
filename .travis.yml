@@ -41,7 +41,6 @@ install:
   - cd $TRAVIS_BUILD_DIR
   - conda env create -f UBUMLaaS_env.yml
   - conda activate UBUMLaaS
-  - python -m pip install .
   - wget https://github.com/dpr1005/UBUMLaaS/raw/CICD/test/utils/testDB.sqlite -O $TRAVIS_BUILD_DIR/ubumlaas/data.sqlite --no-check-certificate
   - wget https://github.com/dpr1005/UBUMLaaS/raw/CICD/test/utils/ubumlaas.tar -O /tmp/ubumlaas.tar --no-check-certificate
   - mkdir -p $TRAVIS_BUILD_DIR/ubumlaas/datasets/{ubumlaas,ubumlaas2}
