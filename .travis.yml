@@ -31,9 +31,17 @@ before_install:
   - sudo cp geckodriver /usr/bin
 
 install:
+  - wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+  - bash miniconda.sh -b -p $HOME/miniconda
+  - source "$HOME/miniconda/etc/profile.d/conda.sh"
+  - hash -r
+  - conda config --set always_yes yes --set changeps1 no
+  - conda update -q conda
+  - conda info -a
   - cd $TRAVIS_BUILD_DIR
-  - python -m pip install --upgrade pip
-  - pip install -r requirements.txt
+  - conda env create -f UBUMLaaS_env.yml
+  - conda activate UBUMLaaS
+  - python -m pip install .
   - wget https://github.com/dpr1005/UBUMLaaS/raw/CICD/test/utils/testDB.sqlite -O $TRAVIS_BUILD_DIR/ubumlaas/data.sqlite --no-check-certificate
   - wget https://github.com/dpr1005/UBUMLaaS/raw/CICD/test/utils/ubumlaas.tar -O /tmp/ubumlaas.tar --no-check-certificate
   - mkdir -p $TRAVIS_BUILD_DIR/ubumlaas/datasets/{ubumlaas,ubumlaas2}
