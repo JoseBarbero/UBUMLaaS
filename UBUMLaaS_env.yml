@@ -28,6 +28,7 @@ dependencies:
   - geopy
   - psutil
   - glances
+  - javabridge
   - pip:
      - flask-migrate==2.5.2
      - python-weka-wrapper3==0.1.7
