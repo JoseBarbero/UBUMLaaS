@@ -22,7 +22,7 @@ itsdangerous == 1.1.0
 flask-mail == 0.9.1
 email-validator == 1.1.1
 MarkupSafe == 1.1.1
-Jinja2 == 2.11.2
+Jinja2 == 2.11.3
 pycountry >= 22.3.5
 geopy >= 2.2.0
 WTForms==2.3.3
