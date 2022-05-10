@@ -1,25 +1,30 @@
 # UBUMLaaS [![admirable-logo](ubumlaas/static/img/onlyA-32x32.svg)](http://admirable-ubu.es/)
 
-<!--[![Build Status](https://app.travis-ci.com/dpr1005/UBUMLaaS.svg?branch=master)](https://app.travis-ci.com/dpr1005/UBUMLaaS)-->
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/5380c6229bc5421ba4832902f9e359fa)](https://www.codacy.com/gh/dpr1005/UBUMLaaS/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=dpr1005/UBUMLaaS&amp;utm_campaign=Badge_Grade)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=dpr1005_UBUMLaaS&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=dpr1005_UBUMLaaS)
-<!--
-badges antiguas
-[![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability/JoseBarbero/UBUMLaaS?logo=code-climate&style=for-the-badge)](https://codeclimate.com/github/JoseBarbero/UBUMLaaS)
-[![GitHub repo size](https://img.shields.io/github/repo-size/JoseBarbero/UBUMLaaS?color=yellowgreen&logo=github&style=for-the-badge)](https://github.com/JoseBarbero/UBUMLaaS/archive/master.zip)
-[![GitHub](https://img.shields.io/github/license/JoseBarbero/UBUMLaaS?logo=gnu&logoColor=white&style=for-the-badge)](https://github.com/JoseBarbero/UBUMLaaS/blob/master/LICENSE)
--->
+<div align="center">
+    <img alt="Codacy grade" src="https://img.shields.io/codacy/grade/5380c6229bc5421ba4832902f9e359fa?logo=codacy">
+    <img alt="SonarCloud Build Status" src="https://sonarcloud.io/api/project_badges/measure?project=dpr1005_UBUMLaaS&metric=alert_status">
+    <img alt="SonarCloud Security" src="https://sonarcloud.io/api/project_badges/measure?project=dpr1005_UBUMLaaS&metric=security_rating">
+    <br/>
+    <a href="https://github.com/dpr1005/UBUMLaaS"><img alt="GitHub issues" src="https://img.shields.io/github/issues/dpr1005/UBUMLaaS"></a>
+<a href="https://github.com/dpr1005/UBUMLaaS/network"><img alt="GitHub forks" src="https://img.shields.io/github/forks/dpr1005/UBUMLaaS"></a>
+<a href="https://github.com/dpr1005/UBUMLaaS/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/dpr1005/UBUMLaaS"></a>
+<img alt="GitHub commit activity" src="https://img.shields.io/github/commit-activity/m/dpr1005/UBUMLaaS">
+  <a href="https://github.com/dpr1005/UBUMLaaS/blob/main/LICENSE"><img alt="GitHub license" src="https://img.shields.io/github/license/dpr1005/UBUMLaaS"></a>
+    <br/>
+    <img alt="Non Comment Lines Of Code" src="https://sonarcloud.io/api/project_badges/measure?project=dpr1005_UBUMLaaS&metric=ncloc">
+    <img alt="GitHub repo size" src="https://img.shields.io/github/repo-size/dpr1005/UBUMLaaS?color=purple&logo=github">
+</div>
+    
+---
+<div align="justify">
+This application is the continuation of <a href="https://github.com/JoseBarbero/UBUMLaaS">UBUMLaaS</a> developed by the ADMIRABLE research group of the University of Burgos.
+
+This new version provides support for Semi-Supervised Learning algorithms and new instance selection filters.
+
+It also has a renewed and modernized interface. With a whole new administration section of the application itself, with statistics for users and general system statistics.
 
 Machine Learning as a Service (MLaaS) platform based on [ADMIRABLE](http://admirable-ubu.es/) and [BEST-AI](https://www.ubu.es/best-ai-biologia-educacion-y-salud-con-tecnologias-avanzadas-informaticas-best-ai) research groups methods.
-
----
-This application is described as one of the result of two different projects (with objectives partially overlapping, and being this application in the intersection of the objectives):
-
-1. <a href="http://www.mineco.gob.es/portal/site/mineco/"><img align="right" width="20%" src="ubumlaas/static/img/MEC.svg"></a>
-Project "***Algoritmos de ensembles para problemas de salidas múltiples - nuevos desarrollos y aplicaciones***" from "*Ministerio de Economía y Competitividad*" (reference: TIN2015-67534-P)
-2. <a href="https://www.jcyl.es/"><img align="right" width="20%" src="ubumlaas/static/img/JCYL.svg"></a>
-Project "***Minería de datos para la mejora del mantenimiento y disponibilidad de máquinas de altas presiones***" from *"Consejería de Educación de la Junta de Castilla y León"* (reference: BU085P17)
-
+</div>
 <br>
 
 ---
@@ -87,9 +92,8 @@ Project "***Minería de datos para la mejora del mantenimiento y disponibilidad 
 
 ---
 
-<a href="https://ec.europa.eu/regional_policy/es/funding/erdf/"><img hspace="2%" align="center" width="20%" src="ubumlaas/static/img/FEDER.svg"></a>
-<a href="http://www.mineco.gob.es/portal/site/mineco/"><img hspace="2%" align="center" width="20%" src="ubumlaas/static/img/MEC.svg"></a>
-<a href="https://www.jcyl.es/"><img hspace="2%" align="center" width="20%" src="ubumlaas/static/img/JCYL.svg"></a>
-<a href="https://www.educa.jcyl.es/universidad/es/fondos-europeos/fondo-europeo-desarrollo-regional-feder/"><img hspace="2%" align="center" width="20%" src="ubumlaas/static/img/JCYL_impulsa.svg"></a>
+> GitHub [@dpr1005](https://github.com/dpr1005) &nbsp;&middot;&nbsp;
+> Twitter [@callmednx](https://twitter.com/callmednx) &nbsp;&middot;&nbsp;
+> LinkedIn [Daniel Puente Ramírez](https://www.linkedin.com/in/danielpuenteramirez/)
 
         
