@@ -6,8 +6,8 @@
     <img alt="SonarCloud Mantainability" src="https://sonarcloud.io/api/project_badges/measure?project=dpr1005_UBUMLaaS&metric=sqale_rating">
     <img alt="SonarCloud Vulneravilities" src="https://sonarcloud.io/api/project_badges/measure?project=dpr1005_UBUMLaaS&metric=vulnerabilities">
     <br/>
-    <a href="https://github.com/dpr1005/UBUMLaaS"><img alt="GitHub issues" src="https://img.shields.io/github/issues/dpr1005/UBUMLaaS"></a>
-<a href="https://github.com/dpr1005/UBUMLaaS/network"><img alt="GitHub forks" src="https://img.shields.io/github/forks/dpr1005/UBUMLaaS"></a>
+    <a href="https://github.com/dpr1005/UBUMLaaS/issues"><img alt="GitHub issues" src="https://img.shields.io/github/issues/dpr1005/UBUMLaaS"></a>
+<a href="https://github.com/dpr1005/UBUMLaaS/network/members"><img alt="GitHub forks" src="https://img.shields.io/github/forks/dpr1005/UBUMLaaS"></a>
 <a href="https://github.com/dpr1005/UBUMLaaS/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/dpr1005/UBUMLaaS"></a>
 <img alt="GitHub commit activity" src="https://img.shields.io/github/commit-activity/m/dpr1005/UBUMLaaS">
   <a href="https://github.com/dpr1005/UBUMLaaS/blob/main/LICENSE"><img alt="GitHub license" src="https://img.shields.io/github/license/dpr1005/UBUMLaaS"></a>
