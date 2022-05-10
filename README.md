@@ -3,7 +3,8 @@
 <div align="center">
     <img alt="Codacy grade" src="https://img.shields.io/codacy/grade/5380c6229bc5421ba4832902f9e359fa?logo=codacy">
     <img alt="SonarCloud Build Status" src="https://sonarcloud.io/api/project_badges/measure?project=dpr1005_UBUMLaaS&metric=alert_status">
-    <img alt="SonarCloud Security" src="https://sonarcloud.io/api/project_badges/measure?project=dpr1005_UBUMLaaS&metric=security_rating">
+    <img alt="SonarCloud Mantainability" src="https://sonarcloud.io/api/project_badges/measure?project=dpr1005_UBUMLaaS&metric=sqale_rating">
+    <img alt="SonarCloud Vulneravilities" src="https://sonarcloud.io/api/project_badges/measure?project=dpr1005_UBUMLaaS&metric=vulnerabilities">
     <br/>
     <a href="https://github.com/dpr1005/UBUMLaaS"><img alt="GitHub issues" src="https://img.shields.io/github/issues/dpr1005/UBUMLaaS"></a>
 <a href="https://github.com/dpr1005/UBUMLaaS/network"><img alt="GitHub forks" src="https://img.shields.io/github/forks/dpr1005/UBUMLaaS"></a>
