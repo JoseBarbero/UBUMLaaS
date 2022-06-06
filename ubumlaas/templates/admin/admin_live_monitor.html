@@ -127,7 +127,7 @@
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="col mt-0">
-                                            <h5 class="card-title">Storaged Used</h5>
+                                            <h5 class="card-title">Storage Used</h5>
                                         </div>
                                         <div class="col-auto">
                                             <div class="stat text-primary">
@@ -552,11 +552,11 @@
     }
 
 
-    var rx = '{{ system_load.network_enp4s0_rx }}';
-    var rx_label = '{{ system_load.network_enp4s0_rx_label }}';
+    var rx = '{{ system_load.network_rx }}';
+    var rx_label = '{{ system_load.network_rx_label }}';
     rx = strToNum(rx);
-    var tx = '{{ system_load.network_enp4s0_tx }}';
-    var tx_label = '{{ system_load.network_enp4s0_tx_label }}';
+    var tx = '{{ system_load.network_tx }}';
+    var tx_label = '{{ system_load.network_tx_label }}';
     tx = strToNum(tx);
     var txStep = Math.ceil(Math.max.apply(Math, tx) / 2);
     var rxStep = Math.ceil(Math.max.apply(Math, rx) / 2);

@@ -93,25 +93,26 @@ def get_last_system_stats():
         glances_dict['mem_in_use'] = round(glances_dict['mem_used'] * byte_mib, 2)
         glances_dict['mem_label'] = MiB
     
-    storage_used = glances_dict['fs_/_used'] * byte_gib
+    storage_used = glances_dict[os.environ['MONITOR_DISK_USED']] * byte_gib
     if mem_gib > 1:
         glances_dict['storage_in_use'] = round(storage_used, 2)
         glances_dict['storage_label'] = GiB
     else:
         glances_dict['storage_in_use'] = round(
-            glances_dict['fs_/_used'] * byte_mib, 2)
+            glances_dict[os.environ['MONITOR_DISK_USED']] * byte_mib, 2)
         glances_dict['storage_label'] = MiB
     
-    max_storage = glances_dict['fs_/_size'] * byte_gib
+    max_storage = glances_dict[os.environ['MONITOR_DISK_SIZE']] * byte_gib
     if mem_gib > 1:
         glances_dict['max_storage'] = round(max_storage, 2)
         glances_dict['max_storage_label'] = GiB
     else:
         glances_dict['max_storage'] = round(
-            glances_dict['fs_/_size'] * byte_mib, 2)
+            glances_dict[os.environ['MONITOR_DISK_SIZE']] * byte_mib, 2)
         glances_dict['max_storage_label'] = MiB
     
-    glances_dict['storage_in_use_percent'] = round(glances_dict['fs_/_used']/glances_dict['fs_/_size']*100, 1)
+    glances_dict['storage_in_use_percent'] = round(
+        glances_dict[os.environ['MONITOR_DISK_USED']]/glances_dict[os.environ['MONITOR_DISK_SIZE']]*100, 1)
 
     time = glances_dict['uptime_seconds']
     day = time // (24 * 3600)
@@ -141,7 +142,7 @@ def get_system_load():
     if current_df.shape[0] < 10:
         try:
             history_df = pd.read_csv(path + "/glances_history.csv")
-            current_df = pd.concat([history_df, current_df], ignore_index=True)  
+            current_df = pd.concat([history_df, current_df], ignore_index=True, sort=True)  
         except FileNotFoundError:
             v.app.logger.info('Log history does not exist.')
 
@@ -153,10 +154,10 @@ def get_system_load():
     data['cpu_iowait'] = system_load_10_df['cpu_iowait'].to_list()
     data['diskio_sda_read_count'] = system_load_10_df['diskio_sda_read_count'].to_list()
     data['diskio_sda_write_count'] = system_load_10_df['diskio_sda_write_count'].to_list()
-    data['network_enp4s0_rx'], data['network_enp4s0_rx_label'] = get_network_usage(
-        system_load_10_df, 'network_enp4s0_rx')
-    data['network_enp4s0_tx'], data['network_enp4s0_tx_label'] = get_network_usage(
-        system_load_10_df, 'network_enp4s0_tx')
+    data['network_rx'], data['network_rx_label'] = get_network_usage(
+        system_load_10_df, os.environ['MONITOR_NETWORK_RX'])
+    data['network_tx'], data['network_tx_label'] = get_network_usage(
+        system_load_10_df, os.environ['MONITOR_NETWORK_TX'])
     data['timestamp'] = [x.split(' ')[1] for x in system_load_10_df['timestamp'].to_list() if isinstance(x, str)]
 
     return data

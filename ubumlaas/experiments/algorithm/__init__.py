@@ -61,12 +61,6 @@ def task_skeleton(experiment, current_user):
             "ubumlaas/datasets/" + current_user["username"] + "/",
             experiment['data'])
 
-        if y is not None:
-            y_name = y.keys()
-            le = LabelEncoder()
-            y = le.fit_transform(y)
-            y = pd.DataFrame(y, columns=y_name)
-
         v.app.logger.info("%d - Dataset %s opened", current_user['id'],
                           experiment['data'])
 
@@ -118,6 +112,12 @@ def task_skeleton(experiment, current_user):
         y_test_list = []
         X_test_list = []
         if execution_lib.algorithm_type == "Semi Supervised Classification":
+            if y is not None:
+                y_name = y.keys()
+                le = LabelEncoder()
+                y = le.fit_transform(y)
+                y = pd.DataFrame(y, columns=y_name)
+
             col = y.columns.tolist()[0]
             X_labeled = X.loc[y[col] != -1]
             y_labeled = y.loc[y[col] != -1]
