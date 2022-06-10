@@ -159,7 +159,9 @@ html {
                                 <h3 class="text-center font-weight-bold">Error</h3>
                                 <p class="text-danger">
                                     <i class="fa-solid fa-circle-exclamation"></i>
-                                    {{ experiment.result }}
+                                    Couldn't perform the experiment. Internal error: {{ experiment.result }}
+                                    <br>
+                                    Check whether the parametrization is correct, if so contact support so we can look into it.
                                 </p>
                                 {% elif experiment.state == 1 %}
                                 <h3 class="text-center font-weight-bold">Finished</h3>

@@ -13,6 +13,7 @@ import sklearn.preprocessing
 import sklearn.multiclass
 import sklearn.semi_supervised
 import lib.is_ssl.semisupervised
+import lib.is_ssl.instance_selection
 from sklearn.preprocessing import LabelEncoder
 from ubumlaas.experiments.algorithm.metrics import calculate_metrics
 from ubumlaas import create_app
@@ -31,7 +32,6 @@ from ubumlaas.util import get_dataframe_from_file
 from ubumlaas.experiments.execute_algorithm._weka import Execute_weka
 
 import shutil
-
 
 def task_skeleton(experiment, current_user):
     """
@@ -83,8 +83,7 @@ def task_skeleton(experiment, current_user):
             y_labeled = y.loc[labeled_cols]
             X = X.drop(axis=0, index=labeled_cols)
             y = y.drop(axis=0, index=labeled_cols)
-            alg_filter = ast.literal_eval("lib." + execution_lib.filter_name +
-                                          "(**execution_lib.filter_config)")
+            alg_filter = eval("lib." + execution_lib.filter_name + "(**execution_lib.filter_config)")
             X_labeled, y_labeled = alg_filter.filter(X_labeled, y_labeled)
             X = X.append(X_labeled, ignore_index=True)
             y = pd.concat([y, y_labeled], ignore_index=True).fillna(1)
