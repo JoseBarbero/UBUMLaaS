@@ -35,6 +35,7 @@ def predict(id):
     v.app.logger.info("%d - Predict experiment %s", current_user.id, id)
     v.app.logger.debug("%d - id_experiment - %s", current_user.id, id)
     return render_template("predict.html", form_pr=form_pr,
+                           ip=request.environ.get('HTTP_X_REAL_IP', request.remote_addr),
                            id=id, title="Predict")
 
 
@@ -66,7 +67,7 @@ def start_predict():
     alg = get_algorithm_by_name(exp.alg_name)
     path = "ubumlaas/models/{}/{}.model".format(current_user.username, exp_id)
     exp = exp.to_dict()
-    if alg.lib == "sklearn" or alg.lib == "meka":
+    if alg.lib == "sklearn" or alg.lib == "meka" or alg.lib == "is_ssl":
         # Open experiment configuration
         execute = v.apps_functions[alg.lib](exp)
 
@@ -115,7 +116,7 @@ def start_predict():
         pred_df=prediction_df.iloc[:, -1].to_frame()
 
     else:
-        v.app.logger.warn("%d - code 400 alg.lib neither weka nor sklear nor meka", current_user.id)
+        v.app.logger.warn("%d - code 400 alg.lib neither weka nor sklear nor meka nor is_ssl", current_user.id)
         v.app.logger.debug("%d - alg.lib - %s", current_user.id, alg.lib)
         return "", 400
 

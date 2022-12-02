@@ -1,4 +1,8 @@
 {% extends "base.html" %}
+{% block head %}
+    <link rel="preload" href="{{url_for('static', filename='img/escudo-UBU.png')}}" as="image">
+    <link rel="preload" href="{{url_for('static', filename='img/logo.v3.3.svg')}}" as="image">
+{% endblock %}
 {% block css %}
 <style>
     html, body {
@@ -9,7 +13,6 @@
         box-sizing: border-box;
         color: white;
         min-height:5%;
-        /*min-height: 87.5%;*/
     }
     .index_background{
         background-color: rgba(var(--ubu-maroon-red), var(--ubu-maroon-green), var(--ubu-maroon-blue), 0.75); /*#ca7c89;*/
@@ -35,57 +38,66 @@
 {% endblock %}
 {% block content %}
 
-<div class="container-fluid h-100 d-flex align-items-stretch p-0" style="z-index: 999;">
-    <div class="container-fluid h-100 d-flex align-items-stretch p-0">
-        <div class="row container-fluid p-0 m-0">        
-            <div class="col-md-6 col-12 pt-3 d-flex align-items-center" id="index-left">
-                <div class="container">
-                    <div class="col-md-9 col-sm-12">
+<main class="d-flex w-100">
+    <div class="container d-flex flex-column">
+        <div class="row vh-100">
+            <div class="col-sm-12 col-md-12 col-lg-12 mx-auto d-table h-100">
+                <div class="d-table-cell align-middle">
+                    <div class="text-center mt-4">
+                        <div class="text-center">
+                            <div class="container-fluid">
+                                <div class="row">
+                                    <div class="col-xl-10 mx-auto">
+                                        <div class="row">
+                                            <div class="col-md-5">
+                                                <img src="{{url_for('static', filename='img/escudo-UBU.png')}}" alt="Universidad de Burgos logo" class="img-fluid"
+                                                    alt="Null" />
+                                            </div>
+                                            <div class="col-md-2"></div>
+                                            <div class="col-md-5">
+                                                <img src="{{url_for('static', filename='img/logo.v3.3.svg')}}" alt="ADMIRABLE logo" class="img-fluid" alt="Null" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br><br><br><br><br>
+                        {% if current_user.is_authenticated %}
+                        <h1 class="h1 font-weight-bold">Which experiment should we launch next?</h1>
+                        <div class="col-xl-6 mx-auto">
+                            <a class="mt-3 btn btn-ubu-maroon font-weight-bold text-monospace text-uppercase btn-lg btn-block"
+                                href="{{ url_for('experiments.new_experiment') }}">Create a new experiment</a>
+                        </div>
                         <blockquote class="blockquote text-center mt-2">
                             <p class="mb-0" id="cite_text"><q>In God we trust, all others must bring data</q></p>
-                            <footer class="blockquote-footer"><cite title="W. Edwards Deming" id="cite_name">W. Edwards Deming</cite></footer>
+                            <h6 class="card-subtitle text-muted">W. Edwards Deming</h6>
                         </blockquote>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6 col-12 index_background pt-3 d-flex align-items-center" id="index-right">
-                <div class="container">
-                    <div class="col-12">
-                        <h3 class="text-center text-monospace font-weight-bold">Welcome to UBUMLaaS</h3>
-                    </div>                
-                    <div class="col-12">
-                        <div class="container">
-                        {% if current_user.is_authenticated %}
-                            <div class="row">
-                                <div class="col-md-8 offset-md-2 mb-3">
-                                    <a class="mt-3 btn btn-ubu-maroon font-weight-bold text-monospace text-uppercase btn-lg btn-block" href="{{ url_for('experiments.new_experiment') }}">Create a new experiment</a>
-                                </div>
-                            </div>
                         {% else %}
-                            <div class="row">
-                                <div class="col-md-8 offset-md-2 mb-3">
-                                    <a class="mt-3 btn btn-ubu-maroon font-weight-bold text-monospace text-uppercase btn-lg btn-block" href="{{ url_for('users.register') }}">Register</a>
+                        <h1 class="h1 font-weight-bold">Universidad de Burgos Machine Learning as a Service</h1>
+                        <h1 class="h2">UBUMLaaS</h1>
+                        <p class="lead">
+                            Where data comes in and knowledge goes out.
+                        </p>
+                        <div class="col-xl-8 mx-auto">
+                            <div class="row d-flex">
+                                <div class="col-md-6">
+                                    <a class="mt-3 btn btn-ubu-maroon font-weight-bold text-monospace text-uppercase btn-lg btn-block"
+                                        href="{{ url_for('users.register') }}">Register</a>
+                                </div>
+                                <div class="col-md-6">
+                                    <a class="mt-3 btn btn-ubu-maroon font-weight-bold text-monospace text-uppercase btn-lg btn-block"
+                                        href="{{ url_for('users.login') }}">Log In</a>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col-md-8 offset-md-2 mb-3">
-                                    <a class="mt-3 btn btn-outline-ubu-maroon font-weight-bold text-monospace text-uppercase btn-lg btn-block" href="{{ url_for('users.login') }}" style="color: white;">Login</a>
-                                </div>
-                            </div>
-                        {% endif %}
                         </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
-        </div>    
-    </div>
-    <div class="container-fluid index d-md-flex align-items-stretch p-0 position-fixed d-sm-none" style="z-index: -100;">
-        <div class="container-fluid d-flex justify-content-center" style="min-height: fit-content;">
-            <img src="{{ url_for("static", filename="img/mano-robotica.svg")}}" class="pt-md-5 h-90"  />
         </div>
     </div>
-</div>
-
+</main>
 {% endblock %}
 
 {% block footer %}
@@ -93,7 +105,7 @@
     <div class="container">
         <div class="row">
         <div class="col-md-12 text-center">
-            <p>UBUMLaaS. © 2019. All rights reserved.</p>
+            <p>UBUMLaaS. © <script>document.write(new Date().getFullYear());</script>. All rights reserved.</p>
         </div>
         </div>
     </div>

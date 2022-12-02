@@ -4,9 +4,14 @@
 const MULTITARGET = ["MultiClassification"];
 
 /**
- * Possible values of Non-Supervised algorithmsç 
+ * Possible values of Non-Supervised algorithms 
  */
 const UNSUPERVISED = ["Clustering"]
+
+/**
+ * Columns with missing data for Semi Supervised Classification.
+ */
+const SEMISUPERVISED = ["Semi Supervised Classification"]
 
 /**
  * It guarantees only one target if algorithms is not MULTITARGET 
@@ -68,6 +73,25 @@ function target_or_use(identifier, mode){
             }else{
                 v.addClass("list-group-item-secondary");
             }
+        }
+    }
+}
+
+/**
+ * It assures that when working with Semi Supervised Classification, 
+ * the target column contains unlabeled (-1) values, so the algorithms 
+ * can work properly.
+ * 
+ * @param {string} column number 
+ */
+function target_with_unlabeled(column){
+    let typ = $("#alg_typ").val();
+    if (SEMISUPERVISED.flat().includes(typ)) {
+        if (!SEMISUPERVISED.flat().includes(parseInt(column))){
+            launch_danger_modal("Target not allowed",
+                "Semi Supervised Classification needs a target with missing or '-1' values.");
+            $("#col" + column + '_target').prop("checked", true);
+            $("#col" + column + '_use').prop("checked", true);
         }
     }
 }

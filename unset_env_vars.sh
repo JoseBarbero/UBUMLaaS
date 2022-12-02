@@ -1,3 +1,4 @@
+#!/bin/bash
 unset SECRET_KEY
 unset EMAIL_AC
 unset EMAIL_PASS

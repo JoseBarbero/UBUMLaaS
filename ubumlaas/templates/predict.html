@@ -11,50 +11,63 @@
 {% endblock %}
 
 {% block content %}
-<div class="container">
-        <div class="jumbotron">
-                <h3 class="text-center">Predict</h3>
-                <div class="row" id="updata">
-                        <div class="col-6 center">
-                                <fieldset>
-                                        <form class="mt-4" id="form_pred">
-                                                {{ form_pr.hidden_tag() }}
-                                                <div class="form-group custom-file">
-                                                        {{ form_pr.dataset(class="custom-file-input") }}
-                                                        {{ form_pr.dataset.label(class="custom-file-label",id="datasetLabel") }}
+<main class="d-flex w-100">
+        <div class="container flex-column">
+                <div class="row row-flex">
+                        <div class="container">
+                                <div class="row">
+                                        <div class="col-sm-10 col-md-8 col-lg-6 mx-auto d-table h-100">
+                                                <div class="d-table-cell align-middle">
+                                                        <div class="text-center mt-4">
+                                                                <h1 class="h2 font-weight-bold">Predict</h1>
+                                                        </div>
+                                                        <div class="card">
+                                                                <div class="card-body">
+                                                                        <div class="row" id="updata">
+                                                                                <div class="col-xl-12">
+                                                                                        <form class="mt-4 form-horizontal" id="form_pred">
+                                                                                                {{ form_pr.hidden_tag() }}
+                                                                                                <div class="form-group custom-file">
+                                                                                                        {{ form_pr.dataset(class="custom-file-input") }}
+                                                                                                        {{ form_pr.dataset.label(class="custom-file-label",id="datasetLabel") }}
+                                                                                                </div>
+                                                                                                <div class="form-group">
+                                                                                                        <button class="btn btn-secondary btn-block" id="uploadDataset">Upload</button>
+                                                                                                </div>
+                                                                                        </form>
+                                                                                </div>
+                                                                                <div class="col-xl-12 center">
+                                                                                        <div id="show_dataset" class="col-12 form-group table-responsive">
+                                                                                                {% include 'blocks/show_dataset.html' %}
+                                                                                        </div>
+                                                                                </div>
+                                                                                <div class="col-xl-6 center">
+                                                                                        <form class="form-horizontal" id="submit_completed_experiment">
+                                                                                                {{ form_pr.hidden_tag() }}
+                                                                                                <div class="form-group">
+                                                                                                        <input type="submit" class="btn btn-primary btn-block btn-lg mt-4"
+                                                                                                                value="Predict" />
+                                                                                                </div>
+                                                                                        </form>
+                                                                                </div>
+                                                                        </div>
+                                                                        
+                                                                        <div class="container" id="div_res" style="display: none">
+                                                                                <div class="col-12 center">
+                                                                                        <div id="show_result" class="col-12 form-group table-responsive">
+                                                                                                {% include 'blocks/predict_result.html' %}
+                                                                                        </div>
+                                                                                </div>
+                                                                        </div>
+                                                                </div>
+                                                        </div>
                                                 </div>
-                                                <div class="form-group">
-                                                        <button class="btn btn-secondary btn-block" id="uploadDataset">Upload</button>
-                                                </div>
-                                        </form>
-                                </fieldset>
-                        </div>
-                        <div class="col-12 center">
-                                <div id="show_dataset" class="col-12 form-group table-responsive">
-                                        {% include 'blocks/show_dataset.html' %}
-                                </div>
-                        </div>
-                        <div class="col-md-6 center">
-                                <fieldset>
-                                        <form class="col-md-6 offset-3" id="submit_completed_experiment">
-                                                {{ form_pr.hidden_tag() }}
-                                                <div class="form-group">
-                                                        <input type="submit" class="btn btn-primary btn-block btn-lg mt-4" value="Predict"/>
-                                                </div>
-                                        </form>
-                                </fieldset>
-                        </div>  
-                </div>
-
-                <div class="container" id="div_res" style= "display: none">
-                        <div class="col-12 center">
-                                <div id="show_result" class="col-12 form-group table-responsive">
-                                        {% include 'blocks/predict_result.html' %}
+                                        </div>
                                 </div>
                         </div>
                 </div>
         </div>
-</div>
+</main>
 {% endblock %}
 {% block js %}
 <script>
@@ -130,7 +143,7 @@
 
         function delete_file(){
                 $.ajax({
-                        url:"{{ url_for("experiments.delete_file")}}",
+                        url:"{{ url_for("experiments.delete_file") }}",
                         type: 'DELETE'
                 });
         }

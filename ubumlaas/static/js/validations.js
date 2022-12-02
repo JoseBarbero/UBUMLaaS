@@ -22,7 +22,7 @@ function load_verify_elements(){
 
 /**
  * Verify if experiments is configured correctly.
- * If any verification failed submit button will be disables.
+ * If any verification failed submit button will be disabled.
  */
 function verify_all(element=null){
     load_verify_elements();

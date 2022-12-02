@@ -46,13 +46,20 @@ def get_experiments(idu):
     Returns:
         experiments list -- all experiments from user with that id.
     """
-    listexp = Experiment.query.filter(Experiment.idu == idu).all()
-    for i in listexp:
-        i.starttime = datetime.fromtimestamp(i.starttime)\
+    listexp_db = Experiment.query.filter(Experiment.idu == idu).all()
+    listexp = []
+    for i in listexp_db:
+        d = i.to_dict()
+        d['starttime'] = datetime.fromtimestamp(i.starttime)\
             .strftime("%d/%m/%Y - %H:%M:%S")
         if i.endtime is not None:
-            i.endtime = datetime.fromtimestamp(i.endtime)\
+            d['endtime'] = datetime.fromtimestamp(i.endtime)\
                 .strftime("%d/%m/%Y - %H:%M:%S")
+        else:
+            d['endtime'] = None
+        d['web_name'] = i.web_name()
+        d['state'] = i.state
+        listexp.append(d)
     v.app.logger.info("Getting experiments from user with id %d, %d experiments found", idu, len(listexp))
     return listexp
 
@@ -75,7 +82,7 @@ def get_similar_algorithms(alg_name, exp_typ):
     else:
         cond = Algorithm.lib == alg.lib
         subcond = Algorithm.alg_typ == exp_typ
-        if exp_typ in ["Classification", "Regression"]:
+        if exp_typ in ["Classification", "Regression", "Semi Supervised Classification"]:
             subcond = or_(subcond, Algorithm.alg_typ == "Mixed")
         cond = and_(cond, subcond)
     algorithms = Algorithm.query.filter(cond).all()
@@ -126,11 +133,12 @@ def get_filter_by_name(name):
         .filter(Filter.filter_name == name).first()
 
 
-def get_compatible_filters(lib, typ=None):
+def get_compatible_filters(lib, typ=None, alg_typ=None):
     """Get an filter by .
 
     Arguments:
-        lib {string} -- name of the library sklearn or weka.
+        lib {string} -- name of the library sklearn, weka or is_ssl.
+        alg_typ {string} -- algorithm type Classification, Regression, etc.
 
     Returns:
         Algorithm -- Algorithm with that name.
@@ -138,12 +146,20 @@ def get_compatible_filters(lib, typ=None):
     cond = Filter.lib == lib
     if typ is not None:
         cond = and_(cond, Filter.typ == typ)
+    if alg_typ in ['Classification', 'Semi Supervised Classification', 'Mixed']:
+        filters = []
+        if lib != 'is_ssl':
+            cond1 = Filter.lib == 'is_ssl'
+            filters = Filter.query.filter(cond1).all()
+            v.app.logger.info("Getting filter for is_ssl")
+        [filters.append(x) for x in Filter.query.filter(cond).all()]
+        return filters
     v.app.logger.info("Getting filter for %s", lib)
     return Filter.query\
         .filter(cond).all()
 
 def delete_experiment(id):
-    v.app.logger.info("Deleting experiment with id %d", id)
+    v.app.logger.info("Deleting experiment with id %d", int(id))
     Experiment.query.filter_by(id=id).delete()
     v.db.session.commit()
 
@@ -155,19 +171,40 @@ class User(v.db.Model, UserMixin):
     email = v.db.Column(v.db.String(64), unique=True, index=True)
     username = v.db.Column(v.db.String(64), unique=True, index=True)
     password_hash = v.db.Column(v.db.String(128))
-    activated = v.db.Column(v.db.Boolean, nullable=False, default = False)
+    activated = v.db.Column(v.db.Boolean, nullable=False, default=False)
+    desired_use = v.db.Column(v.db.String(64))
+    country = v.db.Column(v.db.String(64))
+    user_type = v.db.Column(v.db.Integer, nullable=False, default=1)
+    website = v.db.Column(v.db.String(128))
+    twitter = v.db.Column(v.db.String(64))
+    github = v.db.Column(v.db.String(64))
+    institution = v.db.Column(v.db.String(128))
+    linkedin = v.db.Column(v.db.String(64))
+    google_scholar = v.db.Column(v.db.String(64))
 
-    def __init__(self, email, username, password):
+    def __init__(self, email, username, password, desired_use, country, activated, user_type):
         """User constructor
 
         Arguments:
             email {string} -- User's email
             username {string} -- User name identifer
             password {string} -- User's password
+            desired_use {string} -- User's intended use
+            country {string} -- User's country
         """
         self.email = email
         self.username = username
         self.password_hash = generate_password_hash(password)
+        self.desired_use = desired_use
+        self.country = country
+        self.activated = activated
+        self.user_type = user_type
+        self.website = None
+        self.twitter = None
+        self.github = None
+        self.institution = None
+        self.linkedin = None
+        self.google_scholar = None
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -182,6 +219,9 @@ class User(v.db.Model, UserMixin):
             boolean -- True if both password match, instead False
         """
         return check_password_hash(self.password_hash, password)
+
+    def is_admin(self):
+        return True if self.user_type == 0 else False
 
     def __repr__(self):
         """Representation
@@ -208,7 +248,30 @@ class User(v.db.Model, UserMixin):
         return {"id": self.id,
                 "email": self.email,
                 "username": self.username,
-                "password": self.password_hash}
+                "password": self.password_hash
+                }
+    
+    def to_dict_all(self):
+        """Object to dict
+
+        Returns:
+            dict -- dict with all atributes except password.
+        """
+        return {
+            "id": self.id,
+            "email": self.email,
+            "username": self.username,
+            "desired_use": self.desired_use,
+            "country": self.country,
+            "activated": self.activated,
+            "user_type": self.user_type,
+            "website": self.website,
+            "twitter": self.twitter,
+            "github": self.github,
+            "institution": self.institution,
+            "linkedin": self.linkedin,
+            "google_scholar": self.google_scholar
+        }
 
 
 class Algorithm(v.db.Model):
@@ -272,7 +335,7 @@ class Filter(v.db.Model):
             web_name {str} -- filter web name.
             filter_typ {str} -- filter type
             config {str} -- json with filter configuration.
-            lib {str} -- sklearn or weka.
+            lib {str} -- sklearn, weka or is_ssl.
         """
 
         self.filter_name = filter_name
@@ -370,3 +433,31 @@ class Experiment(v.db.Model):
 
     def web_name(self):
         return get_algorithm_by_name(self.alg_name).web_name
+
+
+class Country(v.db.Model):
+    __tablename__ = 'countries'
+    name = v.db.Column(v.db.String(64), nullable=False)
+    alpha_2 = v.db.Column(v.db.String(64), primary_key=True)
+    alpha_3 = v.db.Column(v.db.String(64), nullable=False)
+    numeric = v.db.Column(v.db.Integer, nullable=False)
+    longitude = v.db.Column(v.db.Float, nullable=False)
+    latitude = v.db.Column(v.db.Float, nullable=False)
+
+    def __init__(self, name, alpha_2, alpha_3, numeric, longitude, latitude):
+      self.name = name
+      self.alpha_2 = alpha_2
+      self.alpha_3 = alpha_3
+      self.numeric = numeric
+      self.longitude = longitude
+      self.latitude = latitude
+
+    def to_dict(self):
+        return {
+            "name": self.name,
+            "alpha_2": self.alpha_2,
+            "alpha_3": self.alpha_3,
+            "numeric": self.numeric,
+            "longitude": self.longitude,
+            "latitude": self.latitude
+        }

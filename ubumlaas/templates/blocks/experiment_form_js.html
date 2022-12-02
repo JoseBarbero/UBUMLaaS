@@ -160,6 +160,9 @@
             error: function (result) {
                 launch_warning_modal("Upload failed", "The dataset upload failed, try again later or contact with the administratior.")
             },
+            complete: function(result) {
+                update_datasets();
+            },
             cache: false,
             contentType: false,
             processData: false
@@ -238,7 +241,7 @@
 </script>
 <script>
     $("document").ready(function(){
-        const ONLY_FILTERS_ON = ["Classification", ""];
+        const ONLY_FILTERS_ON = ["Classification", "Semi Supervised Classification",""];
         $("#alg_typ").change(function(){
             if (ONLY_FILTERS_ON.includes($(this).val())){
                 $("#form_filter").show();
