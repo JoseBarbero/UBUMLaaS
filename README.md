@@ -90,11 +90,4 @@ Machine Learning as a Service (MLaaS) platform based on [ADMIRABLE](http://admir
    $ python migrate.py
    ``` 
 
-
----
-
-> GitHub [@dpr1005](https://github.com/dpr1005) &nbsp;&middot;&nbsp;
-> Twitter [@callmednx](https://twitter.com/callmednx) &nbsp;&middot;&nbsp;
-> LinkedIn [Daniel Puente Ramírez](https://www.linkedin.com/in/danielpuenteramirez/)
-
         
