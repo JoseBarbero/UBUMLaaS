@@ -1,5 +1,5 @@
 flask == 1.1.1
-werkzeug == 0.15.6
+werkzeug == 2.2.3
 flask-login == 0.6.0
 flask-wtf == 0.14.2
 flask-sqlalchemy == 2.5.1
