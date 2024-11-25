@@ -6,10 +6,10 @@
 PackageName=wekaDeeplearning4j
 
 # Version (required)
-Version=1.6.0
+Version=1.7.2
 
 #Date
-Date=2020-07-03
+Date=2021-09-24
 
 # Title (required)
 Title=Weka wrappers for Deeplearning4j
@@ -17,7 +17,7 @@ Title=Weka wrappers for Deeplearning4j
 Category=Classification/Regression
 
 # Author (required)
-Author=Christopher Beckham, Eibe Frank, Mark Hall, Steven Lang and Felipe Bravo
+Author=Christopher Beckham, Eibe Frank, Mark Hall, Steven Lang, Felipe Bravo, and Rhys Compton
 
 # Maintainer (required)
 Maintainer=Weka team <wekalist@list.scms.waikato.ac.nz>
@@ -27,17 +27,17 @@ License=GPL 3.0
 
 Description=Provides access to classifiers and filters using the Deeplearning4j library. Deep neural networks can be built using a multitude of different layers, activations, lossfunctions and more. See https://deeplearning.cms.waikato.ac.nz/install#add-gpu-support to add CUDA support.
 
-Changes=Update Deeplearning4j API to dl4j 1.0.0-beta
+Changes=Added IsGPUAvailable tool and minor bug fixes
 
 # Package URL for obtaining the package archive (required)
-PackageURL=https://github.com/Waikato/wekaDeeplearning4j/releases/download/v1.6.0/wekaDeeplearning4j-1.6.0.zip
+PackageURL=https://github.com/Waikato/wekaDeeplearning4j/releases/download/v1.7.2/wekaDeeplearning4j-1.7.2.zip
 
 # URL for further information
 URL=https://deeplearning.cms.waikato.ac.nz/
 
 # Dependencies
 #{PACKAGE_DEPENDENCIES}
-Depends=weka (>=3.8.1)
+Depends=weka (>=3.8.4)
 
 # Package(s) that can't be installed alongside this one
 # - old wekaDeeplearning4j

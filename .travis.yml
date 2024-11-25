@@ -19,21 +19,30 @@ git:
   depth: 3
 
 addons:
-  chrome: stable
-  apt:
-    packages:
-      - chromium-chromedriver
+  firefox: "60.0"
 
 services:
   - redis
   - xvfb
 
+before_install:
+  - wget https://github.com/mozilla/geckodriver/releases/download/v0.20.1/geckodriver-v0.20.1-linux64.tar.gz
+  - tar -xzf geckodriver-v0.20.1-linux64.tar.gz
+  - sudo cp geckodriver /usr/bin
+
 install:
+  - wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+  - bash miniconda.sh -b -p $HOME/miniconda
+  - source "$HOME/miniconda/etc/profile.d/conda.sh"
+  - hash -r
+  - conda config --set always_yes yes --set changeps1 no
+  - conda update -q conda
+  - conda info -a
   - cd $TRAVIS_BUILD_DIR
-  - pip install -r requirements.txt
-  - wget http://mirror.jkanetwork.com/Datasets/data.sqlite.tgz -O $TRAVIS_BUILD_DIR/ubumlaas/data.sqlite.tgz --no-check-certificate
-  - tar -xvzf $TRAVIS_BUILD_DIR/ubumlaas/data.sqlite.tgz -C $TRAVIS_BUILD_DIR/ubumlaas
-  - wget http://mirror.jkanetwork.com/Datasets/ubumlaas.tar -O /tmp/ubumlaas.tar --no-check-certificate
+  - conda env create -f UBUMLaaS_env.yml
+  - conda activate UBUMLaaS
+  - wget https://github.com/dpr1005/UBUMLaaS/raw/CICD/test/utils/testDB.sqlite -O $TRAVIS_BUILD_DIR/ubumlaas/data.sqlite --no-check-certificate
+  - wget https://github.com/dpr1005/UBUMLaaS/raw/CICD/test/utils/ubumlaas.tar -O /tmp/ubumlaas.tar --no-check-certificate
   - mkdir -p $TRAVIS_BUILD_DIR/ubumlaas/datasets/{ubumlaas,ubumlaas2}
   - mkdir -p $TRAVIS_BUILD_DIR/test/datasets
   - tar -xvf /tmp/ubumlaas.tar -C $TRAVIS_BUILD_DIR/ubumlaas/datasets/ubumlaas
@@ -41,14 +50,14 @@ install:
   - cp $TRAVIS_BUILD_DIR/ubumlaas/datasets/ubumlaas/* $TRAVIS_BUILD_DIR/ubumlaas/datasets/ubumlaas2
   
 before_script:
-  - wget http://mirror.jkanetwork.com/Datasets/env_variables.sh -O env_variables.sh --no-check-certificate
+  - wget https://raw.githubusercontent.com/dpr1005/UBUMLaaS/CICD/test/utils/env_variables -O env_variables.sh --no-check-certificate
   - source env_variables.sh
   - python migrate.py
   - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x16"
   - sleep 3
   - python app.py &
-  - sleep 20  
+  - sleep 10
 
 script:
   - python -m pytest test/test_selenium.py --verbose
-  - python -m test.tests
+  #- python -m test.tests

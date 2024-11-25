@@ -1,6 +1,5 @@
 from ubumlaas.experiments.execute_algorithm import\
-    (_meka, _weka, _sklearn)
-import os
+    (_meka, _weka, _sklearn, _is_ssl)
 
 
 def start():
@@ -15,6 +14,7 @@ def start():
     workers = None
     apps_functions = {"sklearn": _sklearn.Execute_sklearn,
                       "weka": _weka.Execute_weka,
-                      "meka": _meka.Execute_meka}
+                      "meka": _meka.Execute_meka,
+                      "is_ssl": _is_ssl.Execute_ssl}
     app = None
     mail = None

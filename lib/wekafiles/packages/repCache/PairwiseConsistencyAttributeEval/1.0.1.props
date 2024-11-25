@@ -1,0 +1,35 @@
+# Template Description file for a Weka package
+# 
+
+# Package name (required)
+PackageName=PairwiseConsistencyAttributeEval
+
+# Version (required)
+Version=1.0.1
+
+#Date (year-month-day)
+Date=2021-12-16
+
+# Title (required)
+Title=Attribute evaluator that evaluates the worth of an attribute i by adding the consistency rates of the attribute subsets composed of attribute i and each of the other attributes.
+
+# Category (recommended)
+Category=Attribute selection
+
+# Author (required)
+Author= S. Navarro, F. Jimenez, G. Sanchez, J. Palma
+
+# Maintainer (required)
+Maintainer= S. Navarro
+
+# License (required)
+License= GPL 2.0
+
+# Description (required)
+Description = Attribute evaluator that evaluates the worth of an attribute i by adding the consistency rates of the attribute subsets composed of attribute i and each of the other attributes. For more information see: F. Jimenez, G. Sanchez, J. Palma, L. Miralles-Pechuan, J. Botia (2021). Multivariate feature ranking of gene expression data, ArXiv, 2111.02357
+
+# Package URL for obtaining the package archive (required)
+PackageURL=https://sourceforge.net/projects/pairwisefeatureranking/files/PairwiseConsistencyAttributeEval/PairwiseConsistencyAttributeEval1.0.1.zip/download
+
+# Dependencies (format: packageName (equality/inequality version_number)
+Depends=weka (>=3.8.3), consistencySubsetEval (>=1.0.0)

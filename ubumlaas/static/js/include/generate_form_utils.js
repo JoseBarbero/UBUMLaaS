@@ -234,8 +234,7 @@ function get_base_block(placein, block, param_name, param, level, filter=false){
     let a = $("<a></a>", { onClick: "toggle_click('"+bname+"','"+basename+"_span'"+")",
                            href: "#a",
                            id: basename+"_open" });
-    let icon = $("<i></i>", { class: "material-icons float-right" });
-    icon.text("arrow_drop_down_circle")
+      let icon = $("<i></i>", { class: "fa fa-chevron-down pull-right" });
     a.append(icon);
     let dv = $("<div></div>");
     dv.append(lbl);

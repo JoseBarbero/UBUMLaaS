@@ -48,6 +48,8 @@
 
     }*/
 </script>
+<script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js"></script>
 <script>
     _heads = [];
     _childs = [];
@@ -104,8 +106,14 @@
 </script>
 <script>
     
-    $($("#show_predict_dataset").children()[0]).DataTable();
-    $($("#show_predict_dataset2").children()[0]).DataTable();
+    $($("#show_predict_dataset").children()[0]).DataTable({
+        "searching": false,
+        "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]]
+    });
+    $($("#show_predict_dataset2").children()[0]).DataTable({
+        "searching": false,
+        "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]]
+    });
 
 </script>
 

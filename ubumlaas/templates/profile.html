@@ -1,139 +1,870 @@
 {% extends "base.html" %}
+
 {% block content %}
-<div class="container">
-    <div class="jumbotron">
-        <div class="row">
-            <div class="col-md-6">
-                <h3 class="text-center">User Info</h3>
-                <div class="container">
-                    <div class="row">
-                        <p class="col-md-3 font-weight-bold">Username</p>
-                        <p class="col-md-9">{{ user.username }} </p>
-                    </div>
-                    <div class="row">
-                            <p class="col-md-3 font-weight-bold">Mail</p>
-                            <p class="col-md-9">{{ user.email }} </p>
-                        </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <h3 class="text-center">Datasets</h3>
-                <table class="table table-striped" id="dataset_list">
-                    <thead>
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Name</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for d in datasets %}
-                        <tr>
-                            <td scope="col">{{ loop.index }}</td>
-                            <td scope="col">{{ d }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"
+    integrity="sha512-QSkVNOCYLtj73J4hbmVoOV6KVZuMluZlioC+trLpewV8qMjsWqlIQvkn1KGX2StWvPMdWGBqim1xlC8krl1EKQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<main class="content">
+    <div class="container-fluid p-0">
+
+        <div class="mb-3">
+            <h1 class="h3 d-inline align-middle"><strong>Profile</strong></h1>
         </div>
         <div class="row">
-            <div class="col-12">
-                <h3 class="text-center">Experiments</h3>
-                <table id="exper" class="table table-striped table-responsive" style="width:100%">
-                    <thead>
-                        <tr>
-                            <th scope="col">Id</th>
-                            <th scope="col">Algorithm</th>
-                            <th scope="col">Dataset</th>
-                            <th scope="col">Init Date</th>
-                            <th scope="col">Finish Date</th>
-                            <th scope="col">State</th>
-                            <th scope="col" class="no-sort">View Result</th>
-                            <th scope="col" class="no-sort">Reuse experiment</th>
-                            <th scope="col" class="no-sort">Delete experiment</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for e in experiments %}
-                        <tr class="align-middle">
-                            <td scope="col">{{ e.id }}</td>
-                            <td scope="col">{{ e.web_name() }}</td>
-                            <td scope="col">{{ e.data }}</td>
-                            <td scope="col">{{ e.starttime }}</td>
-                            <td scope="col">
-                                {% if e.endtime is not none %}
-                                    {{ e.endtime }}
-                                {% else %}
-                                    ---
-                                {% endif %}
-                            </td>
-                            <td scope="col" align="center">
-                                <div class="square rounded-circle
-                                {% if e.state == 0 %}
-                                    bg-warning
-                                {% elif e.state == 1 %}
-                                    bg-success
-                                {% elif e.state == 2 %}
-                                    bg-danger
-                                {% endif %}
-                                ">
-                                    &nbsp;
-                                </div>
-                            </td>
-                            <td>
-                                <a class="btn btn-lg btn-info text-uppercase font-weight-bold" data-toggle="tooltip" data-placement="top" title="See configuration and results." href="{{ url_for("experiments.result_experiment",id=e.id) }}">See</a>
-                            </td>
-                            <td>
-                                <a class="btn btn-lg btn-warning text-uppercase font-weight-bold" data-toggle="tooltip" data-placement="top" title="Create a new experiment with this configuration." href="{{ url_for("experiments.new_experiment", exp=e.id) }}">Reuse</a>
-                            </td>
-                            <td>
-                                <a class="btn btn-lg btn-danger text-uppercase font-weight-bold" data-toggle="tooltip" data-placement="top" title="Delete this experiment, its results and the model generated" href="javascript:delete_experiment({{e.id}})">Delete</a>
-                            </td>
-                        </tr>
+            <div class="col-md-4 col-xl-3">
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Profile Details</h5>
+                    </div>
+                    <div class="card-body text-center">
+                        {% for category, message in get_flashed_messages(with_categories=True) %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">{{ message }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
                         {% endfor %}
-                    </tbody>
-                </table>
+                        <img src="{{user.avatar}}" alt="{{ user.username }}" class="img-fluid rounded-circle mb-2" width="128" height="128" 
+                             id="profile_pic" role="button" data-toggle="modal" data-target="#uploadPic"/>
+                        <h5 class="card-title mb-0">{{ user.username }}</h5>
+                        <div class="text-muted mb-2">{{ user.email }}</div>
+                        {% if user.user_type == 0 %}
+                        <h5 class="card-title mb-0">Admin</h5>
+                        {% endif %}
+                        <a class="badge bg-success me-1 my-1y" data-toggle="collapse" href="#statistics" role="button" aria-expanded="false"
+                            aria-controls="statistics">
+                            Statistics
+                        </a>
+                    </div>
+                    <hr class="my-0" />
+                    <div class="card-body">
+                        <h5 class="h6 card-title">About</h5>
+                        <ul class="list-unstyled mb-0">
+                            <li class="mb-1"><span data-feather="box" class="feather-sm me-1"></span> App usage to <a>{{ user.desired_use }}</a></li>
+                            <li class="mb-1"><span data-feather="home" class="feather-sm me-1"></span> Lives in <a>{{ user.country }}</a></li>
+                            {% if user.institution %}
+                            <li class="mb-1"><span data-feather="briefcase" class="feather-sm me-1"></span> Works at <a>{{ user.institution }}</a></li>
+                            {% endif %}
+                            {% if user.website %}
+                            <li class="mb-1"><span data-feather="bookmark" class="feather-sm me-1"></span><a href="{{ user.webpage }}">Personal blog</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                    {% if user.twitter or user.github or user.linkedin or user.google_scholar %}
+                        <hr class="my-0" />
+                        <div class="card-body">
+                            <h5 class="h6 card-title">Elsewhere</h5>
+                            <ul class="list-unstyled mb-0">
+                                {% if user.twitter %}
+                                <li class="mb-1"><span data-feather="twitter" class="feather-sm me-1"></span><a href="https://twitter.com/{{ user.twitter }}">Twitter</a></li>
+                                {% endif %}
+                                {% if user.github %}
+                                <li class="mb-1"><span data-feather="github" class="feather-sm me-1"></span><a href="https://github.com/{{ user.github }}">GitHub</a></li>
+                                {% endif %}
+                                {% if user.linkedin %}
+                                <li class="mb-1"><span data-feather="linkedin" class="feather-sm me-1"></span><a href="https://linkedin.com/in/{{ user.linkedin }}">Linked-In</a></li>
+                                {% endif %}
+                                {% if user.google_scholar %}
+                                <li class="mb-1"><span data-feather="paperclip" class="feather-sm me-1"></span><a href="{{ user.google_scholar }}">Google Scholar</a></li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                    <hr class="my-0" />
+                    <div class="text-center">
+                        <a id="editProfile" class="badge bg-warning me-1 my-1" type="button" data-toggle="modal" data-target="#formEditProfile">Edit Profile</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8 col-xl-9">
+                <div class="card flex-fill collapse" id="statistics">
+                    <div class="card-header" data-toggle="collapse" data-target="#statistics">
+                        <i class="fa fa-chevron-down pull-right"></i>
+                        <h5 class="card-title mb-0">User Statistics</h5>
+                    </div>
+                    <div class="card-body ">
+                        <div class="w-100">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col mt-0">
+                                                    <h5 class="card-title">Experiments</h5>
+                                                </div>
+                                                <div class="col-auto">
+                                                    <div class="stat text-primary">
+                                                        <i class="align-middle" data-feather="database"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <h1 class="mt-1 mb-3">{{ cards_data.experiments }}</h1>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col mt-0">
+                                                    <h5 class="card-title">Datasets</h5>
+                                                </div>
+                                
+                                                <div class="col-auto">
+                                                    <div class="stat text-primary">
+                                                        <i class="align-middle" data-feather="hard-drive"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <h1 class="mt-1 mb-3">{{ cards_data.datasets }}</h1>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5 class="card-title mb-0">Experiments performed in the last 7 days</h5>
+                                        </div>
+                                        <div class="card-body py-3">
+                                            <div class="chart chart-sm">
+                                                <canvas id="exp_7d_times"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 col-lg-6 col-xxl-6 d-flex">
+                                    <div class="card flex-fill w-100">
+                                        <div class="card-header">
+                                            <h5 class="card-title mb-0">Algorithm Type Usage Distribution</h5>
+                                        </div>
+                                        <div class="card-body align-self-center w-100">
+                                            <div class="chart chart-xm">
+                                                <canvas id="alg_type_dist"></canvas>
+                                            </div>
+                                            <table class="table mb-0">
+                                                <tbody>
+                                                    {% for name, times in exps_alg_type.items() %}
+                                                    {% if loop.index | int < 5 %} <tr>
+                                                        <td>{{ name }}</td>
+                                                        <td class="text-end">{{ times }}</td>
+                                                        </tr>
+                                                        {% endif %}
+                                                        {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-lg-6 col-xxl-6 d-flex">
+                                    <div class="card flex-fill w-100">
+                                        <div class="card-header">
+                                            <h5 class="card-title mb-0">Algorithm Type Time Used</h5>
+                                        </div>
+                                        <div class="card-body align-self-center w-100">
+                                            <div style="text-align:center">
+                                                <label class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="radio" name="alg_typ_time_used" value="seconds" checked
+                                                        onclick="preUpdateChart()">
+                                                    <span class="form-check-label">
+                                                        Seconds
+                                                    </span>
+                                                </label>
+                                                <label class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="radio" name="alg_typ_time_used" value="minutes"
+                                                        onclick="preUpdateChart()">
+                                                    <span class="form-check-label">
+                                                        Minutes
+                                                    </span>
+                                                </label>
+                                                <label class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="radio" name="alg_typ_time_used" value="hours"
+                                                        onclick="preUpdateChart()">
+                                                    <span class="form-check-label">
+                                                        Hours
+                                                    </span>
+                                                </label>
+                                                <label class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="radio" name="alg_typ_time_used" value="days"
+                                                        onclick="preUpdateChart()">
+                                                    <span class="form-check-label">
+                                                        Days
+                                                    </span>
+                                                </label>
+                                            </div>
+                                            <span></span><span></span>
+                                            <div class="chart align-self-center chart-xl">
+                                                <canvas id="exps_type_time"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card flex-fill">
+                    <div class="card-header" data-toggle="collapse" data-target="#datasets_table">
+                        <i class="fa fa-chevron-down pull-right"></i>
+                        <h5 class="card-title mb-0">Datasets</h5>
+                    </div>
+                    <div id="datasets_table" class="card-body collapse">
+                        <div class="row justify-content-center">
+                            <div class="col-xl-11">
+                                <div class="table-responsive">
+                                    <table id="datasetsTable" style="width:100%" data-pagination="true" data-search="true"
+                                        data-filter-control="true" data-show-search-clear-button="true" data-page-size="5"
+                                        data-page-list="[5, 10, 25, 50, 100, all]">
+                                        <thead>
+                                            <tr>
+                                                <th data-sortable="true" class="d-none d-xl-table-cell">#</th>
+                                                <th data-sortable="true" class="d-none d-xl-table-cell">Name</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for d in datasets %}
+                                            <tr>
+                                                <td class="d-none d-xl-table-cell">{{ loop.index }}</td>
+                                                <td class="d-none d-xl-table-cell">{{ d }}</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card flex-fill">
+                    <div class="card-header" data-toggle="collapse" data-target="#experiments_table">
+                        <i class="fa fa-chevron-down pull-right"></i>
+                        <h5 class="card-title mb-0">Latest Experiments</h5>
+                    </div>
+                    <div id="experiments_table" class="card-body collapse show">
+                        <div class="row justify-content-center">
+                            <div class="col-xl-11">
+                                <div class="table-responsive">
+                                    <table id="experimentsTable" style="width:100%" data-pagination="true" data-search="true"
+                                        data-filter-control="true" data-show-search-clear-button="true"
+                                        data-sort-name="Id" data-sort-order="desc" data-page-size="15"
+                                        data-page-list="[5, 10, 25, 50, 100, 250, 500, 1000, all]">
+                                        <thead>
+                                            <tr>
+                                                <th data-sortable="true" class="d-none d-xl-table-cell" data-align="center" data-field="Id">Id</th>
+                                                <th data-sortable="true" class="d-none d-xl-table-cell" data-align="center" data-field="Algorithm">Algorithm</th>
+                                                <th data-sortable="true" class="d-none d-xl-table-cell" data-align="center" data-field="Dataset">Dataset</th>
+                                                <th data-sortable="true" class="d-none d-xl-table-cell" data-align="center" data-field="Start Date">Start Date</th>
+                                                <th data-sortable="true" class="d-none d-xl-table-cell" data-align="center" data-field="Finish Date">Finish Date</th>
+                                                <th data-sortable="true" class="d-none d-xl-table-cell" data-align="center" data-field="State">State</th>
+                                                <th data-sortable="false" class="d-none d-xl-table-cell" data-align="center" data-field="View Result">View Result</th>
+                                                <th data-sortable="false" class="d-none d-xl-table-cell" data-align="center" data-field="Reuse">Reuse</th>
+                                                <th data-sortable="false" class="d-none d-xl-table-cell" data-align="center" data-field="Delete">Delete</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for e in experiments %}
+                                            <tr>
+                                                <td class="d-none d-xl-table-cell">{{ e.id }}</td>
+                                                <td class="d-none d-xl-table-cell">{{ e.web_name }}</td>
+                                                <td class="d-none d-xl-table-cell">{{ e.data }}</td>
+                                                <td class="d-none d-xl-table-cell">{{ e.starttime }}</td>
+                                                <td class="d-none d-xl-table-cell">
+                                                    {% if e.endtime %}
+                                                        {{ e.endtime }}
+                                                    {% else %}
+                                                        ---
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    {% if e.state == 0 %}
+                                                    <span class="badge bg-warning">In progress...</span>
+                                                    {% elif e.state == 1 %}
+                                                    <span class="badge bg-success">Finalized</span>
+                                                    {% else %}
+                                                    <span class="badge bg-danger">Error</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    <a class="btn btn-lg btn-info text-uppercase font-weight-bold" data-toggle="tooltip" data-placement="top"
+                                                        title="See configuration and results." href="{{ url_for("experiments.result_experiment",id=e.id) }}">See</a>
+                                                </td>
+                                                <td>
+                                                    <a class="btn btn-lg btn-warning text-uppercase font-weight-bold" data-toggle="tooltip" data-placement="top"
+                                                        title="Create a new experiment with this configuration." href="{{ url_for("experiments.new_experiment", exp=e.id) }}">Reuse</a>
+                                                </td>
+                                                <td>
+                                                    <a class="btn btn-lg btn-danger text-uppercase font-weight-bold" data-toggle="tooltip" data-placement="top"
+                                                        title="Delete this experiment, its results and the model generated"
+                                                        href="javascript:delete_experiment({{e.id}})">Delete</a>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="uploadPic" tabindex="-1" role="dialog" aria-labelledby="formModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">
+                            Uploading a new photo</h5> 
+                            <button type="button" class="close" data-dismiss="modal" aria-label="close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                    </div>
+                    <div class="modal-body">
+                        
+                        <p class="body-desc">
+                            Now you can change your picture. </p>
+                        <p id="msg"></p>
+                        <div class="photo-input"> <input type="file" id="loadFile" name="file[]"/> 
+                            <button class="btn btn-sm btn-primary" onclick="document.getElementById('loadFile').click()"> 
+                                Select a file 
+                            </button> 
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <p class="footer-title">
+                            If you're having problems uploading, try choosing a smaller photo.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="formEditProfile" tabindex="-1" role="dialog" aria-labelledby="formModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title" id="formModalLabel">Edit your data, {{ user.username }}</h3>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form id="formUserData" method="POST">
+                        {{form.hidden_tag()}}
+                        <div class="modal-body">
+                            <div class="form-group row">
+                                <label for="password" class="col-sm-6 col-form-label">
+                                    {{form.update_checkbox.label(class="form-group")}}
+                                </label>
+                                <div class="col-sm-6">
+                                    {{form.update_checkbox(onchange="allowForm('update_checkbox')")}}
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="username" class="col-sm-6 col-form-label">
+                                    {{form.username.label(class="form-group")}}
+                                </label>
+                                <div class="col-sm-6">
+                                    {{form.username(class="form-control", value=user.username) }}<br>
+                                    {% for error in form.username.errors %}
+                                    <div class="alert alert-warning alert-dismissible fade show" role="alert">{{ error }}
+                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="email" class="col-sm-6 col-form-label">
+                                    {{form.email.label(class="control")}}
+                                </label>
+                                <div class="col-sm-6">
+                                    {{form.email(type="email", class="form-control", value=user.email)}}<br>
+                                    {% for error in form.email.errors %}
+                                    <div class="alert alert-warning alert-dismissible fade show" role="alert">{{ error }}
+                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="country" class="col-sm-6 col-form-label">
+                                    {{form.country.label(class="form-group")}}
+                                </label>
+                                <div class="col-sm-6">
+                                    {{form.country(type="country", class="form-control", value=user.country)}}
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="desired_use" class="col-sm-6 col-form-label">
+                                    {{form.desired_use.label(class="form-group")}}
+                                </label>
+                                <div class="col-sm-6">
+                                    {{form.desired_use(type="desired_use", class="form-control", value=user.desired_use)}}
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="website" class="col-sm-6 col-form-label">
+                                    {{form.website.label(class="form-group")}}
+                                </label>
+                                <div class="col-sm-6">
+                                    {% if user.website %}
+                                        {{form.website(type="website", class="form-control", value=user.website)}}
+                                    {% else %}
+                                        {{form.website(type="website", class="form-control")}}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="twitter" class="col-sm-6 col-form-label">
+                                    {{form.twitter.label(class="form-group")}}
+                                </label>
+                                <div class="col-sm-6">
+                                    {% if user.twitter %}
+                                    {{form.twitter(type="twitter", class="form-control", value=user.twitter)}}
+                                    {% else %}
+                                    {{form.twitter(type="twitter", class="form-control")}}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="github" class="col-sm-6 col-form-label">
+                                    {{form.github.label(class="form-group")}}
+                                </label>
+                                <div class="col-sm-6">
+                                    {% if user.github %}
+                                    {{form.github(type="github", class="form-control", value=user.github)}}
+                                    {% else %}
+                                    {{form.github(type="github", class="form-control")}}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="institution" class="col-sm-6 col-form-label">
+                                    {{form.institution.label(class="form-group")}}
+                                </label>
+                                <div class="col-sm-6">
+                                    {% if user.institution %}
+                                    {{form.institution(type="institution", class="form-control", value=user.institution)}}
+                                    {% else %}
+                                    {{form.institution(type="institution", class="form-control")}}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="linkedin" class="col-sm-6 col-form-label">
+                                    {{form.linkedin.label(class="form-group")}}
+                                </label>
+                                <div class="col-sm-6">
+                                    {% if user.linkedin %}
+                                    {{form.linkedin(type="linkedin", class="form-control", value=user.linkedin)}}
+                                    {% else %}
+                                    {{form.linkedin(type="linkedin", class="form-control")}}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="google_scholar" class="col-sm-6 col-form-label">
+                                    {{form.google_scholar.label(class="form-group")}}
+                                </label>
+                                <div class="col-sm-6">
+                                    {% if user.google_scholar %}
+                                    {{form.google_scholar(type="google_scholar", class="form-control", value=user.google_scholar)}}
+                                    {% else %}
+                                    {{form.google_scholar(type="google_scholar", class="form-control")}}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <h6 class="text-muted">
+                                Keep in mind that submiting this form will update ALL your data with the data on each field.
+                            </h6>
+                            {{form.submit(class="btn btn-primary", value="Update my data")}}
+                        </div>
+                    </form>
+                    <div class="modal-footer"></div>
+                    <form id="formUserPasswd" method="POST">
+                        {{pass_form.hidden_tag()}}
+                        <div class="modal-body">
+                            <div class="form-group row">
+                                <label for="password" class="col-sm-6 col-form-label">
+                                    {{pass_form.pass_checkbox.label(class="form-group")}}
+                                </label>
+                                <div class="col-sm-6">
+                                    {{pass_form.pass_checkbox(onchange="allowForm('pass_checkbox')")}}
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="password" class="col-sm-6 col-form-label">
+                                    {{pass_form.password.label(class="form-group")}}
+                                </label>
+                                <div class="col-sm-6">
+                                    {{pass_form.password(type="password", class="form-control")}}<br>
+                                    {% for error in pass_form.password.errors %}
+                                    <div class="alert alert-warning alert-dismissible fade show" role="alert">{{ error }}
+                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="confirm_password" class="col-sm-6 col-form-label">
+                                    {{pass_form.confirm_password.label(class="form-group")}}
+                                </label>
+                                <div class="col-sm-6">
+                                    {{pass_form.confirm_password(type="password", class="form-control")}}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            {{pass_form.submit(class="btn btn-primary", value="Update my password")}}
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
-{% endblock content %}
+</main>
+
+{% endblock content%}
 
 {% block js %}
 <script>
-$(document).ready(function() {
-    $('#exper').DataTable( {
-        "order": [[ 0, "desc" ]],
-        "columnDefs": [ {
-          "targets": 'no-sort',
-          "orderable": false,
-    } ]
-    } );
+    const pass_fields = ['password', 'confirm_password'];
+    const data_fields = ['username', 'email', 'desired_use', 'country',
+                         'website', 'twitter', 'github', 'institution', 
+                         'linkedin', 'google_scholar'];
+    $('#formEditProfile').appendTo("body");
+    $('#uploadPic').appendTo("body");
+    $(function () {
+        $('#datasetsTable').bootstrapTable({
+            silentSort: false,
+            undefinedText: 'N/A'
+        });
+        $('#experimentsTable').bootstrapTable({
+            silentSort: false,
+            undefinedText: 'N/A'
+        });
+        $('#experimentsTable').bootstrapTable('hideColumn', 'Id');
+    })
 
-    $('#dataset_list').DataTable( {
-        "lengthMenu": [5, 10, 15],
-        "pageLength": 5
-    } );
-} );
+    function allowForm(type, def=false) {
+        var checked = document.getElementById(type).checked;
+        if (type == 'update_checkbox') 
+            fields = data_fields;
+        else
+            fields = pass_fields;
+        
+        fields.forEach(element => {
+            if (checked || def)
+                document.getElementById(element).disabled = false;
+            else
+                document.getElementById(element).disabled = true;
+        });
+    }
+    allowForm('update_checkbox');
+    allowForm('pass_checkbox');
 
-function delete_experiment(id){
-    launch_confirm_danger_modal("Delete experiment", "Are you sure to delete experiment?", confirm_delete_experiment, id);
-}
-function confirm_delete_experiment(id){
-    $.ajax({
-    url: '{{url_for("experiments.remove_experiment")}}',
-    type: 'DELETE',
-    contentType: 'text/plain; charset=utf-8',
-    data: id.toString(),
-    success: function(result) {
-        location.reload()
-    },
-    error: function (result) {
-            launch_danger_modal("Delete Failed", "Fail when delete the experiment")
+
+    function delete_experiment(id) {
+        $.ajax({
+            url: '{{url_for("experiments.remove_experiment")}}',
+            type: 'DELETE',
+            contentType: 'text/plain; charset=utf-8',
+            data: id.toString(),
+            success: function (result) {
+                location.reload()
+            },
+            error: function (result) {
+                alert("Delete Failed");
             }
-});
-}
-</script>12
+        });
+    }
+</script>
+<script>
+    const d = new Date();
+    let today = weekday[d.getDay()];
+    var weekOrder = [];
+    document.addEventListener("DOMContentLoaded", function () {
+        d3.csv("{{ url_for('static', filename='tmp/exp_'+current_user.username+'_7d.csv') }}")
+            .then(makeChartExp7d);
+        function makeChartExp7d(data) {
+            var ctx = document.getElementById("exp_7d_times").getContext("2d");
+            var gradient = ctx.createLinearGradient(0, 0, 0, 225);
+            gradient.addColorStop(0, "rgba(198, 40, 40, 1)");
+            gradient.addColorStop(1, "rgba(198, 40, 40, 0)");
+            var day = data.map(function (d) { return d.day; });
+            var times = data.map(function (d) { return d.times; });
+            maxValue = Math.max.apply(null, times);
 
+            daysAfter = [];
+            dayFound = false;
+            weekday.forEach(element => {
+                if (element == today) {
+                    dayFound = true;
+                } else if (dayFound) {
+                    daysAfter.push(element);
+                } else {
+                    weekOrder.push(element);
+                }
+            });
+            weekOrder = daysAfter.concat(weekOrder, [today])
+
+            new Chart(document.getElementById("exp_7d_times"), {
+                type: "line",
+                data: {
+                    labels: weekOrder,
+                    datasets: [{
+                        label: "Experiments performed",
+                        fill: true,
+                        backgroundColor: gradient,
+                        borderColor: CHART_COLORS.ubu,
+                        data: times
+                    }]
+                },
+                options: {
+                    responsive: !window.MSInputMethodContext,
+                    maintainAspectRatio: false,
+                    elements: {
+                        line: {
+                            cubicInterpolationMode: 'monotone'
+                        }
+                    },
+                    tooltips: {
+                        intersect: false
+                    },
+                    hover: {
+                        intersect: true
+                    },
+                    plugins: {
+                        filler: {
+                            propagate: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        },
+                        y: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                precision: 0
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: false,
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'top',
+                            formatter: Math.round,
+                            font: {
+                                weight: 'bold',
+                                size: 16
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    });
+</script>
+<script>
+    var chartExpsTypeTime;
+    const url = "{{ url_for('static', filename='tmp/exps_type_'+current_user.username+'_times.csv') }}";
+    document.addEventListener("DOMContentLoaded", function () {
+        preChartExpTotalTime();
+    });
+
+    function preChartExpTotalTime() {
+        d3.csv(url).then(makeChartExpTotalTime);
+    }
+
+    function preUpdateChart() {
+        d3.csv(url).then(updateChart);
+    }
+
+    function updateChart(data) {
+        const time = $("input[type='radio'][name='alg_typ_time_used']:checked").val();
+        var type = data.map(function (d) { return d.type; });
+        var time_data = data.map(function (d) { return d.seconds; });
+        const divisor = getDivisor(time);
+
+        for (var i = 0; i < time_data.length; i++) {
+            time_data[i] /= divisor;
+        }
+        chart = chartExpsTypeTime;
+        chart.data.labels = type;
+        chart.data.datasets.forEach((dataset) => {
+            dataset.data = time_data;
+        });
+        chart.update();
+    }
+
+    function getDivisor(time) {
+        var divisor = 1;
+
+        switch (time) {
+            case 'seconds':
+                break;
+            case 'minutes':
+                divisor = 60;
+                break;
+            case 'hours':
+                divisor = 3600;
+                break;
+            case 'days':
+                divisor = 86400;
+                break;
+        }
+        return divisor;
+    }
+
+    function makeChartExpTotalTime(data) {
+        const time = $("input[type='radio'][name='alg_typ_time_used']:checked").val();
+        var type = data.map(function (d) { return d.type; });
+        var time_data = data.map(function (d) { return d.seconds; });
+        const divisor = getDivisor(time);
+
+        for (var i = 0; i < time_data.length; i++) {
+            time_data[i] /= divisor;
+        }
+
+        chartExpsTypeTime = new Chart(document.getElementById("exps_type_time").getContext("2d"), {
+            type: "bar",
+            data: {
+                labels: type,
+                datasets: [{
+                    label: "Total time",
+                    backgroundColor: CHART_COLORS.ubu,
+                    borderColor: CHART_COLORS.ubu,
+                    hoverBackgroundColor: CHART_COLORS.ubu,
+                    hoverBorderColor: CHART_COLORS.ubu,
+                    data: time_data,
+                    barPercentage: .75,
+                    categoryPercentage: .5
+                }]
+            },
+            options: {
+                responsive: !window.MSInputMethodContext,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                    },
+                    y: {
+                        grid: {
+                            display: false
+                        },
+                        callback: function (value, index, ticks) {
+                            return '$' + value;
+                        }
+                    }
+                },
+                plugins: {
+                    legend: false,
+                    datalabels: {
+                        anchor: 'end',
+                        align: 'top',
+                        formatter: Math.round,
+                        font: {
+                            weight: 'bold',
+                            size: 16
+                        }
+                    }
+                }
+            }
+        });
+    }
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        d3.csv("{{ url_for('static', filename='tmp/exps_alg_type_'+current_user.username+'.csv') }}")
+            .then(makeUsePie)
+        function makeUsePie(data) {
+            var type = data.map(function (d) { return d.type; });
+            var times = data.map(function (d) { return d.times; });
+            new Chart(document.getElementById("alg_type_dist"), {
+                type: "pie",
+                data: {
+                    labels: type,
+                    datasets: [{
+                        data: times,
+                        backgroundColor: Object.values(CHART_COLORS),
+                        borderWidth: 5
+                    }]
+                },
+                options: {
+                    responsive: !window.MSInputMethodContext,
+                    maintainAspectRatio: false,
+                    legend: {
+                        display: false
+                    },
+                    cutoutPercentage: 0
+                }
+            });
+        }
+    });
+</script>
+<script>
+    $(document).ready(function (e) {
+            $('#loadFile').on('change', function () {
+                var form_data = new FormData();
+                var ins = document.getElementById('loadFile').files.length;
+
+                if (ins == 0) {
+                    $('#msg').html('<span style="color:red">Select one picture. </span>');
+                    return;
+                }
+                if (ins > 1) {
+                    $('#msg').html('<span style="color:red">You can only upload one picture. </span>');
+                    return;
+                }
+
+                for (var x = 0; x < ins; x++) {
+                    form_data.append("file[]", document.getElementById('loadFile').files[x]);
+                }
+
+                $.ajax({
+                    url: '{{ url_for("users.change_picture")}}',
+                    dataType: 'json', 
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    data: form_data,
+                    type: 'post',
+                    success: function (response) { 
+                        $('#msg').html('');
+                        $.each(response, function (key, data) {
+                            if (key !== 'message') {
+                                $('#msg').append(key + ' -> ' + data + '<br/>');
+                            } else {
+                                $('#msg').append(data + '<br/>');
+                            }
+                        })
+                    },
+                    error: function (response) {
+                        $('#msg').html(response.message); 
+                    },
+                    complete: function(response) {
+                        window.location.reload(true);
+                    }
+                });
+            });
+        });
+</script>
 {% endblock js %}
-

@@ -1,11 +1,10 @@
 import variables as v
 from rq import Worker
 import multiprocessing as mp
-
+"""Jobs module."""
 
 class WorkerBuilder():
-    """RQ Worker Builder
-    """
+    """RQ Worker Builder"""
 
     name = None
     queues = set()
@@ -13,7 +12,8 @@ class WorkerBuilder():
     proc = None
 
     def set_name(self, name):
-        """Add name to identify worker
+        """
+        Add name to identify worker
 
         Arguments:
             name {str} -- worker name
@@ -25,7 +25,8 @@ class WorkerBuilder():
         return self
 
     def set_queue(self, queue):
-        """Override queues set with unique queue.
+        """
+        Override queues set with unique queue.
 
         Arguments:
             queue {rq.Queue} -- Queue to add to worker
@@ -37,7 +38,8 @@ class WorkerBuilder():
         return self
 
     def add_queue(self, queue):
-        """Add new queue to worker
+        """
+        Add new queue to worker
 
         Arguments:
             queue {rq.Queue} -- Queue to add to worker
@@ -49,7 +51,8 @@ class WorkerBuilder():
         return self
 
     def create(self):
-        """Create a worker object with current configuration.
+        """
+        Create a worker object with current configuration.
 
         Returns:
             WorkerBuilder -- self
@@ -62,7 +65,8 @@ class WorkerBuilder():
         return self
 
     def start(self):
-        """Start a new process with the worker.
+        """
+        Start a new process with the worker.
 
         Returns:
             WorkerBuilder -- self
@@ -71,7 +75,8 @@ class WorkerBuilder():
         return self
 
     def kill(self):
-        """Kill a process with the worker
+        """
+        Kill a process with the worker
 
         Returns:
             WorkerBuilder -- self

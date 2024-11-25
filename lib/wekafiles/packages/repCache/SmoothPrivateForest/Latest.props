@@ -1,0 +1,38 @@
+# Template Description file for a Weka package
+#
+#
+
+# Package name (required)
+PackageName=SmoothPrivateForest
+
+# Version (required)
+Version=1.2.1
+
+#Date
+Date=2020-07-10
+
+# Title (required)
+Title=Smooth Private Forest for Differential Privacy
+
+Category=Classification
+
+# Author (required)
+Author=Michael Furner
+
+# Maintainer (required)
+Maintainer=Michael Furner <mfurner@csu.edu.au>
+
+# License (required)
+License=GPL 3.0
+
+# Description (required)
+Description=Implementation of Smooth Private Forest, a differentially private decision forest designed to minimize the number of queries required and the sensitivity of those queries.<br/>For more information, see:<br/>Fletcher, S., & Islam, M. Z. (2017). Differentially private random decision forests using smooth sensitivity. Expert Systems with Applications, 78, 16-31.
+
+# Package URL for obtaining the package archive (required)
+PackageURL=https://github.com/zislam/SmoothPrivateForest/releases/download/1.2.1/SmoothPrivateForest.1.2.1.zip
+
+# URL for further information
+URL=https://github.com/zislam/SmoothPrivateForest/
+
+# Dependencies
+Depends=weka (>=3.7.1), SysFor (>=1.2)

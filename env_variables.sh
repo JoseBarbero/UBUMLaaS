@@ -6,8 +6,14 @@ export EMAIL_PASS=<email-password>
 export EMAIL_URL=<email-url>
 export FLASK_ENV=development #development or production
 LIBFOLDER=/absolute/path/to/UBUMLaaS
+# glances CSV output to be read for monitoring
+export MONITOR_DISK_USED=<disk used>
+export MONITOR_DISK_SIZE=<disk size>
+export MONITOR_NETWORK_RX=<main network RX>
+export MONITOR_NETWORK_TX=<main network TX>
 
 export WEKA_HOME=$LIBFOLDER/lib/wekafiles/packages/
+export IS_SSL=$LIBFOLDER/lib/is_ssl/
 
 ruta="$WEKA_HOME/packages/"
 packages=$(ls -l $ruta)
