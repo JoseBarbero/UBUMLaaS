@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, request
 import variables as v
 from flask_login import current_user
 
@@ -17,7 +17,7 @@ def error_404(error):
     """
     uid = -1 if current_user.is_anonymous else current_user.id
     v.app.logger.warning("%d - Rendering 404 error", uid)
-    return render_template('error_pages/404.html'), 404
+    return render_template('error_pages/404.html', ip=request.environ.get('HTTP_X_REAL_IP', request.remote_addr)), 404
 
 
 @error_pages.app_errorhandler(403)
@@ -32,4 +32,4 @@ def error_403(error):
     """
     uid = -1 if current_user.is_anonymous else current_user.id
     v.app.logger.warning("%d - Rendering 403 error", uid)
-    return render_template('error_pages/403.html'), 403
+    return render_template('error_pages/403.html', ip=request.environ.get('HTTP_X_REAL_IP', request.remote_addr)), 403

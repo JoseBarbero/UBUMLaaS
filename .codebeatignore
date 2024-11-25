@@ -1,0 +1,8 @@
+# Files to be ignored by CodeBeat
+lib/**
+logs/**
+test/**
+*bootstrap*
+
+*.pyc
+*.model

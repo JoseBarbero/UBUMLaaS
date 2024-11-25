@@ -1,0 +1,54 @@
+{% block content %}
+<div class="collapse" id="newuserForm">
+    <div class="container">
+        <form method="POST">
+            {{form.hidden_tag()}}
+            {% for category, message in get_flashed_messages(with_categories=True) %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">{{ message }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            {% endfor %}
+            <div class="control-group" name="email">
+                {{form.email.label(class="control")}}
+                {{form.email(type="email", class="form-control")}}<br>
+                {% for error in form.email.errors %}
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">{{ error }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="control-group" name="username">
+                {{form.username.label(class="form-group")}}
+                {{form.username(class="form-control")}}<br>
+                {% for error in form.username.errors %}
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">{{ error }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <div class="control-group" name="country">
+                {{form.country.label(class="form-group")}}
+                {{form.country(type="country", class="form-control")}}
+            </div>
+            <br>
+            <div class="control-group" name="desired_use">
+                {{form.desired_use.label(class="form-group")}}
+                {{form.desired_use(type="desired_use", class="form-control")}}
+            </div>
+            <br>
+            <div class="control-group">
+                {{form.submit(class="btn btn-primary")}}
+            </div>
+            
+        </form>
+    </div>
+</div>
+
+{% endblock %}

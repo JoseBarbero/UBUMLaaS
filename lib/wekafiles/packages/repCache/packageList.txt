@@ -29,6 +29,7 @@ IPCP
 IWSS
 IWSSembeddedNB
 J48Consolidated
+J48PartiallyConsolidated
 J48graft
 JCDT
 JCHAIDStar
@@ -41,7 +42,10 @@ MultiObjectiveEvolutionaryFuzzyClassifier
 MultiObjectiveEvolutionarySearch
 NNge
 OpenmlWeka
+OptimizedForest
 PSOSearch
+PairwiseConsistencyAttributeEval
+PairwiseCorrelationAttributeEval
 RBFNetwork
 RPlugin
 RankCorrelation
@@ -52,9 +56,9 @@ SMOTE
 SPAARC
 SPMFWrapper
 SPegasos
-SSF
 SVMAttributeEval
 SelfOrganizingMap
+SmoothPrivateForest
 SparseGenerativeModel
 StudentFilters
 SysFor
@@ -66,11 +70,9 @@ WiSARD
 XMeans
 alternatingDecisionTrees
 alternatingModelTrees
-anonymizationPackage
 arxAnonymizer
 associationRulesVisualizer
 attributeSelectionSearchMethods
-baggedLocalOutlierFactor
 bayesianLogisticRegression
 bestFirstTree
 calibrationCurve
@@ -156,6 +158,7 @@ multisearch
 naiveBayesTree
 netlibNativeLinux
 netlibNativeOSX
+netlibNativeOSXarm
 netlibNativeWindows
 newKnowledgeFlowStepExamples
 niftiLoader
@@ -196,8 +199,8 @@ thresholdSelector
 tigerjython
 timeSeriesFilters
 timeseriesForecasting
+ultraBoost
 userClassifier
-vfdr
 vines
 votingFeatureIntervals
 wavelet

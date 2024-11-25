@@ -1,0 +1,55 @@
+# Template Description file for a Weka package
+#
+# 
+
+# Package name (required)
+PackageName=netlibNativeLinux
+
+# Version (required)
+Version=1.0.3
+
+#Date
+Date=2017-05-03
+
+# Title (required)
+Title=netlib-java wrappers and native libraries for BLAS, LAPACK and ARPACK under Linux
+
+Category=Linear Algebra
+
+# Author (required)
+Author=The Weka team
+
+# Maintainer (required)
+Maintainer=Weka team <wekalist@list.scms.waikato.ac.nz>
+
+# License (required)
+License=GPL 3.0
+
+# Description (required)
+Description=This package is a library-only package specific for Linux. It provides native libraries for linear algebra, including both a reference and system-tuned version. The system-tuned version will require libraries for BLAS, LAPACK and ARPACK compiled for your system to be available in your PATH. The native reference implementation should work out-of-the-box. After installing this package, several Weka schemes (such as linear regression and PCA) will use the native libraries for matrix operations.
+
+Changes=Now includes Linux natives built on Ubuntu 20.04 against libgfortran.5 and glibc 2.31 (and libraries from BLAS/LAPACK 3.10.0-2 for the "system" versions). The armhf versions have been removed in the default set-up. Instead, aarch64 versions are included now. The aarch64 and the 32-bit Intel versions were built on a 64-bit Intel machine running Ubuntu 20.04. GCC/GFORTRAN version 9.3.0 were used throughout for this.
+
+# Package URL for obtaining the package archive (required)
+PackageURL=http://prdownloads.sourceforge.net/weka/netlibNativeLinux1.0.3.zip?download
+
+# URL for further information
+URL=http://weka.sourceforge.net/doc.packages/netlibNativeLinux
+
+# Enhances various other packages ?
+# Enhances=packageName1,packageName2,...
+
+# Related to other packages?
+#Related=
+
+Precludes=netlibNativeOSX,netlibNativeWindows,netlibNativeOSXarm
+
+# Jar files containing native libraries (; separated list of jar/zip:lib-path,lib-path,...)
+NativeLibs=lib/netlib-native_ref-linux-aarch64-1.2-SNAPSHOT-natives.jar:netlib-native_ref-linux-aarch64.so;lib/netlib-native_ref-linux-i686-1.2-SNAPSHOT-natives.jar:netlib-native_ref-linux-i686.so;lib/netlib-native_ref-linux-x86_64-1.2-SNAPSHOT-natives.jar:netlib-native_ref-linux-x86_64.so;lib/netlib-native_system-linux-aarch64-1.2-SNAPSHOT-natives.jar:netlib-native_system-linux-aarch64.so;lib/netlib-native_system-linux-i686-1.2-SNAPSHOT-natives.jar:netlib-native_system-linux-i686.so;lib/netlib-native_system-linux-x86_64-1.2-SNAPSHOT-natives.jar:netlib-native_system-linux-x86_64.so
+
+# Classes needed for loading/finding native libraries (get injected into the root or weka.jar-level classloader). k separated list of
+# [root|]jar/zip:fully qualified class,fully qualified class,...
+InjectLoader=root|lib/jniloader-1.2-SNAPSHOT.jar;root|lib/native_ref-java-1.2-SNAPSHOT.jar;root|lib/native_system-java-1.2-SNAPSHOT.jar
+
+# Dependencies
+Depends=weka (>=3.8.0)

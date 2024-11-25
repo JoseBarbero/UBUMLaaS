@@ -36,6 +36,9 @@
                             }
                         }
                     }
+                    if (SEMISUPERVISED.flat().includes($("#alg_typ").val())){
+                        SEMISUPERVISED.push(result.cols_unlabeled);
+                    }
                     already_correct.add("data");
                 },
                 error: function (result) {

@@ -5,11 +5,15 @@ import variables as v
 import copy
 import arff
 import re
+import string
 import numpy as np
 from itsdangerous import URLSafeTimedSerializer
 from flask_mail import Message
 from flask import url_for
 from flask_login import current_user
+import asyncio
+from threading import Thread
+import time
 
 def get_dataframe_from_file(path, filename, target_column=False):
     extension = filename.split(".")[-1]
@@ -44,6 +48,17 @@ def get_dataframe_from_file(path, filename, target_column=False):
             raise Exception("Unknown user trying upload dataset")
         raise Exception("Invalid format for "+filename)
 
+    column_names = []
+    print(file_df.columns)
+    for index, column in enumerate(file_df.columns):
+        column = column.replace('.', '')
+        try:
+            int(column)
+            column_names.append(f'Attr-{index}')
+        except ValueError:
+            column_names.append(column)
+    file_df.columns = column_names
+
     if target_column:
         return file_df, targets_indexes
     return file_df
@@ -53,7 +68,7 @@ def send_experiment_result_email(user, email, procid, result=None):
     """SEND an email with the result
 
     Arguments:
-        user {str} -- username
+        user {dict} -- username
         email {str} -- user's email
         procid {int} -- experiment identifier
 
@@ -69,7 +84,7 @@ def send_experiment_result_email(user, email, procid, result=None):
 
         send_email(subject, email, html=html)
     
-    v.app.logger.info("%d - Email send experiment %d has finished", user.id, procid)
+    v.app.logger.info(f"{user['id']} - Email send experiment {procid} has finished")
 
 
 def send_email(subject, to=None, body=None, html=None):
@@ -172,3 +187,4 @@ def find_y_uniques(y):
     uniques = np.unique(y.values)
     uniques.sort()
     return uniques
+        
